@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="代币,以太坊," />
 
 
-<meta name="description" content="一个孤独的开发者，正在互联网公司踩坑">
-<meta property="og:type" content="website">
-<meta property="og:title" content="柳絮纷飞">
-<meta property="og:url" content="http://cordate.github.io/index.html">
+<meta name="description" content="关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。 ERC20令牌标准接口以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：123456789101112131415// ----------------------------------------------------------------------------// ERC Token Stan">
+<meta name="keywords" content="代币,以太坊">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊ERC20 token标准">
+<meta property="og:url" content="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20-token标准/index.html">
 <meta property="og:site_name" content="柳絮纷飞">
-<meta property="og:description" content="一个孤独的开发者，正在互联网公司踩坑">
+<meta property="og:description" content="关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。 ERC20令牌标准接口以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：123456789101112131415// ----------------------------------------------------------------------------// ERC Token Stan">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-27T06:28:54.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="柳絮纷飞">
-<meta name="twitter:description" content="一个孤独的开发者，正在互联网公司踩坑">
+<meta name="twitter:title" content="以太坊ERC20 token标准">
+<meta name="twitter:description" content="关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。 ERC20令牌标准接口以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：123456789101112131415// ----------------------------------------------------------------------------// ERC Token Stan">
 
 
 
 
 
 
-  <link rel="canonical" href="http://cordate.github.io/"/>
+  <link rel="canonical" href="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20-token标准/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>柳絮纷飞</title>
+  <title>以太坊ERC20 token标准 | 柳絮纷飞</title>
   
 
 
@@ -175,8 +177,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -247,9 +248,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -281,9 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/blockchain/以太坊ERC20-token标准/" itemprop="url">以太坊ERC20 token标准</a></h1>
+          <h1 class="post-title" itemprop="name headline">以太坊ERC20 token标准</h1>
         
 
         <div class="post-meta">
@@ -350,9 +349,7 @@
       
 
       
-        
-          
-            <p>关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。</p>
+        <p>关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。</p>
 <h2 id="ERC20令牌标准接口"><a href="#ERC20令牌标准接口" class="headerlink" title="ERC20令牌标准接口"></a>ERC20令牌标准接口</h2><p>以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">// ERC Token Standard #20 Interface</span><br><span class="line">// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md</span><br><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">contract ERC20Interface &#123;</span><br><span class="line">    function totalSupply() public constant returns (uint);</span><br><span class="line">    function balanceOf(address tokenOwner) public constant returns (uint balance);</span><br><span class="line">    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);</span><br><span class="line">    function transfer(address to, uint tokens) public returns (bool success);</span><br><span class="line">    function approve(address spender, uint tokens) public returns (bool success);</span><br><span class="line">    function transferFrom(address from, address to, uint tokens) public returns (bool success);</span><br><span class="line"></span><br><span class="line">    event Transfer(address indexed from, address indexed to, uint tokens);</span><br><span class="line">    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>以太坊区块链上的大部分主要代币均符合ERC20标准。GNT Golem Network Token是唯一部分兼容erc20的代币，因为它不执行approve、allowance以及transferFrom功能和Approval事件。</p>
 <p>一些令牌包括描述令牌合同的更多信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string public constant name = &quot;Token Name&quot;;</span><br><span class="line">string public constant symbol = &quot;SYM&quot;;</span><br><span class="line">uint8 public constant decimals = 18;  // 18 is the most common number of decimal places</span><br></pre></td></tr></table></figure></p>
@@ -365,8 +362,6 @@
 <h2 id="接口文档说明"><a href="#接口文档说明" class="headerlink" title="接口文档说明"></a>接口文档说明</h2><p>见引文吧！</p>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/diandianxiyu_geek/article/details/78082551" target="_blank" rel="noopener">【Ethereum】以太坊ERC20 Token标准完整说明</a><br><a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard" target="_blank" rel="noopener">ERC20 Token Standard</a></p>
 
-          
-        
       
     </div>
 
@@ -384,365 +379,38 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/MySQL网络协议分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/database/MySQL网络协议分析/" itemprop="url">MySQL网络协议分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T11:23:16+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Database/" itemprop="url" rel="index"><span itemprop="name">Database</span></a></span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/代币/" rel="tag"># 代币</a>
           
-
+            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在开发类似交易所功能的应用，由于可能会用到分表分库之类的事情，所以接触到了MySQL协议的一些东西，之前也想过MySQL底层走的应该是相关的协议只是这些协议具体指什么，从来没有进行深入了解。MyCat就是模拟MySQL的协议做了一层中间件，从而隔离了分表分库对应用开发的侵入性，我觉得这个是一个很好的处理方式，对开发运维堪称完美，太棒了。但是这种中间件也有问题，这里提一下，但是不做深入讨论：</p>
-<ol>
-<li>中间件的维护成本高</li>
-<li>开发运维不能实时沟通，不利于查找问题</li>
-<li>聚合了很多查询，容易使得MyCat的访问量变大，从而带来很多的问题。</li>
-</ol>
-<p>下面我们进入正题。</p>
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>理解网络协议，可以实现很多功能，我们往往在上层站的太久，忘记了下来坐坐。通过网络协议我们可以抓包分析，可以做中间件（中继器）或者一些其他功能（Proxy、实时监控）。有的时候第三方中间件不太好改，也可通过熟知协议，拦截修改，可谓妙笔生花。</p>
-<h2 id="链接方式"><a href="#链接方式" class="headerlink" title="链接方式"></a>链接方式</h2><p>到MySQL5.7为止，链接方式总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets，Shared Memory，Named pipes，下面我们就来看看这五种的区别：</p>
-<table>
-<thead>
-<tr>
-<th>方式</th>
-<th>默认开启</th>
-<th>支持系统</th>
-<th>只支持本机</th>
-<th>如何开启</th>
-<th>参数配置</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>TCP/IP</td>
-<td>是</td>
-<td>所有系统</td>
-<td>否</td>
-<td>–skip-networking=yes/no.</td>
-<td>–port –bind-address</td>
-</tr>
-<tr>
-<td>TLS/SSL</td>
-<td>是</td>
-<td>所有系统（基于TCP/IP)之上</td>
-<td>否</td>
-<td>–ssl=yes/no.</td>
-<td>–ssl-* options</td>
-</tr>
-<tr>
-<td>Unix Sockets</td>
-<td>是</td>
-<td>类Unix系统</td>
-<td>是</td>
-<td>设置–socket=<empty> 来关闭.</empty></td>
-<td>–socket=socket path</td>
-</tr>
-<tr>
-<td>Shared Memory</td>
-<td>否</td>
-<td>Windows系统</td>
-<td>是</td>
-<td>–shared-memory=on/off.</td>
-<td>–shared-memory-base-name=<name></name></td>
-</tr>
-<tr>
-<td>Named pipes</td>
-<td>否</td>
-<td>Windows系统</td>
-<td>否</td>
-<td>–enable-named-pipe=on/off.</td>
-<td>–socket=<name></name></td>
-</tr>
-</tbody>
-</table>
-<p>这里我只介绍TLS/SSL的连接方式：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql --protocol=tcp -uroot --ssl=on</span><br><span class="line">mysql -P3306 -h127.0.0.1 -uroot --ssl=on</span><br></pre></td></tr></table></figure></p>
-<p>我们可以通过以下语句来查询目前数据库的连接情况：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> connection_type <span class="keyword">from</span> performance_schema.threads <span class="keyword">where</span> connection_type <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">null</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="MySQL数据包"><a href="#MySQL数据包" class="headerlink" title="MySQL数据包"></a>MySQL数据包</h2><p>现在我们来看一下链接的过程：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/Database/MySQL%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90-process.png?raw=true" alt=""></p>
-<p>其实主要就是两步，Client将执行命令编码成Server要求的格式传输给Server端执行，Server端将执行结果传输给Client端，Client端再根据相应的数据包格式解析获得所需的数据。然后通过数据格式的协定，开始交互。</p>
-<h3 id="1-基本数据类型"><a href="#1-基本数据类型" class="headerlink" title="1.基本数据类型"></a>1.基本数据类型</h3><p>虽然网络中的数据是用字节传输的，但它背后的数据源都是有类型的数据，MySQL协议也有基本的数据类型（可以看出协议也可认为是一种语言），好比Java中的8种基本数据类型，但MySQL协议中简单的多，它只有两种基本数据类型，分别为Integer(整型)，String(字符串)，下面我们就来看看这两种类型。</p>
-<h4 id="Integer整形"><a href="#Integer整形" class="headerlink" title="Integer整形"></a>Integer整形</h4><p>首先Integer在MySQL协议中有两种编码方式，分别为FixedLengthInteger和LengthEncodedInteger ,其中前者用于存储无符号定长整数，实际中使用的不多。详细的情况还是参考原文比较好。</p>
-<h4 id="String-字符串"><a href="#String-字符串" class="headerlink" title="String(字符串)"></a>String(字符串)</h4><p>就是正常的字符串在协议中的编码方式，这里也是参考博客原文进行解释。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实本文是想通过解析协议来学习协议的指定规范，由于时间有限，就先到这里，原文的内容知识比较多，请参考文献。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.godpan.me/2017/11/10/mysql-protocol.html" target="_blank" rel="noopener">MySQL网络协议分析</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
       
 
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/24/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/24/hello-world/" itemprop="url">Hexo使用攻略</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-24T10:05:18+08:00">2018-02-24</time>
+              <a href="/2018/02/27/database/MySQL网络协议分析/" rel="next" title="MySQL网络协议分析">
+                <i class="fa fa-chevron-left"></i> MySQL网络协议分析
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>机器先安装好node即可。运行下面的安装命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
-<h2 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h2><h3 id="初始化目录"><a href="#初始化目录" class="headerlink" title="初始化目录"></a>初始化目录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> 相应目录</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-<h2 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h2><p>下载相应主题到theme目录，然后更改_config.js文件中的主题配置即可，名称theme的文件夹名即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: hexo-theme-next</span><br></pre></td></tr></table></figure></p>
-<h2 id="更改网站的信息"><a href="#更改网站的信息" class="headerlink" title="更改网站的信息"></a>更改网站的信息</h2><p>在_config.js中更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Site</span><br><span class="line">title: 柳絮纷飞</span><br><span class="line">subtitle: Gavin的个人博客</span><br><span class="line">description: 一个孤独的开发者，正在互联网公司踩坑</span><br><span class="line">author: Gavin Zhang</span><br><span class="line">language: zh-CN</span><br><span class="line">timezone: Asia/Shanghai</span><br></pre></td></tr></table></figure></p>
-<h2 id="添加新页"><a href="#添加新页" class="headerlink" title="添加新页"></a>添加新页</h2><p><a href="https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/" target="_blank" rel="noopener">https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -752,14 +420,19 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -780,8 +453,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -858,6 +540,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ERC20令牌标准接口"><span class="nav-number">1.</span> <span class="nav-text">ERC20令牌标准接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代用合同如何工作？"><span class="nav-number">2.</span> <span class="nav-text">代用合同如何工作？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">3.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口文档说明"><span class="nav-number">4.</span> <span class="nav-text">接口文档说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">5.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -985,6 +683,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
 
   
 
