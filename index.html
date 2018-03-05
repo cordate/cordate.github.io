@@ -264,6 +264,651 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/JVM系统底层运行参数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/JVM系统底层运行参数/" itemprop="url">JVM系统底层运行参数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T18:58:31+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>今天在网上看到一个很有趣的例子，貌似大家一点也不关注，今天来学习一下，不过这个例子激起了我对JVM底层运行原理的兴趣，如果日后有兴趣，倒是可以花心思研究一下。</p>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123; </span><br><span class="line">    String a = sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String b = sun.misc.VM.getSavedProperty(&quot;high&quot;); </span><br><span class="line">    String c = System.getProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String d = System.getProperty(&quot;high&quot;); </span><br><span class="line"></span><br><span class="line">    System.err.println(a); </span><br><span class="line">    System.err.println(b); </span><br><span class="line">    System.err.println(c); </span><br><span class="line">    System.err.println(d); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>加入java命令执行时设置的值是这样的：<code>-Djava.lang.Integer.IntegerCache.high=250 -Dhigh=250</code>,输出的结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">250 </span><br><span class="line">250 </span><br><span class="line">null </span><br><span class="line">250</span><br></pre></td></tr></table></figure></p>
+<p>那么问题来了，为何System.getProperty(“java.lang.Integer.IntegerCache.high”); 是null呢？</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>其实上面的<code>java.lang.Integer.IntegerCache.high</code>是用来设置HotSpot VM上Integer的autobox（自动装箱缓存大小配置）范围的。详细参考：<a href="http://rednaxelafx.iteye.com/blog/680746" target="_blank" rel="noopener">http://rednaxelafx.iteye.com/blog/680746</a></p>
+<p>使用<code>sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);</code>来获取这个参数值，而不是通过<code>System.getProperty()</code>.</p>
+<p>通常，HotSpot VM所接收的特定的VM参数都是通过-XX:前缀的命令行参数指定的，而传给Java层的system property则是通过-D前缀的参数来指定。</p>
+<p>在系统初始化的时候，JVM调用<code>java.lang.System.initializeSystemClass()</code>来初始化System类，而它进一步调用的<br><code>java.lang.System.initProperties()</code>会调用到JVM的<code>JVM_InitProperties()</code>函数，来从JVM那边把-D参数都拿到System.properties里。</p>
+<p>紧接着，<code>initializeSystemClass()</code>又调用<code>sun.misc.VM.saveAndRemoveProperties()</code>来保存一份“干净”的system properties备份以便JDK内部使用，避免JDK的内部行为受到运行时用户代码对<code>System.properties</code>的修改所干扰。同时<code>saveAndRemoveProperties()</code>也会从System.properties移除一些只供JDK内部使用、用户代码不应该看到的系统属性，例如设置NIO direct memory大小限制的sun.nio.MaxDirectMemorySize属性。这些被移除的系统属性在sun.misc.VM.savedProps里都留有备份。</p>
+<p>所以上面使用System.getProperty去获取系统预留的配置时，就获取不到任何信息。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/Java中一些实用类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/Java中一些实用类/" itemprop="url">Java中一些实用类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T16:27:19+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Java中有很多比较实用的类，大多使用过，但是也有很多未被大家所使用的类。</p>
+<h2 id="BitSet类"><a href="#BitSet类" class="headerlink" title="BitSet类"></a>BitSet类</h2><p>BitSet就是一个位存储和操作而设计的一个类。里面使用Long数组进行存储，一个long64字节，所以一个bit地址对应的查找是先找long或者称为word的索引，然后进行位操作进行设置读取等操作。更多的知识参考源码即可。</p>
+<p>应用场景也是有的，比如说你想删除一些元素，但是需要暂存一下，就可以使用这个类。元素的标记可以作为索引，是否删除取决于，索引对应标志位的值。</p>
+<p>## </p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/java-Set学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/java-Set学习/" itemprop="url">java Set学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T15:25:13+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Set和list是很相似的，只是List可以存在相同元素，而Set却不可以，其他都是类似的。</p>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>讲到这个当然先说说Set接口了，这个比较简单，就不过多去说了。几乎和List是一样的。</p>
+<h2 id="AbstractSet"><a href="#AbstractSet" class="headerlink" title="AbstractSet"></a>AbstractSet</h2><p>我们来看一下这个类，继承自AbstractCollection，也没啥定义了一些通用方法，比如实现了equals、hashCode和removeAll方法。</p>
+<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
+<p>内部定义了一个hashMap作为实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br></pre></td></tr></table></figure></p>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>HashSet的构造函数比较重要：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 默认的无参构造器，构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会初始化一个空的HashMap，并使用默认初始容量为16和加载因子0.75。</span><br><span class="line"> */</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 构造一个包含指定collection中的元素的新set。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层使用默认的加载因子0.75和足以包含指定collection中所有元素的初始容量来创建一个HashMap。</span><br><span class="line"> * @param c 其中的元素将存放在此set中的collection。</span><br><span class="line"> */</span><br><span class="line">public HashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(Math.max((int) (c.size()/.75f) + 1, 16));</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数及加载因子loadFactor为0.75构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个新的空链接哈希集合。此构造函数为包访问权限，不对外公开，</span><br><span class="line"> * 实际只是是对LinkedHashSet的支持。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会以指定的参数构造一个空LinkedHashMap实例来实现。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> * @param dummy 标记。</span><br><span class="line"> */</span><br><span class="line">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;</span><br><span class="line">    map = new LinkedHashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里可以利用LinkedHashMap实现，这个作用比较大，因为HashSet中元素的遍历是通过map的迭代器，但是也不一定，如果数量比较少，利用hashMap的迭代器进行迭代，速度也不应该会慢，这要相对的看。</p>
+<h3 id="add方法"><a href="#add方法" class="headerlink" title="add方法"></a>add方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    return map.put(e, PRESENT)==null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用hash表实现的Set本身就不用考虑相同的值被插入进来。这里的PRESENT是一个Object常量。其他的还是阅读源码吧！</p>
+<h2 id="SortedSet"><a href="#SortedSet" class="headerlink" title="SortedSet"></a>SortedSet</h2><p>继承Set的接口，定义和SortedMap类似，都会出现子树等形式的函数。</p>
+<h2 id="EnumSet"><a href="#EnumSet" class="headerlink" title="EnumSet"></a>EnumSet</h2><p>看到JDK有这样的一个类，所以过来学习一下。这个类和HashSet差不多，不过只针对枚举，也有缓存。EnumSet是一个抽象类，有两个实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; noneOf(Class&lt;E&gt; elementType) &#123;</span><br><span class="line">    Enum[] universe = getUniverse(elementType);</span><br><span class="line">    if (universe == null)</span><br><span class="line">        throw new ClassCastException(elementType + &quot; not an enum&quot;);</span><br><span class="line"></span><br><span class="line">    if (universe.length &lt;= 64)</span><br><span class="line">        return new RegularEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">    else</span><br><span class="line">        return new JumboEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h2><p>这个类是基于HashSet实现的，由于HashSet和HashMap不同，已经做了数组的缓存，所以LinkedHash几乎完全基于HashSet实现。看其中的一个构造方法即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public LinkedHashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    super(Math.max(2*c.size(), 11), .75f, true);</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>传入的第三个参数就是告诉HashSet使用LinkedHashMap实现，具体原因查看HashSet的构造函数就明白了。</p>
+<h2 id="NavigableSet"><a href="#NavigableSet" class="headerlink" title="NavigableSet"></a>NavigableSet</h2><p>对Set进行树形结构操作的规范接口。这个接口继承自SortedSet。</p>
+<h2 id="TreeSet接口"><a href="#TreeSet接口" class="headerlink" title="TreeSet接口"></a>TreeSet接口</h2><p>这也是一个比较简单的类。基于红黑树实现的Set集。TreeSet 底层实际使用的存储容器就是 TreeMap。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class TreeSet&lt;E&gt; extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements NavigableSet&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<p>TreeSet是基于TreeMap实现的。TreeSet中的元素支持2种排序方式：自然排序 或者 根据创建TreeSet 时提供的 Comparator 进行排序。这取决于使用的构造方法。</p>
+<p>TreeSet为基本操作（add、remove 和 contains）提供受保证的 log(n) 时间开销。<br>另外，TreeSet是非同步的。 它的iterator 方法返回的迭代器是fail-fast的。</p>
+<p>具体可以查看TreeSet的源码进行解读。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/mawming/article/details/52438387" target="_blank" rel="noopener">Java 之EnumSet与EnumMap</a><br><a href="https://www.ibm.com/developerworks/cn/java/j-lo-tree/index.html" target="_blank" rel="noopener">通过分析 JDK 源代码研究 TreeMap 红黑树算法实现</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/数据结构/红黑树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/数据结构/红黑树/" itemprop="url">红黑树（RB-Tree）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T12:59:48+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>红黑树在大学的数据结构没有涉及，他是AVL（平衡二叉树）的变种和升级，大学着重基本原理就只有AVL，而红黑树是为了满足企业级的开发捣鼓出来的为了节省成本的一种数据结构，本文讲解的RBTree只有插入部分，没有删除部分，因为只有插入比较易懂，而且诠释了红黑树的基本原理，而删除不论是在AVL还是在RBTree中都是最复杂的一步，此文只讲原理不讲代码。</p>
+<p>RBTree的规则： </p>
+<ol>
+<li>每一个结点不是红色的就是黑色的。 </li>
+<li>根总是黑色的。 </li>
+<li>每个叶子节点必须是黑色的。</li>
+<li>如果结点是红色的，那么他的子结点必须是黑色的（反之倒不一定必须为真）。 </li>
+<li>从根到叶结点或空子结点的每条路径，必须包含相同数目的黑色结点。 </li>
+</ol>
+<h2 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h2><p>一棵含有n个节点的红黑树的高度至多为2log(n+1).</p>
+<p>高度为h的红黑树，它的包含的内节点个数至少为 2<sup>bh(x)</sup>-1个</p>
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="左旋"><a href="#左旋" class="headerlink" title="左旋"></a>左旋</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">LEFT-ROTATE(T, x)  </span><br><span class="line">01  y ← right[x]            // 前提：这里假设x的右孩子为y。下面开始正式操作</span><br><span class="line">02  right[x] ← left[y]      // 将 “y的左孩子” 设为 “x的右孩子”，即 将β设为x的右孩子</span><br><span class="line">03  p[left[y]] ← x          // 将 “x” 设为 “y的左孩子的父亲”，即 将β的父亲设为x</span><br><span class="line">04  p[y] ← p[x]             // 将 “x的父亲” 设为 “y的父亲”</span><br><span class="line">05  if p[x] = nil[T]       </span><br><span class="line">06  then root[T] ← y                 // 情况1：如果 “x的父亲” 是空节点，则将y设为根节点</span><br><span class="line">07  else if x = left[p[x]]  </span><br><span class="line">08            then left[p[x]] ← y    // 情况2：如果 x是它父节点的左孩子，则将y设为“x的父节点的左孩子”</span><br><span class="line">09            else right[p[x]] ← y   // 情况3：(x是它父节点的右孩子) 将y设为“x的父节点的右孩子”</span><br><span class="line">10  left[y] ← x             // 将 “x” 设为 “y的左孩子”</span><br><span class="line">11  p[x] ← y                // 将 “x的父节点” 设为 “y”</span><br></pre></td></tr></table></figure>
+<h3 id="右旋"><a href="#右旋" class="headerlink" title="右旋"></a>右旋</h3><p>右旋和左旋相反而已。原理都是一样的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">RIGHT-ROTATE(T, y)  </span><br><span class="line">01  x ← left[y]             // 前提：这里假设y的左孩子为x。下面开始正式操作</span><br><span class="line">02  left[y] ← right[x]      // 将 “x的右孩子” 设为 “y的左孩子”，即 将β设为y的左孩子</span><br><span class="line">03  p[right[x]] ← y         // 将 “y” 设为 “x的右孩子的父亲”，即 将β的父亲设为y</span><br><span class="line">04  p[x] ← p[y]             // 将 “y的父亲” 设为 “x的父亲”</span><br><span class="line">05  if p[y] = nil[T]       </span><br><span class="line">06  then root[T] ← x                 // 情况1：如果 “y的父亲” 是空节点，则将x设为根节点</span><br><span class="line">07  else if y = right[p[y]]  </span><br><span class="line">08            then right[p[y]] ← x   // 情况2：如果 y是它父节点的右孩子，则将x设为“y的父节点的左孩子”</span><br><span class="line">09            else left[p[y]] ← x    // 情况3：(y是它父节点的左孩子) 将x设为“y的父节点的左孩子”</span><br><span class="line">10  right[x] ← y            // 将 “y” 设为 “x的右孩子”</span><br><span class="line">11  p[y] ← x                // 将 “y的父节点” 设为 “x”</span><br></pre></td></tr></table></figure></p>
+<h2 id="插入节点"><a href="#插入节点" class="headerlink" title="插入节点"></a>插入节点</h2><p>当我们要往树里边插入一个节点的的时候分下边3个步骤：</p>
+<ul>
+<li>在下行路途中的颜色变换。</li>
+<li>在向下路途上的旋转。</li>
+<li>插入结点之后的旋转。 </li>
+</ul>
+<h3 id="在下行路途中的颜色变换。"><a href="#在下行路途中的颜色变换。" class="headerlink" title="在下行路途中的颜色变换。"></a>在下行路途中的颜色变换。</h3><p>从root根结点开始向下搜索，当碰到如下情况是要进行颜色的变换<br>发现一个黑色结点有2个红色子结点，把2个红色子结点颜色变为黑色，父结点颜色变为红色（如果父结点为根，那么父结点还是黑色，遵守规则一）。 </p>
+<h3 id="插入结点之后的旋转。"><a href="#插入结点之后的旋转。" class="headerlink" title="插入结点之后的旋转。"></a>插入结点之后的旋转。</h3><p>结点插入之后可能会造成树的规则的破坏，需要对树重新调整。 </p>
+<p>新插入的节点有3中可能的情况： </p>
+<ul>
+<li>父节点（P）是黑色的</li>
+<li>P是红色的，X是G的外侧子孙节点。</li>
+<li>P是红色的，X是G的内侧子孙节点。 </li>
+</ul>
+<h4 id="父节点（P）是黑色的"><a href="#父节点（P）是黑色的" class="headerlink" title="父节点（P）是黑色的"></a>父节点（P）是黑色的</h4><p>如果P是黑色的什么事也不做，直接把节点插入即可。</p>
+<h4 id="P是红色的，X是G的外侧子孙节点。"><a href="#P是红色的，X是G的外侧子孙节点。" class="headerlink" title="P是红色的，X是G的外侧子孙节点。"></a>P是红色的，X是G的外侧子孙节点。</h4><p>X是插入的节点，G是祖先节点，也就是P的父节点，调整方法如下：</p>
+<ul>
+<li>改变X的祖父节点G（本例中是25）的颜色。 </li>
+<li>改变X的父节点P（12）的颜色。 </li>
+<li>以X的祖父节点G（25）为顶旋转，向X（6）上升的方向，在本例中是右旋。 </li>
+</ul>
+<h4 id="P是红色的，X是G的内侧子孙节点。"><a href="#P是红色的，X是G的内侧子孙节点。" class="headerlink" title="P是红色的，X是G的内侧子孙节点。"></a>P是红色的，X是G的内侧子孙节点。</h4><p>调整步骤： </p>
+<ol>
+<li>改变X的祖父节点（本例中为25）的颜色。 </li>
+<li>改变X（18）的颜色。 </li>
+<li>用X的父节点P（12）作为顶旋转，向X上升的方向旋转，本例是左旋。 </li>
+<li>再以X的祖父节点（25）为顶旋转，向X上升的方向旋转（本例为右旋）。</li>
+</ol>
+<h3 id="在向下路途上的旋转"><a href="#在向下路途上的旋转" class="headerlink" title="在向下路途上的旋转"></a>在向下路途上的旋转</h3><p>解释：在从根结点向下搜索遍历寻找插入位置的时候，会进行中途结点颜色的调整（即步骤一），以便于搜索继续向下进行，旋转之后可能会造成红-红冲突（规则三），出现冲突就需要进行树的旋转调整。<br>在向下的路径上有2中旋转的可能性： </p>
+<ul>
+<li>外侧子孙节点。 </li>
+<li>内侧子孙节点。</li>
+</ul>
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p>红可以变黑，但是必须是双红变黑，否则的确解决了红红冲突，但是会出现每条链上黑色的果树就会不一致。另外上下层的黑色和红色可以互换。这样本层路径的黑色数量也不会改变。红红变换可能需要多次的红红冲突解决才能重新让整棵树维护成红黑树。详细还是查看引用。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/skywang12345/p/3245399.html" target="_blank" rel="noopener">红黑树(一)之 原理和算法详细介绍</a><br><a href="http://blog.csdn.net/wzq6578702/article/details/44946729" target="_blank" rel="noopener">红黑树原理（RB-Tree Principle）</a><br><a href="http://blog.csdn.net/v_JULY_v/article/details/6105630" target="_blank" rel="noopener">教你初步了解红黑树</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/golang/golang的包组织方式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -687,8 +1332,74 @@
 <p>我们先看一个基础的实现，不涉及具体的操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public abstract Set&lt;Entry&lt;K,V&gt;&gt; entrySet();</span><br><span class="line"></span><br><span class="line">public V remove(Object key) &#123;</span><br><span class="line">    Iterator&lt;Entry&lt;K,V&gt;&gt; i = entrySet().iterator();</span><br><span class="line">    Entry&lt;K,V&gt; correctEntry = null;</span><br><span class="line">    if (key==null) &#123;</span><br><span class="line">        while (correctEntry==null &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = i.next();</span><br><span class="line">            if (e.getKey()==null)</span><br><span class="line">                correctEntry = e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        while (correctEntry==null &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = i.next();</span><br><span class="line">            if (key.equals(e.getKey()))</span><br><span class="line">                correctEntry = e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    V oldValue = null;</span><br><span class="line">    if (correctEntry !=null) &#123;</span><br><span class="line">        oldValue = correctEntry.getValue();</span><br><span class="line">        i.remove();</span><br><span class="line">    &#125;</span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    throw new UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>里面的put方法这个类没有实现，remove函数我们可以看到默认还是使用迭代器的模式实现的。感觉更像是在使用数组实现。</p>
 <h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><p>默认的初始化大小为16. 最大容量为1&gt;&gt;30,就是2的30次方的大小吧！默认的加载因子是0.75（当然可以指定），也就是扩容的临界值等于容量的0.75。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static final int DEFAULT_INITIAL_CAPACITY = 16;</span><br><span class="line">static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;</span><br><span class="line">static final float DEFAULT_LOAD_FACTOR = 0.75f;</span><br><span class="line">// 存放集合</span><br><span class="line">transient Entry&lt;K,V&gt;[] table;</span><br><span class="line">transient int size;</span><br><span class="line">// 下一个重新扩容的阈值（默认capacity * load factor）</span><br><span class="line">int threshold;</span><br><span class="line">final float loadFactor;</span><br><span class="line">transient int modCount;</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public HashMap(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    if (initialCapacity &lt; 0)</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +</span><br><span class="line">                                            initialCapacity);</span><br><span class="line">    if (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +</span><br><span class="line">                                            loadFactor);</span><br><span class="line"></span><br><span class="line">    // Find a power of 2 &gt;= initialCapacity</span><br><span class="line">    int capacity = 1;</span><br><span class="line">    while (capacity &lt; initialCapacity)</span><br><span class="line">        capacity &lt;&lt;= 1;</span><br><span class="line"></span><br><span class="line">    this.loadFactor = loadFactor;</span><br><span class="line">    threshold = (int)Math.min(capacity * loadFactor, MAXIMUM_CAPACITY + 1);</span><br><span class="line">    table = new Entry[capacity];</span><br><span class="line">    useAltHashing = sun.misc.VM.isBooted() &amp;&amp;</span><br><span class="line">            (capacity &gt;= Holder.ALTERNATIVE_HASHING_THRESHOLD);</span><br><span class="line">    init();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><h2 id="Hashtable"><a href="#Hashtable" class="headerlink" title="Hashtable"></a>Hashtable</h2><h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><h2 id="关于fail-fast-和-fail-safe的区别"><a href="#关于fail-fast-和-fail-safe的区别" class="headerlink" title="关于fail-fast 和 fail-safe的区别"></a>关于fail-fast 和 fail-safe的区别</h2><p>这里为了解决并发的问题，一般采用这两种机制。一般来说容器都是线程不安全的，特别是迭代器进行访问的时候特别容易出现问题。下面我们来大概解释一下这个概念。</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>HashMap 包含如下几个构造器：</p>
+<ul>
+<li>HashMap()：构建一个初始容量为 16，负载因子为 0.75 的 HashMap。</li>
+<li>ashMap(int initialCapacity)：构建一个初始容量为 initialCapacity，负载因子为 0.75 的 HashMap。</li>
+<li>HashMap(int initialCapacity, float loadFactor)：以指定初始容量、指定的负载因子创建一个 HashMap。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public HashMap(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    if (initialCapacity &lt; 0)</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +</span><br><span class="line">                                            initialCapacity);</span><br><span class="line">    if (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +</span><br><span class="line">                                            loadFactor);</span><br><span class="line"></span><br><span class="line">    // Find a power of 2 &gt;= initialCapacity</span><br><span class="line">    int capacity = 1;</span><br><span class="line">    while (capacity &lt; initialCapacity)</span><br><span class="line">        capacity &lt;&lt;= 1;</span><br><span class="line"></span><br><span class="line">    this.loadFactor = loadFactor;</span><br><span class="line">    // 决定下次访问的阈值</span><br><span class="line">    threshold = (int)Math.min(capacity * loadFactor, MAXIMUM_CAPACITY + 1);</span><br><span class="line">    table = new Entry[capacity];</span><br><span class="line">    useAltHashing = sun.misc.VM.isBooted() &amp;&amp;</span><br><span class="line">            (capacity &gt;= Holder.ALTERNATIVE_HASHING_THRESHOLD);</span><br><span class="line">    init();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们来看一下Entry的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">static class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final K key;</span><br><span class="line">    V value;</span><br><span class="line">    Entry&lt;K,V&gt; next;</span><br><span class="line">    final int hash;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="核心方法解读"><a href="#核心方法解读" class="headerlink" title="核心方法解读"></a>核心方法解读</h3><h4 id="put方法"><a href="#put方法" class="headerlink" title="put方法"></a>put方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    //其允许存放null的key和null的value，当其key为null时，调用putForNullKey方法，放入到table[0]的这个位置</span><br><span class="line">    if (key == null)</span><br><span class="line">        return putForNullKey(value);</span><br><span class="line">    //通过调用hash方法对key进行哈希，得到哈希之后的数值。该方法实现可以通过看源码，其目的是为了尽可能的让键值对可以分不到不同的桶中</span><br><span class="line">    int hash = hash(key);</span><br><span class="line">    //根据上一步骤中求出的hash得到在数组中是索引i</span><br><span class="line">    int i = indexFor(hash, table.length);</span><br><span class="line">    //如果i处的Entry不为null，则通过其next指针不断遍历e元素的下一个元素。</span><br><span class="line">    for (Entry&lt;K,V&gt; e = table[i]; e != null; e = e.next) &#123;</span><br><span class="line">        Object k;</span><br><span class="line">        if (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            e.value = value;</span><br><span class="line">            e.recordAccess(this);</span><br><span class="line">            return oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    addEntry(hash, key, value, i);</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>key相同，新的值会替换旧的值并返回旧的值，如果旧的值不存在就返回null。</p>
+<p>从上面的源代码中可以看出：当我们往 HashMap 中 put 元素的时候，先根据 key 的 hashCode 重新计算 hash 值，根据 hash 值得到这个元素在数组中的位置（即下标），如果数组该位置上已经存放有其他元素了，那么在这个位置上的元素将以链表的形式存放，新加入的放在链头，最先加入的放在链尾。如果数组该位置上没有元素，就直接将该元素放到此数组中的该位置上。</p>
+<p>还有就是put一个为null的key，这个是放在table[0]这个位置的（很重要的一个点）。</p>
+<p>注意addEntry(hash, key, value, i)方法根据计算出的 hash 值，将 key-value 对放在数组 table 的 i 索引处。addEntry 是 HashMap 提供的一个包访问权限的方法。这个就是职责分离的一个最基本的应用，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">void addEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">        if ((size &gt;= threshold) &amp;&amp; (null != table[bucketIndex])) &#123;</span><br><span class="line">            resize(2 * table.length);</span><br><span class="line">            hash = (null != key) ? hash(key) : 0;</span><br><span class="line">            bucketIndex = indexFor(hash, table.length);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        createEntry(hash, key, value, bucketIndex);</span><br><span class="line">&#125;</span><br><span class="line">void createEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">        // 获取指定 bucketIndex 索引处的 Entry</span><br><span class="line">        Entry&lt;K,V&gt; e = table[bucketIndex];</span><br><span class="line">        // 将新创建的 Entry 放入 bucketIndex 索引处，并让新的 Entry 指向原来的 Entr</span><br><span class="line">        table[bucketIndex] = new Entry&lt;&gt;(hash, key, value, e);</span><br><span class="line">        size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>hash(int h)方法根据 key 的 hashCode 重新计算一次散列。此算法加入了高位计算，防止低位不变，高位变化时，造成的 hash 冲突。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">final int hash(Object k) &#123;</span><br><span class="line">    int h = 0;</span><br><span class="line">    if (useAltHashing) &#123;</span><br><span class="line">        if (k instanceof String) &#123;</span><br><span class="line">            return sun.misc.Hashing.stringHash32((String) k);</span><br><span class="line">        &#125;</span><br><span class="line">        h = hashSeed;</span><br><span class="line">    &#125;</span><br><span class="line">    //得到k的hashcode值</span><br><span class="line">    h ^= k.hashCode();</span><br><span class="line">    //进行计算</span><br><span class="line">    h ^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12);</span><br><span class="line">    return h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>“模”运算的消耗还是比较大的，在 HashMap 中是这样做的：调用 indexFor(int h, int length) 方法来计算该对象应该保存在 table 数组的哪个索引处。indexFor(int h, int length) 方法的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static int indexFor(int h, int length) &#123;  </span><br><span class="line">    return h &amp; (length-1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个方法非常巧妙，它通过 h &amp; (table.length -1) 来得到该对象的保存位，而 HashMap 底层数组的长度总是 2 的 n 次方，这是 HashMap 在速度上的优化。在 HashMap 构造器中有如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int capacity = 1;</span><br><span class="line">    while (capacity &lt; initialCapacity)  </span><br><span class="line">        capacity &lt;&lt;= 1;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码保证初始化时 HashMap 的容量总是 2 的 n 次方，即底层数组的长度总是为 2 的 n 次方。</p>
+<p>当 length 总是 2 的 n 次方时，h&amp; (length-1)运算等价于对 length 取模，也就是 h%length，但是 &amp; 比 % 具有更高的效率。</p>
+<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><p>TreeMap基于红黑树实现的。查看“键”或“键值对”时，它们会被排序（次序由Comparable或Comparator决定）。TreeMap的特点在于，所得到的结果是经过排序的。TreeMap是唯一的带有subMap()方法的Map，它可以返回一个子树。 </p>
+<h3 id="Comparable接口"><a href="#Comparable接口" class="headerlink" title="Comparable接口"></a>Comparable接口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Comparable&lt;T&gt; &#123;</span><br><span class="line">    public int compareTo(T o);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Comparamtor接口"><a href="#Comparamtor接口" class="headerlink" title="Comparamtor接口"></a>Comparamtor接口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Comparator&lt;T&gt; &#123;</span><br><span class="line">    int compare(T o1, T o2);</span><br><span class="line">    boolean equals(Object obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Entry结构"><a href="#Entry结构" class="headerlink" title="Entry结构"></a>Entry结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static final class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    K key;</span><br><span class="line">    V value;</span><br><span class="line">    // 左孩子</span><br><span class="line">    Entry&lt;K,V&gt; left = null;</span><br><span class="line">    // 右孩子</span><br><span class="line">    Entry&lt;K,V&gt; right = null;</span><br><span class="line">    // 父节点</span><br><span class="line">    Entry&lt;K,V&gt; parent;</span><br><span class="line">    // 默认颜色是黑</span><br><span class="line">    boolean color = BLACK;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">    * 根据给定的键、值、父节点构造一个节点，颜色为默认的黑色</span><br><span class="line">    */</span><br><span class="line">    Entry(K key, V value, Entry&lt;K,V&gt; parent) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">        this.value = value;</span><br><span class="line">        this.parent = parent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public K getKey() &#123;return key;&#125;</span><br><span class="line">    public V getValue() &#123;return value;&#125;</span><br><span class="line">    public V setValue(V value) &#123;</span><br><span class="line">        V oldValue = this.value;</span><br><span class="line">        this.value = value;</span><br><span class="line">        return oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (!(o instanceof Map.Entry))</span><br><span class="line">            return false;</span><br><span class="line">        Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line"></span><br><span class="line">        return valEquals(key,e.getKey()) &amp;&amp; valEquals(value,e.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        int keyHash = (key==null ? 0 : key.hashCode());</span><br><span class="line">        int valueHash = (value==null ? 0 : value.hashCode());</span><br><span class="line">        return keyHash ^ valueHash;</span><br><span class="line">    &#125;</span><br><span class="line">    public String toString() &#123;   return key + &quot;=&quot; + value;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class TreeMap&lt;K,V&gt;</span><br><span class="line">    extends AbstractMap&lt;K,V&gt;</span><br><span class="line">    implements NavigableMap&lt;K,V&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
+<p>NavigableMap接口扩展的SortedMap，具有了针对给定搜索目标返回最接近匹配项的导航方法。方法lowerEntry、floorEntry、ceilingEntry和higherEntry分别返回与小于、小于等于、大于等于、大于给定键的键关联的Map.Entry对象，如果不存在这样的键，则返回null。类似地，方法lowerKey、floorKey、ceilingKey和higherKey只返回关联的键。所有这些方法是为查找条目而不是遍历条目而设计的（后面会逐个介绍这些方法）。其实就是以此为方法进行分树进行操作。</p>
+<p>SortedMap就是可排序的鼻祖接口，里面有基本的分树的接口。</p>
+<h3 id="TreeMap属性"><a href="#TreeMap属性" class="headerlink" title="TreeMap属性"></a>TreeMap属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 用于保持顺序的比较器，如果为空的话使用自然顺保持Key的顺序</span><br><span class="line">private final Comparator&lt;? super K&gt; comparator;</span><br><span class="line">// 根节点</span><br><span class="line">private transient Entry&lt;K,V&gt; root = null;</span><br><span class="line">// 树中的节点数量</span><br><span class="line">private transient int size = 0;</span><br><span class="line">// 多次在集合类中提到了，用于举了结构行的改变次数</span><br><span class="line">private transient int modCount = 0;</span><br></pre></td></tr></table></figure>
+<h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public TreeMap() &#123;</span><br><span class="line">    comparator = null;</span><br><span class="line">&#125;</span><br><span class="line">// 构造方法二，提供指定的比较器(这个功能很赞，有木有)</span><br><span class="line">public TreeMap(Comparator&lt;? super K&gt; comparator) &#123;</span><br><span class="line">    this.comparator = comparator;</span><br><span class="line">&#125;</span><br><span class="line">public TreeMap(Map&lt;? extends K, ? extends V&gt; m) &#123;</span><br><span class="line">    comparator = null;</span><br><span class="line">    putAll(m);</span><br><span class="line">&#125;</span><br><span class="line">// 构造方法四，接收SortedMap参数，根据SortedMap的比较器维持TreeMap中的节点顺序，* 同时通过</span><br><span class="line">// buildFromSorted(int size, Iterator it, java.io.ObjectInputStream str, V defaultVal)方* 法</span><br><span class="line">// 将SortedMap中的内容添加到TreeMap中(其实就是通过其他的SortedMap进行初始化)</span><br><span class="line">public TreeMap(SortedMap&lt;K, ? extends V&gt; m) &#123;</span><br><span class="line">    comparator = m.comparator();</span><br><span class="line">    try &#123;</span><br><span class="line">        buildFromSorted(m.size(), m.entrySet().iterator(), null, null);</span><br><span class="line">    &#125; catch (java.io.IOException cannotHappen) &#123;</span><br><span class="line">    &#125; catch (ClassNotFoundException cannotHappen) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="put方法-1"><a href="#put方法-1" class="headerlink" title="put方法"></a>put方法</h3><p>ok，了解了上面的基础知识之后，我们来看看put方法的内容，从而了解内部的结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    Entry&lt;K,V&gt; t = root;</span><br><span class="line">    if (t == null) &#123;</span><br><span class="line">        // 如果根节点为空，将传入的键值对构造成根节点（根节点没有父节点，所以传入的父节点为null）</span><br><span class="line">        compare(key, key); // type (and possibly null) check</span><br><span class="line"></span><br><span class="line">        root = new Entry&lt;&gt;(key, value, null);</span><br><span class="line">        size = 1;</span><br><span class="line">        modCount++;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">    int cmp; // 用于记录比较结果</span><br><span class="line">    Entry&lt;K,V&gt; parent;</span><br><span class="line">    // split comparator and comparable paths</span><br><span class="line">    // 分割比较器和可比较接口的处理</span><br><span class="line">    Comparator&lt;? super K&gt; cpr = comparator;</span><br><span class="line">    if (cpr != null) &#123;</span><br><span class="line">        do &#123;</span><br><span class="line">            parent = t;</span><br><span class="line">            cmp = cpr.compare(key, t.key);</span><br><span class="line">            if (cmp &lt; 0)</span><br><span class="line">                t = t.left;</span><br><span class="line">            else if (cmp &gt; 0)</span><br><span class="line">                t = t.right;</span><br><span class="line">            else</span><br><span class="line">                return t.setValue(value);</span><br><span class="line">        &#125; while (t != null);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        // 注意treeMap不支持null的操作</span><br><span class="line">        if (key == null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        // Key本身是Comparable的接口，也就是说Comparable和Comparator的区别在这个地方</span><br><span class="line">        // 一个是类来实现，一个是外部实现而已</span><br><span class="line">        Comparable&lt;? super K&gt; k = (Comparable&lt;? super K&gt;) key;</span><br><span class="line">        do &#123;</span><br><span class="line">            parent = t;</span><br><span class="line">            cmp = k.compareTo(t.key);</span><br><span class="line">            if (cmp &lt; 0)</span><br><span class="line">                t = t.left;</span><br><span class="line">            else if (cmp &gt; 0)</span><br><span class="line">                t = t.right;</span><br><span class="line">            else</span><br><span class="line">                return t.setValue(value);</span><br><span class="line">        &#125; while (t != null);</span><br><span class="line">    &#125;</span><br><span class="line">    // 没有找到节点的话，新建节点，并放入到树中</span><br><span class="line">    Entry&lt;K,V&gt; e = new Entry&lt;&gt;(key, value, parent);</span><br><span class="line">    if (cmp &lt; 0)</span><br><span class="line">        parent.left = e;</span><br><span class="line">    else</span><br><span class="line">        parent.right = e;</span><br><span class="line">    // 检查是否符合红黑树的规范，不符合进行调整。</span><br><span class="line">    fixAfterInsertion(e);</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在put(K key,V value)方法的末尾调用了fixAfterInsertion(Entry&lt;K,V&gt; x)方法，这个方法负责在插入节点后调整树结构和着色，以满足红黑树的要求。</p>
+<ul>
+<li>每一个节点或者着成红色，或者着成黑色。</li>
+<li>根是黑色的。</li>
+<li>如果一个节点是红色的，那么它的子节点必须是黑色的。</li>
+<li>一个节点到一个null引用的每一条路径必须包含相同数量的黑色节点。</li>
+</ul>
+<p>在看fixAfterInsertion(Entry&lt;K,V&gt; x)方法前先看一个红黑树的内容：红黑树不是严格的平衡二叉树，它并不严格的保证左右子树的高度差不超过1，但红黑树高度依然是平均log(n)，且最坏情况高度不会超过2log(n)，所以它算是平衡树。</p>
+<p>下面的功能和这里类似，这里我们就不再深入分析了，更多的分析请查看引用</p>
+<h2 id="Hashtable"><a href="#Hashtable" class="headerlink" title="Hashtable"></a>Hashtable</h2><p>和 HashMap 一样，Hashtable 也是一个散列表，它存储的内容是键值对。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class Hashtable&lt;K,V&gt;</span><br><span class="line">    extends Dictionary&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<h3 id="Dictionary"><a href="#Dictionary" class="headerlink" title="Dictionary"></a>Dictionary</h3><p>Dictionary类是一个抽象类，用来存储键/值对，作用和Map类相似。</p>
+<p>给出键和值，你就可以将值存储在Dictionary对象中。一旦该值被存储，就可以通过它的键来获取它。所以和Map一样， Dictionary 也可以作为一个键/值对列表。这个Dictionary应该是过时了。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p>Hashtable是通过”拉链法”实现的哈希表。它包括几个重要的成员变量：table, count, threshold, loadFactor, modCount。</p>
+<ul>
+<li>table是一个 Entry[] 数组类型，而 Entry（在 HashMap 中有讲解过）实际上就是一个单向链表。哈希表的”key-value键值对”都是存储在Entry数组中的。</li>
+<li>count 是 Hashtable 的大小，它是 Hashtable 保存的键值对的数量。</li>
+<li>threshold 是 Hashtable 的阈值，用于判断是否需要调整 Hashtable 的容量。threshold 的值=”容量*加载因子”。</li>
+<li>loadFactor 就是加载因子。</li>
+<li>modCount 是用来实现 fail-fast 机制的。</li>
+</ul>
+<h3 id="异同"><a href="#异同" class="headerlink" title="异同"></a>异同</h3><ol>
+<li>默认的初始容量是11，加载因子还是0.75，这意味着扩展的实现可能是不一样的。</li>
+<li>put不支持key为null</li>
+<li>方法synchronized同步。</li>
+</ol>
+<h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><p>LinkedHashMap保持了插入顺序。是什么样的结构使得LinkedHashMap具有如此特性呢？</p>
+<p>LinkedHashMap 实现与 HashMap 的不同之处在于，LinkedHashMap 维护着一个运行于所有条目的双重链接列表。此链接列表定义了迭代顺序，该迭代顺序可以是插入顺序或者是访问顺序。</p>
+<p>根据链表中元素的顺序可以分为：按插入顺序的链表，和按访问顺序(调用 get 方法)的链表。<b style="color:red">默认是按插入顺序排序，如果指定按访问顺序排序，那么调用get方法后，会将这次访问的元素移至链表尾部，不断访问可以形成按访问顺序排序的链表。</b></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>对于 LinkedHashMap 而言，它继承与 HashMap(public class LinkedHashMap&lt;K,V&gt; extends HashMap&lt;K,V&gt; implements Map&lt;K,V&gt;)、底层使用哈希表与双向链表来保存所有元素。其基本操作与父类 HashMap 相似，它通过重写父类相关的方法，来实现自己的链接列表特性。下面我们来分析 LinkedHashMap 的源代码：</p>
+<h4 id="成员变量-1"><a href="#成员变量-1" class="headerlink" title="成员变量"></a>成员变量</h4><p>LinkedHashMap 采用的 hash 算法和 HashMap 相同，但是它重新定义了数组中保存的元素 Entry，该 Entry 除了保存当前对象的引用外，还保存了其上一个元素 before 和下一个元素 after 的引用，从而在哈希表的基础上又构成了双向链接列表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* The iteration ordering method for this linked hash map: &lt;tt&gt;true&lt;/tt&gt;</span><br><span class="line">* for access-order, &lt;tt&gt;false&lt;/tt&gt; for insertion-order.</span><br><span class="line">* 如果为true，则按照访问顺序；如果为false，则按照插入顺序。</span><br><span class="line">*/</span><br><span class="line">private final boolean accessOrder;</span><br><span class="line">/**</span><br><span class="line">* 双向链表的表头元素。</span><br><span class="line"> */</span><br><span class="line">private transient Entry&lt;K,V&gt; header;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* LinkedHashMap的Entry元素。</span><br><span class="line">* 继承HashMap的Entry元素，又保存了其上一个元素before和下一个元素after的引用。</span><br><span class="line"> */</span><br><span class="line">private static class Entry&lt;K,V&gt; extends HashMap.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过源代码可以看出，在 LinkedHashMap 的构造方法中，实际调用了父类 HashMap 的相关构造方法来构造一个底层存放的 table 数组，但额外可以增加 accessOrder 这个参数，如果不设置，默认为 false，代表按照插入顺序进行迭代；当然可以显式设置为 true，代表以访问顺序进行迭代。如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public LinkedHashMap(int initialCapacity, float loadFactor,boolean accessOrder) &#123;</span><br><span class="line">    super(initialCapacity, loadFactor);</span><br><span class="line">    this.accessOrder = accessOrder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h4><p>LinkedHashMap 并未重写父类 HashMap 的 put 方法，而是重写了父类 HashMap 的 put 方法调用的子方法void recordAccess(HashMap m) ，void addEntry(int hash, K key, V value, int bucketIndex) 和void createEntry(int hash, K key, V value, int bucketIndex)，提供了自己特有的双向链接列表的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">void recordAccess(HashMap&lt;K,V&gt; m) &#123;</span><br><span class="line">    LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">    if (lm.accessOrder) &#123;</span><br><span class="line">        lm.modCount++;</span><br><span class="line">        remove();</span><br><span class="line">        addBefore(lm.header);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void addEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">    // 调用create方法，将新元素以双向链表的的形式加入到映射中。</span><br><span class="line">    createEntry(hash, key, value, bucketIndex);</span><br><span class="line"></span><br><span class="line">    // 删除最近最少使用元素的策略定义</span><br><span class="line">    Entry&lt;K,V&gt; eldest = header.after;</span><br><span class="line">    if (removeEldestEntry(eldest)) &#123;</span><br><span class="line">        removeEntryForKey(eldest.key);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        if (size &gt;= threshold)</span><br><span class="line">            resize(2 * table.length);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void createEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">    HashMap.Entry&lt;K,V&gt; old = table[bucketIndex];</span><br><span class="line">    Entry&lt;K,V&gt; e = new Entry&lt;K,V&gt;(hash, key, value, old);</span><br><span class="line">    table[bucketIndex] = e;</span><br><span class="line">    // 调用元素的addBrefore方法，将元素加入到哈希、双向链接列表。  </span><br><span class="line">    e.addBefore(header);</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void addBefore(Entry&lt;K,V&gt; existingEntry) &#123;</span><br><span class="line">    after  = existingEntry;</span><br><span class="line">    before = existingEntry.before;</span><br><span class="line">    before.after = this;</span><br><span class="line">    after.before = this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h4><p>LinkedHashMap 重写了父类 HashMap 的 get 方法，实际在调用父类 getEntry() 方法取得查找的元素后，再判断当排序模式 accessOrder 为 true 时，记录访问顺序，将最新访问的元素添加到双向链表的表头，并从原来的位置删除。由于的链表的增加、删除操作是常量级的，故并不会带来性能的损失。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">    // 调用父类HashMap的getEntry()方法，取得要查找的元素。</span><br><span class="line">    Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;)getEntry(key);</span><br><span class="line">    if (e == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 记录访问顺序。</span><br><span class="line">    e.recordAccess(this);</span><br><span class="line">    return e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void recordAccess(HashMap&lt;K,V&gt; m) &#123;</span><br><span class="line">    LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">    // 如果定义了LinkedHashMap的迭代顺序为访问顺序，</span><br><span class="line">    // 则删除以前位置上的元素，并将最新访问的元素添加到链表表头。  </span><br><span class="line">    if (lm.accessOrder) &#123;</span><br><span class="line">        lm.modCount++;</span><br><span class="line">        remove();</span><br><span class="line">        addBefore(lm.header);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* Removes this entry from the linked list.</span><br><span class="line">*/</span><br><span class="line">private void remove() &#123;</span><br><span class="line">    before.after = after;</span><br><span class="line">    after.before = before;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**clear链表，设置header为初始状态*/</span><br><span class="line">public void clear() &#123;</span><br><span class="line"> super.clear();</span><br><span class="line"> header.before = header.after = header;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="排序模式"><a href="#排序模式" class="headerlink" title="排序模式"></a>排序模式</h4><p>LinkedHashMap 定义了排序模式 accessOrder，该属性为 boolean 型变量，对于访问顺序，为 true；对于插入顺序，则为 false。一般情况下，不必指定排序模式，其迭代顺序即为默认为插入顺序。</p>
+<p>这些构造方法都会默认指定排序模式为插入顺序。如果你想构造一个 LinkedHashMap，并打算按从近期访问最少到近期访问最多的顺序（即访问顺序）来保存元素，那么请使用下面的构造方法构造 LinkedHashMap：public LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder)</p>
+<p>该哈希映射的迭代顺序就是最后访问其条目的顺序，这种映射很适合构建 LRU 缓存。LinkedHashMap 提供了 removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) 方法。该方法可以提供在每次添加新条目时移除最旧条目的实现程序，默认返回 false，这样，此映射的行为将类似于正常映射，即永远不能移除最旧的元素。</p>
+<p>我们其实可以利用 LinkedHashMap 构建 LRU 缓存。</p>
+<h2 id="EnumMap"><a href="#EnumMap" class="headerlink" title="EnumMap"></a><b style="color:red">EnumMap</b></h2><p>EnumMap是处理Enum为key的优化，没有仔细看源码，但是看到put方法时，就大概明白优化的地方在哪了！没有hash函数，使用Enum.ordinal()作为散列函数确实妙，这样没有key冲突，直接访问即可，性能会有一定提升。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    // 类型检查</span><br><span class="line">    typeCheck(key);</span><br><span class="line"></span><br><span class="line">    // 找到枚举的索引（注意这里是利用枚举的index作为hash值，的确很好使）</span><br><span class="line">    int index = key.ordinal();</span><br><span class="line">    Object oldValue = vals[index];</span><br><span class="line">    vals[index] = maskNull(value);</span><br><span class="line">    if (oldValue == null)</span><br><span class="line">        size++;</span><br><span class="line">    return unmaskNull(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里就是简单介绍一下，具体还是查看源码的具体实现</p>
+<h2 id="关于fail-fast-和-fail-safe的区别"><a href="#关于fail-fast-和-fail-safe的区别" class="headerlink" title="关于fail-fast 和 fail-safe的区别"></a>关于fail-fast 和 fail-safe的区别</h2><p>这里为了解决并发的问题，一般采用这两种机制。一般来说容器都是线程不安全的，特别是迭代器进行访问的时候特别容易出现问题。下面我们来大概解释一下这个概念。</p>
 <p>其实就是通过版本号防止并发的问题，但是呢？光通过版本号是解决不了问题的，所以这里的这种机制是带有欺骗性的，只是会减少并发的问题，但是真正并发量大的时候，问题是解决不了的。</p>
 <p>fail-fast就是发现版本号不对的时候抛异常，fail-safe不会抛异常，会优雅地返回错误而已。另外fail-safe是通过clone来保证访问没有问题的。下面列个表看一下：</p>
 <table>
@@ -722,7 +1433,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/ch717828/article/details/46892051" target="_blank" rel="noopener">java中fail-fast 和 fail-safe的区别</a></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/ch717828/article/details/46892051" target="_blank" rel="noopener">java中fail-fast 和 fail-safe的区别</a><br><a href="http://blog.csdn.net/chenchaofuck1/article/details/51297077" target="_blank" rel="noopener">JDK源码学习(2)-TreeMap源码分析</a><br><a href="http://www.runoob.com/java/java-collections.html" target="_blank" rel="noopener">Java 集合框架</a><br><a href="http://www.runoob.com/java/java-dictionary-class.html" target="_blank" rel="noopener">Java Dictionary 类</a><br><a href="http://wiki.jikexueyuan.com/project/java-collection/hashtable.html" target="_blank" rel="noopener">Hashtable 的实现原理</a><br><a href="https://yikun.github.io/2015/04/02/Java-LinkedHashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener">Java LinkedHashMap工作原理及实现</a></p>
 
           
         
@@ -990,6 +1701,8 @@
 <h4 id="删除的方法"><a href="#删除的方法" class="headerlink" title="删除的方法"></a>删除的方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public E remove(int index) &#123;</span><br><span class="line">    rangeCheck(index);</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    E oldValue = elementData(index);</span><br><span class="line"></span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index,</span><br><span class="line">                            numMoved);</span><br><span class="line">    elementData[--size] = null; // Let gc do its work</span><br><span class="line"></span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br><span class="line">// 删除函数</span><br><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    if (o == null) &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (elementData[index] == null) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (o.equals(elementData[index])) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="调整数组容量"><a href="#调整数组容量" class="headerlink" title="调整数组容量"></a>调整数组容量</h4><p>从上面介绍的向 ArrayList 中存储元素的代码中，我们看到，每当向数组中添加元素时，都要去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组扩容有两个方法，其中开发者可以通过一个 public 的方法ensureCapacity(int minCapacity)来增加 ArrayList 的容量，而在存储元素等操作过程中，如果遇到容量不足，会调用priavte方法private void ensureCapacityInternal(int minCapacity)实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &gt; 0)</span><br><span class="line">        ensureCapacityInternal(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">// growth方法上面是有的</span><br></pre></td></tr></table></figure></p>
 <h4 id="Fail-Fast-机制"><a href="#Fail-Fast-机制" class="headerlink" title="Fail-Fast 机制"></a>Fail-Fast 机制</h4><p>ArrayList 也采用了快速失败的机制，通过记录 modCount 参数来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
+<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p>Vector也是一个List，但是这里面是线程安全的，而且没有实现迭代器模式。或者说Enumeration也是迭代器模式。另外没有扩容因子这个东西的存在，默认是以两倍的方式进行扩容，但是可以指定每次扩容的量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    // 扩容方式是翻倍或者用户指定的扩容参数即可</span><br><span class="line">    int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</span><br><span class="line">                                        capacityIncrement : oldCapacity);</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        // 防止容量不够</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        // 不能超过上限，其实没有上限的</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // 进行扩容存放元素。</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean add(E e) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    ensureCapacityHelper(elementCount + 1);</span><br><span class="line">    elementData[elementCount++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean removeElement(Object obj) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = indexOf(obj);</span><br><span class="line">    if (i &gt;= 0) &#123;</span><br><span class="line">        removeElementAt(i);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized void removeElementAt(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    if (index &gt;= elementCount) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index + &quot; &gt;= &quot; +</span><br><span class="line">                                                    elementCount);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (index &lt; 0) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index);</span><br><span class="line">    &#125;</span><br><span class="line">    int j = elementCount - index - 1;</span><br><span class="line">    if (j &gt; 0) &#123;</span><br><span class="line">        System.arraycopy(elementData, index + 1, elementData, index, j);</span><br><span class="line">    &#125;</span><br><span class="line">    elementCount--;</span><br><span class="line">    elementData[elementCount] = null; /* to let gc do its work */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>细节方面就不多写了。下面看一下Enumeration接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Enumeration&lt;E&gt; &#123;</span><br><span class="line">    boolean hasMoreElements();</span><br><span class="line">    E nextElement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a></p>
 
           
@@ -1402,638 +2115,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/28/syslib/mmap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/28/syslib/mmap/" itemprop="url">mmap</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-28T11:21:10+08:00">2018-02-28</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/操作系统扩展/" itemprop="url" rel="index"><span itemprop="name">操作系统扩展</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在计算机中，mmap(2)是符合POSIX标准的Unix 系统调用，可将文件或设备映射到内存中。它是内存映射文件 I/O的一种方法。它自然地实现了需求分页，因为文件内容最初不是从磁盘读取的，根本不使用物理RAM。在访问特定位置后，实际从磁盘读取数据的操作将以“懒惰”方式执行。在不再需要存储器之后，munmap(2)指向它的指针很重要。保护信息可以使用管理mprotect(2)，特殊处理可以使用强制执行madvise(2)。</p>
-<p>个人的理解就是，直接跳过操作系统的内核空间，直接在你的进程内存空间映射到文件系统，这样就可已省去用户空间到内核空间的拷贝操作，可以多进程共同访问文件，但是会出现一些并发同步修改等问题。</p>
-<p>详细的说明见引文，里面已经有很好的说明了。</p>
-<h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#_label0" target="_blank" rel="noopener">认真分析mmap：是什么 为什么 怎么用</a><br><a href="http://man7.org/linux/man-pages/man2/mmap.2.html" target="_blank" rel="noopener">Linux &gt; man-pages</a><br><a href="http://akaedu.github.io/book/ch28s08.html" target="_blank" rel="noopener">mmap</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/Mycat简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/database/Mycat简介/" itemprop="url">Mycat简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T16:02:42+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/database/" itemprop="url" rel="index"><span itemprop="name">database</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>前几天因为要处理类似交易所的设计，发现大量的数据问题，于是想通过Mycat进行分表分库，读了Mycat的官方文档，真的学习了好多的东西，于是画了一张脑图。以后有时间再来整理里面的知识吧！</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/Database/Mycat%E7%AE%80%E4%BB%8B.png?raw=true" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20与ERC233的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/blockchain/以太坊ERC20与ERC233的区别/" itemprop="url">以太坊ERC20与ERC233的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T14:45:16+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ERC: 223<br>Title: Token standard<br>Author: Dexaran, <a href="mailto:dexaran820@gmail.com" target="_blank" rel="noopener">dexaran820@gmail.com</a><br>Status: Draft<br>Type: ERC<br>Created: 5-03.2017<br>Resolution: <a href="https://github.com/Dexaran/ERC223-token-standard" target="_blank" rel="noopener">https://github.com/Dexaran/ERC223-token-standard</a><br>Recommended implementation: <a href="https://github.com/Dexaran/ERC223-token-standard/tree/Recommended" target="_blank" rel="noopener">https://github.com/Dexaran/ERC223-token-standard/tree/Recommended</a></p>
-<p>以下描述标准功能，令牌合同和使用指定令牌的合同可以实施，以防止意外发送令牌到合同，并使令牌交易的行为像ether交易。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>ERC223解决了ERC20的一些问题:</p>
-<p>ERC20令牌标准导致最终用户的资金损失。主要问题是缺乏处理通过ERC20代币transfer方法执行的传入ERC20事务的可能性。 </p>
-<p>如果您发送100个ETH到一个不打算与Ether协同工作的合同，那么它将拒绝一个交易，并且不会发生任何错误。如果您将100个ERC20令牌发送到不打算与ERC20令牌一起使用的合同，则它不会拒绝令牌，因为它无法识别传入的事务。结果，您的代币将卡住合约余额。</p>
-<p>目前丢失了多少ERC20令牌（2017年12月27日）：</p>
-<ol>
-<li>QTUM，1,204,273美元流失。看着Etherscan</li>
-<li>EOS 损失1,015,131美元。看着Etherscan</li>
-<li>GNT，亏损249,627美元。看着Etherscan</li>
-<li>STORJ，亏损217,477美元。看着Etherscan</li>
-<li>Tronix，损失201,232美元。看着Etherscan</li>
-<li>DGD，损失151,826美元。看着Etherscan</li>
-<li>OMG，亏损149,941美元。看着Etherscan</li>
-<li>STORJ，输掉102,560 美元。看着Etherscan</li>
-</ol>
-<p>注意：这些只是我知道的8个令牌合约。每个以太坊合约都是ERC20令牌的潜在令牌陷阱，因此，比我在此例中显示的损失要多得多。</p>
-<p>ERC223解决了ERC20的一些问题:</p>
-<p>1.无法处理接收合同中的进账交易。<br>2.令牌可以发送到合同中没有设计不处理与标记工作，并可能会丢失。目前至少有四十万美元的损失。<br>3.令牌交易应与Ethereum意识形态一致。当一个用户转账的时候，必须自己执行transfer.用户存入合同或发送到外部拥有的账户无关紧要。</p>
-<p>这些将允许合同处理传入令牌交易并防止意外发送的令牌被合同接受。<br>例如，分散式交换将不再需要强制用户通过令牌合约来呼叫批准，然后通过从允许的令牌获取正在调用transfer的呼叫存款。 令牌交易将在交易所合约内自动处理。</p>
-<p>这里最重要的是在执行合同交易时调用tokenFallback。</p>
-<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><p>与令牌一起使用的令牌合同</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>注意: 一个重要的一点是，如果合同开发人员希望他们的合同使用指定的令牌，那么合同开发人员必须实现tokenFallback。</p>
-<p>如果接收方未实现tokenFallback函数，则认为合同不是设计为使用令牌，那么事务必须失败，并且不会传输令牌。 在尝试将Ether发送到没有实现function（）payable的合同时，与Ether事务的类比是失败的。</p>
-<h3 id="totalSupply"><a href="#totalSupply" class="headerlink" title="totalSupply"></a>totalSupply</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function totalSupply() constant returns (uint256 totalSupply)</span><br></pre></td></tr></table></figure>
-<p>获取代币的发币总量</p>
-<h3 id="name"><a href="#name" class="headerlink" title="name"></a>name</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function name() constant returns (string _name)</span><br></pre></td></tr></table></figure>
-<p>获取代币的名称</p>
-<h3 id="symbol"><a href="#symbol" class="headerlink" title="symbol"></a>symbol</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function symbol() constant returns (bytes32 _symbol)</span><br></pre></td></tr></table></figure>
-<p>代币的标识符</p>
-<h3 id="decimals"><a href="#decimals" class="headerlink" title="decimals"></a>decimals</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function decimals() constant returns (uint8 _decimals)</span><br></pre></td></tr></table></figure>
-<p>得到token的小数点后几位</p>
-<h3 id="balanceOf"><a href="#balanceOf" class="headerlink" title="balanceOf"></a>balanceOf</h3><h3 id="transfer"><a href="#transfer" class="headerlink" title="transfer"></a>transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function transfer(address _to, uint _value) returns (bool)</span><br></pre></td></tr></table></figure>
-<p>由于向后兼容性原因，因为ERC20传输函数没有字节参数。如果_to是合约，则此函数必须传输令牌并调_to中的函数tokenFallback(address,uint256,bytes)。如果_to（接收方合同）中没有实现tokenFallback函数，则事务必须失败，并且不会发生令牌的传输。</p>
-<p>重要:将在接收方合约中调用的令牌备用功能必须命名为tokenFallback，并使用参数address,uint256，bytes。 此函数必须具有0xc0ee0b8a签名。</p>
-<h3 id="transfer-address-uint-bytes"><a href="#transfer-address-uint-bytes" class="headerlink" title="transfer(address, uint, bytes)"></a>transfer(address, uint, bytes)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function transfer(address _to, uint _value, bytes _data) returns (bool)</span><br></pre></td></tr></table></figure>
-<p>当某人想要转移令牌时总是调用这个函数。<br>如果_to是合约，则此函数必须传输令牌并调用_to中的函数tokenFallback (address, uint256, bytes)。 如果_to（接收方合同）中没有实现tokenFallback函数，则事务必须失败，并且不会发生令牌的传输。<br>如果_to是外部拥有的地址，则必须发送事务，而不尝试在_to中执行tokenFallback。</p>
-<p>_data可以附加到这个令牌交易中，它将永远保持在块状（需要更多的gas）。 _data可以是空的。</p>
-<p>注意: 检查_to是合约还是地址的推荐方法是组装_to的代码。 如果_to中没有代码，那么这是一个外部拥有的地址，否则就是一个合约。</p>
-<p>重要: 将在接收方合约中调用的令牌备用功能必须命名为tokenFallback，并使用参数address, uint256,bytes。 此函数必须具有0xc0ee0b8a签名。</p>
-<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h3 id="Transfer"><a href="#Transfer" class="headerlink" title="Transfer"></a>Transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">event Transfer(address indexed _from, address indexed _to, uint256 indexed _value, bytes _data)</span><br></pre></td></tr></table></figure>
-<p>当token转移的时候触发。</p>
-<h3 id="合约和token一起工作"><a href="#合约和token一起工作" class="headerlink" title="合约和token一起工作"></a>合约和token一起工作</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function tokenFallback(address _from, uint _value, bytes _data)</span><br></pre></td></tr></table></figure>
-<p>令牌持有者发送令牌时处理从令牌合同所调用的令牌传输的功能。 _from是令牌发送者，_value是传入令牌的数量，_data是附加的数据，类似于Ether事务中的数据。 适用于以太交易的回退功能，并且不返回任何内容。</p>
-<p>注意: msg.sender将是tokenFallback函数内的令牌合同。 过滤哪些令牌（通过令牌契约地址）发送可能很重要。 令牌发送者（谁发起了代币交易的人）将_from thetokenFallback函数内。</p>
-<p>重要: 这个函数必须命名为tokenFallback，并使用参数地址uint256，字节来匹配函数签名0xc0ee0b8a。</p>
-<h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p><a href="http://blog.csdn.net/diandianxiyu_geek/article/details/78093229" target="_blank" rel="noopener">以太坊ERC20与ERC233的区别</a></p>
-<p><a href="https://github.com/ethereum/EIPs/issues/223" target="_blank" rel="noopener">ERC223 token standard #223</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20-token标准/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/blockchain/以太坊ERC20-token标准/" itemprop="url">以太坊ERC20 token标准</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T13:48:28+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。</p>
-<h2 id="ERC20令牌标准接口"><a href="#ERC20令牌标准接口" class="headerlink" title="ERC20令牌标准接口"></a>ERC20令牌标准接口</h2><p>以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">// ERC Token Standard #20 Interface</span><br><span class="line">// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md</span><br><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">contract ERC20Interface &#123;</span><br><span class="line">    function totalSupply() public constant returns (uint);</span><br><span class="line">    function balanceOf(address tokenOwner) public constant returns (uint balance);</span><br><span class="line">    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);</span><br><span class="line">    function transfer(address to, uint tokens) public returns (bool success);</span><br><span class="line">    function approve(address spender, uint tokens) public returns (bool success);</span><br><span class="line">    function transferFrom(address from, address to, uint tokens) public returns (bool success);</span><br><span class="line"></span><br><span class="line">    event Transfer(address indexed from, address indexed to, uint tokens);</span><br><span class="line">    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>以太坊区块链上的大部分主要代币均符合ERC20标准。GNT Golem Network Token是唯一部分兼容erc20的代币，因为它不执行approve、allowance以及transferFrom功能和Approval事件。</p>
-<p>一些令牌包括描述令牌合同的更多信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string public constant name = &quot;Token Name&quot;;</span><br><span class="line">string public constant symbol = &quot;SYM&quot;;</span><br><span class="line">uint8 public constant decimals = 18;  // 18 is the most common number of decimal places</span><br></pre></td></tr></table></figure></p>
-<p>在这个标准中我们要指明我们的代币信息，和一些通用的调用接口信息。</p>
-<h2 id="代用合同如何工作？"><a href="#代用合同如何工作？" class="headerlink" title="代用合同如何工作？"></a>代用合同如何工作？</h2><p>以下是令牌合同的一个片段，用于演示令牌合约如何维护以太坊帐户的令牌余额：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">contract TokenContractFragment &#123;</span><br><span class="line"> </span><br><span class="line">    // Balances for each account</span><br><span class="line">    mapping(address =&gt; uint256) balances;</span><br><span class="line"></span><br><span class="line">    // Owner of account approves the transfer of an amount to another account</span><br><span class="line">    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;</span><br><span class="line"> </span><br><span class="line">    // Get the token balance for account `tokenOwner`</span><br><span class="line">    function balanceOf(address tokenOwner) public constant returns (uint balance) &#123;</span><br><span class="line">        return balances[tokenOwner];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Transfer the balance from owner&apos;s account to another account</span><br><span class="line">    function transfer(address to, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        balances[msg.sender] = balances[msg.sender].sub(tokens);</span><br><span class="line">        balances[to] = balances[to].add(tokens);</span><br><span class="line">        Transfer(msg.sender, to, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Send `tokens` amount of tokens from address `from` to address `to`</span><br><span class="line">    // The transferFrom method is used for a withdraw workflow, allowing contracts to send</span><br><span class="line">    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge</span><br><span class="line">    // fees in sub-currencies; the command should fail unless the _from account has</span><br><span class="line">    // deliberately authorized the sender of the message via some mechanism; we propose</span><br><span class="line">    // these standardized APIs for approval:</span><br><span class="line">    function transferFrom(address from, address to, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        balances[from] = balances[from].sub(tokens);</span><br><span class="line">        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);</span><br><span class="line">        balances[to] = balances[to].add(tokens);</span><br><span class="line">        Transfer(from, to, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Allow `spender` to withdraw from your account, multiple times, up to the `tokens` amount.</span><br><span class="line">    // If this function is called again it overwrites the current allowance with _value.</span><br><span class="line">    function approve(address spender, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        allowed[msg.sender][spender] = tokens;</span><br><span class="line">        Approval(msg.sender, spender, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>基于ERC20的货币更容易互换，并且能够在Dapps上相同的工作。</p>
-<p>新的标准可以让token更兼容，允许其他功能，包括投票标记化。操作更像一个投票操作</p>
-<p>Token的持有人可以完全控制资产，遵守ERC20的token可以跟踪任何人在任何时间拥有多少token.基于eth合约的子货币，所以容易实施。只能自己去转让。</p>
-<p>标准化非常有利，也就意味着这些资产可以用于不同的平台和项目，否则只能用在特定的场合。</p>
-<h2 id="接口文档说明"><a href="#接口文档说明" class="headerlink" title="接口文档说明"></a>接口文档说明</h2><h3 id="代币账户查询-balanceOf"><a href="#代币账户查询-balanceOf" class="headerlink" title="代币账户查询 balanceOf"></a>代币账户查询 balanceOf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tokenContract.balanceOf(0x1111111111111111111111111111111111111111) will return 100</span><br><span class="line">tokenContract.balanceOf(0x2222222222222222222222222222222222222222) will return 200</span><br></pre></td></tr></table></figure>
-<h3 id="转移Token余额transfer"><a href="#转移Token余额transfer" class="headerlink" title="转移Token余额transfer"></a>转移Token余额transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tokenContract.transfer(0x2222222222222222222222222222222222222222, 10)</span><br></pre></td></tr></table></figure>
-<h3 id="从token余额批准和转移-approve"><a href="#从token余额批准和转移-approve" class="headerlink" title="从token余额批准和转移 approve"></a>从token余额批准和转移 approve</h3><p>其实就是中转一下，类似于淘宝先付款再确认收货。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/diandianxiyu_geek/article/details/78082551" target="_blank" rel="noopener">【Ethereum】以太坊ERC20 Token标准完整说明</a><br><a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard" target="_blank" rel="noopener">ERC20 Token Standard</a><br><a href="https://medium.com/hackoin-taiwan/ethereum-erc20-token-standard-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E4%BB%A3%E5%B9%A3%E6%A8%99%E6%BA%96%E4%BB%8B%E7%B4%B9-b7bc58171021" target="_blank" rel="noopener">Ethereum ERC20 Token Standard 以太坊代幣標準介紹</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2081,7 +2162,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2106,7 +2187,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2147,7 +2230,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">13</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
