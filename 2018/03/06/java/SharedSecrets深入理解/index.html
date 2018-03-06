@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="SharedSecrets," />
+
+
+<meta name="description" content="前言最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java">
+<meta name="keywords" content="SharedSecrets">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SharedSecrets深入理解">
+<meta property="og:url" content="http://cordate.github.io/2018/03/06/java/SharedSecrets深入理解/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="前言最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-03-06T08:33:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SharedSecrets深入理解">
+<meta name="twitter:description" content="前言最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/06/java/SharedSecrets深入理解/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>SharedSecrets深入理解 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/SharedSecrets深入理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SharedSecrets深入理解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T16:05:59+08:00">2018-03-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。<a href="http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java" target="_blank" rel="noopener">http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java</a> 这个就是这个类的内容。一开始没有懂这里面的意思，那么现在我们来深入理解一下。</p>
+<h2 id="从属性开始"><a href="#从属性开始" class="headerlink" title="从属性开始"></a>从属性开始</h2><p>我们来看一下这个类的属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SharedSecrets &#123;</span><br><span class="line">    private static final Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line">    private static JavaUtilJarAccess javaUtilJarAccess;</span><br><span class="line">    private static JavaLangAccess javaLangAccess;</span><br><span class="line">    private static JavaIOAccess javaIOAccess;</span><br><span class="line">    private static JavaNetAccess javaNetAccess;</span><br><span class="line">    private static JavaNetHttpCookieAccess javaNetHttpCookieAccess;</span><br><span class="line">    private static JavaNioAccess javaNioAccess;</span><br><span class="line">    private static JavaIOFileDescriptorAccess javaIOFileDescriptorAccess;</span><br><span class="line">    private static JavaSecurityProtectionDomainAccess javaSecurityProtectionDomainAccess;</span><br><span class="line">    private static JavaSecurityAccess javaSecurityAccess;</span><br><span class="line">    private static JavaUtilZipFileAccess javaUtilZipFileAccess;</span><br><span class="line">    private static JavaAWTAccess javaAWTAccess;</span><br></pre></td></tr></table></figure></p>
+<p>然后再去看看具体方法，发现都是这个类的getter和setter方法，具体看起来是没有啥可理解的。那么具体是什么意思呢？</p>
+<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>那么我们来解释一下，就看一下注释里面的说明。</p>
+<p>“共享私有”库，这是在其他包中调用私有实现方法的一种机制，而不用使用反射。好了就解释这么多，下面是英文原文。</p>
+<p>/*<em> A repository of “shared secrets”, which are a mechanism for<br>    calling implementation-private methods in another package without<br>    using reflection. A package-private class implements a public<br>    interface and provides the ability to call package-private methods<br>    within that package; the object implementing that interface is<br>    provided through a third package to which access is restricted.<br>    This framework avoids the primary disadvantage of using reflection<br>    for this purpose, namely the loss of compile-time checking. </em>/</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>可能上面的说明还是比较空洞，不知道要表达什么意思，我们来看一些具体的示例就好了。</p>
+<p>在JAAS的ProtectionDomain类中有两个地方使用了SharedSecrets，我们来看看具体是怎么使用的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    // Set up JavaSecurityAccess in SharedSecrets</span><br><span class="line">    // 在SharedSecrets设置好JavaSecurityAccess</span><br><span class="line">    // 设置java安全访问，这里是使用匿名实现类实现的。</span><br><span class="line">    // 一直在找JavaSecurityAccess的实现类，这里有一个，居然是匿名类难怪找不到。</span><br><span class="line">    SharedSecrets.setJavaSecurityAccess(</span><br><span class="line">        new JavaSecurityAccess() &#123;</span><br><span class="line">            // 执行交叉特权</span><br><span class="line">            public &lt;T&gt; T doIntersectionPrivilege(</span><br><span class="line">                PrivilegedAction&lt;T&gt; action,</span><br><span class="line">                final AccessControlContext stack,</span><br><span class="line">                final AccessControlContext context)</span><br><span class="line">            &#123;</span><br><span class="line">                if (action == null) &#123;</span><br><span class="line">                    throw new NullPointerException();</span><br><span class="line">                &#125;</span><br><span class="line">                return AccessController.doPrivileged(</span><br><span class="line">                    action,</span><br><span class="line">                    new AccessControlContext(</span><br><span class="line">                        stack.getContext(), context).optimize()</span><br><span class="line">                );</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // 执行交叉特权</span><br><span class="line">            public &lt;T&gt; T doIntersectionPrivilege(</span><br><span class="line">                PrivilegedAction&lt;T&gt; action,</span><br><span class="line">                AccessControlContext context)</span><br><span class="line">            &#123;</span><br><span class="line">                return doIntersectionPrivilege(action,</span><br><span class="line">                    AccessController.getContext(), context);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">    SharedSecrets.setJavaSecurityProtectionDomainAccess(</span><br><span class="line">            // 设置默认的JavaSecurityProtectionDomainAccess</span><br><span class="line">        new JavaSecurityProtectionDomainAccess() &#123;</span><br><span class="line">            public ProtectionDomainCache getProtectionDomainCache() &#123;</span><br><span class="line">                return new ProtectionDomainCache() &#123;</span><br><span class="line">                    private final Map&lt;Key, PermissionCollection&gt; map =</span><br><span class="line">                        Collections.synchronizedMap</span><br><span class="line">                            (new WeakHashMap&lt;Key, PermissionCollection&gt;());</span><br><span class="line">                    public void put(ProtectionDomain pd,</span><br><span class="line">                        PermissionCollection pc) &#123;</span><br><span class="line">                        map.put((pd == null ? null : pd.key), pc);</span><br><span class="line">                    &#125;</span><br><span class="line">                    public PermissionCollection get(ProtectionDomain pd) &#123;</span><br><span class="line">                        return pd == null ? map.get(null) : map.get(pd.key);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>是的这个类中有两个静态块，用于实例化一些基础的类库。我们来看一下JavaSecurityProtectionDomainAccess和JavaSecurityAccess这两个接口，发现找不到，但是在dt.jar中可以找到；接着我尝试去找实现类发现也找不到，但是终于在这里我找到了相应的实现类，可谓不容易，不过也让我彻底明白了，这个类的实际意义，我想大家也应该明白这里面的作用了吧！很棒的设计，但是代码隐藏太深，如果不是去看到这个示例，我可能永远都不理解这个类的用意。</p>
+<p>我想这个类的具体作用还是要从属性出发，发现很多属性都和Java的security相关。</p>
+<p>不管这么多了，这个类的设计方式值得我们学习，但是会使代码难于理解。</p>
+<h2 id="JavaLangAccess示例"><a href="#JavaLangAccess示例" class="headerlink" title="JavaLangAccess示例"></a>JavaLangAccess示例</h2><p>我也在网上看到这样的实例，挺好玩的。使用JavaLangAccess和SharedSecrets来获取JVM中的实例。</p>
+<h3 id="SharedSecrets和JavaLangAccess的作用"><a href="#SharedSecrets和JavaLangAccess的作用" class="headerlink" title="SharedSecrets和JavaLangAccess的作用"></a>SharedSecrets和JavaLangAccess的作用</h3><p>当我们需要对使用Log的类名进行的推断的时候，我们就需要知道JVM里面的实例对象了，这时候我们就需要使用到SharedSecrets和JavaLangAccess，通过这两个类来获取Java栈帧中存储的类信息，然后进行挑选，从而找出调用的类。</p>
+<p>接下来看一下SharedSecrets和JavaLangAccess的使用方式：</p>
+<p>测试环境：为了方便，在mybatis源码工程里面利用junit进行测试，创建新类testLang.java，也可以自己创建java工程进行测试。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">package org.apache.ibatis.logging;</span><br><span class="line"></span><br><span class="line">import sun.misc.JavaLangAccess;</span><br><span class="line">import sun.misc.SharedSecrets;</span><br><span class="line"></span><br><span class="line">public class testLang &#123;</span><br><span class="line">    public void testPrint() &#123;</span><br><span class="line">        JavaLangAccess access = SharedSecrets.getJavaLangAccess();</span><br><span class="line">        Throwable throwable = new Throwable();</span><br><span class="line"></span><br><span class="line">        int depth = access.getStackTraceDepth(throwable);</span><br><span class="line"></span><br><span class="line">        //输出JVM栈帧中的所有类实例</span><br><span class="line">        for (int i = 0; i &lt; depth; i++) &#123;</span><br><span class="line">            StackTraceElement frame = access.getStackTraceElement(throwable, i);</span><br><span class="line">            System.out.println(frame);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 在LogFactoryTest.java文件中添加方法,这里使用了junit：</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">  public void yumsTest() &#123;</span><br><span class="line">    //System.err.println(&quot;Yumaosheng TEST&quot;);</span><br><span class="line">    testLang t = new testLang();</span><br><span class="line">      t.testPrint();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>执行结果，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">org.apache.ibatis.logging.testLang.testPrint(testLang.java:12)</span><br><span class="line">org.apache.ibatis.logging.LogFactoryTest.yumsTest(LogFactoryTest.java:52)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)</span><br><span class="line">org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)</span><br><span class="line">org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)</span><br><span class="line">org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)</span><br><span class="line">org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)</span><br><span class="line">org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)</span><br><span class="line">org.junit.runners.ParentRunner.run(ParentRunner.java:309)</span><br><span class="line">org.junit.runner.JUnitCore.run(JUnitCore.java:160)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:42)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:262)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:84)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">com.intellij.rt.execution.application.AppMain.main(AppMain.java:147)</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
+<p>我们会发现代码输出了所有JVM栈帧中的实例对象的类名。也就是说我们使用JavaLangAccess和SharedSecrets可以获取栈帧中的所有实例对象的类名称，接下来我们需要剔除掉不可能是调用类的名字。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们发现SharedSecrets这个类挺有趣的，但是注意这个类只是工具，具体的实现都是通过属性来完成，而属性的填充可能是JVM在加载类的时候填入的，所以只要了解接口的作用，我们只要取得里面的接口实例来做一些我们觉得好玩的事情。这就是这个类所不同的地方，凡是此类不能防止set方法只执行一次，所以要在setter方法中做限制，我们发现有些是做了限制的，有些没有。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/yums467/article/details/53005292" target="_blank" rel="noopener">使用JavaLangAccess和SharedSecrets来获取JVM中的实例</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SharedSecrets/" rel="tag"># SharedSecrets</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/06/java/SecurityManager深入学习/" rel="next" title="SecurityManager深入学习">
+                <i class="fa fa-chevron-left"></i> SecurityManager深入学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/06/java/深入理解System类及系统启动/" rel="prev" title="深入理解System类及系统启动">
+                深入理解System类及系统启动 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从属性开始"><span class="nav-number">2.</span> <span class="nav-text">从属性开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解释"><span class="nav-number">3.</span> <span class="nav-text">解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">4.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaLangAccess示例"><span class="nav-number">5.</span> <span class="nav-text">JavaLangAccess示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SharedSecrets和JavaLangAccess的作用"><span class="nav-number">5.1.</span> <span class="nav-text">SharedSecrets和JavaLangAccess的作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">7.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

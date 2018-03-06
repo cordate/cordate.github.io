@@ -264,6 +264,903 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/03/java/java中Map学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/03/java/java中Map学习/" itemprop="url">java中Map学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-03T23:00:23+08:00">2018-03-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这里写的是基于Java7的版本，java8已经改了实现的方式，主要是红黑树的实现，Entry更名为Node。</p>
+<h2 id="Map接口"><a href="#Map接口" class="headerlink" title="Map接口"></a>Map接口</h2><p>map是一个接口， 但是在这个接口的内部也定义了一个接口Entry，用于标识映射项（键-值对）。</p>
+<p>java8中有默认的实现和加了一些方法。</p>
+<h2 id="AbstractMap"><a href="#AbstractMap" class="headerlink" title="AbstractMap"></a>AbstractMap</h2><p>此类提供 Map 接口的骨干实现，以最大限度地减少实现此接口所需的工作。</p>
+<p>要实现不可修改的映射，编程人员只需扩展此类并提供 entrySet() 方法的实现即可，该方法将返回映射的映射关系 set 视图。通常，返回的 set 将依次在 AbstractSet 上实现。此 set 不支持 add 或 remove 方法，其迭代器也不支持 remove 方法。</p>
+<p>这个类的设计巧妙之处就是在这个entrySet()的抽象方法。典型的模板方法模式。</p>
+<p>这个类的内部的Entry类是SimpleEntry。</p>
+<p>这个的类基本实现都是靠着迭代器模式，遍历entrySet来实现基础的各个功能。</p>
+<p>我们先看一个基础的实现，不涉及具体的操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public abstract Set&lt;Entry&lt;K,V&gt;&gt; entrySet();</span><br><span class="line"></span><br><span class="line">public V remove(Object key) &#123;</span><br><span class="line">    Iterator&lt;Entry&lt;K,V&gt;&gt; i = entrySet().iterator();</span><br><span class="line">    Entry&lt;K,V&gt; correctEntry = null;</span><br><span class="line">    if (key==null) &#123;</span><br><span class="line">        while (correctEntry==null &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = i.next();</span><br><span class="line">            if (e.getKey()==null)</span><br><span class="line">                correctEntry = e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        while (correctEntry==null &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = i.next();</span><br><span class="line">            if (key.equals(e.getKey()))</span><br><span class="line">                correctEntry = e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    V oldValue = null;</span><br><span class="line">    if (correctEntry !=null) &#123;</span><br><span class="line">        oldValue = correctEntry.getValue();</span><br><span class="line">        i.remove();</span><br><span class="line">    &#125;</span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    throw new UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>里面的put方法这个类没有实现，remove函数我们可以看到默认还是使用迭代器的模式实现的。感觉更像是在使用数组实现。</p>
+<h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><p>默认的初始化大小为16. 最大容量为1&gt;&gt;30,就是2的30次方的大小吧！默认的加载因子是0.75（当然可以指定），也就是扩容的临界值等于容量的0.75。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static final int DEFAULT_INITIAL_CAPACITY = 16;</span><br><span class="line">static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;</span><br><span class="line">static final float DEFAULT_LOAD_FACTOR = 0.75f;</span><br><span class="line">// 存放集合</span><br><span class="line">transient Entry&lt;K,V&gt;[] table;</span><br><span class="line">transient int size;</span><br><span class="line">// 下一个重新扩容的阈值（默认capacity * load factor）</span><br><span class="line">int threshold;</span><br><span class="line">final float loadFactor;</span><br><span class="line">transient int modCount;</span><br></pre></td></tr></table></figure></p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>HashMap 包含如下几个构造器：</p>
+<ul>
+<li>HashMap()：构建一个初始容量为 16，负载因子为 0.75 的 HashMap。</li>
+<li>ashMap(int initialCapacity)：构建一个初始容量为 initialCapacity，负载因子为 0.75 的 HashMap。</li>
+<li>HashMap(int initialCapacity, float loadFactor)：以指定初始容量、指定的负载因子创建一个 HashMap。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public HashMap(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    if (initialCapacity &lt; 0)</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +</span><br><span class="line">                                            initialCapacity);</span><br><span class="line">    if (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +</span><br><span class="line">                                            loadFactor);</span><br><span class="line"></span><br><span class="line">    // Find a power of 2 &gt;= initialCapacity</span><br><span class="line">    int capacity = 1;</span><br><span class="line">    while (capacity &lt; initialCapacity)</span><br><span class="line">        capacity &lt;&lt;= 1;</span><br><span class="line"></span><br><span class="line">    this.loadFactor = loadFactor;</span><br><span class="line">    // 决定下次访问的阈值</span><br><span class="line">    threshold = (int)Math.min(capacity * loadFactor, MAXIMUM_CAPACITY + 1);</span><br><span class="line">    table = new Entry[capacity];</span><br><span class="line">    useAltHashing = sun.misc.VM.isBooted() &amp;&amp;</span><br><span class="line">            (capacity &gt;= Holder.ALTERNATIVE_HASHING_THRESHOLD);</span><br><span class="line">    init();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们来看一下Entry的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">static class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    final K key;</span><br><span class="line">    V value;</span><br><span class="line">    Entry&lt;K,V&gt; next;</span><br><span class="line">    final int hash;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="核心方法解读"><a href="#核心方法解读" class="headerlink" title="核心方法解读"></a>核心方法解读</h3><h4 id="put方法"><a href="#put方法" class="headerlink" title="put方法"></a>put方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    //其允许存放null的key和null的value，当其key为null时，调用putForNullKey方法，放入到table[0]的这个位置</span><br><span class="line">    if (key == null)</span><br><span class="line">        return putForNullKey(value);</span><br><span class="line">    //通过调用hash方法对key进行哈希，得到哈希之后的数值。该方法实现可以通过看源码，其目的是为了尽可能的让键值对可以分不到不同的桶中</span><br><span class="line">    int hash = hash(key);</span><br><span class="line">    //根据上一步骤中求出的hash得到在数组中是索引i</span><br><span class="line">    int i = indexFor(hash, table.length);</span><br><span class="line">    //如果i处的Entry不为null，则通过其next指针不断遍历e元素的下一个元素。</span><br><span class="line">    for (Entry&lt;K,V&gt; e = table[i]; e != null; e = e.next) &#123;</span><br><span class="line">        Object k;</span><br><span class="line">        if (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            e.value = value;</span><br><span class="line">            e.recordAccess(this);</span><br><span class="line">            return oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    addEntry(hash, key, value, i);</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>key相同，新的值会替换旧的值并返回旧的值，如果旧的值不存在就返回null。</p>
+<p>从上面的源代码中可以看出：当我们往 HashMap 中 put 元素的时候，先根据 key 的 hashCode 重新计算 hash 值，根据 hash 值得到这个元素在数组中的位置（即下标），如果数组该位置上已经存放有其他元素了，那么在这个位置上的元素将以链表的形式存放，新加入的放在链头，最先加入的放在链尾。如果数组该位置上没有元素，就直接将该元素放到此数组中的该位置上。</p>
+<p>还有就是put一个为null的key，这个是放在table[0]这个位置的（很重要的一个点）。</p>
+<p>注意addEntry(hash, key, value, i)方法根据计算出的 hash 值，将 key-value 对放在数组 table 的 i 索引处。addEntry 是 HashMap 提供的一个包访问权限的方法。这个就是职责分离的一个最基本的应用，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">void addEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">        if ((size &gt;= threshold) &amp;&amp; (null != table[bucketIndex])) &#123;</span><br><span class="line">            resize(2 * table.length);</span><br><span class="line">            hash = (null != key) ? hash(key) : 0;</span><br><span class="line">            bucketIndex = indexFor(hash, table.length);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        createEntry(hash, key, value, bucketIndex);</span><br><span class="line">&#125;</span><br><span class="line">void createEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">        // 获取指定 bucketIndex 索引处的 Entry</span><br><span class="line">        Entry&lt;K,V&gt; e = table[bucketIndex];</span><br><span class="line">        // 将新创建的 Entry 放入 bucketIndex 索引处，并让新的 Entry 指向原来的 Entr</span><br><span class="line">        table[bucketIndex] = new Entry&lt;&gt;(hash, key, value, e);</span><br><span class="line">        size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>hash(int h)方法根据 key 的 hashCode 重新计算一次散列。此算法加入了高位计算，防止低位不变，高位变化时，造成的 hash 冲突。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">final int hash(Object k) &#123;</span><br><span class="line">    int h = 0;</span><br><span class="line">    if (useAltHashing) &#123;</span><br><span class="line">        if (k instanceof String) &#123;</span><br><span class="line">            return sun.misc.Hashing.stringHash32((String) k);</span><br><span class="line">        &#125;</span><br><span class="line">        h = hashSeed;</span><br><span class="line">    &#125;</span><br><span class="line">    //得到k的hashcode值</span><br><span class="line">    h ^= k.hashCode();</span><br><span class="line">    //进行计算</span><br><span class="line">    h ^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12);</span><br><span class="line">    return h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>“模”运算的消耗还是比较大的，在 HashMap 中是这样做的：调用 indexFor(int h, int length) 方法来计算该对象应该保存在 table 数组的哪个索引处。indexFor(int h, int length) 方法的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static int indexFor(int h, int length) &#123;  </span><br><span class="line">    return h &amp; (length-1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个方法非常巧妙，它通过 h &amp; (table.length -1) 来得到该对象的保存位，而 HashMap 底层数组的长度总是 2 的 n 次方，这是 HashMap 在速度上的优化。在 HashMap 构造器中有如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int capacity = 1;</span><br><span class="line">    while (capacity &lt; initialCapacity)  </span><br><span class="line">        capacity &lt;&lt;= 1;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码保证初始化时 HashMap 的容量总是 2 的 n 次方，即底层数组的长度总是为 2 的 n 次方。</p>
+<p>当 length 总是 2 的 n 次方时，h&amp; (length-1)运算等价于对 length 取模，也就是 h%length，但是 &amp; 比 % 具有更高的效率。</p>
+<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><p>TreeMap基于红黑树实现的。查看“键”或“键值对”时，它们会被排序（次序由Comparable或Comparator决定）。TreeMap的特点在于，所得到的结果是经过排序的。TreeMap是唯一的带有subMap()方法的Map，它可以返回一个子树。 </p>
+<h3 id="Comparable接口"><a href="#Comparable接口" class="headerlink" title="Comparable接口"></a>Comparable接口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Comparable&lt;T&gt; &#123;</span><br><span class="line">    public int compareTo(T o);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Comparamtor接口"><a href="#Comparamtor接口" class="headerlink" title="Comparamtor接口"></a>Comparamtor接口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Comparator&lt;T&gt; &#123;</span><br><span class="line">    int compare(T o1, T o2);</span><br><span class="line">    boolean equals(Object obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Entry结构"><a href="#Entry结构" class="headerlink" title="Entry结构"></a>Entry结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">static final class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    K key;</span><br><span class="line">    V value;</span><br><span class="line">    // 左孩子</span><br><span class="line">    Entry&lt;K,V&gt; left = null;</span><br><span class="line">    // 右孩子</span><br><span class="line">    Entry&lt;K,V&gt; right = null;</span><br><span class="line">    // 父节点</span><br><span class="line">    Entry&lt;K,V&gt; parent;</span><br><span class="line">    // 默认颜色是黑</span><br><span class="line">    boolean color = BLACK;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">    * 根据给定的键、值、父节点构造一个节点，颜色为默认的黑色</span><br><span class="line">    */</span><br><span class="line">    Entry(K key, V value, Entry&lt;K,V&gt; parent) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">        this.value = value;</span><br><span class="line">        this.parent = parent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public K getKey() &#123;return key;&#125;</span><br><span class="line">    public V getValue() &#123;return value;&#125;</span><br><span class="line">    public V setValue(V value) &#123;</span><br><span class="line">        V oldValue = this.value;</span><br><span class="line">        this.value = value;</span><br><span class="line">        return oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (!(o instanceof Map.Entry))</span><br><span class="line">            return false;</span><br><span class="line">        Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line"></span><br><span class="line">        return valEquals(key,e.getKey()) &amp;&amp; valEquals(value,e.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        int keyHash = (key==null ? 0 : key.hashCode());</span><br><span class="line">        int valueHash = (value==null ? 0 : value.hashCode());</span><br><span class="line">        return keyHash ^ valueHash;</span><br><span class="line">    &#125;</span><br><span class="line">    public String toString() &#123;   return key + &quot;=&quot; + value;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class TreeMap&lt;K,V&gt;</span><br><span class="line">    extends AbstractMap&lt;K,V&gt;</span><br><span class="line">    implements NavigableMap&lt;K,V&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
+<p>NavigableMap接口扩展的SortedMap，具有了针对给定搜索目标返回最接近匹配项的导航方法。方法lowerEntry、floorEntry、ceilingEntry和higherEntry分别返回与小于、小于等于、大于等于、大于给定键的键关联的Map.Entry对象，如果不存在这样的键，则返回null。类似地，方法lowerKey、floorKey、ceilingKey和higherKey只返回关联的键。所有这些方法是为查找条目而不是遍历条目而设计的（后面会逐个介绍这些方法）。其实就是以此为方法进行分树进行操作。</p>
+<p>SortedMap就是可排序的鼻祖接口，里面有基本的分树的接口。</p>
+<h3 id="TreeMap属性"><a href="#TreeMap属性" class="headerlink" title="TreeMap属性"></a>TreeMap属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 用于保持顺序的比较器，如果为空的话使用自然顺保持Key的顺序</span><br><span class="line">private final Comparator&lt;? super K&gt; comparator;</span><br><span class="line">// 根节点</span><br><span class="line">private transient Entry&lt;K,V&gt; root = null;</span><br><span class="line">// 树中的节点数量</span><br><span class="line">private transient int size = 0;</span><br><span class="line">// 多次在集合类中提到了，用于举了结构行的改变次数</span><br><span class="line">private transient int modCount = 0;</span><br></pre></td></tr></table></figure>
+<h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public TreeMap() &#123;</span><br><span class="line">    comparator = null;</span><br><span class="line">&#125;</span><br><span class="line">// 构造方法二，提供指定的比较器(这个功能很赞，有木有)</span><br><span class="line">public TreeMap(Comparator&lt;? super K&gt; comparator) &#123;</span><br><span class="line">    this.comparator = comparator;</span><br><span class="line">&#125;</span><br><span class="line">public TreeMap(Map&lt;? extends K, ? extends V&gt; m) &#123;</span><br><span class="line">    comparator = null;</span><br><span class="line">    putAll(m);</span><br><span class="line">&#125;</span><br><span class="line">// 构造方法四，接收SortedMap参数，根据SortedMap的比较器维持TreeMap中的节点顺序，* 同时通过</span><br><span class="line">// buildFromSorted(int size, Iterator it, java.io.ObjectInputStream str, V defaultVal)方* 法</span><br><span class="line">// 将SortedMap中的内容添加到TreeMap中(其实就是通过其他的SortedMap进行初始化)</span><br><span class="line">public TreeMap(SortedMap&lt;K, ? extends V&gt; m) &#123;</span><br><span class="line">    comparator = m.comparator();</span><br><span class="line">    try &#123;</span><br><span class="line">        buildFromSorted(m.size(), m.entrySet().iterator(), null, null);</span><br><span class="line">    &#125; catch (java.io.IOException cannotHappen) &#123;</span><br><span class="line">    &#125; catch (ClassNotFoundException cannotHappen) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="put方法-1"><a href="#put方法-1" class="headerlink" title="put方法"></a>put方法</h3><p>ok，了解了上面的基础知识之后，我们来看看put方法的内容，从而了解内部的结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    Entry&lt;K,V&gt; t = root;</span><br><span class="line">    if (t == null) &#123;</span><br><span class="line">        // 如果根节点为空，将传入的键值对构造成根节点（根节点没有父节点，所以传入的父节点为null）</span><br><span class="line">        compare(key, key); // type (and possibly null) check</span><br><span class="line"></span><br><span class="line">        root = new Entry&lt;&gt;(key, value, null);</span><br><span class="line">        size = 1;</span><br><span class="line">        modCount++;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">    int cmp; // 用于记录比较结果</span><br><span class="line">    Entry&lt;K,V&gt; parent;</span><br><span class="line">    // split comparator and comparable paths</span><br><span class="line">    // 分割比较器和可比较接口的处理</span><br><span class="line">    Comparator&lt;? super K&gt; cpr = comparator;</span><br><span class="line">    if (cpr != null) &#123;</span><br><span class="line">        do &#123;</span><br><span class="line">            parent = t;</span><br><span class="line">            cmp = cpr.compare(key, t.key);</span><br><span class="line">            if (cmp &lt; 0)</span><br><span class="line">                t = t.left;</span><br><span class="line">            else if (cmp &gt; 0)</span><br><span class="line">                t = t.right;</span><br><span class="line">            else</span><br><span class="line">                return t.setValue(value);</span><br><span class="line">        &#125; while (t != null);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        // 注意treeMap不支持null的操作</span><br><span class="line">        if (key == null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        // Key本身是Comparable的接口，也就是说Comparable和Comparator的区别在这个地方</span><br><span class="line">        // 一个是类来实现，一个是外部实现而已</span><br><span class="line">        Comparable&lt;? super K&gt; k = (Comparable&lt;? super K&gt;) key;</span><br><span class="line">        do &#123;</span><br><span class="line">            parent = t;</span><br><span class="line">            cmp = k.compareTo(t.key);</span><br><span class="line">            if (cmp &lt; 0)</span><br><span class="line">                t = t.left;</span><br><span class="line">            else if (cmp &gt; 0)</span><br><span class="line">                t = t.right;</span><br><span class="line">            else</span><br><span class="line">                return t.setValue(value);</span><br><span class="line">        &#125; while (t != null);</span><br><span class="line">    &#125;</span><br><span class="line">    // 没有找到节点的话，新建节点，并放入到树中</span><br><span class="line">    Entry&lt;K,V&gt; e = new Entry&lt;&gt;(key, value, parent);</span><br><span class="line">    if (cmp &lt; 0)</span><br><span class="line">        parent.left = e;</span><br><span class="line">    else</span><br><span class="line">        parent.right = e;</span><br><span class="line">    // 检查是否符合红黑树的规范，不符合进行调整。</span><br><span class="line">    fixAfterInsertion(e);</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在put(K key,V value)方法的末尾调用了fixAfterInsertion(Entry&lt;K,V&gt; x)方法，这个方法负责在插入节点后调整树结构和着色，以满足红黑树的要求。</p>
+<ul>
+<li>每一个节点或者着成红色，或者着成黑色。</li>
+<li>根是黑色的。</li>
+<li>如果一个节点是红色的，那么它的子节点必须是黑色的。</li>
+<li>一个节点到一个null引用的每一条路径必须包含相同数量的黑色节点。</li>
+</ul>
+<p>在看fixAfterInsertion(Entry&lt;K,V&gt; x)方法前先看一个红黑树的内容：红黑树不是严格的平衡二叉树，它并不严格的保证左右子树的高度差不超过1，但红黑树高度依然是平均log(n)，且最坏情况高度不会超过2log(n)，所以它算是平衡树。</p>
+<p>下面的功能和这里类似，这里我们就不再深入分析了，更多的分析请查看引用</p>
+<h2 id="Hashtable"><a href="#Hashtable" class="headerlink" title="Hashtable"></a>Hashtable</h2><p>和 HashMap 一样，Hashtable 也是一个散列表，它存储的内容是键值对。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class Hashtable&lt;K,V&gt;</span><br><span class="line">    extends Dictionary&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<h3 id="Dictionary"><a href="#Dictionary" class="headerlink" title="Dictionary"></a>Dictionary</h3><p>Dictionary类是一个抽象类，用来存储键/值对，作用和Map类相似。</p>
+<p>给出键和值，你就可以将值存储在Dictionary对象中。一旦该值被存储，就可以通过它的键来获取它。所以和Map一样， Dictionary 也可以作为一个键/值对列表。这个Dictionary应该是过时了。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p>Hashtable是通过”拉链法”实现的哈希表。它包括几个重要的成员变量：table, count, threshold, loadFactor, modCount。</p>
+<ul>
+<li>table是一个 Entry[] 数组类型，而 Entry（在 HashMap 中有讲解过）实际上就是一个单向链表。哈希表的”key-value键值对”都是存储在Entry数组中的。</li>
+<li>count 是 Hashtable 的大小，它是 Hashtable 保存的键值对的数量。</li>
+<li>threshold 是 Hashtable 的阈值，用于判断是否需要调整 Hashtable 的容量。threshold 的值=”容量*加载因子”。</li>
+<li>loadFactor 就是加载因子。</li>
+<li>modCount 是用来实现 fail-fast 机制的。</li>
+</ul>
+<h3 id="异同"><a href="#异同" class="headerlink" title="异同"></a>异同</h3><ol>
+<li>默认的初始容量是11，加载因子还是0.75，这意味着扩展的实现可能是不一样的。</li>
+<li>put不支持key为null</li>
+<li>方法synchronized同步。</li>
+</ol>
+<h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><p>LinkedHashMap保持了插入顺序。是什么样的结构使得LinkedHashMap具有如此特性呢？</p>
+<p>LinkedHashMap 实现与 HashMap 的不同之处在于，LinkedHashMap 维护着一个运行于所有条目的双重链接列表。此链接列表定义了迭代顺序，该迭代顺序可以是插入顺序或者是访问顺序。</p>
+<p>根据链表中元素的顺序可以分为：按插入顺序的链表，和按访问顺序(调用 get 方法)的链表。<b style="color:red">默认是按插入顺序排序，如果指定按访问顺序排序，那么调用get方法后，会将这次访问的元素移至链表尾部，不断访问可以形成按访问顺序排序的链表。</b></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>对于 LinkedHashMap 而言，它继承与 HashMap(public class LinkedHashMap&lt;K,V&gt; extends HashMap&lt;K,V&gt; implements Map&lt;K,V&gt;)、底层使用哈希表与双向链表来保存所有元素。其基本操作与父类 HashMap 相似，它通过重写父类相关的方法，来实现自己的链接列表特性。下面我们来分析 LinkedHashMap 的源代码：</p>
+<h4 id="成员变量-1"><a href="#成员变量-1" class="headerlink" title="成员变量"></a>成员变量</h4><p>LinkedHashMap 采用的 hash 算法和 HashMap 相同，但是它重新定义了数组中保存的元素 Entry，该 Entry 除了保存当前对象的引用外，还保存了其上一个元素 before 和下一个元素 after 的引用，从而在哈希表的基础上又构成了双向链接列表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* The iteration ordering method for this linked hash map: &lt;tt&gt;true&lt;/tt&gt;</span><br><span class="line">* for access-order, &lt;tt&gt;false&lt;/tt&gt; for insertion-order.</span><br><span class="line">* 如果为true，则按照访问顺序；如果为false，则按照插入顺序。</span><br><span class="line">*/</span><br><span class="line">private final boolean accessOrder;</span><br><span class="line">/**</span><br><span class="line">* 双向链表的表头元素。</span><br><span class="line"> */</span><br><span class="line">private transient Entry&lt;K,V&gt; header;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* LinkedHashMap的Entry元素。</span><br><span class="line">* 继承HashMap的Entry元素，又保存了其上一个元素before和下一个元素after的引用。</span><br><span class="line"> */</span><br><span class="line">private static class Entry&lt;K,V&gt; extends HashMap.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过源代码可以看出，在 LinkedHashMap 的构造方法中，实际调用了父类 HashMap 的相关构造方法来构造一个底层存放的 table 数组，但额外可以增加 accessOrder 这个参数，如果不设置，默认为 false，代表按照插入顺序进行迭代；当然可以显式设置为 true，代表以访问顺序进行迭代。如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public LinkedHashMap(int initialCapacity, float loadFactor,boolean accessOrder) &#123;</span><br><span class="line">    super(initialCapacity, loadFactor);</span><br><span class="line">    this.accessOrder = accessOrder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h4><p>LinkedHashMap 并未重写父类 HashMap 的 put 方法，而是重写了父类 HashMap 的 put 方法调用的子方法void recordAccess(HashMap m) ，void addEntry(int hash, K key, V value, int bucketIndex) 和void createEntry(int hash, K key, V value, int bucketIndex)，提供了自己特有的双向链接列表的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">void recordAccess(HashMap&lt;K,V&gt; m) &#123;</span><br><span class="line">    LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">    if (lm.accessOrder) &#123;</span><br><span class="line">        lm.modCount++;</span><br><span class="line">        remove();</span><br><span class="line">        addBefore(lm.header);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void addEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">    // 调用create方法，将新元素以双向链表的的形式加入到映射中。</span><br><span class="line">    createEntry(hash, key, value, bucketIndex);</span><br><span class="line"></span><br><span class="line">    // 删除最近最少使用元素的策略定义</span><br><span class="line">    Entry&lt;K,V&gt; eldest = header.after;</span><br><span class="line">    if (removeEldestEntry(eldest)) &#123;</span><br><span class="line">        removeEntryForKey(eldest.key);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        if (size &gt;= threshold)</span><br><span class="line">            resize(2 * table.length);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void createEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">    HashMap.Entry&lt;K,V&gt; old = table[bucketIndex];</span><br><span class="line">    Entry&lt;K,V&gt; e = new Entry&lt;K,V&gt;(hash, key, value, old);</span><br><span class="line">    table[bucketIndex] = e;</span><br><span class="line">    // 调用元素的addBrefore方法，将元素加入到哈希、双向链接列表。  </span><br><span class="line">    e.addBefore(header);</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void addBefore(Entry&lt;K,V&gt; existingEntry) &#123;</span><br><span class="line">    after  = existingEntry;</span><br><span class="line">    before = existingEntry.before;</span><br><span class="line">    before.after = this;</span><br><span class="line">    after.before = this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h4><p>LinkedHashMap 重写了父类 HashMap 的 get 方法，实际在调用父类 getEntry() 方法取得查找的元素后，再判断当排序模式 accessOrder 为 true 时，记录访问顺序，将最新访问的元素添加到双向链表的表头，并从原来的位置删除。由于的链表的增加、删除操作是常量级的，故并不会带来性能的损失。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">    // 调用父类HashMap的getEntry()方法，取得要查找的元素。</span><br><span class="line">    Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;)getEntry(key);</span><br><span class="line">    if (e == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 记录访问顺序。</span><br><span class="line">    e.recordAccess(this);</span><br><span class="line">    return e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void recordAccess(HashMap&lt;K,V&gt; m) &#123;</span><br><span class="line">    LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">    // 如果定义了LinkedHashMap的迭代顺序为访问顺序，</span><br><span class="line">    // 则删除以前位置上的元素，并将最新访问的元素添加到链表表头。  </span><br><span class="line">    if (lm.accessOrder) &#123;</span><br><span class="line">        lm.modCount++;</span><br><span class="line">        remove();</span><br><span class="line">        addBefore(lm.header);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* Removes this entry from the linked list.</span><br><span class="line">*/</span><br><span class="line">private void remove() &#123;</span><br><span class="line">    before.after = after;</span><br><span class="line">    after.before = before;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**clear链表，设置header为初始状态*/</span><br><span class="line">public void clear() &#123;</span><br><span class="line"> super.clear();</span><br><span class="line"> header.before = header.after = header;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="排序模式"><a href="#排序模式" class="headerlink" title="排序模式"></a>排序模式</h4><p>LinkedHashMap 定义了排序模式 accessOrder，该属性为 boolean 型变量，对于访问顺序，为 true；对于插入顺序，则为 false。一般情况下，不必指定排序模式，其迭代顺序即为默认为插入顺序。</p>
+<p>这些构造方法都会默认指定排序模式为插入顺序。如果你想构造一个 LinkedHashMap，并打算按从近期访问最少到近期访问最多的顺序（即访问顺序）来保存元素，那么请使用下面的构造方法构造 LinkedHashMap：public LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder)</p>
+<p>该哈希映射的迭代顺序就是最后访问其条目的顺序，这种映射很适合构建 LRU 缓存。LinkedHashMap 提供了 removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) 方法。该方法可以提供在每次添加新条目时移除最旧条目的实现程序，默认返回 false，这样，此映射的行为将类似于正常映射，即永远不能移除最旧的元素。</p>
+<p>我们其实可以利用 LinkedHashMap 构建 LRU 缓存。</p>
+<h2 id="EnumMap"><a href="#EnumMap" class="headerlink" title="EnumMap"></a><b style="color:red">EnumMap</b></h2><p>EnumMap是处理Enum为key的优化，没有仔细看源码，但是看到put方法时，就大概明白优化的地方在哪了！没有hash函数，使用Enum.ordinal()作为散列函数确实妙，这样没有key冲突，直接访问即可，性能会有一定提升。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    // 类型检查</span><br><span class="line">    typeCheck(key);</span><br><span class="line"></span><br><span class="line">    // 找到枚举的索引（注意这里是利用枚举的index作为hash值，的确很好使）</span><br><span class="line">    int index = key.ordinal();</span><br><span class="line">    Object oldValue = vals[index];</span><br><span class="line">    vals[index] = maskNull(value);</span><br><span class="line">    if (oldValue == null)</span><br><span class="line">        size++;</span><br><span class="line">    return unmaskNull(oldValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里就是简单介绍一下，具体还是查看源码的具体实现</p>
+<h2 id="关于fail-fast-和-fail-safe的区别"><a href="#关于fail-fast-和-fail-safe的区别" class="headerlink" title="关于fail-fast 和 fail-safe的区别"></a>关于fail-fast 和 fail-safe的区别</h2><p>这里为了解决并发的问题，一般采用这两种机制。一般来说容器都是线程不安全的，特别是迭代器进行访问的时候特别容易出现问题。下面我们来大概解释一下这个概念。</p>
+<p>其实就是通过版本号防止并发的问题，但是呢？光通过版本号是解决不了问题的，所以这里的这种机制是带有欺骗性的，只是会减少并发的问题，但是真正并发量大的时候，问题是解决不了的。</p>
+<p>fail-fast就是发现版本号不对的时候抛异常，fail-safe不会抛异常，会优雅地返回错误而已。另外fail-safe是通过clone来保证访问没有问题的。下面列个表看一下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">item</th>
+<th style="text-align:center">Fail Fast Iterator</th>
+<th style="text-align:center">Fail Safe Iterator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Throw ConcurrentModification Exception</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:center">Clone object</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">Memory Overhead</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center">Examples</td>
+<td style="text-align:center">HashMap, Vector, ArrayList, HashSet</td>
+<td style="text-align:center">CopyOnWriteArrayList, ConcurrentHashMap</td>
+</tr>
+</tbody>
+</table>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/ch717828/article/details/46892051" target="_blank" rel="noopener">java中fail-fast 和 fail-safe的区别</a><br><a href="http://blog.csdn.net/chenchaofuck1/article/details/51297077" target="_blank" rel="noopener">JDK源码学习(2)-TreeMap源码分析</a><br><a href="http://www.runoob.com/java/java-collections.html" target="_blank" rel="noopener">Java 集合框架</a><br><a href="http://www.runoob.com/java/java-dictionary-class.html" target="_blank" rel="noopener">Java Dictionary 类</a><br><a href="http://wiki.jikexueyuan.com/project/java-collection/hashtable.html" target="_blank" rel="noopener">Hashtable 的实现原理</a><br><a href="https://yikun.github.io/2015/04/02/Java-LinkedHashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener">Java LinkedHashMap工作原理及实现</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/03/java/java中list学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/03/java/java中list学习/" itemprop="url">java中list学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-03T18:11:56+08:00">2018-03-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>好久没有认真学习java了，可能是前阶段的事情比较多，现在觉得还是要认真学习才行。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>首先所有的集合类都是Collection这个接口的子类，它的默认实现是AbstractCollection实现类。这是一个抽象类，提供一些默认的实现啥的。其实就是一些基本的功能实现。</p>
+<p>关于List结合，我们先看一下List即可，这是所有List的基类。接下是基础的实现类AbstractList，这个继承自AbstractCollection，实现了List接口。从源码的分析上我们可以看出AbstractList是支持null元素的操作的。</p>
+<p>在AbstractList类中有迭代器的内部类的实现。在这个类中有两种迭代器，一种是Iterator的实现类，另一种是ListIterator的实现类。我觉得这种内部类的实现方式有助于，公用类实例的空间，这样我们迭代器的实现就比较简单，不用拷贝List数组了，因为在外部类中有自己的List实例可以直接调用，可为简单呀！</p>
+<p>ListIterator是继承Iterator的，定义了一些自己针对List的扩展而已。</p>
+<h2 id="AbstractList"><a href="#AbstractList" class="headerlink" title="AbstractList"></a>AbstractList</h2><p>我们来看看这个类里面的subList方法，这个方法我很少用，不过看起来很好玩：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;E&gt; subList(int fromIndex, int toIndex) &#123;</span><br><span class="line">    // 如果是RandomAccess的实例，那么就创建RandomAccessSubList实例，否则就创建SubList实例</span><br><span class="line">    return (this instanceof RandomAccess ?</span><br><span class="line">            new RandomAccessSubList&lt;&gt;(this, fromIndex, toIndex) :</span><br><span class="line">            new SubList&lt;&gt;(this, fromIndex, toIndex));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>RandomAccess其实就是一个接口。标记为一个可以随机访问的作用。这里的RandomAccessSubList和SubList都在这个类定义的文件中出现定义。有兴趣可以查看这些实现。</p>
+<p>看一下hashCode()的实现吧，这个也挺有趣。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public int hashCode() &#123;</span><br><span class="line">    int hashCode = 1;</span><br><span class="line">    for (E e : this)</span><br><span class="line">        hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());</span><br><span class="line">    return hashCode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="AbstractSequentialList"><a href="#AbstractSequentialList" class="headerlink" title="AbstractSequentialList"></a>AbstractSequentialList</h2><p>AbstractSequentialList意思是按照顺序的访问，也就是顺序访问。我们来看看这里类通过迭代器的实现，这就是迭代器的实现。也许这就是顺序访问的意思吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public E get(int index) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        return listIterator(index).next();</span><br><span class="line">    &#125; catch (NoSuchElementException exc) &#123;</span><br><span class="line">        throw new IndexOutOfBoundsException(&quot;Index: &quot;+index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E set(int index, E element) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        ListIterator&lt;E&gt; e = listIterator(index);</span><br><span class="line">        E oldVal = e.next();</span><br><span class="line">        // 设置index索引的值</span><br><span class="line">        e.set(element);</span><br><span class="line">        return oldVal;</span><br><span class="line">    &#125; catch (NoSuchElementException exc) &#123;</span><br><span class="line">        throw new IndexOutOfBoundsException(&quot;Index: &quot;+index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>迭代器中index就是要传入迭代器开始迭代的地方而已。其他的类也就是这些类似的实现。这些我们不再说明，只是这部分知识的大概叙述，具体还是要去查看源码的实现。</p>
+<h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><p>LinkedList 是基于链表实现的（通过名字也能区分开来），所以它的插入和删除操作比 ArrayList 更加高效。但也是由于其为基于链表的，所以随机访问的效率要比ArrayList差。我们来看一下继承的结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedList&lt;E&gt;</span><br><span class="line">    extends AbstractSequentialList&lt;E&gt;</span><br><span class="line">    implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<h3 id="Deque"><a href="#Deque" class="headerlink" title="Deque"></a>Deque</h3><p>双向队列Deque，这是一个接口，继承自Queue。Queue是队列，继承自Collection。关于队列的数据结构，我们会在后面的一篇博文中进行分析。下面是Queue接口的方法解释：</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add</td>
+<td>增加一个元索</td>
+<td>如果队列已满，则抛出一个IIIegaISlabEepeplian异常</td>
+</tr>
+<tr>
+<td>remove</td>
+<td>移除并返回队列头部的元素</td>
+<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
+</tr>
+<tr>
+<td>element</td>
+<td>返回队列头部的元素</td>
+<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
+</tr>
+<tr>
+<td>offer</td>
+<td>添加一个元素并返回true</td>
+<td>如果队列已满，则返回false</td>
+</tr>
+<tr>
+<td>poll</td>
+<td>移除并返问队列头部的元素</td>
+<td>如果队列为空，则返回null</td>
+</tr>
+<tr>
+<td>peek</td>
+<td>返回队列头部的元素</td>
+<td>如果队列为空，则返回null</td>
+</tr>
+</tbody>
+</table>
+<p>Deque接口列表如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getFirst()</td>
+<td>返回头部元素, 不删除该元素</td>
+</tr>
+<tr>
+<td>getLast()</td>
+<td>返回末尾元素,不删除该元素</td>
+</tr>
+<tr>
+<td>peekFirst()</td>
+<td>返回头部元素,不删除该元素</td>
+</tr>
+<tr>
+<td>peekLast()</td>
+<td>返回末尾元素,不删除该元素</td>
+</tr>
+<tr>
+<td>pollFirst()</td>
+<td>返回头部元素并且删除该元素</td>
+</tr>
+<tr>
+<td>pollLast()</td>
+<td>返回尾部元素并且删除该元素</td>
+</tr>
+<tr>
+<td>removeFirst()</td>
+<td>返回头部元素并且删除该元素</td>
+</tr>
+<tr>
+<td>removeLast()</td>
+<td>返回尾部元素并且删除该元素</td>
+</tr>
+<tr>
+<td>removeFirstOccurrence(Object)</td>
+<td>由头至尾删除第一次出现在列表中的元素</td>
+</tr>
+<tr>
+<td>removeLastOccurrence(Object)</td>
+<td>由尾至头删除第一次出现在列表中的元素</td>
+</tr>
+<tr>
+<td>pop()</td>
+<td>从末尾取出并且删除元素</td>
+</tr>
+</tbody>
+</table>
+<p>所以说LinkedList就是一个双端队列。</p>
+<h3 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h3><h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><p>LinkedList 是基于链表结构实现，所以在类中包含了 first 和 last 两个指针(Node)。Node 中包含了上一个节点和下一个节点的引用，这样就构成了双向的链表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">transient int size = 0;</span><br><span class="line">transient Node&lt;E&gt; first; //链表的头指针</span><br><span class="line">transient Node&lt;E&gt; last; //尾指针</span><br><span class="line">//存储对象的结构 Node, LinkedList的内部类</span><br><span class="line">private static class Node&lt;E&gt; &#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next; // 指向下一个节点</span><br><span class="line">    Node&lt;E&gt; prev; //指向上一个节点</span><br><span class="line"></span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        this.item = element;</span><br><span class="line">        this.next = next;</span><br><span class="line">        this.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="存储方式"><a href="#存储方式" class="headerlink" title="存储方式"></a>存储方式</h4><p>直接看方法吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line">/**</span><br><span class="line">* Links e as last element.</span><br><span class="line">*/</span><br><span class="line">void linkLast(E e) &#123;</span><br><span class="line">    final Node&lt;E&gt; l = last;</span><br><span class="line">    final Node&lt;E&gt; newNode = new Node&lt;&gt;(l, e, null);</span><br><span class="line">    last = newNode;</span><br><span class="line">    if (l == null)</span><br><span class="line">        first = newNode;</span><br><span class="line">    else</span><br><span class="line">        l.next = newNode;</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其他方法和这个类似，其实只是链表的操作而已。</p>
+<h2 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h2><p>ArrayList 可以理解为动态数组。每个 ArrayList 实例都有一个容量，该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向 ArrayList 中不断添加元素，其容量也自动增长。自动增长会带来数据向新数组的重新拷贝，因此，如果可预知数据量的多少，可在构造 ArrayList 时指定其容量。在添加大量元素前，应用程序也可以使用 ensureCapacity 操作来增加 ArrayList 实例的容量，这可以减少递增式再分配的数量。</p>
+<p>我们看一下实现的接口吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<h3 id="数据结构-1"><a href="#数据结构-1" class="headerlink" title="数据结构"></a>数据结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private transient Object[] elementData;</span><br></pre></td></tr></table></figure>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>一般需要指明capcity的大小。ArrayList 提供了三种方式的构造器：</p>
+<ul>
+<li>public ArrayList()可以构造一个默认初始容量为10的空列表；</li>
+<li>public ArrayList(int initialCapacity)构造一个指定初始容量的空列表；</li>
+<li>public ArrayList(Collection&lt;? extends E&gt; c)构造一个包含指定 collection 的元素的列表，这些元素按照该collection的迭代器返回它们的顺序排列的。</li>
+</ul>
+<h3 id="操作方式"><a href="#操作方式" class="headerlink" title="操作方式"></a>操作方式</h3><p>我们来看看一些操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void fastRemove(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index,</span><br><span class="line">                            numMoved);</span><br><span class="line">    // 需要gc去做一些操作</span><br><span class="line">    elementData[--size] = null; // Let gc do its work</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="add方法"><a href="#add方法" class="headerlink" title="add方法"></a>add方法</h4><p>下面我们看看add方法，该方法是将指定的元素添加到列表的尾部。当容量不足时，会调用 grow 方法增长容量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    ensureCapacityInternal(size + 1);  // Increments modCount!!</span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    // 看一下扩容方式，是1.5倍进行扩容。</span><br><span class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // minCapacity is usually close to size, so this is a win:</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="删除的方法"><a href="#删除的方法" class="headerlink" title="删除的方法"></a>删除的方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public E remove(int index) &#123;</span><br><span class="line">    rangeCheck(index);</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    E oldValue = elementData(index);</span><br><span class="line"></span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index,</span><br><span class="line">                            numMoved);</span><br><span class="line">    elementData[--size] = null; // Let gc do its work</span><br><span class="line"></span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br><span class="line">// 删除函数</span><br><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    if (o == null) &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (elementData[index] == null) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (o.equals(elementData[index])) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="调整数组容量"><a href="#调整数组容量" class="headerlink" title="调整数组容量"></a>调整数组容量</h4><p>从上面介绍的向 ArrayList 中存储元素的代码中，我们看到，每当向数组中添加元素时，都要去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组扩容有两个方法，其中开发者可以通过一个 public 的方法ensureCapacity(int minCapacity)来增加 ArrayList 的容量，而在存储元素等操作过程中，如果遇到容量不足，会调用priavte方法private void ensureCapacityInternal(int minCapacity)实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &gt; 0)</span><br><span class="line">        ensureCapacityInternal(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">// growth方法上面是有的</span><br></pre></td></tr></table></figure></p>
+<h4 id="Fail-Fast-机制"><a href="#Fail-Fast-机制" class="headerlink" title="Fail-Fast 机制"></a>Fail-Fast 机制</h4><p>ArrayList 也采用了快速失败的机制，通过记录 modCount 参数来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
+<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p>Vector也是一个List，但是这里面是线程安全的，而且没有实现迭代器模式。或者说Enumeration也是迭代器模式。另外没有扩容因子这个东西的存在，默认是以两倍的方式进行扩容，但是可以指定每次扩容的量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    // 扩容方式是翻倍或者用户指定的扩容参数即可</span><br><span class="line">    int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</span><br><span class="line">                                        capacityIncrement : oldCapacity);</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        // 防止容量不够</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        // 不能超过上限，其实没有上限的</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // 进行扩容存放元素。</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean add(E e) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    ensureCapacityHelper(elementCount + 1);</span><br><span class="line">    elementData[elementCount++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean removeElement(Object obj) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = indexOf(obj);</span><br><span class="line">    if (i &gt;= 0) &#123;</span><br><span class="line">        removeElementAt(i);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized void removeElementAt(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    if (index &gt;= elementCount) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index + &quot; &gt;= &quot; +</span><br><span class="line">                                                    elementCount);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (index &lt; 0) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index);</span><br><span class="line">    &#125;</span><br><span class="line">    int j = elementCount - index - 1;</span><br><span class="line">    if (j &gt; 0) &#123;</span><br><span class="line">        System.arraycopy(elementData, index + 1, elementData, index, j);</span><br><span class="line">    &#125;</span><br><span class="line">    elementCount--;</span><br><span class="line">    elementData[elementCount] = null; /* to let gc do its work */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>细节方面就不多写了。下面看一下Enumeration接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Enumeration&lt;E&gt; &#123;</span><br><span class="line">    boolean hasMoreElements();</span><br><span class="line">    E nextElement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/01/golang/Go语言如何实现继承和多态/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/01/golang/Go语言如何实现继承和多态/" itemprop="url">Go语言如何实现继承和多态</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-01T18:38:37+08:00">2018-03-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go语言/" itemprop="url" rel="index"><span itemprop="name">Go语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>其实golang里是不提倡继承的，也不提倡重载的。但是有些场景下，我们还是想试验一下传统C++或Java语言里的继承和重载能否用在golang里。这里是利用了Go语言结构体和接口的特性实现的。</p>
+<p>可以理解接口就是一种抽象，而结构体就是最终干活的，注意这种实现关系并没有java那样直接需要你去implements，所以这种继承和实现的关系，没有那么直观也没有那么富有语法约束能力。也就是我想实现就实现。缺点：</p>
+<ol>
+<li>阅读代码难，可能存在误解</li>
+<li>没有检查机制（其实可以在Go语言的基础上自己写一些插件来进行约束，可以通过变更语法或者逻辑判断，比如说命名）</li>
+</ol>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">type Person struct &#123;</span><br><span class="line">	Id   int</span><br><span class="line">	Name string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Tester interface &#123;</span><br><span class="line">	Test()</span><br><span class="line">	Eat()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Person) Test() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Person.Test&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Person) Eat() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Person.Eat&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Employee 从Person继承, 直接继承了 Eat 方法，并且将 Test 方法覆盖了。</span><br><span class="line">type Employee struct &#123;</span><br><span class="line">	Person</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Employee) Test() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Employee.Test&quot;)</span><br><span class="line">	this.Person.Test() // 调用父类的方法，且该方法被子类覆盖了</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	fmt.Println(&quot;An Employee instance :&quot;)</span><br><span class="line">	var nu Employee</span><br><span class="line">	nu.Id = 2</span><br><span class="line">	nu.Name = &quot;NTom&quot;</span><br><span class="line">	nu.Test()</span><br><span class="line">	nu.Eat()</span><br><span class="line">	fmt.Println()</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;A Tester interface to Employee instance :&quot;)</span><br><span class="line">	var t Tester</span><br><span class="line">	t = &amp;nu</span><br><span class="line">	t.Test()</span><br><span class="line">	t.Eat()</span><br><span class="line">	fmt.Println()</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;A Tester interface to Person instance :&quot;)</span><br><span class="line">	t = &amp;nu.Person</span><br><span class="line">	t.Test()</span><br><span class="line">	t.Eat()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="程序执行输出"><a href="#程序执行输出" class="headerlink" title="程序执行输出"></a>程序执行输出</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">An Employee instance :</span><br><span class="line">	this = 0xc082024020 Employee.Test</span><br><span class="line">	this = 0xc082024028 Person.Test</span><br><span class="line">	this = 0xc082024030 Person.Eat</span><br><span class="line"></span><br><span class="line">A Tester interface to Employee instance :</span><br><span class="line">	this = 0xc082024038 Employee.Test</span><br><span class="line">	this = 0xc082024040 Person.Test</span><br><span class="line">	this = 0xc082024048 Person.Eat</span><br><span class="line"></span><br><span class="line">A Tester interface to Person instance :</span><br><span class="line">	this = 0xc082024050 Person.Test</span><br><span class="line">	this = 0xc082024058 Person.Eat</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>多态的实现是通过地址实现，继承是通过结构体复用的逻辑实现的。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.runoob.com/go/go-interfaces.html" target="_blank" rel="noopener">Go 语言接口</a><br><a href="http://blog.codeg.cn/2015/02/12/golang-derive-override/" target="_blank" rel="noopener">golang学习之继承和重载</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/01/eth-wiki/Web3-Secret存储定义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/01/eth-wiki/Web3-Secret存储定义/" itemprop="url">Web3 Secret存储定义</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-01T16:41:15+08:00">2018-03-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/以太坊官网/" itemprop="url" rel="index"><span itemprop="name">以太坊官网</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>我最近在阅读以太坊官网的一些源代码，看到keystore的那篇源码之后发现官网关于以太坊生成的UTF8格式的json文件的定义标准，所以去官网看了一下，不是很明白，所以想边看看边记录一下这里面的知识。一开始的阅读确实比较难理解，这里我们先补充一点基础知识便于阅读。</p>
+<p>这里主要写的是关于以太坊keystore的知识，以太坊的存储是一个内容经过加密的json文件，以太坊的密钥与比特币的密钥不同，除了记住私钥，你还要记住密码。其实就是这个json文件和这个json文件内容解密的密码，否则你就找不到你的账户了。下面的讲解就是这个文件是怎么生成的，加密的方式，json文件中内容以及意义等等。这个我们可以先给出一个这样的json文件，以便于后面正文的阅读。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ cat ~/.ethereum/keystore/UTC--&lt;created_date_time&gt;--  008aeeda4d805471df9b2a5b0f38a0c3bcba786b</span><br><span class="line">&#123;</span><br><span class="line">    &quot;crypto&quot; : &#123;</span><br><span class="line">        &quot;cipher&quot; : &quot;aes-128-ctr&quot;,</span><br><span class="line">        &quot;cipherparams&quot; : &#123;</span><br><span class="line">            &quot;iv&quot; : &quot;83dbcc02d8ccb40e466191a123791e0e&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ciphertext&quot; : &quot;d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c&quot;,</span><br><span class="line">        &quot;kdf&quot; : &quot;scrypt&quot;,</span><br><span class="line">        &quot;kdfparams&quot; : &#123;</span><br><span class="line">            &quot;dklen&quot; : 32,</span><br><span class="line">            &quot;n&quot; : 262144,</span><br><span class="line">            &quot;r&quot; : 1,</span><br><span class="line">            &quot;p&quot; : 8,</span><br><span class="line">            &quot;salt&quot; : &quot;ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;mac&quot; : &quot;2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;id&quot; : &quot;3198bc9c-6672-5ab3-d995-4942343ae5b6&quot;,</span><br><span class="line">    &quot;version&quot; : 3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在下文的讲解中有些定义没有将清除，这里先对文件中的几个字段做个说明好了，便于阅读：</p>
+<ul>
+<li>cipher：对称 AES 算法的名称;</li>
+<li>cipherparams：上述 cipher 算法需要的参数;</li>
+<li>ciphertext：你的以太坊私钥使用上述 cipher 算法进行加密;</li>
+<li>kdf：密钥生成函数，用于让你用密码加密 keystore 文件;</li>
+<li>kdfparams：上述 kdf 算法需要的参数;</li>
+<li>Mac：用于验证密码的代码。</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为了让您的应用程序能够在以太坊上运行，您可以使用web3.js库提供的web3对象。它通过RPC调用与本地节点通信。web3与任何暴露RPC层的以太坊节点一起工作。</p>
+<p>web3包含eth对象 - web3.eth（专门用于以太坊区块链交互）和shh对象 - web3.shh（用于Whisper交互）。随着时间的推移，我们将为其他每个web3协议引入其他对象。下面是一个具体的例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">var fs = require(&apos;fs&apos;);</span><br><span class="line">var recognizer = require(&apos;ethereum-keyfile-recognizer&apos;);</span><br><span class="line"></span><br><span class="line">fs.readFile(&apos;keyfile.json&apos;, (err, data) =&gt; &#123;</span><br><span class="line">var json = JSON.parse(data);</span><br><span class="line">var result = recognizer(json);</span><br><span class="line">/** result</span><br><span class="line">  *               [ &apos;web3&apos;, 3 ]   web3 (v3) keyfile</span><br><span class="line">  *  [ &apos;ethersale&apos;, undefined ]   Ethersale keyfile</span><br><span class="line">  *                        null     invalid keyfile</span><br><span class="line"> */</span><br><span class="line"> &#125;));</span><br></pre></td></tr></table></figure></p>
+<p>这是Web3 secret存储定义的第三版。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>除了AES-128-CBC不再固定加密算法（AES-128-CTR现在是最低要求）之外，文件的实际编码和解码在版本1上基本保持不变。除了mac将衍生密钥的最后16个字节与完整字符串ciphertext联起来进行SHA3（keccak-256）之外，大部分meanings/algorithm与版本1类似。</p>
+<p>密钥文件直接存储在~/.web3/keystore（对于类Unix系统）和~/AppData/Web3/keystore（对于Windows）。它们可以被随意命名，但是比较好的约定是<uuid>.json，这里<uuid>是给出私钥的128位的UUID（私钥地址的隐私保护代理）。</uuid></uuid></p>
+<p>所有这些文件都有一个关联的密码。要导出给定.json文件的密钥，首先要导出文件的加密密钥;这是通过获取文件的密码并根据kdf参数所描述的，通过私钥派生函数传递密码。KDF决定KDF函数的静态和动态参数在kdfparams关键字中有说明。</p>
+<p>PBKDF2必须得到所有最低限度兼容的实现的支持，表示为：</p>
+<ul>
+<li>kdf: pbkdf2</li>
+</ul>
+<p>对于PBKDF2， kdfparams包含以下的一些内容：</p>
+<ul>
+<li>prf：必须是hmac-sha256（可能会在将来扩展）</li>
+<li>c：迭代次数</li>
+<li>salt： 传给PBKDF的盐</li>
+<li>dklen： 生成key的长度，必须&gt;=32</li>
+</ul>
+<p>一旦文件的key被生成出来，就应该通过Mac的派生器来验证。MAC应该计算为字节数组的SHA3（keccak-256）散列，形成为派生密钥的左二十六个字节与ciphertext密钥内容的连接，即：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">KECCAK(DK[16..31] ++ &lt;ciphertext&gt;)  // （其中++是连接运算符）</span><br></pre></td></tr></table></figure></p>
+<p>这个值应该与mac密钥的内容进行比较; 如果它们不同，则应请求替代密码（或取消操作）。</p>
+<p>文件密钥验证完成后，密文（ciphertext文件中的密钥）可以使用密钥指定的对称加密算法进行解密，cipher并通过密钥进行参数化cipherparams。如果导出的密钥大小和算法的密钥大小不匹配，则应使用派生密钥的零填充最右边的字节作为算法的密钥。</p>
+<p>所有最低限度兼容的实施必须支持AES-128-CTR算法，表示为：</p>
+<ul>
+<li>cipher： aes-128-ctr</li>
+</ul>
+<p>该密码采用以下参数，作为密钥的cipherparams键：</p>
+<ul>
+<li>iv：密码的128位初始化向量。</li>
+</ul>
+<p>密码的关键是派生密钥的最左边的16个字节，即 DK[0..15]</p>
+<p>密钥的创建/加密应基本上与这些指令相反。确保uuid，salt并且iv实际上是随机的。</p>
+<p>除了version应该作为版本的“硬”标识符的字段之外，实现还可以minorversion用于追踪对格式的更小的，不中断的更改。</p>
+<h2 id="测试举例"><a href="#测试举例" class="headerlink" title="测试举例"></a>测试举例</h2><p>细节：</p>
+<ul>
+<li>Address: 008aeeda4d805471df9b2a5b0f38a0c3bcba786b</li>
+<li>ICAP: XE542A5PZHH8PYIZUBEJEO0MFWRAPPIL67</li>
+<li>UUID: 3198bc9c-6672-5ab3-d9954942343ae5b6</li>
+<li>Password: testpassword</li>
+<li>Secret: 7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d</li>
+</ul>
+<h3 id="PBKDF2-SHA-256"><a href="#PBKDF2-SHA-256" class="headerlink" title="PBKDF2-SHA-256"></a>PBKDF2-SHA-256</h3><p>使用AES-128-CTR和PBKDF2-SHA-256的测试向量：</p>
+<p>文件内容~/.web3/keystore/3198bc9c-6672-5ab3-d9954942343ae5b6.json：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">     “ crypto ”：&#123;</span><br><span class="line">         “ cipher ”：“ aes-128-ctr ”，</span><br><span class="line">         “ cipherparams ”：&#123;</span><br><span class="line">             “ iv ”：“ 6087dab2f9fdbbfaddc31a909735c1e6 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ ciphertext ”： “ 5318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46 ”，</span><br><span class="line">         “ kdf ”： “ pbkdf2 ”，</span><br><span class="line">         “ kdfparams ”：&#123;</span><br><span class="line">             “ c ”： 262144，</span><br><span class="line">             “ dklen ”： 32，</span><br><span class="line">             “ prf ”： “ hmac-sha256 ”，</span><br><span class="line">             “ salt ”：“ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd “</span><br><span class="line">        &#125;，</span><br><span class="line">        “ mac ”： “ 517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2 ”</span><br><span class="line">    &#125;，</span><br><span class="line">    “ id ”： “ 3198bc9c-6672-5ab3-d995-4942343ae5b6 ”，</span><br><span class="line">     “ version ”： 3 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>中间结果：</p>
+<ul>
+<li>Derived key: f06d69cdc7da0faffb1008270bca38f5e31891a3a773950e6d0fea48a7188551</li>
+<li>MAC Body: e31891a3a773950e6d0fea48a71885515318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46</li>
+<li>MAC 517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2</li>
+<li>Cipher key: f06d69cdc7da0faffb1008270bca38f5<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3>使用AES-128-CTR和Scrypt的测试矢量：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;crypto&quot; : &#123;</span><br><span class="line">        &quot;cipher&quot; : &quot;aes-128-ctr&quot;,</span><br><span class="line">        &quot;cipherparams&quot; : &#123;</span><br><span class="line">            &quot;iv&quot; : &quot;83dbcc02d8ccb40e466191a123791e0e&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ciphertext&quot; : &quot;d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c&quot;,</span><br><span class="line">        &quot;kdf&quot; : &quot;scrypt&quot;,</span><br><span class="line">        &quot;kdfparams&quot; : &#123;</span><br><span class="line">            &quot;dklen&quot; : 32,</span><br><span class="line">            &quot;n&quot; : 262144,</span><br><span class="line">            &quot;r&quot; : 1,</span><br><span class="line">            &quot;p&quot; : 8,</span><br><span class="line">            &quot;salt&quot; : &quot;ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;mac&quot; : &quot;2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;id&quot; : &quot;3198bc9c-6672-5ab3-d995-4942343ae5b6&quot;,</span><br><span class="line">    &quot;version&quot; : 3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>中间结果</p>
+<ul>
+<li>Derived key: fac192ceb5fd772906bea3e118a69e8bbb5cc24229e20d8766fd298291bba6bd</li>
+<li>MAC Body bb5cc24229e20d8766fd298291bba6bdd172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c</li>
+<li>MAC: 2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097</li>
+<li>Cipher key: fac192ceb5fd772906bea3e118a69e8b</li>
+</ul>
+<h2 id="版本1中的更改"><a href="#版本1中的更改" class="headerlink" title="版本1中的更改"></a>版本1中的更改</h2><p>该版本修复了此处发布的版本1的几个不一致之处。简而言之，这些是：</p>
+<ul>
+<li>大小写不合理且不一致（scrypt小写，Kdf混合大小写，MAC大写）。</li>
+<li>Address 不必要和妥协的隐私。</li>
+<li>Salt 本质上是密钥派生函数的一个参数，值得关联它，而不是一般的密码。</li>
+<li>SaltLen不必要的（从中推导出来Salt）。</li>
+<li>给出了密钥导出函数，但加密算法很难确定。</li>
+<li>Version 本质上是数字，但是是一个字符串（可以使用字符串进行结构化版本控制，但可以认为超出了很少更改的配置文件格式）。</li>
+<li>KDF和密码是概念上的兄弟概念，但组织方式不同。</li>
+<li>MAC是通过一个空白不可知的数据块来计算的（！）</li>
+</ul>
+<p>已对格式进行了更改，以提供以下文件，功能上与前面链接页面上给出的示例相同：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">     “ crypto ”：&#123;</span><br><span class="line">         “ cipher ”：“ aes-128-cbc ”，</span><br><span class="line">         “ ciphertext ”：“ 07533e172414bfa50e99dba4a0ce603f654ebfa1ff46277c3e0c577fdc87f6bb4e4fe16c5a94ce6ce14cfa069821ef9b ”，</span><br><span class="line">         “ cipherparams ”：&#123;</span><br><span class="line">             “ iv ”：“ 16d67ba0ce5a339ff2f07951253e6ba8 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ kdf ”： “ scrypt ”，</span><br><span class="line">         “ kdfparams ”：&#123;</span><br><span class="line">             “ dklen ”： 32，</span><br><span class="line">             “ n ”： 262144，</span><br><span class="line">             “ p ”： 1，</span><br><span class="line">             “ r ”： 8，</span><br><span class="line">             “ salt ”： “ 06870e5e6a24e183a5c807bd1c43afd86d573f7db303ff4853d135cd0fd3fe91 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ mac ”： “ 8ccded24da2e99a11d48cda146f9cc8213eb423e2ea0d8427f41c3be414424dd ”，</span><br><span class="line">         “版本”： 1</span><br><span class="line">    &#125;，</span><br><span class="line">    “ id ”： “ 0498f19a-59db-4d54-ac95-33901b4f1870 ”，</span><br><span class="line">     “ version ”： 2 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="版本2中的更改"><a href="#版本2中的更改" class="headerlink" title="版本2中的更改"></a>版本2中的更改</h2><p>版本2是一个早期的C++实现，带有许多错误。所有其中的东西保持不变。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition" target="_blank" rel="noopener">Web3 Secret Storage Definition</a><br><a href="http://ethfans.org/posts/what-is-an-ethereum-keystore-file" target="_blank" rel="noopener">科普 | 什么是以太坊私钥储存（Keystore）文件？</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/28/syslib/mmap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1279,7 +2176,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1355,7 +2252,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
