@@ -103,16 +103,16 @@
   <meta name="keywords" content="Hexo, NexT" />
 
 
-<meta name="description" content="一个孤独的开发者，正在互联网公司踩坑">
+<meta name="description" content="一个孤独的开发者，正在互联网公司踩坑邮箱：zlcgavin@gmail.com">
 <meta property="og:type" content="website">
 <meta property="og:title" content="柳絮纷飞">
 <meta property="og:url" content="http://cordate.github.io/page/2/index.html">
 <meta property="og:site_name" content="柳絮纷飞">
-<meta property="og:description" content="一个孤独的开发者，正在互联网公司踩坑">
+<meta property="og:description" content="一个孤独的开发者，正在互联网公司踩坑邮箱：zlcgavin@gmail.com">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="柳絮纷飞">
-<meta name="twitter:description" content="一个孤独的开发者，正在互联网公司踩坑">
+<meta name="twitter:description" content="一个孤独的开发者，正在互联网公司踩坑邮箱：zlcgavin@gmail.com">
 
 
 
@@ -248,6 +248,330 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/golang/golang的包组织方式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/golang/golang的包组织方式/" itemprop="url">golang的包组织方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T10:23:35+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go语言/" itemprop="url" rel="index"><span itemprop="name">Go语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近在研究以太坊官网的源代码，经常发现包的导入，由于不了解机制所以不免给阅读带来不小的难度，所以这里我们来讨论一下golang的包导入策略。</p>
+<h2 id="导入方式"><a href="#导入方式" class="headerlink" title="导入方式"></a>导入方式</h2><h3 id="路径"><a href="#路径" class="headerlink" title="路径"></a>路径</h3><p>可以是相对路径，也可以是绝对路径。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import   &quot;./module&quot;   //当前文件同一目录的module目录， 此方式没什么用容易出错</span><br><span class="line">import “LearnGo/init”     //加载gopath/src/LearnGo/init模块</span><br></pre></td></tr></table></figure></p>
+<h3 id="点操作"><a href="#点操作" class="headerlink" title="点操作"></a>点操作</h3><p>我们有时候会看到如下的方式导入包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import( . “fmt” )</span><br></pre></td></tr></table></figure></p>
+<p>这个点操作的含义就是这个包导入之后在你调用这个包的函数时，你可以省略前缀的包名，也就是前面你调用的fmt.Println(“hello world”)可以省略的写成Println(“hello world”);</p>
+<h3 id="别名操作"><a href="#别名操作" class="headerlink" title="别名操作"></a>别名操作</h3><p>别名操作顾名思义我们可以把包命名成另一个我们用起来容易记忆的名字。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import(</span><br><span class="line">    f &quot;fmt&quot;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>别名操作的话调用包函数时前缀变成了我们的前缀，即f.Println(“hello world”)。</p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="_操作"></a>_操作</h3><p>这个操作经常是让很多人费解的一个操作符，请看下面这个import<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import (//revel框架的代码片段</span><br><span class="line">	_ &quot;github.com/revel/modules/testrunner/app&quot;</span><br><span class="line">	_ &quot;guild_website/app&quot;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>_操作其实是引入该包，而不直接使用包里面的函数，而是调用了该包里面的init函数，要理解这个问题，需要看下面这个图，理解包是怎么按照顺序加载的：</p>
+<p>程序的初始化和执行都起始于main包。如果main包还导入了其它的包，那么就会在编译时将它们依次导入。有时一个包会被多个包同时导入，那么它 只会被导入一次（例如很多包可能都会用到fmt包，但它只会被导入一次，因为没有必要导入多次）。当一个包被导入时，如果该包还导入了其它的包，那么会先 将其它包导入进来，然后再对这些包中的包级常量和变量进行初始化，接着执行init函数（如果有的话），依次类推。等所有被导入的包都加载完毕了，就会开 始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。此外需了解别名操作方式导入包也会执行init函数。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/golang/golang%E5%8C%85%E6%9C%BA%E5%88%B6.jpeg?raw=true" alt=""></p>
+<h2 id="main包"><a href="#main包" class="headerlink" title="main包"></a>main包</h2><p>程序的启动是从main包开始的，main包下面有一个main方法就是程序的入口点。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/sun-misc-Unsafe的学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/sun-misc-Unsafe的学习/" itemprop="url">sun.misc.Unsafe的学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T01:21:48+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>以下sun.misc.Unsafe源码和demo基于jdk1.7；JUC的包中很多都使用了这个类的实例，这里我们需要进一步深入的学习。</p>
+<p>这个类的实现方法很多都是native的，所以研究起来并不容易，需要了解动态链接库做的一些事情，这里我就不深入研究了，源码是网上找的，不知道对不对，提供一种研究思路吧，所以这篇博文也就是简单地了解一下，日后可以根据具体的情况深入研究一下。</p>
+<h2 id="Unsafe类的作用"><a href="#Unsafe类的作用" class="headerlink" title="Unsafe类的作用"></a>Unsafe类的作用</h2><p>可以用来在任意内存地址位置处读写数据，可见，对于普通用户来说，使用起来还是比较危险的；</p>
+<p>另外，还支持一些CAS原子操作；</p>
+<h2 id="获取Unsafe对象"><a href="#获取Unsafe对象" class="headerlink" title="获取Unsafe对象"></a>获取Unsafe对象</h2><p>遗憾的是，Unsafe对象不能直接通过new Unsafe()或调用Unsafe.getUnsafe()获取，原因如下：</p>
+<ul>
+<li><p>不能直接new Unsafe()，原因是Unsafe被设计成单例模式，构造方法是私有的；</p>
+</li>
+<li><p>不能通过调用Unsafe.getUnsafe()获取，因为getUnsafe被设计成只能从引导类加载器（bootstrap class loader）加载，从getUnsafe的源码中也可以看出来，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@CallerSensitive</span><br><span class="line">public static Unsafe getUnsafe() &#123;</span><br><span class="line">    //得到调用该方法的Class对象</span><br><span class="line">    Class cc = Reflection.getCallerClass();</span><br><span class="line">    //判断调用该方法的类是否是引导类加载器（bootstrap class loader）</span><br><span class="line">    //如果不是的话，比如由AppClassLoader调用该方法，则抛出SecurityException异常</span><br><span class="line">    if (cc.getClassLoader() != null)</span><br><span class="line">        throw new SecurityException(&quot;Unsafe&quot;);</span><br><span class="line">    //返回单例对象</span><br><span class="line">    return theUnsafe;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>虽然我们不能通过以上方法得到Unsafe对象，但得Unsafe类中有个私有的静态全局属性theUnsafe（Unsafe实例对象），通过反射，可以获取到该成员属性theUnsafe对应的Field对象，并将其设置为可访问，从而得到theUnsafe具体对象，如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line">        System.out.println(unsafe);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Unsafe类中的API"><a href="#Unsafe类中的API" class="headerlink" title="Unsafe类中的API"></a>Unsafe类中的API</h2><p>本地方法，功能是生成一个对象实例，但是不会运行该对象的构造方法；由于natUnsafe.cc版本较老，没找到对应的c++实现；<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/** Allocate an instance but do not run any constructor. Initializes the class if it has not yet been. */</span><br><span class="line">    public native Object allocateInstance(Class cls)</span><br><span class="line">        throws InstantiationException;</span><br></pre></td></tr></table></figure></p>
+<p>例子，利用Unsafe的allocateInstance方法，在未调用构造方法的情况下生成了对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">class User &#123;</span><br><span class="line">    private String name = &quot;&quot;;</span><br><span class="line">    private int age = 0;</span><br><span class="line"></span><br><span class="line">    public User() &#123;</span><br><span class="line">        this.name = &quot;test&quot;;</span><br><span class="line">        this.age = 22;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return name + &quot;: &quot; + age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line"></span><br><span class="line">        User user = (User) unsafe.allocateInstance(User.class);</span><br><span class="line">        System.out.println(user); //dont invoke constructor, print null: 0</span><br><span class="line">        </span><br><span class="line">        User userFromNormal = new User();</span><br><span class="line">        System.out.println(userFromNormal); //print test: 22</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">objectFieldOffset方法，返回成员属性在内存中的地址相对于对象内存地址的偏移量</b><br>比较简单，就是返回成员属性内存地址相对于对象内存地址的偏移量，通过该方法可以计算一个对象在内存中的空间大小，方法是通过反射得到它的所有Field(包括父类继承得到的)，找出Field中偏移量最大值，然后对该最大偏移值填充字节数即为对象大小；</p>
+<p>关于该方法的使用例子可以看下面的修改内存数据的例子；</p>
+<p><b style="color:blue">putLong，putInt，putDouble，putChar，putObject等方法，直接修改内存数据（可以越过访问权限）</b><br>这里，还有put对应的get方法，很简单就是直接读取内存地址处的数据，不做举例；</p>
+<p> 我们可以举个putLong(Object, long, long)方法详细看下其具体实现，其它的类似，先看Java的源码，没啥好看的，就声明了一个native本地方法：</p>
+<p>三个参数说明下：</p>
+<p>Object o//对象引用<br>long offset//对象内存地址的偏移量<br>long x//写入的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public native void    putLong(Object o, long offset, long x);</span><br></pre></td></tr></table></figure></p>
+<p>还是看下natUnsafe.cc中的c++实现吧，很简单，就是计算要写入数据的内存地址，然后写入数据，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void sun::misc::Unsafe::putLong (jobject obj, jlong offset, jlong value)</span><br><span class="line">&#123;</span><br><span class="line">  jlong *addr = (jlong *) ((char *) obj + offset);//计算要修改的数据的内存地址=对象地址+成员属性地址偏移量</span><br><span class="line">  spinlock lock;//自旋锁，通过循环来获取锁， i386处理器需要加锁访问64位数据，如果是int，则不需要改行代码</span><br><span class="line">  *addr = value;//往该内存地址位置直接写入数据</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如下例子，即使User类的成员属性是私有的且没有提供对外的public方法，我们还是可以直接在它们的内存地址位置处写入数据，并成功；<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">class User &#123;</span><br><span class="line">    private String name = &quot;test&quot;; </span><br><span class="line">    private long id = 1;</span><br><span class="line">    private int age = 2;</span><br><span class="line">    private double height = 1.72;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return name + &quot;,&quot; + id + &quot;,&quot; + age + &quot;,&quot; + height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line"></span><br><span class="line">        User user = new User();</span><br><span class="line">        System.out.println(user); //打印test,1,2,1.72</span><br><span class="line">        </span><br><span class="line">        Class userClass = user.getClass();</span><br><span class="line">        Field name = userClass.getDeclaredField(&quot;name&quot;);</span><br><span class="line">        Field id = userClass.getDeclaredField(&quot;id&quot;);</span><br><span class="line">        Field age = userClass.getDeclaredField(&quot;age&quot;);</span><br><span class="line">        Field height = userClass.getDeclaredField(&quot;height&quot;);</span><br><span class="line">        //直接往内存地址写数据</span><br><span class="line">        unsafe.putObject(user, unsafe.objectFieldOffset(name), &quot;midified-name&quot;);</span><br><span class="line">        unsafe.putLong(user, unsafe.objectFieldOffset(id),100l);</span><br><span class="line">        unsafe.putInt(user, unsafe.objectFieldOffset(age), 101);</span><br><span class="line">        unsafe.putDouble(user, unsafe.objectFieldOffset(height), 100.1);</span><br><span class="line">        </span><br><span class="line">        System.out.println(user);//打印midified-name,100,101,100.1</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">copyMemory、freeMemory</b><br>copyMemory：内存数据拷贝</p>
+<p>freeMemory：用于释放allocateMemory和reallocateMemory申请的内存</p>
+<p><b style="color:blue">CAS操作的方法，compareAndSwapInt，compareAndSwapLong等</b><br>看下natUnsafe.cc中的c++实现吧，加深理解，其实就是将内存值与预期值作比较，判断是否相等，相等的话，写入数据，不相等不做操作，返回旧数据；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">static inline bool</span><br><span class="line">compareAndSwap (volatile jint *addr, jint old, jint new_val)</span><br><span class="line">&#123;</span><br><span class="line">  jboolean result = false;</span><br><span class="line">  spinlock lock;</span><br><span class="line">  if ((result = (*addr == old)))</span><br><span class="line">    *addr = new_val;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>J.U.C里原子类就是基于以上CAS操作实现的；</p>
+<p><b style="color:blue">getLongVolatile/putLongVolatile等等方法</b><br>这类方法使用volatile语义去存取数据，我的理解就是各个线程不缓存数据，直接在内存中读取数据；</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.wowotech.net/kernel_synchronization/spinlock.html" target="_blank" rel="noopener">Linux内核同步机制之（四）：spin lock</a><br><a href="http://ifeve.com/sun-misc-unsafe/" target="_blank" rel="noopener">并发编程网Java Magic. Part 4: sun.misc.Unsafe</a><br><a href="https://www.cnblogs.com/chenpi/p/5389254.html" target="_blank" rel="noopener">原文：sun.misc.Unsafe的理解</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1778,362 +2102,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/MySQL网络协议分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/database/MySQL网络协议分析/" itemprop="url">MySQL网络协议分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T11:23:16+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/database/" itemprop="url" rel="index"><span itemprop="name">database</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在开发类似交易所功能的应用，由于可能会用到分表分库之类的事情，所以接触到了MySQL协议的一些东西，之前也想过MySQL底层走的应该是相关的协议只是这些协议具体指什么，从来没有进行深入了解。MyCat就是模拟MySQL的协议做了一层中间件，从而隔离了分表分库对应用开发的侵入性，我觉得这个是一个很好的处理方式，对开发运维堪称完美，太棒了。但是这种中间件也有问题，这里提一下，但是不做深入讨论：</p>
-<ol>
-<li>中间件的维护成本高</li>
-<li>开发运维不能实时沟通，不利于查找问题</li>
-<li>聚合了很多查询，容易使得MyCat的访问量变大，从而带来很多的问题。</li>
-</ol>
-<p>下面我们进入正题。</p>
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>理解网络协议，可以实现很多功能，我们往往在上层站的太久，忘记了下来坐坐。通过网络协议我们可以抓包分析，可以做中间件（中继器）或者一些其他功能（Proxy、实时监控）。有的时候第三方中间件不太好改，也可通过熟知协议，拦截修改，可谓妙笔生花。</p>
-<h2 id="链接方式"><a href="#链接方式" class="headerlink" title="链接方式"></a>链接方式</h2><p>到MySQL5.7为止，链接方式总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets，Shared Memory，Named pipes，下面我们就来看看这五种的区别：</p>
-<table>
-<thead>
-<tr>
-<th>方式</th>
-<th>默认开启</th>
-<th>支持系统</th>
-<th>只支持本机</th>
-<th>如何开启</th>
-<th>参数配置</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>TCP/IP</td>
-<td>是</td>
-<td>所有系统</td>
-<td>否</td>
-<td>–skip-networking=yes/no.</td>
-<td>–port –bind-address</td>
-</tr>
-<tr>
-<td>TLS/SSL</td>
-<td>是</td>
-<td>所有系统（基于TCP/IP)之上</td>
-<td>否</td>
-<td>–ssl=yes/no.</td>
-<td>–ssl-* options</td>
-</tr>
-<tr>
-<td>Unix Sockets</td>
-<td>是</td>
-<td>类Unix系统</td>
-<td>是</td>
-<td>设置–socket=<empty> 来关闭.</empty></td>
-<td>–socket=socket path</td>
-</tr>
-<tr>
-<td>Shared Memory</td>
-<td>否</td>
-<td>Windows系统</td>
-<td>是</td>
-<td>–shared-memory=on/off.</td>
-<td>–shared-memory-base-name=<name></name></td>
-</tr>
-<tr>
-<td>Named pipes</td>
-<td>否</td>
-<td>Windows系统</td>
-<td>否</td>
-<td>–enable-named-pipe=on/off.</td>
-<td>–socket=<name></name></td>
-</tr>
-</tbody>
-</table>
-<p>这里我只介绍TLS/SSL的连接方式：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql --protocol=tcp -uroot --ssl=on</span><br><span class="line">mysql -P3306 -h127.0.0.1 -uroot --ssl=on</span><br></pre></td></tr></table></figure></p>
-<p>我们可以通过以下语句来查询目前数据库的连接情况：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> connection_type <span class="keyword">from</span> performance_schema.threads <span class="keyword">where</span> connection_type <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">null</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="MySQL数据包"><a href="#MySQL数据包" class="headerlink" title="MySQL数据包"></a>MySQL数据包</h2><p>现在我们来看一下链接的过程：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/Database/MySQL%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90-process.png?raw=true" alt=""></p>
-<p>其实主要就是两步，Client将执行命令编码成Server要求的格式传输给Server端执行，Server端将执行结果传输给Client端，Client端再根据相应的数据包格式解析获得所需的数据。然后通过数据格式的协定，开始交互。</p>
-<h3 id="1-基本数据类型"><a href="#1-基本数据类型" class="headerlink" title="1.基本数据类型"></a>1.基本数据类型</h3><p>虽然网络中的数据是用字节传输的，但它背后的数据源都是有类型的数据，MySQL协议也有基本的数据类型（可以看出协议也可认为是一种语言），好比Java中的8种基本数据类型，但MySQL协议中简单的多，它只有两种基本数据类型，分别为Integer(整型)，String(字符串)，下面我们就来看看这两种类型。</p>
-<h4 id="Integer整形"><a href="#Integer整形" class="headerlink" title="Integer整形"></a>Integer整形</h4><p>首先Integer在MySQL协议中有两种编码方式，分别为FixedLengthInteger和LengthEncodedInteger ,其中前者用于存储无符号定长整数，实际中使用的不多。详细的情况还是参考原文比较好。</p>
-<h4 id="String-字符串"><a href="#String-字符串" class="headerlink" title="String(字符串)"></a>String(字符串)</h4><p>就是正常的字符串在协议中的编码方式，这里也是参考博客原文进行解释。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实本文是想通过解析协议来学习协议的指定规范，由于时间有限，就先到这里，原文的内容知识比较多，请参考文献。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.godpan.me/2017/11/10/mysql-protocol.html" target="_blank" rel="noopener">MySQL网络协议分析</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/24/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/24/hello-world/" itemprop="url">Hexo使用攻略</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-24T10:05:18+08:00">2018-02-24</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>机器先安装好node即可。运行下面的安装命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
-<h2 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h2><h3 id="初始化目录"><a href="#初始化目录" class="headerlink" title="初始化目录"></a>初始化目录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> 相应目录</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-<h2 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h2><p>下载相应主题到theme目录，然后更改_config.js文件中的主题配置即可，名称theme的文件夹名即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: hexo-theme-next</span><br></pre></td></tr></table></figure></p>
-<h2 id="更改网站的信息"><a href="#更改网站的信息" class="headerlink" title="更改网站的信息"></a>更改网站的信息</h2><p>在_config.js中更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Site</span><br><span class="line">title: 柳絮纷飞</span><br><span class="line">subtitle: Gavin的个人博客</span><br><span class="line">description: 一个孤独的开发者，正在互联网公司踩坑</span><br><span class="line">author: Gavin Zhang</span><br><span class="line">language: zh-CN</span><br><span class="line">timezone: Asia/Shanghai</span><br></pre></td></tr></table></figure></p>
-<h2 id="添加新页"><a href="#添加新页" class="headerlink" title="添加新页"></a>添加新页</h2><p><a href="https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/" target="_blank" rel="noopener">https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2166,7 +2139,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">Gavin Zhang</p>
-              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
           </div>
 
           
@@ -2176,7 +2149,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2262,7 +2235,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">23</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

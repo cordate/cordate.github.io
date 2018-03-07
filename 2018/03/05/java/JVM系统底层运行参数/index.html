@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="今天在网上看到一个很有趣的例子，貌似大家一点也不关注，今天来学习一下，不过这个例子激起了我对JVM底层运行原理的兴趣，如果日后有兴趣，倒是可以花心思研究一下。 一个例子1234567891011public static void main(String[] args) &amp;#123;     String a = sun.misc.VM.getSavedProperty(&amp;quot;java.la">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-05T13:44:05.000Z">
+<meta property="og:updated_time" content="2018-03-07T08:45:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM系统底层运行参数">
 <meta name="twitter:description" content="今天在网上看到一个很有趣的例子，貌似大家一点也不关注，今天来学习一下，不过这个例子激起了我对JVM底层运行原理的兴趣，如果日后有兴趣，倒是可以花心思研究一下。 一个例子1234567891011public static void main(String[] args) &amp;#123;     String a = sun.misc.VM.getSavedProperty(&amp;quot;java.la">
@@ -358,7 +358,7 @@
 <p>通常，HotSpot VM所接收的特定的VM参数都是通过-XX:前缀的命令行参数指定的，而传给Java层的system property则是通过-D前缀的参数来指定。</p>
 <p>在系统初始化的时候，JVM调用<code>java.lang.System.initializeSystemClass()</code>来初始化System类，而它进一步调用的<br><code>java.lang.System.initProperties()</code>会调用到JVM的<code>JVM_InitProperties()</code>函数，来从JVM那边把-D参数都拿到System.properties里。</p>
 <p>紧接着，<code>initializeSystemClass()</code>又调用<code>sun.misc.VM.saveAndRemoveProperties()</code>来保存一份“干净”的system properties备份以便JDK内部使用，避免JDK的内部行为受到运行时用户代码对<code>System.properties</code>的修改所干扰。同时<code>saveAndRemoveProperties()</code>也会从System.properties移除一些只供JDK内部使用、用户代码不应该看到的系统属性，例如设置NIO direct memory大小限制的sun.nio.MaxDirectMemorySize属性。这些被移除的系统属性在sun.misc.VM.savedProps里都留有备份。</p>
-<p>所以上面使用System.getProperty去获取系统预留的配置时，就获取不到任何信息。</p>
+<p>所以上面使用System.getProperty去获取系统预留的配置时，就获取不到任何信息。关于VM会从系统属性中删除哪些信息可以查看 <code>sun.misc.VM</code> 这个VM类中的saveAndRemoveProperties方法。这个调用过程，可以查看System类里面的initializeSystemClass方法。</p>
 
       
     </div>
@@ -468,7 +468,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">Gavin Zhang</p>
-              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
           </div>
 
           
@@ -478,7 +478,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -564,7 +564,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">23</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
