@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="好久没有认真学习java了，可能是前阶段的事情比较多，现在觉得还是要认真学习才行。 概述首先所有的集合类都是Collection这个接口的子类，它的默认实现是AbstractCollection实现类。这是一个抽象类，提供一些默认的实现啥的。其实就是一些基本的功能实现。 关于List结合，我们先看一下List即可，这是所有List的基类。接下是基础的实现类AbstractList，这个继承自Abs">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-05T10:40:49.000Z">
+<meta property="og:updated_time" content="2018-03-08T05:39:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java中list学习">
 <meta name="twitter:description" content="好久没有认真学习java了，可能是前阶段的事情比较多，现在觉得还是要认真学习才行。 概述首先所有的集合类都是Collection这个接口的子类，它的默认实现是AbstractCollection实现类。这是一个抽象类，提供一些默认的实现啥的。其实就是一些基本的功能实现。 关于List结合，我们先看一下List即可，这是所有List的基类。接下是基础的实现类AbstractList，这个继承自Abs">
@@ -400,6 +400,16 @@
 <td>返回队列头部的元素</td>
 <td>如果队列为空，则返回null</td>
 </tr>
+<tr>
+<td>put</td>
+<td>添加一个元素</td>
+<td>如果队列满，则阻塞</td>
+</tr>
+<tr>
+<td>take</td>
+<td>移除并返回队列头部的元素</td>
+<td>如果队列为空，则阻塞</td>
+</tr>
 </tbody>
 </table>
 <p>Deque接口列表如下：</p>
@@ -477,6 +487,37 @@
 <h4 id="Fail-Fast-机制"><a href="#Fail-Fast-机制" class="headerlink" title="Fail-Fast 机制"></a>Fail-Fast 机制</h4><p>ArrayList 也采用了快速失败的机制，通过记录 modCount 参数来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
 <h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p>Vector也是一个List，但是这里面是线程安全的，而且没有实现迭代器模式。或者说Enumeration也是迭代器模式。另外没有扩容因子这个东西的存在，默认是以两倍的方式进行扩容，但是可以指定每次扩容的量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    // 扩容方式是翻倍或者用户指定的扩容参数即可</span><br><span class="line">    int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</span><br><span class="line">                                        capacityIncrement : oldCapacity);</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        // 防止容量不够</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        // 不能超过上限，其实没有上限的</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // 进行扩容存放元素。</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean add(E e) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    ensureCapacityHelper(elementCount + 1);</span><br><span class="line">    elementData[elementCount++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean removeElement(Object obj) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = indexOf(obj);</span><br><span class="line">    if (i &gt;= 0) &#123;</span><br><span class="line">        removeElementAt(i);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized void removeElementAt(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    if (index &gt;= elementCount) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index + &quot; &gt;= &quot; +</span><br><span class="line">                                                    elementCount);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (index &lt; 0) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index);</span><br><span class="line">    &#125;</span><br><span class="line">    int j = elementCount - index - 1;</span><br><span class="line">    if (j &gt; 0) &#123;</span><br><span class="line">        System.arraycopy(elementData, index + 1, elementData, index, j);</span><br><span class="line">    &#125;</span><br><span class="line">    elementCount--;</span><br><span class="line">    elementData[elementCount] = null; /* to let gc do its work */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>细节方面就不多写了。下面看一下Enumeration接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Enumeration&lt;E&gt; &#123;</span><br><span class="line">    boolean hasMoreElements();</span><br><span class="line">    E nextElement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><p>Stack是Vector的子类。实现的是后入先出的队列功能。里面基本上没有添加什么功能，就是新定义了几个函数。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>push</td>
+<td>加入元素，调用的是Vector的addElement方法，返回压栈的元素</td>
+</tr>
+<tr>
+<td>pop</td>
+<td>弹出栈顶的元素，如果栈是空的抛出异常</td>
+</tr>
+<tr>
+<td>peek</td>
+<td>查看栈顶的元素，如果栈是空的，就抛出异常</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>注意这个是判断栈是不是空的</td>
+</tr>
+<tr>
+<td>search</td>
+<td>在栈中找某个元素，返回索引，没有返回-1</td>
+</tr>
+</tbody>
+</table>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a></p>
 
       
@@ -599,7 +640,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -693,7 +734,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">27</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -729,7 +774,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractList"><span class="nav-number">2.</span> <span class="nav-text">AbstractList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractSequentialList"><span class="nav-number">3.</span> <span class="nav-text">AbstractSequentialList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LinkedList"><span class="nav-number">4.</span> <span class="nav-text">LinkedList</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Deque"><span class="nav-number">4.1.</span> <span class="nav-text">Deque</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码解读"><span class="nav-number">4.2.</span> <span class="nav-text">源码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">4.2.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储方式"><span class="nav-number">4.2.2.</span> <span class="nav-text">存储方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayList"><span class="nav-number">5.</span> <span class="nav-text">ArrayList</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构-1"><span class="nav-number">5.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造方法"><span class="nav-number">5.2.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作方式"><span class="nav-number">5.3.</span> <span class="nav-text">操作方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#add方法"><span class="nav-number">5.3.1.</span> <span class="nav-text">add方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除的方法"><span class="nav-number">5.3.2.</span> <span class="nav-text">删除的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调整数组容量"><span class="nav-number">5.3.3.</span> <span class="nav-text">调整数组容量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fail-Fast-机制"><span class="nav-number">5.3.4.</span> <span class="nav-text">Fail-Fast 机制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vector"><span class="nav-number">6.</span> <span class="nav-text">Vector</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">7.</span> <span class="nav-text">引用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractList"><span class="nav-number">2.</span> <span class="nav-text">AbstractList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractSequentialList"><span class="nav-number">3.</span> <span class="nav-text">AbstractSequentialList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LinkedList"><span class="nav-number">4.</span> <span class="nav-text">LinkedList</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Deque"><span class="nav-number">4.1.</span> <span class="nav-text">Deque</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码解读"><span class="nav-number">4.2.</span> <span class="nav-text">源码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">4.2.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储方式"><span class="nav-number">4.2.2.</span> <span class="nav-text">存储方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayList"><span class="nav-number">5.</span> <span class="nav-text">ArrayList</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构-1"><span class="nav-number">5.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造方法"><span class="nav-number">5.2.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作方式"><span class="nav-number">5.3.</span> <span class="nav-text">操作方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#add方法"><span class="nav-number">5.3.1.</span> <span class="nav-text">add方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除的方法"><span class="nav-number">5.3.2.</span> <span class="nav-text">删除的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调整数组容量"><span class="nav-number">5.3.3.</span> <span class="nav-text">调整数组容量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fail-Fast-机制"><span class="nav-number">5.3.4.</span> <span class="nav-text">Fail-Fast 机制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vector"><span class="nav-number">6.</span> <span class="nav-text">Vector</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stack"><span class="nav-number">7.</span> <span class="nav-text">Stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">8.</span> <span class="nav-text">引用</span></a></li></ol></div>
             
 
           </div>

@@ -264,6 +264,311 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/Java中一些实用类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/Java中一些实用类/" itemprop="url">Java中一些实用类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T16:27:19+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Java中有很多比较实用的类，大多使用过，但是也有很多未被大家所使用的类。</p>
+<h2 id="BitSet类"><a href="#BitSet类" class="headerlink" title="BitSet类"></a>BitSet类</h2><p>BitSet就是一个位存储和操作而设计的一个类。里面使用Long数组进行存储，一个long64字节，所以一个bit地址对应的查找是先找long或者称为word的索引，然后进行位操作进行设置读取等操作。更多的知识参考源码即可。</p>
+<p>应用场景也是有的，比如说你想删除一些元素，但是需要暂存一下，就可以使用这个类。元素的标记可以作为索引，是否删除取决于，索引对应标志位的值。</p>
+<p>## </p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/java-Set学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/05/java/java-Set学习/" itemprop="url">java Set学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T15:25:13+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Set和list是很相似的，只是List可以存在相同元素，而Set却不可以，其他都是类似的。</p>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>讲到这个当然先说说Set接口了，这个比较简单，就不过多去说了。几乎和List是一样的。</p>
+<h2 id="AbstractSet"><a href="#AbstractSet" class="headerlink" title="AbstractSet"></a>AbstractSet</h2><p>我们来看一下这个类，继承自AbstractCollection，也没啥定义了一些通用方法，比如实现了equals、hashCode和removeAll方法。</p>
+<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
+<p>内部定义了一个hashMap作为实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br></pre></td></tr></table></figure></p>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>HashSet的构造函数比较重要：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 默认的无参构造器，构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会初始化一个空的HashMap，并使用默认初始容量为16和加载因子0.75。</span><br><span class="line"> */</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 构造一个包含指定collection中的元素的新set。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层使用默认的加载因子0.75和足以包含指定collection中所有元素的初始容量来创建一个HashMap。</span><br><span class="line"> * @param c 其中的元素将存放在此set中的collection。</span><br><span class="line"> */</span><br><span class="line">public HashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(Math.max((int) (c.size()/.75f) + 1, 16));</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数及加载因子loadFactor为0.75构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个新的空链接哈希集合。此构造函数为包访问权限，不对外公开，</span><br><span class="line"> * 实际只是是对LinkedHashSet的支持。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会以指定的参数构造一个空LinkedHashMap实例来实现。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> * @param dummy 标记。</span><br><span class="line"> */</span><br><span class="line">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;</span><br><span class="line">    map = new LinkedHashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里可以利用LinkedHashMap实现，这个作用比较大，因为HashSet中元素的遍历是通过map的迭代器，但是也不一定，如果数量比较少，利用hashMap的迭代器进行迭代，速度也不应该会慢，这要相对的看。</p>
+<h3 id="add方法"><a href="#add方法" class="headerlink" title="add方法"></a>add方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    return map.put(e, PRESENT)==null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用hash表实现的Set本身就不用考虑相同的值被插入进来。这里的PRESENT是一个Object常量。其他的还是阅读源码吧！</p>
+<h2 id="SortedSet"><a href="#SortedSet" class="headerlink" title="SortedSet"></a>SortedSet</h2><p>继承Set的接口，定义和SortedMap类似，都会出现子树等形式的函数。</p>
+<h2 id="EnumSet"><a href="#EnumSet" class="headerlink" title="EnumSet"></a>EnumSet</h2><p>看到JDK有这样的一个类，所以过来学习一下。这个类和HashSet差不多，不过只针对枚举，也有缓存。EnumSet是一个抽象类，有两个实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; noneOf(Class&lt;E&gt; elementType) &#123;</span><br><span class="line">    Enum[] universe = getUniverse(elementType);</span><br><span class="line">    if (universe == null)</span><br><span class="line">        throw new ClassCastException(elementType + &quot; not an enum&quot;);</span><br><span class="line"></span><br><span class="line">    if (universe.length &lt;= 64)</span><br><span class="line">        return new RegularEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">    else</span><br><span class="line">        return new JumboEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h2><p>这个类是基于HashSet实现的，由于HashSet和HashMap不同，已经做了数组的缓存，所以LinkedHash几乎完全基于HashSet实现。看其中的一个构造方法即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public LinkedHashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    super(Math.max(2*c.size(), 11), .75f, true);</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>传入的第三个参数就是告诉HashSet使用LinkedHashMap实现，具体原因查看HashSet的构造函数就明白了。</p>
+<h2 id="NavigableSet"><a href="#NavigableSet" class="headerlink" title="NavigableSet"></a>NavigableSet</h2><p>对Set进行树形结构操作的规范接口。这个接口继承自SortedSet。</p>
+<h2 id="TreeSet接口"><a href="#TreeSet接口" class="headerlink" title="TreeSet接口"></a>TreeSet接口</h2><p>这也是一个比较简单的类。基于红黑树实现的Set集。TreeSet 底层实际使用的存储容器就是 TreeMap。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class TreeSet&lt;E&gt; extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements NavigableSet&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
+<p>TreeSet是基于TreeMap实现的。TreeSet中的元素支持2种排序方式：自然排序 或者 根据创建TreeSet 时提供的 Comparator 进行排序。这取决于使用的构造方法。</p>
+<p>TreeSet为基本操作（add、remove 和 contains）提供受保证的 log(n) 时间开销。<br>另外，TreeSet是非同步的。 它的iterator 方法返回的迭代器是fail-fast的。</p>
+<p>具体可以查看TreeSet的源码进行解读。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/mawming/article/details/52438387" target="_blank" rel="noopener">Java 之EnumSet与EnumMap</a><br><a href="https://www.ibm.com/developerworks/cn/java/j-lo-tree/index.html" target="_blank" rel="noopener">通过分析 JDK 源代码研究 TreeMap 红黑树算法实现</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/数据结构/红黑树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1170,6 +1475,16 @@
 <td>返回队列头部的元素</td>
 <td>如果队列为空，则返回null</td>
 </tr>
+<tr>
+<td>put</td>
+<td>添加一个元素</td>
+<td>如果队列满，则阻塞</td>
+</tr>
+<tr>
+<td>take</td>
+<td>移除并返回队列头部的元素</td>
+<td>如果队列为空，则阻塞</td>
+</tr>
 </tbody>
 </table>
 <p>Deque接口列表如下：</p>
@@ -1247,6 +1562,37 @@
 <h4 id="Fail-Fast-机制"><a href="#Fail-Fast-机制" class="headerlink" title="Fail-Fast 机制"></a>Fail-Fast 机制</h4><p>ArrayList 也采用了快速失败的机制，通过记录 modCount 参数来实现。在面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险。</p>
 <h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p>Vector也是一个List，但是这里面是线程安全的，而且没有实现迭代器模式。或者说Enumeration也是迭代器模式。另外没有扩容因子这个东西的存在，默认是以两倍的方式进行扩容，但是可以指定每次扩容的量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    // 扩容方式是翻倍或者用户指定的扩容参数即可</span><br><span class="line">    int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</span><br><span class="line">                                        capacityIncrement : oldCapacity);</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        // 防止容量不够</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        // 不能超过上限，其实没有上限的</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    // 进行扩容存放元素。</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean add(E e) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    ensureCapacityHelper(elementCount + 1);</span><br><span class="line">    elementData[elementCount++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized boolean removeElement(Object obj) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = indexOf(obj);</span><br><span class="line">    if (i &gt;= 0) &#123;</span><br><span class="line">        removeElementAt(i);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public synchronized void removeElementAt(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    if (index &gt;= elementCount) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index + &quot; &gt;= &quot; +</span><br><span class="line">                                                    elementCount);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (index &lt; 0) &#123;</span><br><span class="line">        throw new ArrayIndexOutOfBoundsException(index);</span><br><span class="line">    &#125;</span><br><span class="line">    int j = elementCount - index - 1;</span><br><span class="line">    if (j &gt; 0) &#123;</span><br><span class="line">        System.arraycopy(elementData, index + 1, elementData, index, j);</span><br><span class="line">    &#125;</span><br><span class="line">    elementCount--;</span><br><span class="line">    elementData[elementCount] = null; /* to let gc do its work */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>细节方面就不多写了。下面看一下Enumeration接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Enumeration&lt;E&gt; &#123;</span><br><span class="line">    boolean hasMoreElements();</span><br><span class="line">    E nextElement();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><p>Stack是Vector的子类。实现的是后入先出的队列功能。里面基本上没有添加什么功能，就是新定义了几个函数。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>push</td>
+<td>加入元素，调用的是Vector的addElement方法，返回压栈的元素</td>
+</tr>
+<tr>
+<td>pop</td>
+<td>弹出栈顶的元素，如果栈是空的抛出异常</td>
+</tr>
+<tr>
+<td>peek</td>
+<td>查看栈顶的元素，如果栈是空的，就抛出异常</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>注意这个是判断栈是不是空的</td>
+</tr>
+<tr>
+<td>search</td>
+<td>在栈中找某个元素，返回索引，没有返回-1</td>
+</tr>
+</tbody>
+</table>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a></p>
 
           
@@ -1804,338 +2150,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/Mycat简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/database/Mycat简介/" itemprop="url">Mycat简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T16:02:42+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/database/" itemprop="url" rel="index"><span itemprop="name">database</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>前几天因为要处理类似交易所的设计，发现大量的数据问题，于是想通过Mycat进行分表分库，读了Mycat的官方文档，真的学习了好多的东西，于是画了一张脑图。以后有时间再来整理里面的知识吧！</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/Database/Mycat%E7%AE%80%E4%BB%8B.png?raw=true" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20与ERC233的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/27/blockchain/以太坊ERC20与ERC233的区别/" itemprop="url">以太坊ERC20与ERC233的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T14:45:16+08:00">2018-02-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ERC: 223<br>Title: Token standard<br>Author: Dexaran, <a href="mailto:dexaran820@gmail.com" target="_blank" rel="noopener">dexaran820@gmail.com</a><br>Status: Draft<br>Type: ERC<br>Created: 5-03.2017<br>Resolution: <a href="https://github.com/Dexaran/ERC223-token-standard" target="_blank" rel="noopener">https://github.com/Dexaran/ERC223-token-standard</a><br>Recommended implementation: <a href="https://github.com/Dexaran/ERC223-token-standard/tree/Recommended" target="_blank" rel="noopener">https://github.com/Dexaran/ERC223-token-standard/tree/Recommended</a></p>
-<p>以下描述标准功能，令牌合同和使用指定令牌的合同可以实施，以防止意外发送令牌到合同，并使令牌交易的行为像ether交易。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>ERC223解决了ERC20的一些问题:</p>
-<p>ERC20令牌标准导致最终用户的资金损失。主要问题是缺乏处理通过ERC20代币transfer方法执行的传入ERC20事务的可能性。 </p>
-<p>如果您发送100个ETH到一个不打算与Ether协同工作的合同，那么它将拒绝一个交易，并且不会发生任何错误。如果您将100个ERC20令牌发送到不打算与ERC20令牌一起使用的合同，则它不会拒绝令牌，因为它无法识别传入的事务。结果，您的代币将卡住合约余额。</p>
-<p>目前丢失了多少ERC20令牌（2017年12月27日）：</p>
-<ol>
-<li>QTUM，1,204,273美元流失。看着Etherscan</li>
-<li>EOS 损失1,015,131美元。看着Etherscan</li>
-<li>GNT，亏损249,627美元。看着Etherscan</li>
-<li>STORJ，亏损217,477美元。看着Etherscan</li>
-<li>Tronix，损失201,232美元。看着Etherscan</li>
-<li>DGD，损失151,826美元。看着Etherscan</li>
-<li>OMG，亏损149,941美元。看着Etherscan</li>
-<li>STORJ，输掉102,560 美元。看着Etherscan</li>
-</ol>
-<p>注意：这些只是我知道的8个令牌合约。每个以太坊合约都是ERC20令牌的潜在令牌陷阱，因此，比我在此例中显示的损失要多得多。</p>
-<p>ERC223解决了ERC20的一些问题:</p>
-<p>1.无法处理接收合同中的进账交易。<br>2.令牌可以发送到合同中没有设计不处理与标记工作，并可能会丢失。目前至少有四十万美元的损失。<br>3.令牌交易应与Ethereum意识形态一致。当一个用户转账的时候，必须自己执行transfer.用户存入合同或发送到外部拥有的账户无关紧要。</p>
-<p>这些将允许合同处理传入令牌交易并防止意外发送的令牌被合同接受。<br>例如，分散式交换将不再需要强制用户通过令牌合约来呼叫批准，然后通过从允许的令牌获取正在调用transfer的呼叫存款。 令牌交易将在交易所合约内自动处理。</p>
-<p>这里最重要的是在执行合同交易时调用tokenFallback。</p>
-<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><p>与令牌一起使用的令牌合同</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>注意: 一个重要的一点是，如果合同开发人员希望他们的合同使用指定的令牌，那么合同开发人员必须实现tokenFallback。</p>
-<p>如果接收方未实现tokenFallback函数，则认为合同不是设计为使用令牌，那么事务必须失败，并且不会传输令牌。 在尝试将Ether发送到没有实现function（）payable的合同时，与Ether事务的类比是失败的。</p>
-<h3 id="totalSupply"><a href="#totalSupply" class="headerlink" title="totalSupply"></a>totalSupply</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function totalSupply() constant returns (uint256 totalSupply)</span><br></pre></td></tr></table></figure>
-<p>获取代币的发币总量</p>
-<h3 id="name"><a href="#name" class="headerlink" title="name"></a>name</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function name() constant returns (string _name)</span><br></pre></td></tr></table></figure>
-<p>获取代币的名称</p>
-<h3 id="symbol"><a href="#symbol" class="headerlink" title="symbol"></a>symbol</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function symbol() constant returns (bytes32 _symbol)</span><br></pre></td></tr></table></figure>
-<p>代币的标识符</p>
-<h3 id="decimals"><a href="#decimals" class="headerlink" title="decimals"></a>decimals</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function decimals() constant returns (uint8 _decimals)</span><br></pre></td></tr></table></figure>
-<p>得到token的小数点后几位</p>
-<h3 id="balanceOf"><a href="#balanceOf" class="headerlink" title="balanceOf"></a>balanceOf</h3><h3 id="transfer"><a href="#transfer" class="headerlink" title="transfer"></a>transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function transfer(address _to, uint _value) returns (bool)</span><br></pre></td></tr></table></figure>
-<p>由于向后兼容性原因，因为ERC20传输函数没有字节参数。如果_to是合约，则此函数必须传输令牌并调_to中的函数tokenFallback(address,uint256,bytes)。如果_to（接收方合同）中没有实现tokenFallback函数，则事务必须失败，并且不会发生令牌的传输。</p>
-<p>重要:将在接收方合约中调用的令牌备用功能必须命名为tokenFallback，并使用参数address,uint256，bytes。 此函数必须具有0xc0ee0b8a签名。</p>
-<h3 id="transfer-address-uint-bytes"><a href="#transfer-address-uint-bytes" class="headerlink" title="transfer(address, uint, bytes)"></a>transfer(address, uint, bytes)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function transfer(address _to, uint _value, bytes _data) returns (bool)</span><br></pre></td></tr></table></figure>
-<p>当某人想要转移令牌时总是调用这个函数。<br>如果_to是合约，则此函数必须传输令牌并调用_to中的函数tokenFallback (address, uint256, bytes)。 如果_to（接收方合同）中没有实现tokenFallback函数，则事务必须失败，并且不会发生令牌的传输。<br>如果_to是外部拥有的地址，则必须发送事务，而不尝试在_to中执行tokenFallback。</p>
-<p>_data可以附加到这个令牌交易中，它将永远保持在块状（需要更多的gas）。 _data可以是空的。</p>
-<p>注意: 检查_to是合约还是地址的推荐方法是组装_to的代码。 如果_to中没有代码，那么这是一个外部拥有的地址，否则就是一个合约。</p>
-<p>重要: 将在接收方合约中调用的令牌备用功能必须命名为tokenFallback，并使用参数address, uint256,bytes。 此函数必须具有0xc0ee0b8a签名。</p>
-<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h3 id="Transfer"><a href="#Transfer" class="headerlink" title="Transfer"></a>Transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">event Transfer(address indexed _from, address indexed _to, uint256 indexed _value, bytes _data)</span><br></pre></td></tr></table></figure>
-<p>当token转移的时候触发。</p>
-<h3 id="合约和token一起工作"><a href="#合约和token一起工作" class="headerlink" title="合约和token一起工作"></a>合约和token一起工作</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function tokenFallback(address _from, uint _value, bytes _data)</span><br></pre></td></tr></table></figure>
-<p>令牌持有者发送令牌时处理从令牌合同所调用的令牌传输的功能。 _from是令牌发送者，_value是传入令牌的数量，_data是附加的数据，类似于Ether事务中的数据。 适用于以太交易的回退功能，并且不返回任何内容。</p>
-<p>注意: msg.sender将是tokenFallback函数内的令牌合同。 过滤哪些令牌（通过令牌契约地址）发送可能很重要。 令牌发送者（谁发起了代币交易的人）将_from thetokenFallback函数内。</p>
-<p>重要: 这个函数必须命名为tokenFallback，并使用参数地址uint256，字节来匹配函数签名0xc0ee0b8a。</p>
-<h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p><a href="http://blog.csdn.net/diandianxiyu_geek/article/details/78093229" target="_blank" rel="noopener">以太坊ERC20与ERC233的区别</a></p>
-<p><a href="https://github.com/ethereum/EIPs/issues/223" target="_blank" rel="noopener">ERC223 token standard #223</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2183,7 +2197,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2277,7 +2291,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">27</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
