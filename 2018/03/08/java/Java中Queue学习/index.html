@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="在上一篇的博文中，我们分析了Deque的知识，其实感觉是反了，应该是先分析Queue，分析完之后再去分析Deque，不过这都没啥关系，单向的队列或许更容易学习。 Queue接口还是先从Queue接口开始吧，这个接口继承Collection，Queue接口定义了几个方法。    方法名 功能 说明     add 增加一个元索 如果队列已满，则抛出一个IIIegaISlabEepeplian异常">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-08T10:34:52.000Z">
+<meta property="og:updated_time" content="2018-03-09T08:35:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java中Queue学习">
 <meta name="twitter:description" content="在上一篇的博文中，我们分析了Deque的知识，其实感觉是反了，应该是先分析Queue，分析完之后再去分析Deque，不过这都没啥关系，单向的队列或许更容易学习。 Queue接口还是先从Queue接口开始吧，这个接口继承Collection，Queue接口定义了几个方法。    方法名 功能 说明     add 增加一个元索 如果队列已满，则抛出一个IIIegaISlabEepeplian异常">
@@ -412,7 +412,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">private void siftDown(int k, E x) &#123;</span><br><span class="line">    if (comparator != null)</span><br><span class="line">        siftDownUsingComparator(k, x);</span><br><span class="line">    else</span><br><span class="line">        siftDownComparable(k, x);</span><br><span class="line">&#125;</span><br><span class="line">private void siftDownUsingComparator(int k, E x) &#123;</span><br><span class="line">    int half = size &gt;&gt;&gt; 1;</span><br><span class="line">    while (k &lt; half) &#123;</span><br><span class="line">        int child = (k &lt;&lt; 1) + 1;</span><br><span class="line">        Object c = queue[child];</span><br><span class="line">        int right = child + 1;</span><br><span class="line">        if (right &lt; size &amp;&amp;</span><br><span class="line">            comparator.compare((E) c, (E) queue[right]) &gt; 0)</span><br><span class="line">            c = queue[child = right];</span><br><span class="line">        if (comparator.compare(x, (E) c) &lt;= 0)</span><br><span class="line">            break;</span><br><span class="line">        queue[k] = c;</span><br><span class="line">        k = child;</span><br><span class="line">    &#125;</span><br><span class="line">    queue[k] = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这是堆的维护，关于堆的实现请看下面的引用。</p>
 <h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p>看了一下内部的迭代器实现，并没有按照堆内顺序进行返回，而是按照数组的顺序进行返回，所以返回的数组并不是有序的，这点要注意。</p>
-<h3 id="关于堆"><a href="#关于堆" class="headerlink" title="关于堆"></a>关于堆</h3><p>其实堆就是一个完全二叉树，分为小端堆和大端堆。与平衡二叉树相比：</p>
+<h3 id="关于堆"><a href="#关于堆" class="headerlink" title="关于堆"></a>关于堆</h3><p><b style="color:red">其实堆就是一个完全二叉树，分为小端堆和大端堆。与平衡二叉树相比：</b></p>
 <ul>
 <li>堆整体没有顺序，但是每条路径有顺序。</li>
 <li>堆维护成本比较低，每次调整，都要取最右边的那个元素过来进行重新调整。但是调整要比平衡二叉树要快很多。</li>
@@ -540,7 +540,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -646,7 +646,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

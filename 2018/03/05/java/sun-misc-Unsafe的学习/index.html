@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="前言以下sun.misc.Unsafe源码和demo基于jdk1.7；JUC的包中很多都使用了这个类的实例，这里我们需要进一步深入的学习。 这个类的实现方法很多都是native的，所以研究起来并不容易，需要了解动态链接库做的一些事情，这里我就不深入研究了，源码是网上找的，不知道对不对，提供一种研究思路吧，所以这篇博文也就是简单地了解一下，日后可以根据具体的情况深入研究一下。 Unsafe类的作用可">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-04T17:44:33.000Z">
+<meta property="og:updated_time" content="2018-03-09T12:42:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sun.misc.Unsafe的学习">
 <meta name="twitter:description" content="前言以下sun.misc.Unsafe源码和demo基于jdk1.7；JUC的包中很多都使用了这个类的实例，这里我们需要进一步深入的学习。 这个类的实现方法很多都是native的，所以研究起来并不容易，需要了解动态链接库做的一些事情，这里我就不深入研究了，源码是网上找的，不知道对不对，提供一种研究思路吧，所以这篇博文也就是简单地了解一下，日后可以根据具体的情况深入研究一下。 Unsafe类的作用可">
@@ -377,6 +377,7 @@
 <p>freeMemory：用于释放allocateMemory和reallocateMemory申请的内存</p>
 <p><b style="color:blue">CAS操作的方法，compareAndSwapInt，compareAndSwapLong等</b><br>看下natUnsafe.cc中的c++实现吧，加深理解，其实就是将内存值与预期值作比较，判断是否相等，相等的话，写入数据，不相等不做操作，返回旧数据；</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">static inline bool</span><br><span class="line">compareAndSwap (volatile jint *addr, jint old, jint new_val)</span><br><span class="line">&#123;</span><br><span class="line">  jboolean result = false;</span><br><span class="line">  spinlock lock;</span><br><span class="line">  if ((result = (*addr == old)))</span><br><span class="line">    *addr = new_val;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* compareAndSwapObject(Object var1, long var2, Object var3, Object var4)</span><br><span class="line">* var1 操作的对象</span><br><span class="line">* var2 操作的对象属性偏移</span><br><span class="line">* var3 var2与var3比较，相等才更新</span><br><span class="line">* var4 更新值</span><br><span class="line">*/</span><br><span class="line">return UNSAFE.compareAndSwapObject(this, nextOffset, cmp, val)</span><br></pre></td></tr></table></figure>
 <p>J.U.C里原子类就是基于以上CAS操作实现的；</p>
 <p><b style="color:blue">getLongVolatile/putLongVolatile等等方法</b><br>这类方法使用volatile语义去存取数据，我的理解就是各个线程不缓存数据，直接在内存中读取数据；</p>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.wowotech.net/kernel_synchronization/spinlock.html" target="_blank" rel="noopener">Linux内核同步机制之（四）：spin lock</a><br><a href="http://ifeve.com/sun-misc-unsafe/" target="_blank" rel="noopener">并发编程网Java Magic. Part 4: sun.misc.Unsafe</a><br><a href="https://www.cnblogs.com/chenpi/p/5389254.html" target="_blank" rel="noopener">原文：sun.misc.Unsafe的理解</a></p>
@@ -499,7 +500,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -605,7 +606,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
