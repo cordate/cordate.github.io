@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="日志," />
+
+
+<meta name="description" content="1. 快照表表结构修改具有关联性，存储的数据比较多。可维护性很强。 2. JSON2.1 记录修改前后值这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。 2.2 记录修改后的值修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。 2.3 记录修改的字段的值这个和2.2 差不多只是，只序列化修改的字段，这样存储">
+<meta name="keywords" content="日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通用日志表的设计">
+<meta property="og:url" content="http://cordate.github.io/2018/03/14/系统设计/通用日志表的设计/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="1. 快照表表结构修改具有关联性，存储的数据比较多。可维护性很强。 2. JSON2.1 记录修改前后值这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。 2.2 记录修改后的值修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。 2.3 记录修改的字段的值这个和2.2 差不多只是，只序列化修改的字段，这样存储">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-03-14T07:41:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通用日志表的设计">
+<meta name="twitter:description" content="1. 快照表表结构修改具有关联性，存储的数据比较多。可维护性很强。 2. JSON2.1 记录修改前后值这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。 2.2 记录修改后的值修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。 2.3 记录修改的字段的值这个和2.2 差不多只是，只序列化修改的字段，这样存储">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/14/系统设计/通用日志表的设计/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>通用日志表的设计 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/通用日志表的设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">通用日志表的设计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:40:58+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-快照表"><a href="#1-快照表" class="headerlink" title="1. 快照表"></a>1. 快照表</h3><p>表结构修改具有关联性，存储的数据比较多。可维护性很强。</p>
+<h3 id="2-JSON"><a href="#2-JSON" class="headerlink" title="2. JSON"></a>2. JSON</h3><h4 id="2-1-记录修改前后值"><a href="#2-1-记录修改前后值" class="headerlink" title="2.1 记录修改前后值"></a>2.1 记录修改前后值</h4><p>这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。</p>
+<h4 id="2-2-记录修改后的值"><a href="#2-2-记录修改后的值" class="headerlink" title="2.2 记录修改后的值"></a>2.2 记录修改后的值</h4><p>修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。</p>
+<h4 id="2-3-记录修改的字段的值"><a href="#2-3-记录修改的字段的值" class="headerlink" title="2.3 记录修改的字段的值"></a>2.3 记录修改的字段的值</h4><p>这个和2.2 差不多只是，只序列化修改的字段，这样存储的信息更少。但是如果想要知道哪个字段的修改就无能为力，需要找到所有的更改记录。</p>
+<h3 id="3-操作表-更改表"><a href="#3-操作表-更改表" class="headerlink" title="3. 操作表+更改表"></a>3. 操作表+更改表</h3><p>就是一个记录基本操作信息的表，然后另一张表记录修改哪张表的哪个字段，哪个值被改为哪个值。如果要查改动之前的值就是会有查询的操作，另外就是批量更改可能会产生大量需要更改的数据。</p>
+<h4 id="3-1-原值-现值"><a href="#3-1-原值-现值" class="headerlink" title="3.1 原值+现值"></a>3.1 原值+现值</h4><p>依然还是存储想要的值，但是只有修改的字段的原值和现值。</p>
+<h4 id="3-2-只记录现值"><a href="#3-2-只记录现值" class="headerlink" title="3.2 只记录现值"></a>3.2 只记录现值</h4><p>还是通过parent_id记录修改的历史，但是root必须是原来的值，所以插入的时候需要保存一份在这个地方。</p>
+<p>原值的改动可以在第一次查询使用的时候，通过parent_id找到，这种方式的缺点是，无从知晓上一次本字段是在哪次编辑的，反正找打了就要存下来。如果原值不需要查询，那么在生成日志的时候就一起存下来。有的原值是NULL，这样就达不到缓存的策略，所以可以设置为空字符串也不要设置为NULL，这样缓存策略才能生效。</p>
+<p>其实parent_id这种方式只能保证更改的记录串行而已，但是无法确定一个字段的原值，通过parent-id进行回溯，可能存在次数过多的问题。所以应该在记录filed的这张表设置中加入被修改表的信息，以及修改的记录id的信息，通过记录id和字段名找到所有值，这样就可以知道原来的值是什么了，排序就是事件的发生顺序，所以应该没有问题。</p>
+<h3 id="4-No-SQL的存储"><a href="#4-No-SQL的存储" class="headerlink" title="4. No SQL的存储"></a>4. No SQL的存储</h3><p>这种存储方式，可能会出现数据不好解析的问题，因为我们可能是进行序列化的。MongoDB可能比较适合，我们能进行相应数据的查询。但是普遍没有事务的支持。</p>
+<p>还有一种文档存储就是基于Lucene的存储，一般我们不会直接使用Lucene，而是使用封装好的结构进行存储，比如说solr和EleasticSearch。</p>
+<h3 id="5-列存储"><a href="#5-列存储" class="headerlink" title="5. 列存储"></a>5. 列存储</h3><p>如果进行列存储的话，其实可以解决我们的不少问题。我其实比较倾向于使用列存储的方式来解决我们遇到的问题。表格存储最大的好处就是列信息可以变动。</p>
+<h3 id="6-日志文件打印"><a href="#6-日志文件打印" class="headerlink" title="6. 日志文件打印"></a>6. 日志文件打印</h3><p>日志文件的打印不一定是打入到文件里面去，也可以打印到流里面去。网上有很多网络流的工具，比如apache的flume。</p>
+<p>当然也可以打印到日志文件中，这样由第三方的工具再从日志文件中读取分析。但是读取的数据需要分析存储。当然这需要工具记录上次的读取位置。</p>
+<h3 id="7-MQ中继方式"><a href="#7-MQ中继方式" class="headerlink" title="7. MQ中继方式"></a>7. MQ中继方式</h3><p>将数据直接推送至MQ中，或者直接发给flume，再由flume推送到MQ中。一般有3层机制也有多层的架构机制。</p>
+<p>使用这些机制的原因是一层一层的速度放缓，其实这就是本质，flume快速接受，MQ推送可以暂存一部分数据，然后storm或者spark进行分析，进一步完成数据的分析过程，又是一层的数据放缓，最后存储最终整理或者分析后的数据。</p>
+<p>当然hadoop是用来处理离线数据的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上就是我对通用日志的一些总结信息，想到数据分析的作用，日后如果有新的想法，我会继续加入改进。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/14/系统设计/分布式定时器的设计/" rel="next" title="分布式定时器的设计">
+                <i class="fa fa-chevron-left"></i> 分布式定时器的设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/14/系统设计/账务系统平级和层级账户体系设计/" rel="prev" title="账务系统平级和层级账户体系设计">
+                账务系统平级和层级账户体系设计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-快照表"><span class="nav-number">1.</span> <span class="nav-text">1. 快照表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-JSON"><span class="nav-number">2.</span> <span class="nav-text">2. JSON</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-记录修改前后值"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 记录修改前后值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-记录修改后的值"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 记录修改后的值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-记录修改的字段的值"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 记录修改的字段的值</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-操作表-更改表"><span class="nav-number">3.</span> <span class="nav-text">3. 操作表+更改表</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-原值-现值"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 原值+现值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-只记录现值"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 只记录现值</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-No-SQL的存储"><span class="nav-number">4.</span> <span class="nav-text">4. No SQL的存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-列存储"><span class="nav-number">5.</span> <span class="nav-text">5. 列存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-日志文件打印"><span class="nav-number">6.</span> <span class="nav-text">6. 日志文件打印</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-MQ中继方式"><span class="nav-number">7.</span> <span class="nav-text">7. MQ中继方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

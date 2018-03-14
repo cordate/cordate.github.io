@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="账务系统,账务层级," />
+
+
+<meta name="description" content="概述作为一家互联网金融公司，没有严格的账户处理机制是一种不好的现象，当然我们在处理各种账户体系的过程中其实遇到了各种各样的问题。我一开始可能受到一些前端设计界面的影响，导致在账户体系设计的时候没有考虑到我在后台添加的一个资金批次号的问题。然后我与产品沟通是否需要资金批次号中对应那笔资金的流转进行详细的分析，得到的答案是肯定的，但是我回归界面设计的时候却发现界面的设计上根本就不会体现出资金的批次流转">
+<meta name="keywords" content="账务系统,账务层级">
+<meta property="og:type" content="article">
+<meta property="og:title" content="账务系统平级和层级账户体系设计">
+<meta property="og:url" content="http://cordate.github.io/2018/03/14/系统设计/账务系统平级和层级账户体系设计/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="概述作为一家互联网金融公司，没有严格的账户处理机制是一种不好的现象，当然我们在处理各种账户体系的过程中其实遇到了各种各样的问题。我一开始可能受到一些前端设计界面的影响，导致在账户体系设计的时候没有考虑到我在后台添加的一个资金批次号的问题。然后我与产品沟通是否需要资金批次号中对应那笔资金的流转进行详细的分析，得到的答案是肯定的，但是我回归界面设计的时候却发现界面的设计上根本就不会体现出资金的批次流转">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-03-14T07:44:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="账务系统平级和层级账户体系设计">
+<meta name="twitter:description" content="概述作为一家互联网金融公司，没有严格的账户处理机制是一种不好的现象，当然我们在处理各种账户体系的过程中其实遇到了各种各样的问题。我一开始可能受到一些前端设计界面的影响，导致在账户体系设计的时候没有考虑到我在后台添加的一个资金批次号的问题。然后我与产品沟通是否需要资金批次号中对应那笔资金的流转进行详细的分析，得到的答案是肯定的，但是我回归界面设计的时候却发现界面的设计上根本就不会体现出资金的批次流转">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/14/系统设计/账务系统平级和层级账户体系设计/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>账务系统平级和层级账户体系设计 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/账务系统平级和层级账户体系设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">账务系统平级和层级账户体系设计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:43:40+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>作为一家互联网金融公司，没有严格的账户处理机制是一种不好的现象，当然我们在处理各种账户体系的过程中其实遇到了各种各样的问题。我一开始可能受到一些前端设计界面的影响，导致在账户体系设计的时候没有考虑到我在后台添加的一个资金批次号的问题。然后我与产品沟通是否需要资金批次号中对应那笔资金的流转进行详细的分析，得到的答案是肯定的，但是我回归界面设计的时候却发现界面的设计上根本就不会体现出资金的批次流转问题，界面提现出来的就是总资金流转的账户设计。然后查看了一些其他家互金的app，确实大家都不会把这种信息透露出来。</p>
+<p>所以说，有的人说的是真话，但是其实是一个伪命题。别人再回答你的问题的时候，得到的答案可能是想当然的，觉得合理就要。但是其实在设计的时候却不会理会这个东西。这其实是一种很好玩的现象。不提了，反思总结一下就好，不用较真。自己理解知晓就好。</p>
+<p>然后我突然明白我在设计系统时陷入一个盲区，没有进行严格区分产品的需求和系统设计的单独隔离的问题。原来沟通是需要广度和深度的。与产品沟通更需要广度，与团队成员沟通更需要一定的深度；与产品沟通要放弃细节，与团队成员沟通需要深入细节；与产品沟通不用说具体设计，而应该说这种设计所导致的宏观表象就可以了，与团队成员沟通不要太专注表象，而应该关注具体的实现策略选择和系统思维的维护上。所以我们需要一层转换底层设计到产品的转化，这种转化我以前一直认为是代码上的，但其实可能也是数据库上。这种转化不一定是严格的具有上下层的，也可能是物理平级逻辑上下层的理论。这是一种很好的思维扩展。</p>
+<p>在某种程度上受到固有一些因素的影响，当然还有自我因素，但是我是不停发展的，我不会局限当前解决问题的思路。调整策略方式，继续前行。</p>
+<p>正是受到这次事件的影响，我不得不考虑我们系统账户设计的问题。后来我们发现我们的设计不足以追踪投入资金批次的流转问题。一开始我的思想是扩展资金进入记录表，在这张表上扩展一些字段记录一下它的流转信息，其实这是一种很好的解决问题的思路，后来团队成员意见是这种方式计算比较麻烦。其实是可以实现的。</p>
+<p>其实这种想法还是将record表当成了record表，后来一想这应该是账户表，账户升级后这张表的账户就会和计划投资账户形成了一种平级的概念，所以这里我提出了一个平级账户的概念。既然是账户表，那就要记录流水表的设计。这时一个平级账户出现了。</p>
+<p>我又仔细一想为何要将这个账户平级，我可以将这个账户移到计划账户的下面，这样的话，账户体系又扩充了一层，本来的平级账户，瞬间变成了层级账户。</p>
+<p>OK，这就是这次思维的变迁过程，平级账户和层级账户都是我自定义的名词，很好的反应出这些问题。那么下面我就来详细分析这里面的内容。</p>
+<h1 id="业务形态问题"><a href="#业务形态问题" class="headerlink" title="业务形态问题"></a>业务形态问题</h1><p>从上面看，其实平级账户我们是从record表的基础上扩展而来的，这样损失了record，但其实我们可以继续建立record表。所以在某种程度上来说，业务表与账户体系之间有着或多或少的联系，这是我们在设计财务系统的时候经常会忽略的问题。没错本人就是善于从问题中分析总结抽出我想要的东西和理论。</p>
+<p>大家也注意到，平级账户可以扩展到层级账户上去，这里大家也许会发现这样的话，层级账户也是和record表是有关系的。这是个很有趣的现象不是么？所以下面我会再写一篇博客专门介绍业务表、流水表和账户表的设计的问题。发现这个规律你就明白，原来被忽略的事情如此简单。</p>
+<h1 id="记录表去哪了"><a href="#记录表去哪了" class="headerlink" title="记录表去哪了"></a>记录表去哪了</h1><p>平级账户我是基于record表进行设置的，但是仔细一想record表怎么办，不去记录了，这不太可能，对于平级账户，记录表计成和原来一模一样就可以了，它关联的是计划账户表。==但其实记录表是可以关联到计划表上面去的，至于关联哪张表这个可以放到下一篇博客中分析，不是本次重点。==</p>
+<p>再来说说层级账户吧，其实record还是可以关联到原来的计划账户上，实现1对多关系，也可以关联到批次账户上实现1对1关系。详细的分析还是留待后面的分析，以及后面的实践中去总结吧！不过这个是个很有趣的问题。</p>
+<h1 id="关于账户管理"><a href="#关于账户管理" class="headerlink" title="关于账户管理"></a>关于账户管理</h1><p>平级账户其实是一种帐两种表现形式。而层级账户是总账明细账的处理流。平级账户提现的是维度账户体系，需要进行多维度地观看账户的信息。</p>
+<p>另外层级账户和平级账户的设计所能提现出来的信息也是不同的；层级账户很有层次，数据零散而具有层次，有些信息就是不停地进行统计获取到，而且可以获得任何形式的数据，缺点就是统计起来比较耗时，很多数据都要统计；而平级账户本身可能是带有一定维度的，这本来是一件好事，但是要想看另一个维度的数据就比较麻烦，可能你没法看。也就是说平级账户体系可以带来多维度的扩展，但是不太利于多元化的统计，因为维度有限。</p>
+<p>这个层级账户可以利用统计来实现维度账户体系的划分，但是实现的时候效率都不是很高，但是统计灵活，数据可以实现多元化扩展。</p>
+<p>这两种账户在对账上也是有所区分的，==以后应该专门写一篇博客来说明如何进行对账处理。== 这两种账户体系都是可以用来进行对账处理的。并且其实对账的工作量是一样的，该做事情还是要做，只是对帐的形式不同罢了。平级账户减少了账户的层次，这时是需要在平级账户加上一些特殊的标记信息，以弥补层级缺失所导致的一些其他问题（信息上的同步、关联等问题）。</p>
+<h1 id="两种体系的后期转化"><a href="#两种体系的后期转化" class="headerlink" title="两种体系的后期转化"></a>两种体系的后期转化</h1><p>如果我们确定了我们的账户体系，后期我们想实现一种账户体系到另一种账户体系的转化你会发现很多的转化问题，或者说就是无法转化，因为老数据的转化就是一个麻烦，烫手的山芋。</p>
+<h1 id="对账和流水"><a href="#对账和流水" class="headerlink" title="对账和流水"></a>对账和流水</h1><p>流水一般分为汇总的总账流水，和明细型的流水，有的账户这两种流水或许都是存在的。一般来说明细流水的具体流水都是汇总之后向上记录汇总的总账流水。（==注：总账或许在业务上是不存在的，或者界面设计的不同界面会提现出不同类型的流水，有总账型的也有基础流水型的，也许还有业务性的记录等等，我们设计的时候其实都应该注意到==）</p>
+<p>对账的实现，如果延时，那么多维度或者平级账户如何保证数据的计算方式是不同的。理论上计算方式的异同决定了对账的准确性，如果计算方式一致，一般是对不出问题的。平级账户一般数据的计算方式就是不同的，所以一般来说对账是没有问题的，但是不能进行细化对账，因为每个账户的维度不同，最后也就是总账对一下，一旦发现问题，可能无法定位到具体的问题所在。</p>
+<p>而层级账户可以解决这个问题，因为账户形式是总-分型的，所以一旦核对不上可以很明显地精确到具体的位置，但是也就是这种层级关系，在数据写入的时候，往往都是相同的方式计算出来的，所以发现问题很难。</p>
+<h1 id="与业务关系"><a href="#与业务关系" class="headerlink" title="与业务关系"></a>与业务关系</h1><p>账户体系的搭建其实不应该和具体的业务耦合在一起，但是在实际的实现过程中，我们发现这种关联性很强。影响的因素可能是法律合规、想法和具体的业务场景有关。其中最有账户破坏性的就是存管，一旦上存管，就必须考虑，系统账户和存管账户的关联。这个可能要做一些中间代码或者中间数据模型转化。</p>
+<p>但是要说这两种账户体系哪种更好，我还是觉得层级账户更好，平级账户其实不能适应需求的变化。</p>
+<h1 id="账户体系选择"><a href="#账户体系选择" class="headerlink" title="账户体系选择"></a>账户体系选择</h1><p>如果从etl的角度来说，可能就是要同时实现这两种账户体系的转化。那是他们需要处理的，也许在他们的结构设计中压根就没有账户这一概念。</p>
+<p>但是从系统的角度来说，应该优先选择层级账户。但是最好不要两种方式一起实现，只要一套就可以了，因为有系统数据的维护成本。系统设计和数据分析的思路完全不同。如果非要两种体系都实现，那就需要分步来做，主流程处理一种账户体系，另一个体系可以通过后台工作线程或者专门的定时器来实现，进行必要的延时操作。有时可能需要进行实时的数据统计。</p>
+<p>所以账户体系的建立还有很长的一段路要走。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这个是我自己的原创总结，里面的思维在别人看来可能比较混乱，写博客本身就是一个比较累的过程。还有就是文章本身枯燥乏味。其实这篇文章更多的就是要从各个角度分析我发现这个现象，然后对它进行深入思考，在别人看来可能比较难于理解。</p>
+<p>洋洋洒洒地写了这么多，耗费了不少脑力，就写到这儿吧！</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/账务系统/" rel="tag"># 账务系统</a>
+          
+            <a href="/tags/账务层级/" rel="tag"># 账务层级</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/14/系统设计/通用日志表的设计/" rel="next" title="通用日志表的设计">
+                <i class="fa fa-chevron-left"></i> 通用日志表的设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/14/算法/散标的设计之道/" rel="prev" title="散标的设计之道">
+                散标的设计之道 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#业务形态问题"><span class="nav-number">2.</span> <span class="nav-text">业务形态问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#记录表去哪了"><span class="nav-number">3.</span> <span class="nav-text">记录表去哪了</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于账户管理"><span class="nav-number">4.</span> <span class="nav-text">关于账户管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两种体系的后期转化"><span class="nav-number">5.</span> <span class="nav-text">两种体系的后期转化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对账和流水"><span class="nav-number">6.</span> <span class="nav-text">对账和流水</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与业务关系"><span class="nav-number">7.</span> <span class="nav-text">与业务关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#账户体系选择"><span class="nav-number">8.</span> <span class="nav-text">账户体系选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
