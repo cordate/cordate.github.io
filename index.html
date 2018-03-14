@@ -264,6 +264,774 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/债权打包资金选取策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/债权打包资金选取策略/" itemprop="url">债权打包资金选取策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:57:20+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我现在有个需求就是，在一些定额的债权订单中，进行打包，需要从这些不同额的债权中打出比如100w、1000w等各种金额不等的债权。其实一开始想这个问题的时候我也没啥思路，网上也没有看到比较好的解决思路，最后明白有这个时间，不如自己写代码来进行实现。</p>
+<h2 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h2><p>债权的选取具有一定的规律性，越老的订单需要先打包。所以在一些特殊情况下，一些策略的实现也是要做必要的调整。</p>
+<p>如果无法配平，我的策略就是打包超过，然后人工剔除，也可以人工选择加入一笔债权。这当然是弥补措施不是我们解决问题之道。</p>
+<h2 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h2><p>我实现的那一版的思路是一定有一个调整额，而之前也有考虑过配平，这就类似于之前写的关于散标匹配的算法。因为在我看来金额固定的情况下，可以选取一个调整额，然后每笔债权留单，最后利用留下来的单子进行配平即可。</p>
+<p>最后我选取了一个阈值，然后按照这种思路实现了我们的打包策略，由于债权分布良好，所以我一直在想，如果金额不定的话，我们如何进行适配。</p>
+<p>这个当然就是后面的思考了。我后来想到的思路是阈值通过金额的最小公倍数进行计算，然后到了调整的阈值时，进行配平。留单的策略就是最小公倍数除以金额，得到的就是要留该金额多少单。这种方式最大的问题就是如果金额非常散，那么可能一开始就没有单子被选中，一直处于留单状态，这对我们的系统没有好处，可以设置最大的阈值，但是这样就解决不了我们的问题。如果说留单成功了，那么下面就是类似求24点的问题了。</p>
+<p>之前我们提到了散标匹配的算法，所以你应该明白这里也可以使用递归的方式进行债券的选取，但是可能不太适合老的优先原则。我觉得还是使用留单的技术，先用老的单子填补阈值开外的空间。等达到阈值的时候，再利用递归的方式，填补阈值进行配平。</p>
+<h2 id="递归的方式"><a href="#递归的方式" class="headerlink" title="递归的方式"></a>递归的方式</h2><p>如果需要进行配平，基本上就是在最后的时候进行简单配平，或者使用递归的思想进行实现，比如果100w的包，先按照规则将可能即将失效的先放进去90w或者多一些，然后统计剩余的债权量，通过递归回溯的方式去配平最后的10w左右的量。因为债权基本都是500-2000，以500递增的倍数，所以可以进行计数统计，配平的时候再去取债权。因为我们关注的是数字本身而不是债权。关心债权的原因是，要不最旧的先打进去。</p>
+<p><b style="color:red">这种递归我称为计数式的递归使用。</b></p>
+<h2 id="债权预热"><a href="#债权预热" class="headerlink" title="债权预热"></a>债权预热</h2><p>基本上对方要债权包都是整数的，所以可以在债权进入的时候，按1w先打个小包，之后打包的时候，直接按时间选择一定的数量就可以了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>具体实现代码就不写了，这涉及到公司的机密，还有就是代码太长，一大堆异常情况的判断不太适合在这里贴出来。总之思想就是这样的，结合具体的业务场景进行细节的拆分，你总能得到你想要的那个解决方案。这就是我们不得不处理的事情，发现并解决问题。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/最近24小时热点问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/最近24小时热点问题/" itemprop="url">最近24小时热点问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:52:15+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>前段时间我们在处理论坛帖子的问题，这时候产品提出来一个需求就是他想做热们帖子的功能，这些帖子要求是1小时内活跃度的排名，意思是还有日活跃度、周活跃度和月活跃度，还有天活跃度，天以上的我们可以通过定时器进行统计计算。活跃度是点击、点赞、查看量算出来的综合排名，这样我们还要进行常规的计算等等。</p>
+<p>他还要一小时，3小时的活跃度啥的，具体的忘记了。哦，想起来了，他想要最近24小时的活跃度。然后每小时更新一次这样的需求。</p>
+<h2 id="初始方法"><a href="#初始方法" class="headerlink" title="初始方法"></a>初始方法</h2><p>想想这个最近24小时活跃度，正常大家都是认为是前24小时，卧槽这不是要死人吗，每次用户请求我们都要查询一遍，这样可不行的。后来才明白是上24小时区间的活跃度，这才是正常点的思路。</p>
+<p>不过想想一小时统计一次数据，这样可能真的不行，于是我在想如何进行不统计的排名呢？重点是统计之后还要计算，然后排序。后来想来想去，就是建立一个队列。但是想想不对当前的点击量等数据应该是要存放的。而且放入redis中，你还要找到所有的值进行计算然后再排名。这样也不是很好的做法。</p>
+<p>大家都知道redis里面有有序表，哎，让他帮我们维护吧，我们自己来维护问题实在是太多了。</p>
+<p>统计的方法时行不通的，只能缓存。</p>
+<h2 id="后来的想法"><a href="#后来的想法" class="headerlink" title="后来的想法"></a>后来的想法</h2><p>接着我的想法是维持一个一天的数据，然后在24点的时候清零一下数据。重新开始计算，本来觉得这个想法挺好的，不过后来一想不对，时间的维度为啥一天一定是0-24点，1-25点不行？</p>
+<p>然后思维扩展起来了。</p>
+<h2 id="最终方案"><a href="#最终方案" class="headerlink" title="最终方案"></a>最终方案</h2><p>最后的方案就是特别赞，我当时就觉得哇，这么棘手的问题都解决了。</p>
+<p>方案就是维持24个队列，这24个队列分别对应于0-24，1-25，2-26….23-47。</p>
+<p>然后每发生一个时间就向这24个队列写数据，每个都写。然后根据系统当前时间决定使用哪个区间的数据。一个区间的数据一旦使用过就清零，然后重新接受数据，24小时后，这个区间就有了前24个小时的数据，这样我们的最近一小时活跃度的问题就解决了。</p>
+<p>但是注意当前区间这一小时的值怎么办？好办暂存，用完之后那个区间替换当前区间，当前的区间再作为一个临时区间处理，这样利用25个队列，这个问题圆满解决。</p>
+<p>这个有点像地理里面的新一天旧一天的感觉，这就是我们最终的方案，解决这个问题之后，心情特好。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/java/关于流的思考/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/java/关于流的思考/" itemprop="url">关于流的思考</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:44:33+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们知道在JDK中定义了各种各样的流，java.io包下的流都是基本的流，这就是传统的BIO模式。</p>
+<p>我们看一下java.nio中也定义了一种新的流方式，其中涉及到Buffer、Channel和Selector。</p>
+<p>最近我们有一个签章的系统，需要调用第三方的服务，另外需要签名，我们是将合同的模块放在了本地的磁盘上，读取的时候进行加载，签好名然后传送第三方进行电子签，这里面涉及到大量的网络流处理，所以这些处理起来比较费劲。我们也在极力去想优化解决的方案。</p>
+<p>由于第三方都是提供jar给我们，然后我们按照他们的方式进行签署，这样对我们的优化的空间有所不利，还有如果第三方升级接口，我们看了老的代码进行自己实现的优化，可能就要跟着进行更改，这个对于我们是不利的。但是不使用第三方的jar才能进行大面积的优化，否则会面临很多的问题。</p>
+<p>优化的方案无非就是尽量使用内存和队列。还有就是使用NIO技术。</p>
+<h3 id="加载模板的优化"><a href="#加载模板的优化" class="headerlink" title="加载模板的优化"></a>加载模板的优化</h3><p>首先我们能想到的就是先优化模板的加载，一般我们都是从磁盘读流，然后将流给第三方的接口进行签署，这种有一个缺点就是还是在读磁盘，这可不是好现象，而且模板是固定的，没有必要每次都去读磁盘。我们的做法是将模板加载到内存中，然后使用这个内存的Byte数组形成一种内存流，然后将这个流放入第三方的调用函数中进行加载。</p>
+<p>这种方式就是不用频繁访问磁盘，而是一直在访问内存，可以帮助我们解决不少的问题。但是有一个缺点是一旦模板更改，系统一直在使用老模板，但是改模板的场景一般比较少。而且如果后台有管理模板的功能，那么我们就不得不解决这个问题了，还有就是模板数量可能也是动态的，那么我们要处理的事情就会很多。</p>
+<p>其实流就是加上读取的位置标识，这和我们在使用C的file文件的方式是一样的。</p>
+<h3 id="签署优化"><a href="#签署优化" class="headerlink" title="签署优化"></a>签署优化</h3><p>我们也想放内存，但是出现一个问题就是每次签署生成的合同文件是不同的，这和模板有很大的区别。但是同时签署的合同可能并不是很多，所以我们任然可以内存，而不是回写磁盘。</p>
+<p>但是这里会有几个问题需要解决：</p>
+<ul>
+<li>gc的回收任务加重，会带来不少的问题</li>
+<li>内存中的这个对象会很大，很可能被直接放入老年代，或者直接放到了方法区里面去了，这也不是好现象。</li>
+</ul>
+<p>所以这里的优化相对来说很难进行实现。</p>
+<h3 id="使用NIO进行优化"><a href="#使用NIO进行优化" class="headerlink" title="使用NIO进行优化"></a>使用NIO进行优化</h3><p>比如我们将签好的模板回写磁盘的时候，可以使用NIO方式。网络请求调用，分析第三方的jar包，进行改造使用NIO的方式来调优，但是这种方式复杂度比较高。</p>
+<h3 id="使用Java8的Stream"><a href="#使用Java8的Stream" class="headerlink" title="使用Java8的Stream"></a>使用Java8的Stream</h3><p>都说java8的Stream引入同时也带来并发能力，但是我没有更多使用过，所以目前对于效果也不是特别清楚。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/java/ServiceLocator模式学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/java/ServiceLocator模式学习/" itemprop="url">ServiceLocator模式学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T13:29:35+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于这个模式第一次见应该是Dubbo的服务加载器了，由于看Dubbo的源码已经很久远了，记不住了。只知道所有的服务都是通过ServiceLocator进行加载的。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>其实ServiceLocator的实现就像是策略模式之前加上了一层路由转发，也可以说有点像网络中的路由器，通过这个路由器找到对应的服务，所以我觉得起名字叫ServiceRouter也不是不可以呀！如果说看成交换机也行！当然路由规则也是多种多样的，一是直接在系统启动的时候，在ServiceLocator中放入服务即可。还有一种方式就是通过放置资源，用类加载器加载，然后利用反射进行初始化也可以。总之方式是多种多样的就看你的实现了。</p>
+<h2 id="SPI机制"><a href="#SPI机制" class="headerlink" title="SPI机制"></a>SPI机制</h2><p>我们先来说说这个SPI机制，感觉有点像ServiceLocator的泛型版，但是所有的实现都是基于反射实现，类的配置是META-INF里面。我觉得在某些方面我们可以认为，这个ServiceLoader就是ServiceLocator的实现方式之一。</p>
+<h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><p>利用java的命名服务，我们可以将所有的资源都给一个命名，然后我们通过名称找到相应的资源，这种实现方式还是和ServiceLocator的实现有些不一样的。我感觉这种更类似于，先登记在使用，而所有人的登记是放在一个登记的中心。而ServiceLocator并没有中心的这个概念在里面，所以我觉得这个也是比较明显的不同。但是如果广义上来说，这个也是一样的，实现方式不同而已，但是目的都达到了。</p>
+<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>工厂模式其实就是各种产品已经做好了，等着挑选，如果调好了产品就进行制作。工厂模式（包括抽象工厂）是两种抽象一是产品，二是工厂。有4个维度去解析，一个工厂可生产不同商品，不同工厂生产不同商品等等，总之这种模式比较固定，一般来说没有灵活的空间，不能进行后期的定制化操作。或者定制化操作是非常复杂的。但是也可认为是有ServiceLocator的模式在里面的。因为我们在使用策略模式的使用，也经常使用工厂模式去生成策略。我觉得工厂模式很像交换机，ServiceLocator是路由器，不信你自己再仔细想想他们的区别。</p>
+<h2 id="AOP-DI"><a href="#AOP-DI" class="headerlink" title="AOP/DI"></a>AOP/DI</h2><p>这里我就不介绍AOP和DI的基本概念了，我相信大家都是懂得。我们来讲如何实现AOP/DI，大家知道Spring实习AOP/DI的方式其实大体来说有两种，AOP是代理类的实现，至于DI则是通过扫描方式实现的。</p>
+<p>ServiceLocator和DependencyInjection是实现IoC的两种不同方式。第三种方式是FactoryPattern。ServiceLocator强调预先定义资源映射，隔离资源的具体实现，也就是在所实现类的外部某处RegisterService，例如在应用程序初始化时。DependencyInjection强调辅助创建和管理对象，在创建对象是可采用构造函数注入和属性Setter注入等方式。</p>
+<p>当然所有的功能我们可以在类中通过反射的方式来进行实现，没有反射类，其实我们什么也做不了，有了反射之后，一切都变得很强大。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我觉得分析问题一定是辩证统一，所有事物都是相通的，但是又有所区别的。问题还是要看透事情的本质，这样才能更好地理解问题。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/iefreer/article/details/9342519" target="_blank" rel="noopener">服务定位器模式（Service Locator Pattern）详解和代码示范</a><br><a href="http://www.cnblogs.com/gaochundong/archive/2013/04/12/service_locator_pattern.html" target="_blank" rel="noopener">Service Locator 模式</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/Bitcoinj中的上下文NetworkParameters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/blockchain/Bitcoinj中的上下文NetworkParameters/" itemprop="url">Bitcoinj中的上下文NetworkParameters</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T02:12:47+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于上下文要说的东西可就多了，什么是上下文，说到底上下文就是传参。广义的上下文就是你可以获取数据，狭义的就是和当前执行环境有关，那么这个环境又是什么呢？闭包算吗？要我说，系统的环境变量是上下文，java的Properties是上下文，Servlet中的ServletContext是上下文，Spring中的ApplicationContext是上下文，当然Spring中的Environment也是上下文，Mybatis里面的Configuration也是上下文。扯了这么多，就引出了bitcoinj的上下文是什么？NetworkParameters就是上下文，这里有很多参数都是应用会使用的，也有不少的类聚合了NetworkParameters。</p>
+<h2 id="NetworkParameters"><a href="#NetworkParameters" class="headerlink" title="NetworkParameters"></a>NetworkParameters</h2><p>NetworkParameters包含bitcoin链实例工作需要的数据。这是一个抽象类，具体实例可在params包中被发现。有4个实现类：一个是主网络MainNetParams，一个是为了测试网，另外两个是为了单元测试和本地app开发。虽然这些类包含一些别号，我们鼓励去调用get的静态方法。</p>
+<p>这个类所有的实现类都在org.bitcoinj.params这个包下面。</p>
+<h3 id="alert通知的公钥"><a href="#alert通知的公钥" class="headerlink" title="alert通知的公钥"></a>alert通知的公钥</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public static final byte[] SATOSHI_KEY = Utils.HEX.decode(&quot;04fc9702847840aaf195de8442ebecedf5b095cdbb9bc716bda9110971b28a49e0ead8564ff0db22209e0374782c093bb899692d524e9d6a6956e7c5ecbcd68284&quot;);</span><br></pre></td></tr></table></figure>
+<h3 id="网络标识信息"><a href="#网络标识信息" class="headerlink" title="网络标识信息"></a>网络标识信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/** The string returned by getId() for the main, production network where people trade things. */</span><br><span class="line">// getId返回的字符串，用于交换事物的主要生产网络。我们的网络id</span><br><span class="line">public static final String ID_MAINNET = &quot;org.bitcoin.production&quot;;</span><br><span class="line">/** The string returned by getId() for the testnet. */</span><br><span class="line">// 测试网络的getId返回</span><br><span class="line">public static final String ID_TESTNET = &quot;org.bitcoin.test&quot;;</span><br><span class="line">/** The string returned by getId() for regtest mode. */</span><br><span class="line">// regtest模式下的getID返回值，打开regtest的方式是：./bitcoind -regtest -daemon</span><br><span class="line">public static final String ID_REGTEST = &quot;org.bitcoin.regtest&quot;;</span><br><span class="line">/** Unit test network. */</span><br><span class="line">// 单元测试网络返回的getID</span><br><span class="line">public static final String ID_UNITTESTNET = &quot;org.bitcoinj.unittest&quot;;</span><br><span class="line"></span><br><span class="line">/** The string used by the payment protocol to represent the main net. */</span><br><span class="line">// 主网络的支付协议字符串表示</span><br><span class="line">public static final String PAYMENT_PROTOCOL_ID_MAINNET = &quot;main&quot;;</span><br><span class="line">/** The string used by the payment protocol to represent the test net. */</span><br><span class="line">public static final String PAYMENT_PROTOCOL_ID_TESTNET = &quot;test&quot;;</span><br><span class="line">/** The string used by the payment protocol to represent unit testing (note that this is non-standard). */</span><br><span class="line">public static final String PAYMENT_PROTOCOL_ID_UNIT_TESTS = &quot;unittest&quot;;</span><br><span class="line">public static final String PAYMENT_PROTOCOL_ID_REGTEST = &quot;regtest&quot;;</span><br></pre></td></tr></table></figure>
+<p>regtest是bitcoin在本地搭建的测试网络，也就是启动bitcoin的时候自成一格区块链网。进入开发模式。</p>
+<h3 id="创建创世区块"><a href="#创建创世区块" class="headerlink" title="创建创世区块"></a>创建创世区块</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">// 创建创世区块</span><br><span class="line">private static Block createGenesis(NetworkParameters n) &#123;</span><br><span class="line">    Block genesisBlock = new Block(n, Block.BLOCK_VERSION_GENESIS);</span><br><span class="line">    Transaction t = new Transaction(n);</span><br><span class="line">    try &#123;</span><br><span class="line">        // A script containing the difficulty bits and the following message:</span><br><span class="line">        //</span><br><span class="line">        //   &quot;The Times 03/Jan/2009 Chancellor on brink of second bailout for banks&quot;</span><br><span class="line">        byte[] bytes = Utils.HEX.decode</span><br><span class="line">                (&quot;04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73&quot;);</span><br><span class="line">        t.addInput(new TransactionInput(n, t, bytes));</span><br><span class="line">        ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();</span><br><span class="line">        Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode</span><br><span class="line">                (&quot;04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f&quot;));</span><br><span class="line">        scriptPubKeyBytes.write(ScriptOpCodes.OP_CHECKSIG);</span><br><span class="line">        t.addOutput(new TransactionOutput(n, t, FIFTY_COINS, scriptPubKeyBytes.toByteArray()));</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">        // Cannot happen.</span><br><span class="line">        throw new RuntimeException(e);</span><br><span class="line">    &#125;</span><br><span class="line">    genesisBlock.addTransaction(t);</span><br><span class="line">    return genesisBlock;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="HttpDiscovery-Details"><a href="#HttpDiscovery-Details" class="headerlink" title="HttpDiscovery.Details[]"></a>HttpDiscovery.Details[]</h3><p>这个是用来查找P2P节点的种子的。HttpDiscovery这个类会通过detail里面的uri读取文件，会使用detail中的key进行签名的验证。返回的流是GZIP格式的，按照protobuf的格式进行解析，其实就是peerseeds.proto文件的说明，解析就是按照这个标准来的，这样我们的节点就可以先连接上种子节点，进而进入P2P网络。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>还有就是一些全局的参数了，这里不做过多的说明。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">// 创始区块</span><br><span class="line">protected Block genesisBlock;</span><br><span class="line">protected BigInteger maxTarget;</span><br><span class="line"></span><br><span class="line">// 端口号</span><br><span class="line">protected int port;</span><br><span class="line">// 表示消息源网络，当流状态未知时，用于查找下一条消息。</span><br><span class="line">protected long packetMagic;  // Indicates message origin network and is used to seek to the next message when stream state is unknown.</span><br><span class="line">protected int addressHeader; // 地址头部</span><br><span class="line">protected int p2shHeader;    //</span><br><span class="line">protected int dumpedPrivateKeyHeader;</span><br><span class="line">// 用于检测，多少个块开始进行挖矿难度调整</span><br><span class="line">protected int interval;</span><br><span class="line">// 大概的解释是两周内区块要多少时间，秒</span><br><span class="line">protected int targetTimespan;</span><br><span class="line">// alert消息的公钥</span><br><span class="line">protected byte[] alertSigningKey;</span><br><span class="line">protected int bip32HeaderPub;</span><br><span class="line">protected int bip32HeaderPriv;</span><br><span class="line"></span><br><span class="line">/** Used to check majorities for block version upgrade */</span><br><span class="line">// 用来检查多数区块的版本升级</span><br><span class="line">protected int majorityEnforceBlockUpgrade;</span><br><span class="line">protected int majorityRejectBlockOutdated;</span><br><span class="line">protected int majorityWindow;</span><br><span class="line"></span><br><span class="line">// 在旧的钱包中这个字段可能是空值。在这种情况下，我们通过端口号进行启发式地推导</span><br><span class="line">protected String id;</span><br><span class="line">// coinbase交易所需的块的深度是可以花费的。（钱可以花到哪个块高）</span><br><span class="line">protected int spendableCoinbaseDepth;</span><br><span class="line">// 补贴减少块数</span><br><span class="line">protected int subsidyDecreaseBlockCount;</span><br><span class="line"></span><br><span class="line">// 可接受的地址编码（可接受的地址前缀）</span><br><span class="line">protected int[] acceptableAddressCodes;</span><br><span class="line">// dns种子节点</span><br><span class="line">protected String[] dnsSeeds;</span><br><span class="line">// 地址节点种子</span><br><span class="line">protected int[] addrSeeds;</span><br><span class="line">// httpDiscovery的种子节点</span><br><span class="line">protected HttpDiscovery.Details[] httpSeeds = &#123;&#125;;</span><br><span class="line">// 检查点（需要深入学习）</span><br><span class="line">protected Map&lt;Integer, Sha256Hash&gt; checkpoints = new HashMap&lt;&gt;();</span><br><span class="line">// 消息序列化</span><br><span class="line">protected transient MessageSerializer defaultSerializer = null;</span><br></pre></td></tr></table></figure></p>
+<p>现在我也不是很清楚这里面每一个变量的作用，等用到NetworkParameters类及其子类的时候，我们会发现这些字段的具体意思。</p>
+<h2 id="AbstractBitcoinNetParams"><a href="#AbstractBitcoinNetParams" class="headerlink" title="AbstractBitcoinNetParams"></a>AbstractBitcoinNetParams</h2><p>这个类是继承NetworkParameters，也是一个抽象的接口。是比特币类型网络的参数。这里面加入了一个<code>public static final int REWARD_HALVING_INTERVAL = 210000;</code>,还有一个方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 检查我们是否在奖励减半点。</span><br><span class="line">public final boolean isRewardHalvingPoint(final int height) &#123;</span><br><span class="line">    // 当挖矿，挖到一定程度之后，开始奖励减半。</span><br><span class="line">    return ((height + 1) % REWARD_HALVING_INTERVAL) == 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>还有一个难度检测的点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 检查我们是否处于难度转换点。</span><br><span class="line">public final boolean isDifficultyTransitionPoint(final int height) &#123;</span><br><span class="line">    return ((height + 1) % this.getInterval()) == 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/13/blockchain/Bitcoinj中协议抽象学习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1219,973 +1987,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java中双端队列/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/07/java/Java中双端队列/" itemprop="url">Java中双向队列Deque</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T19:31:34+08:00">2018-03-07</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天来简单研究一下双向队列的实现。以前用C语言实现的时候，我最喜欢使用链表的方式进行实现。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>双向队列在java中的接口规范是Deque。我们先来看一下继承的结构。（这里漏画了Deque是继承Queue，Queue继承Collection）</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/deque%E7%B1%BB%E5%9B%BE.png?raw=true" alt=""></p>
-<p>再来看一下Deque里面定义的一些方法：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/Deque%E6%96%B9%E6%B3%95.png?raw=true" alt=""></p>
-<p>这里面需要分两个维度去看，一个是Queue里面的方法，二是queue加入的方法。这里我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><p>这个估计没啥可讲的，因为之前我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="ArrayDeque"><a href="#ArrayDeque" class="headerlink" title="ArrayDeque"></a>ArrayDeque</h2><h3 id="大概思路"><a href="#大概思路" class="headerlink" title="大概思路"></a>大概思路</h3><p>对于数组实现的Deque来说，数据结构上比较简单，只需要一个存储数据的数组以及头尾两个索引即可。由于数组是固定长度的，所以很容易就得到数组的头和尾，那么对于数组的操作只需要移动头和尾的索引即可。</p>
-<p>特别说明的是ArrayDeque并不是一个固定大小的队列，每次队列满了以后就将队列容量扩大一倍（doubleCapacity()），因此加入一个元素总是能成功，而且也不会抛出一个异常。也就是说ArrayDeque是一个没有容量限制的队列。</p>
-<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><p>先看一下继承结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayDeque&lt;E&gt; extends AbstractCollection&lt;E&gt;</span><br><span class="line">                           implements Deque&lt;E&gt;, Cloneable, Serializable</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public ArrayDeque() &#123;</span><br><span class="line">    // 默认初始化16个</span><br><span class="line">    elements = (E[]) new Object[16];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(int numElements) &#123;</span><br><span class="line">    allocateElements(numElements);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    allocateElements(c.size());</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void allocateElements(int numElements) &#123;</span><br><span class="line">    int initialCapacity = MIN_INITIAL_CAPACITY;</span><br><span class="line">    // Find the best power of two to hold elements.</span><br><span class="line">    // Tests &quot;&lt;=&quot; because arrays aren&apos;t kept full.</span><br><span class="line">    if (numElements &gt;= initialCapacity) &#123;</span><br><span class="line">        initialCapacity = numElements;</span><br><span class="line">        // 如果不是2的倍数，就进行修正</span><br><span class="line">        // 根据所给的数组长度，得到一个比该长度大的最小的2^p的真实长度，并建立真实长度的空数组</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  1);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  2);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  4);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  8);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt; 16);</span><br><span class="line">        initialCapacity++;</span><br><span class="line"></span><br><span class="line">        if (initialCapacity &lt; 0)   // Too many elements, must back off</span><br><span class="line">            initialCapacity &gt;&gt;&gt;= 1;// Good luck allocating 2 ^ 30 elements</span><br><span class="line">    &#125;</span><br><span class="line">    elements = (E[]) new Object[initialCapacity];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从上面的代码看，ArrayDeque默认初始化16个；你可以指定大小，但是会被修正成大过initialCapacity的最小2的n次方的值。</p>
-<h3 id="添加的操作"><a href="#添加的操作" class="headerlink" title="添加的操作"></a>添加的操作</h3><p>我们看一下添加的函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">public void addFirst(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">    elements[head = (head - 1) &amp; (elements.length - 1)] = e;</span><br><span class="line">    // 如果队列满了就进行扩容处理</span><br><span class="line">    if (head == tail)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void addLast(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException()</span><br><span class="line">    // tail指向的地方是没有值得的</span><br><span class="line">    elements[tail] = e;</span><br><span class="line">    // 避免tail+1越界，&amp;操作之后就不用对长度进行取余，主要还是因为2的指数倍</span><br><span class="line">    if ( (tail = (tail + 1) &amp; (elements.length - 1)) == head)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* Double the capacity of this deque.  Call only when full, i.e.,</span><br><span class="line">* when head and tail have wrapped around to become equal.</span><br><span class="line">*</span><br><span class="line">* 当队列首尾指向同一个引用时，扩充队列的容量为原来的两倍，并对元素重新定位到新数组中</span><br><span class="line">*/</span><br><span class="line">private void doubleCapacity() &#123;</span><br><span class="line">    assert head == tail;// tail=head代表数组满了，一开始tail与head一定不相交，一旦相交就要扩容。</span><br><span class="line">    int p = head;</span><br><span class="line">    int n = elements.length;</span><br><span class="line">    int r = n - p; // number of elements to the right of p</span><br><span class="line">    // 容量增一倍</span><br><span class="line">    int newCapacity = n &lt;&lt; 1;</span><br><span class="line">    if (newCapacity &lt; 0)</span><br><span class="line">        throw new IllegalStateException(&quot;Sorry, deque too big&quot;);</span><br><span class="line">    Object[] a = new Object[newCapacity];</span><br><span class="line">    // 拷贝数组head右边的元素，放到新数组的0开始，长度是r</span><br><span class="line">    // 这里注意，tail&lt;head的情况，不过这边都可以处理（主要还是因为满了的话tail一般都是小于head的）</span><br><span class="line">    System.arraycopy(elements, p, a, 0, r);</span><br><span class="line">    // 将左侧元素，复制到后面，这个时候head就是0了</span><br><span class="line">    System.arraycopy(elements, 0, a, r, p);</span><br><span class="line">    elements = (E[])a;</span><br><span class="line">    head = 0;</span><br><span class="line">    // tail为n，是因为队列满了</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">我们可以看出，tail==head就是队列满了，(head+1)&amp;(length-1)==tail就是队列空掉的条件。一旦队列满了就会立即扩容，方式就是双倍扩容。</b></p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>其他的方法就不用说了，即使不知道也大概明白思路。对于出队，当然要检查队列是不是空的，如果是空的就不用处理了（或者返回null），感觉还是要看一下源码确认一下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public E pollFirst() &#123;</span><br><span class="line">    int h = head;</span><br><span class="line">    E result = elements[h]; // Element is null if deque empty</span><br><span class="line">    // 如果取得值为空，就表示队列空了</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 如果有值就移除</span><br><span class="line">    elements[h] = null;     // Must null out slot</span><br><span class="line">    // 重新设置head</span><br><span class="line">    head = (h + 1) &amp; (elements.length - 1);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E pollLast() &#123;</span><br><span class="line">    // tail向后移，防止出现负数</span><br><span class="line">    int t = (tail - 1) &amp; (elements.length - 1);</span><br><span class="line">    E result = elements[t];</span><br><span class="line">    // 如果为null啥都不做</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 不为null，移除。tail后移</span><br><span class="line">    elements[t] = null;</span><br><span class="line">    tail = t;</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总的感觉这个类的实现，还是比较简单的，比较容易理解。</p>
-<h2 id="双向并发阻塞队列-LinkedBlockingDeque"><a href="#双向并发阻塞队列-LinkedBlockingDeque" class="headerlink" title="双向并发阻塞队列 LinkedBlockingDeque"></a>双向并发阻塞队列 LinkedBlockingDeque</h2><p>LinkedBlockingDeque是双向链表实现的双向并发阻塞队列。该阻塞队列同时支持FIFO和FILO两种操作方式，即可以从队列的头和尾同时操作(插入/删除)；并且，该阻塞队列是支持线程安全。</p>
-<p>此外，LinkedBlockingDeque还是可选容量的(防止过度膨胀)，即可以指定队列的容量。如果不指定，默认容量大小等于Integer.MAX_VALUE。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/LinkedBlockingDeque%E7%9A%84%E5%8E%9F%E7%90%86%E5%9B%BE.jpg?raw=true" alt=""></p>
-<h3 id="继承结构-1"><a href="#继承结构-1" class="headerlink" title="继承结构"></a>继承结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedBlockingDeque&lt;E&gt;</span><br><span class="line">    extends AbstractQueue&lt;E&gt;</span><br><span class="line">    implements BlockingDeque&lt;E&gt;,  java.io.Serializable &#123;</span><br></pre></td></tr></table></figure>
-<p>LinkedBlockingDeque继承于AbstractQueue，它本质上是一个支持FIFO和FILO的双向的队列。AbstractQueue只是基础的Queue的实现而已。</p>
-<p>LinkedBlockingDeque实现了BlockingDeque接口，它支持多线程并发。当多线程竞争同一个资源时，某线程获取到该资源之后，其它线程需要阻塞等待。</p>
-<h3 id="属性一探"><a href="#属性一探" class="headerlink" title="属性一探"></a>属性一探</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">transient Node&lt;E&gt; first;</span><br><span class="line">transient Node&lt;E&gt; last;</span><br><span class="line">private transient int count;</span><br><span class="line">private final int capacity;</span><br><span class="line">final ReentrantLock lock = new ReentrantLock();</span><br><span class="line">// 等待takes操作的Condition</span><br><span class="line">private final Condition notEmpty = lock.newCondition();</span><br><span class="line">// 等待puts操作的Condition</span><br><span class="line">private final Condition notFull = lock.newCondition();</span><br></pre></td></tr></table></figure>
-<p>lock是控制对LinkedBlockingDeque的互斥锁，当多个线程竞争同时访问LinkedBlockingDeque时，某线程获取到了互斥锁lock，其它线程则需要阻塞等待，直到该线程释放lock，其它线程才有机会获取lock从而获取cpu执行权。</p>
-<p>notEmpty和notFull分别是“非空条件”和“未满条件”。通过它们能够更加细腻进行并发控制。</p>
-<p><b style="color:blue">若某线程(线程A)要取出数据时，队列正好为空，则该线程会执行notEmpty.await()进行等待；当其它某个线程(线程B)向队列中插入了数据之后，会调用notEmpty.signal()唤醒“notEmpty上的等待线程”。此时，线程A会被唤醒从而得以继续运行。 此外，线程A在执行取操作前，会获取takeLock，在取操作执行完毕再释放takeLock。</b><br><b style="color:blue">若某线程(线程H)要插入数据时，队列已满，则该线程会它执行notFull.await()进行等待；当其它某个线程(线程I)取出数据之后，会调用notFull.signal()唤醒“notFull上的等待线程”。此时，线程H就会被唤醒从而得以继续运行。 此外，线程H在执行插入操作前，会获取putLock，在插入操作执行完毕才释放putLock。</b></p>
-<p>这里看一下Node链表的结构吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// Deque里面的Node的class定义，这是一个链表结构</span><br><span class="line">static final class Node&lt;E&gt; &#123;</span><br><span class="line">    E item;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(E x) &#123;</span><br><span class="line">        item = x;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><p>其他构造函数就不看了，主要来看一下这个构造函数，加入元素的时候使用了锁。<b style="color:red">注意这个初始化元素使用的是尾部插入法</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public LinkedBlockingDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    this(Integer.MAX_VALUE);</span><br><span class="line">    // 取得lock</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 从未竞争过，但是对于可视性来说是必要</span><br><span class="line">    lock.lock(); // Never contended, but necessary for visibility</span><br><span class="line">    try &#123;</span><br><span class="line">        for (E e : c) &#123;</span><br><span class="line">            if (e == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">            // 逐条加入</span><br><span class="line">            if (!linkLast(new Node&lt;E&gt;(e)))</span><br><span class="line">                throw new IllegalStateException(&quot;Deque full&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">本来再想锁的粒度问题，我想如果linkLast这个函数也加了锁，不就有问题了吗，查了这个函数发现是私有方法，没有加锁，没毛病。加锁的实现和功能的实现是分离，这个也是常规的做法。</b></p>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>这里面设计几个方面：</p>
-<ol>
-<li>队列先加锁</li>
-<li>执行插入</li>
-<li>通知所有阻塞监听队列内容的线程</li>
-<li>释放放锁</li>
-</ol>
-<p>这里我们只是举个例子，不进行源代码的深入分析, 下面的源码就是对上面过程的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    return offerLast(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean offerLast(E e) &#123;</span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    // 新建节点</span><br><span class="line">    Node&lt;E&gt; node = new Node&lt;E&gt;(e);</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        // 将“新节点”添加到双向链表的末尾</span><br><span class="line">        return linkLast(node);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private boolean linkLast(Node&lt;E&gt; node) &#123;</span><br><span class="line">    // 如果“双向链表的节点数量” &gt; “容量”，则返回false，表示插入失败。</span><br><span class="line">    if (count &gt;= capacity)</span><br><span class="line">        return false;</span><br><span class="line">    // 将“node添加到链表末尾”，并设置node为新的尾节点</span><br><span class="line">    Node&lt;E&gt; l = last;</span><br><span class="line">    node.prev = l;</span><br><span class="line">    last = node;</span><br><span class="line">    if (first == null)</span><br><span class="line">        first = node;</span><br><span class="line">    else</span><br><span class="line">        l.next = node;</span><br><span class="line">    // 将“节点数量”+1</span><br><span class="line">    ++count;</span><br><span class="line">    // 插入节点之后，唤醒notEmpty上的等待线程。</span><br><span class="line">    notEmpty.signal();</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="删除获取"><a href="#删除获取" class="headerlink" title="删除获取"></a>删除获取</h3><p>获取方式有3种：</p>
-<ul>
-<li>一种是取数据不删除数据</li>
-<li>取数据移除数据并不阻塞，没有返回null即可</li>
-<li>取数据移除数据并没有会阻塞等待</li>
-</ul>
-<p>刚才提到通知的问题，我们在线程池中也大概了解到阻塞队列，取消息的时候会阻塞，那么我们就来看看这个阻塞是如何实现的。下面是take的实现，属于第三种。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">public E take() throws InterruptedException &#123;</span><br><span class="line">    return takeFirst();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E takeFirst() throws InterruptedException &#123;</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        E x;</span><br><span class="line">        // 若“队列为空”，则一直等待。否则，通过unlinkFirst()删除第一个节点。</span><br><span class="line">        while ( (x = unlinkFirst()) == null)</span><br><span class="line">            notEmpty.await();</span><br><span class="line">        return x;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private E unlinkFirst() &#123;</span><br><span class="line">    // assert lock.isHeldByCurrentThread();</span><br><span class="line">    Node&lt;E&gt; f = first;</span><br><span class="line">    if (f == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 删除并更新“第一个节点”</span><br><span class="line">    Node&lt;E&gt; n = f.next;</span><br><span class="line">    E item = f.item;</span><br><span class="line">    f.item = null;</span><br><span class="line">    f.next = f; // help GC</span><br><span class="line">    first = n;</span><br><span class="line">    if (n == null)</span><br><span class="line">        last = null;</span><br><span class="line">    else</span><br><span class="line">        n.prev = null;</span><br><span class="line">    // 将“节点数量”-1</span><br><span class="line">    --count;</span><br><span class="line">    // 删除节点之后，唤醒notFull上的等待线程。</span><br><span class="line">    notFull.signal();</span><br><span class="line">    return item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">在takeFirst方法中，我们发现notEmpty.await();阻塞等待，但是注意这里的lock.lock();你可能认为发生了死锁，其实并没有，这就是Lock，condition的组合使用，Condition是基于Lock生成的对象，notEmpty.await();是会释放lock锁的，被唤醒继续执行的时候会重新尝试获取lock锁，只是这个被封装了一下，变得不那么清除了而已。</b></p>
-<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p><b style="color:blue">这部分的知识就不用说了，使用了内部的迭代器。内部类的迭代器遍历有一个好处就是没有Collection的传入，也可复用外部类的方法。总之呢，就是利用了内部类的机制，做自己想做的事情，这种设计思路，我们也可以使用，一定要活学活用。</b>这个迭代器比别的多了缓存的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">private abstract class AbstractItr implements Iterator&lt;E&gt; &#123;</span><br><span class="line">    // next是下一次调用next()会返回的节点。</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    // nextItem是next()返回节点对应的数据。</span><br><span class="line">    E nextItem;</span><br><span class="line">    // 上一次next()返回的节点。</span><br><span class="line">    private Node&lt;E&gt; lastRet;</span><br><span class="line">    // 返回第一个节点</span><br><span class="line">    abstract Node&lt;E&gt; firstNode();</span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    abstract Node&lt;E&gt; nextNode(Node&lt;E&gt; n);</span><br><span class="line"></span><br><span class="line">    AbstractItr() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        // 获取“LinkedBlockingDeque的互斥锁”</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // 获取“双向队列”的表头</span><br><span class="line">            next = firstNode();</span><br><span class="line">            // 获取表头对应的数据</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // 释放“LinkedBlockingDeque的互斥锁”</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取n的后继节点</span><br><span class="line">    private Node&lt;E&gt; succ(Node&lt;E&gt; n) &#123;</span><br><span class="line">        // Chains of deleted nodes ending in null or self-links</span><br><span class="line">        // are possible if multiple interior nodes are removed.</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            Node&lt;E&gt; s = nextNode(n);</span><br><span class="line">            if (s == null)</span><br><span class="line">                return null;</span><br><span class="line">            else if (s.item != null)</span><br><span class="line">                return s;</span><br><span class="line">            else if (s == n)</span><br><span class="line">                return firstNode();</span><br><span class="line">            else</span><br><span class="line">                n = s;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 更新next和nextItem。</span><br><span class="line">    void advance() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // assert next != null;</span><br><span class="line">            next = succ(next);</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回“下一个节点是否为null”</span><br><span class="line">    public boolean hasNext() &#123;</span><br><span class="line">        return next != null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    public E next() &#123;</span><br><span class="line">        if (next == null)</span><br><span class="line">            throw new NoSuchElementException();</span><br><span class="line">        lastRet = next;</span><br><span class="line">        E x = nextItem;</span><br><span class="line">        advance();</span><br><span class="line">        return x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 删除下一个节点</span><br><span class="line">    public void remove() &#123;</span><br><span class="line">        Node&lt;E&gt; n = lastRet;</span><br><span class="line">        if (n == null)</span><br><span class="line">            throw new IllegalStateException();</span><br><span class="line">        lastRet = null;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (n.item != null)</span><br><span class="line">                unlink(n);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>关于双向队列的知识就是这么多了，其实底层还是那样，要么是数组实现，要么是链表实现。但是在实现的过程确实有比较巧妙的设计。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.cnblogs.com/skywang12345/p/3503480.html" target="_blank" rel="noopener">Java多线程系列–“JUC集合”09之 LinkedBlockingDeque</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/WeakHashMap的原理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/07/java/WeakHashMap的原理/" itemprop="url">WeakHashMap的原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T17:02:58+08:00">2018-03-07</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>WeakHashMap和HashMap一样，WeakHashMap也是一个散列表，它存储的内容也是键值对(key-value)映射，而且键和值都可以为null。不过WeakHashMap的键是“弱键”(注：源码中Entry中的定义是这样的：private static class Entry&lt;K,V&gt; extends WeakReference<object> implements Map.Entry&lt;K,V&gt;，即Entry实现了WeakReference类)，当WeakHashMap某个键不再正常使用时，会被从WeakHashMap自动删除。更精确的说，对于一个给定的键，其映射的存在并不能阻止垃圾回收器对该键的丢弃，这就使该键称为被终止的，被终止，然后被回收，这样，这就可以认为该键值对应该被WeakHashMap删除。因此，WeakHashMap使用了弱引用作为内部数据的存储方案，，WeakHashMap可以作为简单缓存表的解决方案，当系统内存不足时，垃圾收集器会自动的清除没有在任何其他地方被引用的键值对。如果需要用一张很大的Map作为缓存表时，那么可以考虑使用WeakHashMap。</object></p>
-<p><b style="color:red">在WeakHashMap实现中，借用了ReferenceQueue这个“监听器”来保存被GC回收的”弱键”，然后在每次使用WeakHashMap时，就在WeakHashMap中删除ReferenceQueue中保存的键值对。即WeakHashMap的实现是通过借用ReferenceQueue这个“监听器”来优雅的实现自动删除那些引用不可达的key的。这个我在上一篇的博客中已经做了说明。</b><a href="/2018/03/07/java/Java引用Reference学习/">Java引用Reference学习</a></p>
-<p>WeakHashMap是通过数组table保存Entry(键值对)；每个Entry实际上就是一个链表来实现的。当某“弱键”不再被其它对象引用，就会被GC回收时，这个“弱键”也同时被添加到ReferenceQueue队列中。当下一步我们需要操作WeakHashMap时，会先同步table、queue，table中保存了全部的键值对，而queue中保存的是GC回收的键值对；同步他们，就是删除table中被GC回收的键值对。</p>
-<p>我们可以在WeakHashMap的源码中看到这样的一个属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* 申明的WeakEntries的queue指针</span><br><span class="line">*/</span><br><span class="line">private final ReferenceQueue&lt;Object&gt; queue = new ReferenceQueue&lt;&gt;();</span><br></pre></td></tr></table></figure></p>
-<p>我们来看一下内部Entry类的定义，你就会明白很多事情了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * 原来将Entry定义为WeakReference，这样就会自动消失。</span><br><span class="line"> */</span><br><span class="line">private static class Entry&lt;K,V&gt; extends WeakReference&lt;Object&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">    V value;</span><br><span class="line">    int hash;</span><br><span class="line">    Entry&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">    * 创建一个新的Entry</span><br><span class="line">    */</span><br><span class="line">    Entry(Object key, V value,</span><br><span class="line">            ReferenceQueue&lt;Object&gt; queue,</span><br><span class="line">            int hash, Entry&lt;K,V&gt; next) &#123;</span><br><span class="line">        // 传入ReferenceQueue和hash，这个可能是在已有头Entry的基础上使用</span><br><span class="line">        super(key, queue);</span><br><span class="line">        this.value = value;</span><br><span class="line">        this.hash  = hash;</span><br><span class="line">        this.next  = next;</span><br><span class="line">    &#125;</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="如何创建Entry"><a href="#如何创建Entry" class="headerlink" title="如何创建Entry"></a>如何创建Entry</h2><p>在进行put操作的时候，会进行Key的建立。大家注意这个弱引用不是指我们put的key是弱引用，而是指内部定义的Entry是弱引用，不要忘记这一点。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    // null key的处理</span><br><span class="line">    Object k = maskNull(key);</span><br><span class="line">    int h = hash(k);</span><br><span class="line">    // 获取所有的桶</span><br><span class="line">    Entry&lt;K,V&gt;[] tab = getTable();</span><br><span class="line">    // 找到链表的头</span><br><span class="line">    int i = indexFor(h, tab.length);</span><br><span class="line"></span><br><span class="line">    // 遍历链表，查找元素，有替换</span><br><span class="line">    for (Entry&lt;K,V&gt; e = tab[i]; e != null; e = e.next) &#123;</span><br><span class="line">        if (h == e.hash &amp;&amp; eq(k, e.get())) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            if (value != oldValue)</span><br><span class="line">                e.value = value;</span><br><span class="line">            return oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    // 获取链表头</span><br><span class="line">    Entry&lt;K,V&gt; e = tab[i];</span><br><span class="line">    // 这里需要注意，这是头部插入法</span><br><span class="line">    tab[i] = new Entry&lt;&gt;(k, value, queue, h, e);</span><br><span class="line">    if (++size &gt;= threshold)</span><br><span class="line">        resize(tab.length * 2);</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="移除失效元素"><a href="#移除失效元素" class="headerlink" title="移除失效元素"></a>移除失效元素</h2><p>进一步研读代码我们可以发现，size方法，getTable等一些的操作中，都会调用一个叫expungeStaleEntries的方法，这个方法的内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 从桶中移除失效的key-value（Entry）</span><br><span class="line"> */</span><br><span class="line">private void expungeStaleEntries() &#123;</span><br><span class="line">    // 从Queue中取被回收的数据，然后进行删除操作</span><br><span class="line">    for (Object x; (x = queue.poll()) != null; ) &#123;</span><br><span class="line">        synchronized (queue) &#123;</span><br><span class="line">            @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;) x;</span><br><span class="line">            int i = indexFor(e.hash, table.length);</span><br><span class="line"></span><br><span class="line">            // 进行删除的操作</span><br><span class="line">            Entry&lt;K,V&gt; prev = table[i];</span><br><span class="line">            Entry&lt;K,V&gt; p = prev;</span><br><span class="line">            while (p != null) &#123;</span><br><span class="line">                Entry&lt;K,V&gt; next = p.next;</span><br><span class="line">                if (p == e) &#123;</span><br><span class="line">                    if (prev == e)</span><br><span class="line">                        table[i] = next;</span><br><span class="line">                    else</span><br><span class="line">                        prev.next = next;</span><br><span class="line">                    // Must not null out e.next;</span><br><span class="line">                    // stale entries may be in use by a HashIterator</span><br><span class="line">                    e.value = null; // Help GC</span><br><span class="line">                    size--;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                prev = p;</span><br><span class="line">                p = next;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>其实就是从Queue中取得，被垃圾回收机制回收的Entry，然后从Map中删除这个Entry，这是一种懒删除的方式，我们之前已经学习了Java的Reference机制，这里就不多研究了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我觉得这种数据结构，可能面临丢失数据的风险，所以使用场景是哪些不怕丢失数据的地方。我想了一下，什么数据不怕丢，最容易想到的就是可以恢复的数据；然后我想到了内存缓存，的确缓存数据最不怕丢失，因为缓存数据往往都是可以想办法恢复的。所以当我们缓存的数据比较多的时候，使用这个数据结构的确可以帮助我们在系统内存紧张的时候，放弃缓存，然后重新缓存。但是Weak的特性是每次gc都极可能丢失，也会带来不少的问题。总之呢，这种开发的思想真的很好。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java引用Reference学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/07/java/Java引用Reference学习/" itemprop="url">Java引用Reference学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T10:40:05+08:00">2018-03-07</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在看一些数据结构的源码的时候发现了Reference这个类，突然就想起来关于Java引用的知识，并不了解里面真实的知识，今天就来深入源码来好好学习一番。所有的源码都在java.lang.ref包下面。注意体会里面的设计模式，多想想总有收获。</p>
-<h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p><b style="color:red">Java引用体系中我们最熟悉的就是强引用类型，如 A a= new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</b></p>
-<p><b style="color:blue">除了强引用外，Java还引入了SoftReference，WeakReference，PhantomReference，FinalReference.Java额外引入这个四种类型引用主要目的是在jvm 在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</b></p>
-<h2 id="对象可达性判断"><a href="#对象可达性判断" class="headerlink" title="对象可达性判断"></a>对象可达性判断</h2><p>垃圾回收时会依据两个原则来判断对象的可达性：</p>
-<ul>
-<li>单一路径中，以最弱的引用为准</li>
-<li>多路径中，以最强的引用为准</li>
-</ul>
-<h2 id="ReferenceQueue-amp-Reference"><a href="#ReferenceQueue-amp-Reference" class="headerlink" title="ReferenceQueue &amp; Reference"></a>ReferenceQueue &amp; Reference</h2><p>Reference作为SoftReference，WeakReference，PhantomReference，FinalReference这几个引用类型的父类。主要有两个字段referent、queue，一个是指所引用的对象，一个是与之对应的ReferenceQueue。Reference类有个构造函数 <code>Reference(T referent, ReferenceQueue&lt;? super T&gt; queue)</code>，可以通过该构造函数传入与Reference相伴的ReferenceQueue。</p>
-<p>ReferenceQueue本身提供队列的功能，有入队(enqueue)和出队(poll,remove,其中remove阻塞等待提取队列元素)。<b style="color:red">ReferenceQueue对象本身保存了一个Reference类型的head节点，Reference封装了next字段，这样就是可以组成一个单向链表。这种元素包含Queue的方式，确实</b>同时ReferenceQueue提供了两个静态字段NULL，ENQUEUED. Null是内部定义的一个空类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">static ReferenceQueue&lt;Object&gt; NULL = new Null&lt;&gt;();</span><br><span class="line">static ReferenceQueue&lt;Object&gt; ENQUEUED = new Null&lt;&gt;();</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:blue">这两个字段的主要功能：NULL是当我们构造Reference实例时queue传入null时，会默认使用NULL，这样在enqueue时判断queue是否为NULL,如果为NULL直接返回，入队失败。ENQUEUED的作用是防止重复入队，reference后会把其queue字段赋值为ENQUEUED,当再次入队时会直接返回失败。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">boolean enqueue(Reference&lt;? extends T&gt; r) &#123; /* Called only by Reference class */</span><br><span class="line">    synchronized (r) &#123;</span><br><span class="line">        // 如果已经enqueue了，就不需要再做</span><br><span class="line">        if (r.queue == ENQUEUED) return false;</span><br><span class="line">        synchronized (lock) &#123;</span><br><span class="line">            // 设置ENQUEUE</span><br><span class="line">            r.queue = ENQUEUED;</span><br><span class="line">            // 没有设置head的话，r开始为链表的头元素，否则就是头结点的插入</span><br><span class="line">            r.next = (head == null) ? r : head;</span><br><span class="line">            head = r;</span><br><span class="line">            // queue长度+1；</span><br><span class="line">            queueLength++;</span><br><span class="line">            if (r instanceof FinalReference) &#123;</span><br><span class="line">                // 如果是FinalReference的话，VM里面的计数+1</span><br><span class="line">                sun.misc.VM.addFinalRefCount(1);</span><br><span class="line">            &#125;</span><br><span class="line">            // 通知所有的lock.wait，这个是Reference里面的线程ReferenceHandler调用</span><br><span class="line">            lock.notifyAll();</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>我们来看看Reference的线程组，wait和notify调用的实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">private static class ReferenceHandler extends Thread &#123;</span><br><span class="line">    // 加入某个线程组里面去，取个名字</span><br><span class="line">    ReferenceHandler(ThreadGroup g, String name) &#123;</span><br><span class="line">        super(g, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void run() &#123;</span><br><span class="line">        for (;;) &#123;</span><br><span class="line"></span><br><span class="line">            Reference r;</span><br><span class="line">            synchronized (lock) &#123;</span><br><span class="line">                if (pending != null) &#123;</span><br><span class="line">                    r = pending;</span><br><span class="line">                    Reference rn = r.next;</span><br><span class="line">                    pending = (rn == r) ? null : rn;</span><br><span class="line">                    r.next = r;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        // 否则就进行阻塞等待，是在ReferenceQueue中调用的notify方法</span><br><span class="line">                        lock.wait();</span><br><span class="line">                    &#125; catch (InterruptedException x) &#123; &#125;</span><br><span class="line">                    continue;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Fast path for cleaners</span><br><span class="line">            // 如果Reference实现了Cleaner接口，那么就调用clean方法来获取我们想要的值</span><br><span class="line">            // 做一些清理操作。这个类在dt.jar中实现的。</span><br><span class="line">            if (r instanceof Cleaner) &#123;</span><br><span class="line">                ((Cleaner)r).clean();</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            ReferenceQueue q = r.queue;</span><br><span class="line">            // 将ReferenceQueue加入到Queue中</span><br><span class="line">            if (q != ReferenceQueue.NULL) q.enqueue(r);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:blue">Reference与ReferenceQueue之间是如何工作的呢？Reference里有个静态字段pending，同时还通过静态代码块启动了Reference-handler thread。当一个Reference的referent被回收时，垃圾回收器会把reference添加到pending这个链表里，然后Reference-handler thread不断的读取pending中的reference，把它加入到对应的ReferenceQueue中。我们可以通过下面代码块来进行把SoftReference，WeakReference，PhantomReference与ReferenceQueue联合使用来验证这个机制。为了确保SoftReference在每次gc后，其引用的referent都被回收，我们需要加入-XX:SoftRefLRUPolicyMSPerMB=0参数，这个原理下文中会在讲。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 为了确保System.gc()后,SoftReference引用的referent被回收需要加入下面的参数</span><br><span class="line"> * -XX:SoftRefLRUPolicyMSPerMB=0</span><br><span class="line"> */</span><br><span class="line">public class ReferenceTest &#123;</span><br><span class="line">    private static List&lt;Reference&gt; roots = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        ReferenceQueue rq = new ReferenceQueue();</span><br><span class="line"></span><br><span class="line">        new Thread(new Runnable() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                int i=0;</span><br><span class="line">                while (true) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        // 这个是只读取pending里面的值</span><br><span class="line">                        Reference r = rq.remove();</span><br><span class="line">                        System.out.println(“reference:”+r);</span><br><span class="line">                        //为null说明referent被回收</span><br><span class="line">                        System.out.println( “get:”+r.get());</span><br><span class="line">                        i++;</span><br><span class="line">                        System.out.println( “queue remove num:”+i);</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        for(int i=0;i&lt;100000;i++) &#123;</span><br><span class="line">            byte[] a = new byte[1024*1024];</span><br><span class="line">            // 分别验证SoftReference,WeakReference,PhantomReference</span><br><span class="line">            Reference r = new SoftReference(a, rq);</span><br><span class="line">            //Reference r = new WeakReference(a, rq);</span><br><span class="line">            //Reference r = new PhantomReference(a, rq);</span><br><span class="line">            roots.add(r);</span><br><span class="line">            System.gc();</span><br><span class="line"></span><br><span class="line">            System.out.println(“produce”+i);</span><br><span class="line">            TimeUnit.MILLISECONDS.sleep(100);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>通过jstack命令可以看到对应的Reference Handler thread<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">“Reference Handler” #2 daemon prio=10 os_prio=31 tid=0x00007f8fb2836800 nid=0x2e03 in Object.wait() [0x000070000082b000]</span><br><span class="line">   java.lang.Thread.State: WAITING (on object monitor)</span><br><span class="line">        at java.lang.Object.wait(Native Method)</span><br><span class="line">        – waiting on &lt;0x0000000740008878&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.Object.wait(Object.java:502)</span><br><span class="line">        at java.lang.ref.Reference.tryHandlePending(Reference.java:191)</span><br><span class="line">        – locked &lt;0x0000000740008878&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">当reference与referenQueue联合使用的主要作用就是当reference指向的referent回收时(或者要被回收 如下文要讲的Finalizer)，提供一种通知机制，通过queue取到这些reference，来做额外的处理工作。当然，如果我们不需要这种通知机制，我们就不用传入额外的queue,默认使用NULL queue就会入队失败。</b></p>
-<h2 id="SoftReference"><a href="#SoftReference" class="headerlink" title="SoftReference"></a>SoftReference</h2><p>如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可用来实现内存敏感的高速缓存。 <b style="color:red">JVM不仅仅只会考虑当前内存情况，还会考虑软引用所指向的referent最近使用情况和创建时间来综合决定是否回收该referent。这部分需要考虑Hotspot的源码</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str=new String(&quot;abc&quot;);                                     // 强引用  </span><br><span class="line">SoftReference&lt;String&gt; softRef=new SoftReference&lt;String&gt;(str);     // 软引用</span><br></pre></td></tr></table></figure></p>
-<p>SoftReference的源代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class SoftReference&lt;T&gt; extends Reference&lt;T&gt; &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 时间戳时钟，垃圾回收机制更新</span><br><span class="line">     */</span><br><span class="line">    static private long clock;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用getter的时候会进行更新。当soft引用被声明时，VM使用这个字段，但是这个不是要求</span><br><span class="line">     */</span><br><span class="line">    private long timestamp;</span><br><span class="line"></span><br><span class="line">    public SoftReference(T referent) &#123;</span><br><span class="line">        super(referent);</span><br><span class="line">        this.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public SoftReference(T referent, ReferenceQueue&lt;? super T&gt; q) &#123;</span><br><span class="line">        super(referent, q);</span><br><span class="line">        this.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用的时候计数</span><br><span class="line">     */</span><br><span class="line">    public T get() &#123;</span><br><span class="line">        T o = super.get();</span><br><span class="line">        if (o != null &amp;&amp; this.timestamp != clock)</span><br><span class="line">            this.timestamp = clock;</span><br><span class="line">        return o;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">这里需要特别注意的是：如果错误地使用了软引用，可能会引起频繁的gc，这个是大家都不想见到的，所以使用的时候还是需要注意一下。</b></p>
-<h2 id="弱引用（WeakReference）"><a href="#弱引用（WeakReference）" class="headerlink" title="弱引用（WeakReference）"></a>弱引用（WeakReference）</h2><p><b style="color:red">弱引用与软引用的区别在于：只具有弱引用的对象拥有更短暂的生命周期。在垃圾回收器线程扫描它所管辖的内存区域的过程中，一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。不过，由于垃圾回收器是一个优先级很低的线程，因此不一定会很快发现那些只具有弱引用的对象。相比SoftReference来说，WeakReference对JVM GC几乎是没有影响的。</b></p>
-<p><b style="color:red">弱引用可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。</b></p>
-<p>其实任何一个引用都可以与ReferenceQueue关联。</p>
-<h2 id="虚引用（PhantomReference）"><a href="#虚引用（PhantomReference）" class="headerlink" title="虚引用（PhantomReference）"></a>虚引用（PhantomReference）</h2><p><b style="color:red">“虚引用”顾名思义，就是形同虚设，与其他几种引用都不同，虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。</b></p>
-<p><b style="color:red">虚引用主要用来跟踪对象被垃圾回收器回收的活动。虚引用与软引用和弱引用的一个区别在于：虚引用必须和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之 关联的引用队列中。</b></p>
-<h2 id="强引用（StrongReference）"><a href="#强引用（StrongReference）" class="headerlink" title="强引用（StrongReference）"></a>强引用（StrongReference）</h2><p>就是我们平时的new，强引用是使用最普遍的引用。如果一个对象具有强引用，那垃圾回收器绝不会回收它。</p>
-<h2 id="FinalReference"><a href="#FinalReference" class="headerlink" title="FinalReference"></a>FinalReference</h2><p><b style="color:red">FinalReference 引用类型主要是为虚拟机提供的，提供 对象被gc前需要执行finalize方法的对象 的机制。</b></p>
-<p>FinalReference 很简单就是extend Reference类，没有做其他逻辑，只是把访问权限改为package,因此我们是无法直接使用的。Finalizer类是我们要讲的重点，它继承了FinalReference，并且是final 类型的。Finalize实现很简单，也是利用上面我们讲的ReferenceQueue VS Reference机制。</p>
-<h3 id="FinalizerThread"><a href="#FinalizerThread" class="headerlink" title="FinalizerThread"></a>FinalizerThread</h3><p><b style="color:red">Finalizer静态代码块里启动了一个deamon线程，我们通过jstack命令查看线程时，总会看到一个Finalizer线程，就是这个原因:</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">    * 启动一个FinalizerThread线程</span><br><span class="line">    */</span><br><span class="line">static &#123;</span><br><span class="line">    ThreadGroup tg = Thread.currentThread().getThreadGroup();</span><br><span class="line">    for (ThreadGroup tgn = tg;</span><br><span class="line">            tgn != null;</span><br><span class="line">            tg = tgn, tgn = tg.getParent());</span><br><span class="line">    Thread finalizer = new FinalizerThread(tg);</span><br><span class="line">    // 执行权限稍微低一些</span><br><span class="line">    finalizer.setPriority(Thread.MAX_PRIORITY - 2);</span><br><span class="line">    finalizer.setDaemon(true);</span><br><span class="line">    finalizer.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>FinalizerThread run方法是不断的从queue中去取Finalizer类型的reference，然后执行runFinalizer释放方。我们来看一下这个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private void runFinalizer() &#123;</span><br><span class="line">    synchronized (this) &#123;</span><br><span class="line">        // 如果已经执行过Finalized方法，返回</span><br><span class="line">        if (hasBeenFinalized()) return;</span><br><span class="line">        remove();</span><br><span class="line">    &#125;</span><br><span class="line">    try &#123;</span><br><span class="line">        Object finalizee = this.get();</span><br><span class="line">        if (finalizee != null &amp;&amp; !(finalizee instanceof java.lang.Enum)) &#123;</span><br><span class="line">            // 调用finalizee方法</span><br><span class="line">            invokeFinalizeMethod(finalizee);</span><br><span class="line">            /* Clear stack slot containing this variable, to decrease</span><br><span class="line">                the chances of false retention with a conservative GC */</span><br><span class="line">            finalizee = null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (Throwable x) &#123; &#125;</span><br><span class="line">    super.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">可以看出如果finalize方法中抛出异常会被直接吃掉</b></p>
-<h3 id="如何使用Finalizer"><a href="#如何使用Finalizer" class="headerlink" title="如何使用Finalizer"></a>如何使用Finalizer</h3><p><b style="color:red">只要类覆写了Object 上的finalize方法，方法体非空。那么这个类的实例都会被Finalizer引用类型引用的。下文中我们简称Finalizer 型的referent为finalizee。</b></p>
-<p>Finalizer的构造函数是private的，也就是不能通过new 来生成一个Fianlizer reference。只能通过静态的register方法来生成。同时Finalizer有个静态字段unfinalized，维护了一个未执行finalize方法的reference列表，在构造函数中通过add()方法把Finalizer引用本身加入到unfinalized列表中，同时关联finalizee和queue,实现通知机制。维护静态字段unfinalized的目的是为了一直保持对未未执行finalize方法的reference的强引用，防止被gc回收掉。</p>
-<p>那么register是被VM何时调用的呢？JVM通过VM参数 RegisterFinalizersAtInit 的值来确定何时调用register，RegisterFinalizersAtInit默认为true,则会在构造函数返回之前调用。</p>
-<h3 id="何时入queue"><a href="#何时入queue" class="headerlink" title="何时入queue"></a>何时入queue</h3><p>当一个finalizee 只剩Finalizer引用，没有其他引用时，需要被回收了，GC就会把该finalizee对应的reference放到Finalizer的refereneQueue中,等待FinalizerThread来执行finalizee的finalize方法，然后finalizee对象才能被GC回收。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.androidstar.cn/java%E5%AD%A6%E4%B9%A0%E6%95%99%E7%A8%8B%E4%B9%8Breference%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">java学习教程之Reference详解</a><br><a href="http://blog.csdn.net/mazhimazh/article/details/19752475" target="_blank" rel="noopener">Java 7之基础 - 强引用、弱引用、软引用、虚引用</a><br><a href="http://blog.csdn.net/u010412719/article/details/52035792" target="_blank" rel="noopener">《Java源码分析》：ReferenceQueue、Reference及其子类</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/深入理解System类及系统启动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/06/java/深入理解System类及系统启动/" itemprop="url">深入理解System类及系统启动</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T21:06:35+08:00">2018-03-06</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Java中有很多的类我们不得不一探究竟，首先我们就来看看这个System类，同时也能了解系统启动时初始化的一些信息，如果还想去底层探究的，就不得不查看Hotspot的源码了，好了，我们开始。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>System类是一个JDK工具类，其实也是整个系统的代表。这个类是final类型的，不能继承，不能被实例化。具体的信息可以查看源码。System类包含几个有用的类属性和方法。其中的操作多数和系统相关。其功能主要如下：</p>
-<ul>
-<li>标准输入输出，如out、in、err，以及设置</li>
-<li>外部定义的属性和环境变量的访问，如getenv()/setenv()和getProperties()/setProperties()；</li>
-<li>加载文件和类库的方法，如load()和loadLibrary()。</li>
-<li>一个快速拷贝数组的方法：arraycopy()</li>
-<li>一些jvm操作，如gc()、runFinalization()、exit()，该部分并未在源码的java doc中提到，可能因为本身不建议主动调用吧。而且这几个方法都仅仅是Runtime.getRuntime()的调用，两者没有区别。</li>
-</ul>
-<p>下面是这些功能的一个简图。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/system%E5%8A%9F%E8%83%BD%E5%9B%BE.png?raw=true" alt=""></p>
-<h2 id="关于系统属性"><a href="#关于系统属性" class="headerlink" title="关于系统属性"></a>关于系统属性</h2><p>我们在System的类的注释上，可以看到有哪些系统属性，这里简单列一下：</p>
-<table>
-<thead>
-<tr>
-<th>项目</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>java.version</td>
-<td>Java Runtime Environment version</td>
-</tr>
-<tr>
-<td>java.vendor</td>
-<td>Java Runtime Environment vendor</td>
-</tr>
-<tr>
-<td>java.vendor.url</td>
-<td>Java vendor URL</td>
-</tr>
-<tr>
-<td>java.home</td>
-<td>Java installation directory</td>
-</tr>
-<tr>
-<td>java.vm.specification.version</td>
-<td>Java Virtual Machine specification version</td>
-</tr>
-<tr>
-<td>java.vm.specification.vendor</td>
-<td>Java Virtual Machine specification vendor</td>
-</tr>
-<tr>
-<td>java.vm.specification.name</td>
-<td>Java Virtual Machine specification name</td>
-</tr>
-<tr>
-<td>java.vm.version</td>
-<td>Java Virtual Machine implementation version</td>
-</tr>
-<tr>
-<td>java.vm.vendor</td>
-<td>Java Virtual Machine implementation vendor</td>
-</tr>
-<tr>
-<td>java.vm.name</td>
-<td>Java Virtual Machine implementation name</td>
-</tr>
-<tr>
-<td>java.specification.version</td>
-<td>Java Runtime Environment specification version</td>
-</tr>
-<tr>
-<td>java.specification.vendor</td>
-<td>Java Runtime Environment specification vendor</td>
-</tr>
-<tr>
-<td>java.specification.name</td>
-<td>Java Runtime Environment specification name</td>
-</tr>
-<tr>
-<td>java.class.version</td>
-<td>Java class format version number</td>
-</tr>
-<tr>
-<td>java.class.path</td>
-<td>Java class path</td>
-</tr>
-<tr>
-<td>java.library.path</td>
-<td>List of paths to search when loading libraries</td>
-</tr>
-<tr>
-<td>java.io.tmpdir</td>
-<td>Default temp file path</td>
-</tr>
-<tr>
-<td>java.compiler</td>
-<td>Name of JIT compiler to use</td>
-</tr>
-<tr>
-<td>java.ext.dirs</td>
-<td>Path of extension directory or directories</td>
-</tr>
-<tr>
-<td>os.name</td>
-<td>Operating system name</td>
-</tr>
-<tr>
-<td>os.arch</td>
-<td>Operating system architecture</td>
-</tr>
-<tr>
-<td>os.version</td>
-<td>Operating system version</td>
-</tr>
-<tr>
-<td>file.separator</td>
-<td>File separator (“/“ on UNIX)</td>
-</tr>
-<tr>
-<td>path.separator</td>
-<td>Path separator (“:” on UNIX)</td>
-</tr>
-<tr>
-<td>line.separator</td>
-<td>Line separator (“\n” on UNIX)</td>
-</tr>
-<tr>
-<td>user.name</td>
-<td>User’s account name</td>
-</tr>
-<tr>
-<td>user.home</td>
-<td>User’s home directory</td>
-</tr>
-<tr>
-<td>user.dir</td>
-<td>User’s current working directory</td>
-</tr>
-</tbody>
-</table>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>我们看到类的开头有这样的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private static native void registerNatives();</span><br><span class="line">static &#123;</span><br><span class="line">    registerNatives();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>类中的静态代码块调用了一个native方法registerNatives()，可以猜到该方法应该是一个入口方法，看一下注释：通过静态初始化注册native方法，该方法会令vm通过调用initializeSystemClass方法来完成初始化工作。果然如此，那么接下来我们看下initializeSystemClass方法吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">private static void initializeSystemClass() &#123;</span><br><span class="line">    // 初始化props</span><br><span class="line">    props = new Properties();</span><br><span class="line">    // 这是一个本地方法</span><br><span class="line">    initProperties(props);</span><br><span class="line">    // 保存并删除系统的一些配置，这里要查看VM的实现了</span><br><span class="line">    sun.misc.VM.saveAndRemoveProperties(props);</span><br><span class="line"></span><br><span class="line">    //获取系统相关的换行符</span><br><span class="line">    lineSeparator = props.getProperty(&quot;line.separator&quot;);</span><br><span class="line">    // 主要是系统参数的一些设置，版本号啥的</span><br><span class="line">    sun.misc.Version.init();</span><br><span class="line"></span><br><span class="line">    //分别创建in、out、err的实例对象，并通过setXX0()初始化，查看setXX0()方法可知，这是个native方法，将系统的标准流管理到类内的对象</span><br><span class="line">    FileInputStream fdIn = new FileInputStream(FileDescriptor.in);</span><br><span class="line">    FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);</span><br><span class="line">    FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);</span><br><span class="line">    setIn0(new BufferedInputStream(fdIn));</span><br><span class="line">    setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));</span><br><span class="line">    setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));</span><br><span class="line">    //加载zip包以获取java.util.zip.ZipFile这个类，以便之后加载利库使用</span><br><span class="line">    loadLibrary(&quot;zip&quot;);</span><br><span class="line"></span><br><span class="line">    // 设置平台相关的信号处理</span><br><span class="line">    Terminator.setup();</span><br><span class="line"></span><br><span class="line">    // 初始化sun.misc相关的环境变量</span><br><span class="line">    sun.misc.VM.initializeOSEnvironment();</span><br><span class="line"></span><br><span class="line">    // 主线程不会在同一个线程组中添加相同的线程，我们必须在这里自己实现。看代码就是主线程自己把自己加到了自己的线程组中......</span><br><span class="line">    Thread current = Thread.currentThread();</span><br><span class="line">    current.getThreadGroup().add(current);</span><br><span class="line"></span><br><span class="line">    // 该方法就是实例化一个JavaLangAccess</span><br><span class="line">    setJavaLangAccess();</span><br><span class="line"></span><br><span class="line">    // 子系统在初始化的时候可以调用sun.misc.VM.isBooted()，以保证在application类加载器启动前不做任何事。booted()其实就是改了个状态,使isBooted()变为true。</span><br><span class="line">    sun.misc.VM.booted();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="FileDescriptor"><a href="#FileDescriptor" class="headerlink" title="FileDescriptor"></a>FileDescriptor</h2><p>文件描述符类的实例用作底层机器特定结构的不透明句柄，表示打开的文件，打开的套接字或字节的另一个源或接收器。文件描述符的主要实际用途是创建一个FileInputStream或FileOutputStream来包含它。应用不应该自己的FileDescriptor类。</p>
-<h2 id="Terminator"><a href="#Terminator" class="headerlink" title="Terminator"></a>Terminator</h2><p>这个类是设置平台相关的信号处理，我们来看一下这个类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class Terminator &#123;</span><br><span class="line">    // SignalHandler是终止触发事件的管理</span><br><span class="line">    private static SignalHandler handler = null;</span><br><span class="line"></span><br><span class="line">    /* Invocations of setup and teardown are already synchronized</span><br><span class="line">     * on the shutdown lock, so no further synchronization is needed here</span><br><span class="line">     */</span><br><span class="line">    static void setup() &#123;</span><br><span class="line">        if (handler != null) return;</span><br><span class="line">        // 默认的接口实现</span><br><span class="line">        SignalHandler sh = new SignalHandler() &#123;</span><br><span class="line">            // 所以这个接口不需要实现，直接使用即可了</span><br><span class="line">            public void handle(Signal sig) &#123;</span><br><span class="line">                // 终止号</span><br><span class="line">                Shutdown.exit(sig.getNumber() + 0200);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        handler = sh;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 加入信号处理</span><br><span class="line">            Signal.handle(new Signal(&quot;INT&quot;), sh);</span><br><span class="line">            Signal.handle(new Signal(&quot;TERM&quot;), sh);</span><br><span class="line">        &#125; catch (IllegalArgumentException e) &#123;</span><br><span class="line">            // When -Xrs is specified the user is responsible for</span><br><span class="line">            // ensuring that shutdown hooks are run by calling</span><br><span class="line">            // System.exit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static void teardown() &#123;</span><br><span class="line">        /* The current sun.misc.Signal class does not support</span><br><span class="line">         * the cancellation of handlers</span><br><span class="line">         */</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里的SignalHandler是一个接口，这里使用的是匿名类的实现。我们看一下SignalHandler。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">public abstract interface SignalHandler &#123;</span><br><span class="line">    public static final SignalHandler SIG_DFL = new NativeSignalHandler(0L);</span><br><span class="line"></span><br><span class="line">    public static final SignalHandler SIG_IGN = new NativeSignalHandler(1L);</span><br><span class="line"></span><br><span class="line">    public abstract void handle(Signal paramSignal);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>我们看一下Signal类的处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">import java.util.Hashtable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 信号类</span><br><span class="line"> */</span><br><span class="line">public final class Signal &#123;</span><br><span class="line">    // 信号对应处理器</span><br><span class="line">    private static Hashtable handlers = new Hashtable(4);</span><br><span class="line">    // 信号编号对信号的映射</span><br><span class="line">    private static Hashtable signals = new Hashtable(4);</span><br><span class="line">    // 编号</span><br><span class="line">    private int number;</span><br><span class="line">    // 名称</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public int getNumber() &#123;</span><br><span class="line">        return this.number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean equals(Object paramObject) &#123;</span><br><span class="line">        if (this == paramObject) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if ((paramObject == null) || (!(paramObject instanceof Signal))) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        Signal localSignal = (Signal) paramObject;</span><br><span class="line">        return (this.name.equals(localSignal.name)) &amp;&amp; (this.number == localSignal.number);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return this.number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;SIG&quot; + this.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 通过name创建signal</span><br><span class="line">     * @param name</span><br><span class="line">     */</span><br><span class="line">    public Signal(String name) &#123;</span><br><span class="line">        this.number = findSignal(name);</span><br><span class="line">        this.name = name;</span><br><span class="line">        if (this.number &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException(&quot;Unknown signal: &quot; + name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     *</span><br><span class="line">     * @param paramSignal</span><br><span class="line">     * @param paramSignalHandler</span><br><span class="line">     * @return</span><br><span class="line">     * @throws IllegalArgumentException</span><br><span class="line">     */</span><br><span class="line">    public static synchronized SignalHandler handle(Signal paramSignal, SignalHandler paramSignalHandler)</span><br><span class="line">            throws IllegalArgumentException &#123;</span><br><span class="line">        // 取得信号编号</span><br><span class="line">        long l1 = (paramSignalHandler instanceof NativeSignalHandler) ? ((NativeSignalHandler) paramSignalHandler).getHandler() : 2L;</span><br><span class="line"></span><br><span class="line">        long l2 = handle0(paramSignal.number, l1);</span><br><span class="line">        if (l2 == -1L) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Signal already used by VM or OS: &quot; + paramSignal);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 信号编号到信号的映射</span><br><span class="line">        signals.put(new Integer(paramSignal.number), paramSignal);</span><br><span class="line">        synchronized (handlers) &#123;</span><br><span class="line">            SignalHandler localSignalHandler = (SignalHandler) handlers.get(paramSignal);</span><br><span class="line">            // 先移除信号，然后重新加入信号映射</span><br><span class="line">            handlers.remove(paramSignal);</span><br><span class="line">            if (l1 == 2L) &#123;</span><br><span class="line">                handlers.put(paramSignal, paramSignalHandler);</span><br><span class="line">            &#125;</span><br><span class="line">            if (l2 == 0L)</span><br><span class="line">                return SignalHandler.SIG_DFL;</span><br><span class="line">            if (l2 == 1L)</span><br><span class="line">                return SignalHandler.SIG_IGN;</span><br><span class="line">            if (l2 == 2L) &#123;</span><br><span class="line">                return localSignalHandler;</span><br><span class="line">            &#125;</span><br><span class="line">            return new NativeSignalHandler(l2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 抛出一个信号，进行处理</span><br><span class="line">     * @param paramSignal</span><br><span class="line">     * @throws IllegalArgumentException</span><br><span class="line">     */</span><br><span class="line">    public static void raise(Signal paramSignal)</span><br><span class="line">            throws IllegalArgumentException &#123;</span><br><span class="line">        if (handlers.get(paramSignal) == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Unhandled signal: &quot; + paramSignal);</span><br><span class="line">        &#125;</span><br><span class="line">        raise0(paramSignal.number);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void dispatch(int paramInt) &#123;</span><br><span class="line">        // 通过信号编号，找到信号</span><br><span class="line">        final Signal localSignal = (Signal) signals.get(new Integer(paramInt));</span><br><span class="line">        // 找到信号的处理handler</span><br><span class="line">        SignalHandler localSignalHandler = (SignalHandler) handlers.get(localSignal);</span><br><span class="line"></span><br><span class="line">        // 处理信号</span><br><span class="line">        Runnable local1 = new Runnable() &#123;</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                this.val$handler.handle(localSignal);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        // 启动处理线程</span><br><span class="line">        if (localSignalHandler != null)</span><br><span class="line">            new Thread(local1, localSignal + &quot; handler&quot;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 信号的查找是本地方法，没有解</span><br><span class="line">    private static native int findSignal(String paramString);</span><br><span class="line"></span><br><span class="line">    // 信号处理办法</span><br><span class="line">    private static native long handle0(int paramInt, long paramLong);</span><br><span class="line"></span><br><span class="line">    private static native void raise0(int paramInt);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个代码比较简单就不多讲了。</p>
-<h2 id="VM-initializeOSEnvironment-方法"><a href="#VM-initializeOSEnvironment-方法" class="headerlink" title="VM.initializeOSEnvironment()方法"></a>VM.initializeOSEnvironment()方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static void initializeOSEnvironment() &#123;</span><br><span class="line">    if (!booted)</span><br><span class="line">        OSEnvironment.initialize();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>看一下OSEnvironment的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">import sun.io.Win32ErrorMode;</span><br><span class="line"></span><br><span class="line">public class OSEnvironment &#123;</span><br><span class="line">    public static void initialize() &#123;</span><br><span class="line">        Win32ErrorMode.initialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里面好像是win32的系统。具体还是看源码吧，本地方法实在没发看，或许要反编译jvm.dll文件。</p>
-<h2 id="setJavaLangAccess"><a href="#setJavaLangAccess" class="headerlink" title="setJavaLangAccess"></a>setJavaLangAccess</h2><p>来看一下这个方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static void setJavaLangAccess() &#123;</span><br><span class="line">    // Allow privileged classes outside of java.lang</span><br><span class="line">    sun.misc.SharedSecrets.setJavaLangAccess(new sun.misc.JavaLangAccess()&#123;</span><br><span class="line">        public sun.reflect.ConstantPool getConstantPool(Class klass) &#123;</span><br><span class="line">            return klass.getConstantPool();</span><br><span class="line">        &#125;</span><br><span class="line">        public void setAnnotationType(Class klass, AnnotationType type) &#123;</span><br><span class="line">            klass.setAnnotationType(type);</span><br><span class="line">        &#125;</span><br><span class="line">        public AnnotationType getAnnotationType(Class klass) &#123;</span><br><span class="line">            return klass.getAnnotationType();</span><br><span class="line">        &#125;</span><br><span class="line">        public &lt;E extends Enum&lt;E&gt;&gt;</span><br><span class="line">                E[] getEnumConstantsShared(Class&lt;E&gt; klass) &#123;</span><br><span class="line">            return klass.getEnumConstantsShared();</span><br><span class="line">        &#125;</span><br><span class="line">        public void blockedOn(Thread t, Interruptible b) &#123;</span><br><span class="line">            t.blockedOn(b);</span><br><span class="line">        &#125;</span><br><span class="line">        public void registerShutdownHook(int slot, boolean registerShutdownInProgress, Runnable hook) &#123;</span><br><span class="line">            Shutdown.add(slot, registerShutdownInProgress, hook);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStackTraceDepth(Throwable t) &#123;</span><br><span class="line">            return t.getStackTraceDepth();</span><br><span class="line">        &#125;</span><br><span class="line">        public StackTraceElement getStackTraceElement(Throwable t, int i) &#123;</span><br><span class="line">            return t.getStackTraceElement(i);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStringHash32(String string) &#123;</span><br><span class="line">            return string.hash32();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>关于这个类的使用，可以看一下我的另一篇博客：<a href="/2018/03/06/java/SharedSecrets深入理解/">SharedSecrets深入理解</a>, 可以看一下里面的JavaLangAccess的实例。</p>
-<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.cnblogs.com/skywang12345/p/io_09.html" target="_blank" rel="noopener">FileDescriptor总结</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/SharedSecrets深入理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/06/java/SharedSecrets深入理解/" itemprop="url">SharedSecrets深入理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T16:05:59+08:00">2018-03-06</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。<a href="http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java" target="_blank" rel="noopener">http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java</a> 这个就是这个类的内容。一开始没有懂这里面的意思，那么现在我们来深入理解一下。</p>
-<h2 id="从属性开始"><a href="#从属性开始" class="headerlink" title="从属性开始"></a>从属性开始</h2><p>我们来看一下这个类的属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SharedSecrets &#123;</span><br><span class="line">    private static final Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line">    private static JavaUtilJarAccess javaUtilJarAccess;</span><br><span class="line">    private static JavaLangAccess javaLangAccess;</span><br><span class="line">    private static JavaIOAccess javaIOAccess;</span><br><span class="line">    private static JavaNetAccess javaNetAccess;</span><br><span class="line">    private static JavaNetHttpCookieAccess javaNetHttpCookieAccess;</span><br><span class="line">    private static JavaNioAccess javaNioAccess;</span><br><span class="line">    private static JavaIOFileDescriptorAccess javaIOFileDescriptorAccess;</span><br><span class="line">    private static JavaSecurityProtectionDomainAccess javaSecurityProtectionDomainAccess;</span><br><span class="line">    private static JavaSecurityAccess javaSecurityAccess;</span><br><span class="line">    private static JavaUtilZipFileAccess javaUtilZipFileAccess;</span><br><span class="line">    private static JavaAWTAccess javaAWTAccess;</span><br></pre></td></tr></table></figure></p>
-<p>然后再去看看具体方法，发现都是这个类的getter和setter方法，具体看起来是没有啥可理解的。那么具体是什么意思呢？</p>
-<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>那么我们来解释一下，就看一下注释里面的说明。</p>
-<p>“共享私有”库，这是在其他包中调用私有实现方法的一种机制，而不用使用反射。好了就解释这么多，下面是英文原文。</p>
-<p>/*<em> A repository of “shared secrets”, which are a mechanism for<br>    calling implementation-private methods in another package without<br>    using reflection. A package-private class implements a public<br>    interface and provides the ability to call package-private methods<br>    within that package; the object implementing that interface is<br>    provided through a third package to which access is restricted.<br>    This framework avoids the primary disadvantage of using reflection<br>    for this purpose, namely the loss of compile-time checking. </em>/</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>可能上面的说明还是比较空洞，不知道要表达什么意思，我们来看一些具体的示例就好了。</p>
-<p>在JAAS的ProtectionDomain类中有两个地方使用了SharedSecrets，我们来看看具体是怎么使用的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    // Set up JavaSecurityAccess in SharedSecrets</span><br><span class="line">    // 在SharedSecrets设置好JavaSecurityAccess</span><br><span class="line">    // 设置java安全访问，这里是使用匿名实现类实现的。</span><br><span class="line">    // 一直在找JavaSecurityAccess的实现类，这里有一个，居然是匿名类难怪找不到。</span><br><span class="line">    SharedSecrets.setJavaSecurityAccess(</span><br><span class="line">        new JavaSecurityAccess() &#123;</span><br><span class="line">            // 执行交叉特权</span><br><span class="line">            public &lt;T&gt; T doIntersectionPrivilege(</span><br><span class="line">                PrivilegedAction&lt;T&gt; action,</span><br><span class="line">                final AccessControlContext stack,</span><br><span class="line">                final AccessControlContext context)</span><br><span class="line">            &#123;</span><br><span class="line">                if (action == null) &#123;</span><br><span class="line">                    throw new NullPointerException();</span><br><span class="line">                &#125;</span><br><span class="line">                return AccessController.doPrivileged(</span><br><span class="line">                    action,</span><br><span class="line">                    new AccessControlContext(</span><br><span class="line">                        stack.getContext(), context).optimize()</span><br><span class="line">                );</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // 执行交叉特权</span><br><span class="line">            public &lt;T&gt; T doIntersectionPrivilege(</span><br><span class="line">                PrivilegedAction&lt;T&gt; action,</span><br><span class="line">                AccessControlContext context)</span><br><span class="line">            &#123;</span><br><span class="line">                return doIntersectionPrivilege(action,</span><br><span class="line">                    AccessController.getContext(), context);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">    SharedSecrets.setJavaSecurityProtectionDomainAccess(</span><br><span class="line">            // 设置默认的JavaSecurityProtectionDomainAccess</span><br><span class="line">        new JavaSecurityProtectionDomainAccess() &#123;</span><br><span class="line">            public ProtectionDomainCache getProtectionDomainCache() &#123;</span><br><span class="line">                return new ProtectionDomainCache() &#123;</span><br><span class="line">                    private final Map&lt;Key, PermissionCollection&gt; map =</span><br><span class="line">                        Collections.synchronizedMap</span><br><span class="line">                            (new WeakHashMap&lt;Key, PermissionCollection&gt;());</span><br><span class="line">                    public void put(ProtectionDomain pd,</span><br><span class="line">                        PermissionCollection pc) &#123;</span><br><span class="line">                        map.put((pd == null ? null : pd.key), pc);</span><br><span class="line">                    &#125;</span><br><span class="line">                    public PermissionCollection get(ProtectionDomain pd) &#123;</span><br><span class="line">                        return pd == null ? map.get(null) : map.get(pd.key);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>是的这个类中有两个静态块，用于实例化一些基础的类库。我们来看一下JavaSecurityProtectionDomainAccess和JavaSecurityAccess这两个接口，发现找不到，但是在dt.jar中可以找到；接着我尝试去找实现类发现也找不到，但是终于在这里我找到了相应的实现类，可谓不容易，不过也让我彻底明白了，这个类的实际意义，我想大家也应该明白这里面的作用了吧！很棒的设计，但是代码隐藏太深，如果不是去看到这个示例，我可能永远都不理解这个类的用意。</p>
-<p>我想这个类的具体作用还是要从属性出发，发现很多属性都和Java的security相关。</p>
-<p>不管这么多了，这个类的设计方式值得我们学习，但是会使代码难于理解。</p>
-<h2 id="JavaLangAccess示例"><a href="#JavaLangAccess示例" class="headerlink" title="JavaLangAccess示例"></a>JavaLangAccess示例</h2><p>我也在网上看到这样的实例，挺好玩的。使用JavaLangAccess和SharedSecrets来获取JVM中的实例。</p>
-<h3 id="SharedSecrets和JavaLangAccess的作用"><a href="#SharedSecrets和JavaLangAccess的作用" class="headerlink" title="SharedSecrets和JavaLangAccess的作用"></a>SharedSecrets和JavaLangAccess的作用</h3><p>当我们需要对使用Log的类名进行的推断的时候，我们就需要知道JVM里面的实例对象了，这时候我们就需要使用到SharedSecrets和JavaLangAccess，通过这两个类来获取Java栈帧中存储的类信息，然后进行挑选，从而找出调用的类。</p>
-<p>接下来看一下SharedSecrets和JavaLangAccess的使用方式：</p>
-<p>测试环境：为了方便，在mybatis源码工程里面利用junit进行测试，创建新类testLang.java，也可以自己创建java工程进行测试。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">package org.apache.ibatis.logging;</span><br><span class="line"></span><br><span class="line">import sun.misc.JavaLangAccess;</span><br><span class="line">import sun.misc.SharedSecrets;</span><br><span class="line"></span><br><span class="line">public class testLang &#123;</span><br><span class="line">    public void testPrint() &#123;</span><br><span class="line">        JavaLangAccess access = SharedSecrets.getJavaLangAccess();</span><br><span class="line">        Throwable throwable = new Throwable();</span><br><span class="line"></span><br><span class="line">        int depth = access.getStackTraceDepth(throwable);</span><br><span class="line"></span><br><span class="line">        //输出JVM栈帧中的所有类实例</span><br><span class="line">        for (int i = 0; i &lt; depth; i++) &#123;</span><br><span class="line">            StackTraceElement frame = access.getStackTraceElement(throwable, i);</span><br><span class="line">            System.out.println(frame);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 在LogFactoryTest.java文件中添加方法,这里使用了junit：</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">  public void yumsTest() &#123;</span><br><span class="line">    //System.err.println(&quot;Yumaosheng TEST&quot;);</span><br><span class="line">    testLang t = new testLang();</span><br><span class="line">      t.testPrint();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
-<p>执行结果，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">org.apache.ibatis.logging.testLang.testPrint(testLang.java:12)</span><br><span class="line">org.apache.ibatis.logging.LogFactoryTest.yumsTest(LogFactoryTest.java:52)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)</span><br><span class="line">org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)</span><br><span class="line">org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)</span><br><span class="line">org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)</span><br><span class="line">org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)</span><br><span class="line">org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)</span><br><span class="line">org.junit.runners.ParentRunner.run(ParentRunner.java:309)</span><br><span class="line">org.junit.runner.JUnitCore.run(JUnitCore.java:160)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:42)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:262)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:84)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">com.intellij.rt.execution.application.AppMain.main(AppMain.java:147)</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
-<p>我们会发现代码输出了所有JVM栈帧中的实例对象的类名。也就是说我们使用JavaLangAccess和SharedSecrets可以获取栈帧中的所有实例对象的类名称，接下来我们需要剔除掉不可能是调用类的名字。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们发现SharedSecrets这个类挺有趣的，但是注意这个类只是工具，具体的实现都是通过属性来完成，而属性的填充可能是JVM在加载类的时候填入的，所以只要了解接口的作用，我们只要取得里面的接口实例来做一些我们觉得好玩的事情。这就是这个类所不同的地方，凡是此类不能防止set方法只执行一次，所以要在setter方法中做限制，我们发现有些是做了限制的，有些没有。我觉得java8引入函数式编程之后，这个方式或许应该被替代了。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/yums467/article/details/53005292" target="_blank" rel="noopener">使用JavaLangAccess和SharedSecrets来获取JVM中的实例</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2228,7 +2034,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">28</span>
+                    <span class="site-state-item-count">33</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2257,7 +2063,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">8</span>
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2342,7 +2150,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">36</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">39</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
