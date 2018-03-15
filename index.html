@@ -276,6 +276,167 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/15/blockchain/比特币的checkpoint理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/15/blockchain/比特币的checkpoint理解/" itemprop="url">比特币的checkpoint理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-15T16:22:25+08:00">2018-03-15</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在写之前的bitcoinj的网络参数时候，有一个字段叫checkpoints。当时始终没有理解这个是用来做啥的，就知道是检查点，可就是不明白检查什么。今天研读到，bitcoinj中Block的组织方式处的代码的时候又见到了这个字段，但是还是不知其意。但是知道了一个类CheckpointManager，于是今天准备来好好说道这个类。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一开始看到这个类的时候还是不明白作用是啥，但是名字上呢是略知一二，看了说明也是云里雾里，于是网上搜索checkpoint也没有比较好的回答，随着代码的深入阅读，终于搞明白了这个类的作用，这可真是太棒了！在类的说明中也提到了SPV。那么checkpoints和SPV有啥关系呢？</p>
+<h2 id="解惑"><a href="#解惑" class="headerlink" title="解惑"></a>解惑</h2><p>我们知道，接收一个新块的时候需要很多的验证，否则可能会被别人进行分叉的攻击等等。检测点，是用于保护网络不受全网51%算力攻击，因为攻击者是不能逆转最后一个检测点前发生的那些交易的。</p>
+<p>检测点是通过硬编码方式写入标准客户端的。意味着标准客户端将在检测点之前将接受所有有效交易，这些交易将是不可逆的。如果任何人试图在检测点前从一个区块对区块链进行分叉，客户端将不会接受这个分叉，这使得那些区块一成不变（set in stone）。</p>
+<p>但其实在CheckpointManager类说明上我们也可以获得一些信息：在整个链中对StoredBlock进行了硬编码。Checkpoints有两个目的：</p>
+<ul>
+<li>他们作为一种安全机制来对抗可能会重写大块历史的巨大重组，只有在时间轴的最新部分中，将区块链限制为一种共识机制。</li>
+<li>它们可以让同步到链头上的新钱包/用户比同步创建块中的所有头部更快。</li>
+</ul>
+<p>这个意思就是说，你只需要同步检查点数据，以及最新检查点之后的区块，然后你的链就可以建立起来了，这样的好处就是你不需要同步所有的链上的区块。总之你利用这个特性可以简化空间和验证hash的时间，我想SPV一定是基于这种方式进行的实现。这种思路特别像跳跃表的实现。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>对了这里可能是bitcoinj的实现，至于比特币内部的实现，我是不知道的。但是都是相同的，即使bitcoinj实现方式不同，但是只要被所有区块接受，那就是有效的算法不是吗？</p>
+<p>这里我就不写一大堆的文字，唯一要提示的就是流的编码问题。如果你读的是二进制的文件，那么开头必须是<code>&quot;CHECKPOINTS 1&quot;</code>，如果读的是文件必须是<code>&quot;TXT CHECKPOINTS 1&quot;</code>开头，还有就是txt有范例在resources目录下。SPVStoredBlock需要Compact格式化（序列化）存储，之前讲过compact格式，最长是256，所以有<code>private static final int MAX_SIGNATURES = 256;</code>.下面贴源码和我的注释，这里就不深入地去探讨了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line">public class CheckpointManager &#123;</span><br><span class="line">    private static final Logger log = LoggerFactory.getLogger(CheckpointManager.class);</span><br><span class="line"></span><br><span class="line">    // 二进制流的头部检查，这个好像没有example，不过知道是这回事就可以了。</span><br><span class="line">    private static final String BINARY_MAGIC = &quot;CHECKPOINTS 1&quot;;</span><br><span class="line">    // 文件格式的开头，查看resources目录下的txt文件即可</span><br><span class="line">    private static final String TEXTUAL_MAGIC = &quot;TXT CHECKPOINTS 1&quot;;</span><br><span class="line">    private static final int MAX_SIGNATURES = 256;</span><br><span class="line"></span><br><span class="line">    // Map of block header time to data.</span><br><span class="line">    // 存放检查点</span><br><span class="line">    protected final TreeMap&lt;Long, StoredBlock&gt; checkpoints = new TreeMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    protected final NetworkParameters params;</span><br><span class="line">    // sha256hash对象</span><br><span class="line">    protected final Sha256Hash dataHash;</span><br><span class="line"></span><br><span class="line">    // base64编码器</span><br><span class="line">    public static final BaseEncoding BASE64 = BaseEncoding.base64().omitPadding();</span><br><span class="line"></span><br><span class="line">    /** Loads the default checkpoints bundled with bitcoinj */</span><br><span class="line">    public CheckpointManager(Context context) throws IOException &#123;</span><br><span class="line">        this(context.getParams(), null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Loads the checkpoints from the given stream */</span><br><span class="line">    public CheckpointManager(NetworkParameters params, @Nullable InputStream inputStream) throws IOException &#123;</span><br><span class="line">        this.params = checkNotNull(params);</span><br><span class="line">        if (inputStream == null)</span><br><span class="line">            inputStream = openStream(params);</span><br><span class="line">        checkNotNull(inputStream);</span><br><span class="line">        inputStream = new BufferedInputStream(inputStream);</span><br><span class="line">        inputStream.mark(1);</span><br><span class="line">        int first = inputStream.read();</span><br><span class="line">        inputStream.reset();</span><br><span class="line">        if (first == BINARY_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readBinary(inputStream);</span><br><span class="line">        else if (first == TEXTUAL_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readTextual(inputStream);</span><br><span class="line">        else</span><br><span class="line">            throw new IOException(&quot;Unsupported format.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a checkpoints stream pointing to inside the bitcoinj JAR */</span><br><span class="line">    // 这个可以查看resources目录下的txt文件，你就能明白一二了。</span><br><span class="line">    public static InputStream openStream(NetworkParameters params) &#123;</span><br><span class="line">        return CheckpointManager.class.getResourceAsStream(&quot;/&quot; + params.getId() + &quot;.checkpoints.txt&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 看从这个流中是如何进行text读取，解析的步骤表明txt文件的格式。</span><br><span class="line">     * @param inputStream</span><br><span class="line">     * @return</span><br><span class="line">     * @throws IOException</span><br><span class="line">     */</span><br><span class="line">    private Sha256Hash readBinary(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        DataInputStream dis = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 信息分解器</span><br><span class="line">            MessageDigest digest = Sha256Hash.newDigest();</span><br><span class="line">            // 将数据读取，并进行分化</span><br><span class="line">            DigestInputStream digestInputStream = new DigestInputStream(inputStream, digest);</span><br><span class="line">            // 转为数据流</span><br><span class="line">            dis = new DataInputStream(digestInputStream);</span><br><span class="line">            digestInputStream.on(false);</span><br><span class="line">            byte[] header = new byte[BINARY_MAGIC.length()];</span><br><span class="line">            dis.readFully(header);</span><br><span class="line">            // 先读取header，查看header是否有效。</span><br><span class="line">            if (!Arrays.equals(header, BINARY_MAGIC.getBytes(&quot;US-ASCII&quot;)))</span><br><span class="line">                throw new IOException(&quot;Header bytes did not match expected version&quot;);</span><br><span class="line">            // 检查索引是否数组越界。</span><br><span class="line">            int numSignatures = checkPositionIndex(dis.readInt(), MAX_SIGNATURES, &quot;Num signatures out of range&quot;);</span><br><span class="line">            for (int i = 0; i &lt; numSignatures; i++) &#123;</span><br><span class="line">                byte[] sig = new byte[65];</span><br><span class="line">                // 读取签名</span><br><span class="line">                dis.readFully(sig);</span><br><span class="line">                // TODO: Do something with the signature here.</span><br><span class="line">            &#125;</span><br><span class="line">            digestInputStream.on(true);</span><br><span class="line">            // 继续读一个整型</span><br><span class="line">            int numCheckpoints = dis.readInt();</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            // 生成缓冲区大小，通过Compact编码读取数据。</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                if (dis.read(buffer.array(), 0, size) &lt; size)</span><br><span class="line">                    throw new IOException(&quot;Incomplete read whilst loading checkpoints.&quot;);</span><br><span class="line">                // 利用参数从数据中恢复，会进行校验检查</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                // 存入检查点</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            // 读取hash</span><br><span class="line">            Sha256Hash dataHash = Sha256Hash.wrap(digest.digest());</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), dataHash);</span><br><span class="line">            // 这里返回的hash，可能是整体文件的hash，也可能是最后的checkpoint的hash</span><br><span class="line">            return dataHash;</span><br><span class="line">        &#125; catch (ProtocolException e) &#123;</span><br><span class="line">            throw new IOException(e);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (dis != null) dis.close();</span><br><span class="line">            inputStream.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Sha256Hash readTextual(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        // google的sha256 hash函数</span><br><span class="line">        Hasher hasher = Hashing.sha256().newHasher();</span><br><span class="line">        BufferedReader reader = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.US_ASCII));</span><br><span class="line">            String magic = reader.readLine();</span><br><span class="line">            // 开头TXT CHECKPOINTS 1，这个可以查看txt下的checkpoints文件。</span><br><span class="line">            if (!TEXTUAL_MAGIC.equals(magic))</span><br><span class="line">                throw new IOException(&quot;unexpected magic: &quot; + magic);</span><br><span class="line">            int numSigs = Integer.parseInt(reader.readLine());</span><br><span class="line">            // 多签名的量，依次读取，txt中第二行都是0</span><br><span class="line">            for (int i = 0; i &lt; numSigs; i++)</span><br><span class="line">                reader.readLine(); // Skip sigs for now.</span><br><span class="line">            // 查找有多少的检查点</span><br><span class="line">            int numCheckpoints = Integer.parseInt(reader.readLine());</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            // Hash numCheckpoints in a way compatible to the binary format.</span><br><span class="line">            hasher.putBytes(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(numCheckpoints).array());</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                byte[] bytes = BASE64.decode(reader.readLine());</span><br><span class="line">                hasher.putBytes(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                buffer.put(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            HashCode hash = hasher.hash();</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), hash);</span><br><span class="line">            return Sha256Hash.wrap(hash.asBytes());</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (reader != null) reader.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Returns a &#123;@link StoredBlock&#125; representing the last checkpoint before the given time, for example, normally</span><br><span class="line">     * you would want to know the checkpoint before the earliest wallet birthday.</span><br><span class="line">     *</span><br><span class="line">     * 返回给定时间节点之前最近的StoredBlock类的checkpoints。</span><br><span class="line">     */</span><br><span class="line">    public StoredBlock getCheckpointBefore(long time) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 时间一定要比创世区块时间要晚</span><br><span class="line">            checkArgument(time &gt; params.getGenesisBlock().getTimeSeconds());</span><br><span class="line">            // This is thread safe because the map never changes after creation.</span><br><span class="line">            Map.Entry&lt;Long, StoredBlock&gt; entry = checkpoints.floorEntry(time);</span><br><span class="line">            if (entry != null) return entry.getValue();</span><br><span class="line">            Block genesis = params.getGenesisBlock().cloneAsHeader();</span><br><span class="line">            return new StoredBlock(genesis, genesis.getWork(), 0);</span><br><span class="line">        &#125; catch (VerificationException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);  // Cannot happen.</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns the number of checkpoints that were loaded. */</span><br><span class="line">    public int numCheckpoints() &#123;</span><br><span class="line">        return checkpoints.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a hash of the concatenated checkpoint data. */</span><br><span class="line">    // 返回串联检查点数据的散列。</span><br><span class="line">    public Sha256Hash getDataHash() &#123;</span><br><span class="line">        return dataHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * &lt;p&gt;Convenience method that creates a CheckpointManager, loads the given data, gets the checkpoint for the given</span><br><span class="line">     * time, then inserts it into the store and sets that to be the chain head. Useful when you have just created</span><br><span class="line">     * a new store from scratch and want to use configure it all in one go.&lt;/p&gt;</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;Note that time is adjusted backwards by a week to account for possible clock drift in the block headers.&lt;/p&gt;</span><br><span class="line">     */</span><br><span class="line">    public static void checkpoint(NetworkParameters params, InputStream checkpoints, BlockStore store, long time)</span><br><span class="line">            throws IOException, BlockStoreException &#123;</span><br><span class="line">        checkNotNull(params);</span><br><span class="line">        checkNotNull(store);</span><br><span class="line">        checkArgument(!(store instanceof FullPrunedBlockStore), &quot;You cannot use checkpointing with a full store.&quot;);</span><br><span class="line"></span><br><span class="line">        time -= 86400 * 7;</span><br><span class="line"></span><br><span class="line">        checkArgument(time &gt; 0);</span><br><span class="line">        log.info(&quot;Attempting to initialize a new block store with a checkpoint for time &#123;&#125; (&#123;&#125;)&quot;, time, Utils.dateTimeFormat(time * 1000));</span><br><span class="line"></span><br><span class="line">        BufferedInputStream stream = new BufferedInputStream(checkpoints);</span><br><span class="line">        CheckpointManager manager = new CheckpointManager(params, stream);</span><br><span class="line">        StoredBlock checkpoint = manager.getCheckpointBefore(time);</span><br><span class="line">        store.put(checkpoint);</span><br><span class="line">        store.setChainHead(checkpoint);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/数字的压缩存储/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1812,217 +1973,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/高可用用户中心设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/系统设计/高可用用户中心设计/" itemprop="url">高可用用户中心设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:30:10+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我们公司现在的账户体系比较混乱，每个系统都有一套自己的账户体系，没有办法进行统一的账户管理，比如统计一个人在哪个系统有账号，这样操作是比较麻烦的，还有就是我们如何进行用户行为分析，最终综合用户的信息进行用户的画像。这些都是需要解决的问题。</p>
-<p>常规的用户设计是统一账号和统一登录验证，统一注册等信息。但是结合我们公司的实际，发现这样的话我们的系统可能会出问题，我们无法屏蔽很多细节。我们的现状是：</p>
-<ul>
-<li>系统需要向用户隐藏是同一个公司的这个事实。也就是说我们做了用户中心的设计，但是不能让用户感知这个系统的存在。也就是说多个系统之间的登录都是需要隔离的。离论上不能做统一账号的登录，但是可以做统一账号的验证。</li>
-<li>同一个系统可能有多个马甲app，我想马甲app之间也需要登录隔离，虽然他们调用的是同一个后台系统，那么我们不得不面对一个问题，同一个用户同时下单的逻辑处理，需要后台做这种处理，否则就会出现严重的并发错误，而开发人员可能都没有注意到这个事实的存在，从而导致一些稀奇古怪的事情出现。</li>
-<li>web端与app端应该是需要同时登录的，我们好像没有web的要求，但是好像有微信的web端的事情。假如我们有web端的登录，那么问题来了，我们要不要实现二维码登录web。目前看是可以先不实现的，但是作为设计考量我们不得不考虑这些。</li>
-<li>第三方账户的登录，我们是通过手机号作为唯一标识，那么不太好实现第三方的登录注册。但是我们可以后期实现，如果实现第三方的登录注册，那么问题来了，我们的设计貌似不支持，需要改动，就是改掉手机作为唯一标识的问题，但是想想好像是不影响的，只要数据能插入问题就不大，因为没有手机号，这些用户是不能登录需要手机的app，但是有的系统可以做特殊处理，从而支持第三方账户的登录注册。但是这样做也有缺点，就是用户利用多种方式进行注册，也就是说我们不得不解决一个问题就是用户可能存在多个账户的可能性。加入用户有微信注册的账户，然后又用手机登录，绑定微信，这个时候我们可能需要去系统中用微信的unionId或者openId查找一下是否有用户，有就不能绑定，没有才能绑定。如果有我们可能也知道了这个人有重复号的可能性。这个可能需要在做的时候处理。</li>
-<li>验证保密问题，公司居然都没有人提到这点。不过也对我们是通过手机号进行验证的。但是如果以后我们不在使用手机号，可能我们需要验证问题。还需要判断用户的活动记录，从而决定用户多长时间需要重新验证app的token。比如用户换了手机，那么我们需要加强验证，不许用户名密码登陆，强制验证码登陆，同时更改登陆设备的问题。比如1年没有登陆的用户，我们是否考虑验证问题，因为可能这个号已经弃用，别人申请了这个号，那么这个新号可以冒用别人的身份进行借钱，我不知道公司现在是否有这样的处理机制，可能是出现这种事情的概率还很小，大家都不关心吧！其实就算不验证手机号，1年没操作也应该需要重新风控的吧！异常情况出现了也就是赔钱，还能干嘛。有的公司不处理应该是因为他们不是敏感行业，其实我们真的是不一样，需要更多地为用户考量这些事情，anyway扯远了。验证问题其实需要综合客服系统，还有就是自动决策也是可以的。</li>
-</ul>
-<p>可以看到用户中心得设计其实牵扯的面是比较多的，其实单纯地拆分这个系统，我们发现我们的用户中心被搞重了，因为正常的用户中心不应该考虑token的sso系统，而只是信息的验证和维护提供。我们融进了SSO，还需要将数据推出验证。总之不是一件简单的事情。下面我们具体分析一下设计用户中心的思路。</p>
-<h2 id="用户基本信息的设计"><a href="#用户基本信息的设计" class="headerlink" title="用户基本信息的设计"></a>用户基本信息的设计</h2><p>这些可能需要根据每个公司自己的需要进行建立了，一般推荐看一下Facebook、Twitter、Linkin里面的资料详情，一般基础资料包括个人基础信息、工作信息、朋友信息、个人身份信息（护照、驾照、身份证、户口簿等）、银行卡信息等等。</p>
-<p>信息一般登录后缓存，但是不能全部缓存，之后会提到相关的内容，还有就是实时信息需要写接口单独从数据库查。</p>
-<p>接口的提供一般也是getSimpleInfo和getInfo两种，后者不缓存，前者一般是缓存的，所以可以再扩展就是是否需要实时信息。</p>
-<h2 id="关于用户体系"><a href="#关于用户体系" class="headerlink" title="关于用户体系"></a>关于用户体系</h2><p>我们采用Account-user的账户体系设计，就是用户中心维护Account表作为基础数据或者是默认数据。每个系统可以选择维护user表，或者选择不维护。这样我们可以使有user表系统的用户使用Account表的一些数据作为默认数据，比如说头像什么的。</p>
-<p>如果系统不使用user表，这就表示，它就是使用公共模块的数据，这时候你就发现，有user表的系统默认数据不是空的。其实这是个很有意思的设计。</p>
-<p>再来谈谈用户名密码吧！不同的系统可能想使用不同的用户名密码登陆，然后你就会发现如果我们采用统一的Account体系是没有办法解决这个问题的，这时候user表的强大作用就凸显出来了。我们可以在user表中自己设置user：passwd字段，这样你就特例化了自己系统的账户密码，验证时你自己验证，通过后就不需要用户中心帮助你验证，你直接告诉用户中心，这个人我验证通过了，你不需要验证，你帮这个人生成token吧！你看过程简洁，职责分离，我们用户中心，就是做统一用户的可见性，聚合用户数据，但是从来不会强制你必须使用我的东西，但是你需要告知我一声就可以了，但是token必须我来统一生成。</p>
-<p>但是大家可能会问这样token安全吗？我们的token是安全的；因为我们token的生成方式不同，token对每一个系统的可见性不同，也就是说我们的token验证是有限制的，是隔离的。</p>
-<p>还是就是必须要提的一点就是多马甲app，不能实现单独的密码和账户，但是如果这个系统如果基于user表扩展一张验证表通过app的编号是可以解决这个问题的。这个看具体自己的系统实现吧，这个功能不归用户中心管理。</p>
-<h2 id="多系统用户无缝迁移"><a href="#多系统用户无缝迁移" class="headerlink" title="多系统用户无缝迁移"></a>多系统用户无缝迁移</h2><p>原来有那么多的老系统如何进行无缝的迁移这种平滑过渡也是我们不得不考虑的问题。一般是利用系统进行本系统的上线，但是本系统上线切入一些老系统的时候，我们又不得不面对一个问题，如何在老系统中平滑过渡？</p>
-<p>我们慢慢发现这个其实是个bug，我们系统越多我们需要平滑迁移的次数就越多，而且要做好多我们不太情愿做的事情。因为每个系统再迁入的时候不是立马替换，而是使用两者共存的策略平滑过渡，试运行，通过之后再慢慢迁过来，一是此过程耗时间，二是需要在每个系统迁移的时候都做，加剧了迁移的时长。</p>
-<p>还有就是系统共存时要相互导数据，这个也比较繁琐。涉及数据格式的转换，所以通用用户系统必须考虑数据的广度问题，太窄不行。还有就是一些老数据需要做一次批量导入，这个很难把握一个度，如何切分哪些数据是老的，哪些数据是MQ推来的新数据。不过我觉得先上，然后全量导入，因为导入过的数据是不会再导入的，因为有判断，在确定导入完成后，新系统再对外访问，这样就可以切数据。</p>
-<p>迁移过程，就是一个验证，定型替换的过程，耗时费力。要进行各种评估。</p>
-<h2 id="token层级问题与生成策略"><a href="#token层级问题与生成策略" class="headerlink" title="token层级问题与生成策略"></a>token层级问题与生成策略</h2><p>这里我们简单提提token隔离的问题，上面提到一个用户可能存在多个token，但是你仔细分析，可能各个Token对每个不相关子系统是不可见的。</p>
-<p>我们是会提供一个通用的Token，这个需要用户中心的一些信息，你只要支持通用Token，那么你就和其他一些支持通用Token的系统一样，这样这些系统和标准的用户中心设计是一样的。也就是说我们的系统是支持标准的用户中心SSO Token实现方式的。</p>
-<p>另外就是我们所说的，每个系统是可以单独生成Token的，而且生成的Token可以根据系统编号、系统分组、平台（app、web），如果是app的话，我们还会考虑马甲app的编号。</p>
-<p>但是所有的这些不是必须的，可以让系统自己进行相应的配置的，下面我们可以进行详细的讲解。</p>
-<h3 id="Token的生成存放策略"><a href="#Token的生成存放策略" class="headerlink" title="Token的生成存放策略"></a>Token的生成存放策略</h3><p>我们不是讲Token的生成，关于Token的生成其实方式有很多种，sha1是我常用的，还有uuid、jwt等等各种方式，但这不是我们要讲解的重点。我们主要讲解Token怎么存放，系统如何取得Token进行交互验证。</p>
-<p>首先系统通过传入用户名密码验证，然后我们会帮助生成Token，或者系统自行验证身份调用用户中心，请求用户中心生成Token。用户中心一般完成工作后会返回Token和这个用户的基础信息。当然注册也需要各个系统进行实现。</p>
-<p>各个系统需要传入系统号、分组id号、是否支持web/app同时登陆、app的编号、是否分组、是否支持马甲用户隔离、是否使用公共token。</p>
-<p>如果支持分组，也就是说系统是可以让分组内的用户共享一个Token的，这个是我们考虑到部分系统可能需要建立小全体而进行的设计。</p>
-<p>是否支持马甲用户，是我们考虑马甲用户Token的隔离而使用的。如果为true那么我们就必须考虑为每个马甲生成不同的Token，当然前提是用户是登录了多个马甲。</p>
-<p>==是否web、app分离，有的时候我们是允许用户web和app同时在线的，但是一般的系统都会做联动，也就是app下线了，webToken会跟着下线，这里我们可能要做很多的处理。==</p>
-<p>是否支持通用Token，支持通用Token的话，那么我们很多事情就比较好处理，其他什么的都不用考虑了。</p>
-<p>还有一点是要注意的，我们需要弄清楚以上参数出现的组合，有些值是可以组合的，但是有些值是不能组合的，这个需要具体的分析，==今天我就不写了，想好了再来补吧！==</p>
-<p>那我们如何保存呢？很简单利用系统编码、分组编码、平台（web、app、client）、马甲app编码进行redis key的拼接，这个存放在redis里面，然后对应的系统也如此拼接，取得Token，并进行交互验证，这样我们的设计就完成了。</p>
-<p>我们可能要设计jar让各个系统解耦，不需要他们写代码，我们提供相应的实现即可。这样他们只管处理自己的业务就好。</p>
-<h3 id="公用Token登录隐藏"><a href="#公用Token登录隐藏" class="headerlink" title="公用Token登录隐藏"></a>公用Token登录隐藏</h3><p>下面我们要来聊一下。公共Token登录功能的设计，这里我们只会去了解上面的参数设计，然后帮助登录的时候基于这些参数做一些设计。</p>
-<p>这里面可能只关注一个参数的设计那就是Token是否web、app分开登录的功能。</p>
-<h3 id="Token验证包的设计"><a href="#Token验证包的设计" class="headerlink" title="Token验证包的设计"></a>Token验证包的设计</h3><p>我们需要提供一个功能的jar包，这样做是为了客户端的解耦设计。这个功能的设计涉及公共模块的处理，以及相关策略的编写。</p>
-<h2 id="关于Token如何验证的问题"><a href="#关于Token如何验证的问题" class="headerlink" title="关于Token如何验证的问题"></a>关于Token如何验证的问题</h2><p>关于token的验证，其实我们也在考虑，我们最后发现是两种方式吧，一是由sso统一验证处理，二是sso提供验证生成token，有系统自己维护token验证。</p>
-<h3 id="sso统一处理"><a href="#sso统一处理" class="headerlink" title="sso统一处理"></a>sso统一处理</h3><p>这种方式看似职责比较清晰，而且其他系统与本系统的关系也是比较解耦的；但是每次系统有请求，都要把token传过来进行验证，一是用户中心的压力会变大，二是其他系统也无法做定制化的开发。</p>
-<p>网络的依赖很重，如果多次调用用户中心，也会加大系统出错风险，如果一台机器负载很大，那对用户中心的压力也会增大，导致用户中心，对其他系统的服务能力下降，可能引起系统生态风险，当然你也可以为每个系统设置阈值，但是这个阈值需要使整个系统的负载而确定，如果其他系统请求增加，那么就降低这个系统的阈值。但是每个系统的权重又不一样，你还要设置每个系统的权重，在分配阈值的时候，你还要参考这个系统的权重，可谓不简单。</p>
-<p>所以综上考虑我们最终放弃了这种方式的实现，转而安照下面系统的思路来进行设计。</p>
-<p>但是网上也有使用Getway的方式进行相应地鉴权，这个就是独立地调用用户中心（SSO）进行相应的鉴权，但是这种方式我觉得会加重系统对Getway和SSO系统的依赖，加大他们的压力。同时可能也不太适合我们这种希望逻辑上实现多系统隔离的实际情况。</p>
-<p>但是这种方式最大的好处就是职责隔离，我其实很讨厌职责不清的情况出现。还有就是改动的话，对所有系统是不可见的，这样可以无缝升级。业务系统不在关注鉴权的功能，也不需要实现登录验证的功能。</p>
-<h3 id="SSO验证生成Token，业务系统校验"><a href="#SSO验证生成Token，业务系统校验" class="headerlink" title="SSO验证生成Token，业务系统校验"></a>SSO验证生成Token，业务系统校验</h3><p>这种设计思路是最后我们采用的设计思路，主要是用户中心负责检验用户名密码然后生成Token，存在缓存中，还要决定是否存储用户信息，然后将Token和用户信息返回给业务系统，再由业务系统进行相应地鉴权操作。</p>
-<p>这种方式最大的好处就是减少了网络依赖的问题，同时也可每个系统高度定制化，同时也能实现用户信息的统一管理。这种特性其实特别符合我们希望我们系统能够在逻辑上相互隔离的设计。缺点就是业务系统需要做额外的处理，用户中心只是一个集中协调的角色，不太做一些其他的内容，但是这其实很符合我们现在的现状。</p>
-<h2 id="Token过期的问题"><a href="#Token过期的问题" class="headerlink" title="Token过期的问题"></a>Token过期的问题</h2><p>关于Token我们需要续期策略，如何对Token进行续期也是我们要解决的问题；其实我们是业务系统和用户系统共用token，这样的话就可以将Token的续期问题交由业务系统自己去进行处理。用户中心这边也可以感觉到在活用户数量，已经用户的Token统计信息。</p>
-<h2 id="用户交互分析"><a href="#用户交互分析" class="headerlink" title="用户交互分析"></a>用户交互分析</h2><p>关于用户交互的分析，一是我们需要记录用户的交互信息，但是活跃信息由于每次Token鉴权是交给了业务系统去处理，那么我们其实并不知道用户的活跃信息。</p>
-<p>二是用户的注册信息我们是可以进行保存，我们会记录用户手机型号，浏览器型号，ip地址，注册来源，是否有人推荐等等一系列信息。还有一点就是用户邀请功能的建立，我们的系统设计的时候貌似也没考虑到这个问题。一点一点添加吧！</p>
-<p>三是用户登录信息的保存，这个用户中心也可以进行相应地保存。</p>
-<p>可能还有一些其他信息的保存，这里想到了再来添加吧！另外我觉得用户的活跃信息要么走mq出来，要么打日志进行日志分析才是王道。这也是系统设计的一方面。而且这个开发过程必须加快，或者直接打入到流中，由流数据进行处理。</p>
-<h2 id="Token缓存策略设计"><a href="#Token缓存策略设计" class="headerlink" title="Token缓存策略设计"></a>Token缓存策略设计</h2><p>Redis并不是无限容量的。我们必须计算一个用户登录之后产生的内存。一个用户可能同时存在多个Token，有的是长时间的Token，所以我们可能维护很多Token，这样我们的Redis缓存一定是Cover不了这些信息的。所以我们必须控制Redis里面存储的用户数据库，如果超了，只能继续存到DB中，我们想采取的策略就是LRU策略，关于这种策略这里就不多介绍了。</p>
-<p>但是其实这种实现方式也有一些问题，那就是DB频繁的硬删和插入。所以我们可以这样进行解决，DB里面存储所有人的信息。频繁去更新is_deleted字段，另外就是刷新最后交互时间。</p>
-<p>但是又不得不面对另一个问题，那就是我们是业务系统进行鉴权，他无法操作用户中心的DB，所以用户中心这边可能需要提供一些检查接口来进行支持。总之这种方式可以防止我们系统因为Redis数据量过大而导致的系统卡顿现象的出现。</p>
-<h2 id="系统的高度定制化"><a href="#系统的高度定制化" class="headerlink" title="系统的高度定制化"></a>系统的高度定制化</h2><p>一个高效的系统一定是可定制的，应该开启定制接口，提供定制化的参数。下面就简单分析一下吧，虽然我们不会去处理，也许系统有边界，但是思维从来没有边界，不能让自己的思维停留在系统的实现上，应该站得更高。</p>
-<ul>
-<li>一是我们的Token每个系统的独立是可以配置的，我们会在公共化的jar包中提供相应的定制参数。由每个业务系统定制。Token时长的配置等</li>
-<li>Token存储阈值的配置，这样我们可以动态配置系统的默认行为</li>
-<li>阈值自动优化机制，这个需要系统额外信息的指引，请求量、内存等相关的数据支撑。</li>
-</ul>
-<p>其实我对团队成员所说的，大概就是这些吧！</p>
-<h2 id="其他思考"><a href="#其他思考" class="headerlink" title="其他思考"></a>其他思考</h2><ul>
-<li>分表分库</li>
-<li>通用日志表的设计（觉得列存储，日志分析比较适合）</li>
-<li>通用id的生成策略问题</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>用户中心设计其实关联了很多的东西，其实并没有那么好实现，我们所采用的方式其实比较新颖。估计业内很少像我这样来处理用户中心这个负载的Token生成策略与验证。我们其实还在开发阶段，但是我经过设计和各种思考觉得这个方案大体是可行的，而且我还带领团队对这个方案进行评估，大家都觉得可行。我相信团队的力量的是无限的。</p>
-<p>总之系统的设计涉及的面其实很多东西，很多系统的设计其实是经不住推敲，一推敲你会发现一大堆的问题急需解决，但这其实并不能带来什么效益。对于团队我是希望大家牢记Google工程师的玩笑：“做正确的事，等着被开除”。但是我会继续带着团队去解决这样的问题。其实我知道团队成员对我的认可来自实力和能力，而外部成员的认可来自绩效。你觉得我会看重哪个方面。不提了，继续前行。</p>
-<p>以后若有新的思考，就会添加新的东西。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2074,7 +2024,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">45</span>
+                    <span class="site-state-item-count">46</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2226,7 +2176,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">49</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
