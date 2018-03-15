@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：123456789101112public static BigInteger decodeCompactBits(long compact) &amp;#123;    // 32位中取得高八位    int size = ((int) (compact &amp;gt;&amp;g">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-14T18:54:37.000Z">
+<meta property="og:updated_time" content="2018-03-15T09:04:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="比特币的compact格式说明">
 <meta name="twitter:description" content="在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：123456789101112public static BigInteger decodeCompactBits(long compact) &amp;#123;    // 32位中取得高八位    int size = ((int) (compact &amp;gt;&amp;g">
@@ -386,7 +386,8 @@
 </ul>
 <h3 id="2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数"><a href="#2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数" class="headerlink" title="2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)"></a>2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)</h3><p>比特币只使用这种“Compact”格式来编码难度目标，无符号256位数量。 所以，所有的符号位的复杂度和使用256的大概可能是一个实施意外。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><b style="color:red">就是32位整数用来表示256位的数字，最高的8位是指后面有多少字节的数据，低位在前面，高位在后面，这样如果高位为0的话，那么就不用去考虑了。但这里并不是这样，这里最多是3个字节。第24位到代表正负，较低的32位是尾数。注意低位的0是可以被忽略的，因为有长度的说明。</b></p>
-<p><b style="color:red">这其实就是有精度限制的，也就是说数字不大的话，精度是可以的，否则就会损失精度。一旦字节长过3（不包括）个字节，那么就会损失精度。大概的意思就是这样。也许浮点数的计算也是这样的吧！这个有利于你理解BigDecimal等一些数据范围比较大的数据的实现。</b></p>
+<p><b style="color:blue">这其实就是有精度限制的，也就是说数字不大的话，精度是可以的，否则就会损失精度。一旦字节长过3（不包括）个字节，那么就会损失精度。大概的意思就是这样。也许浮点数的计算也是这样的吧！这个有利于你理解BigDecimal等一些数据范围比较大的数据的实现。</b></p>
+<p><b style="color:red">当然，如果这个东西是用来序列化整数，那自然是有精度的问题。可是如果就是用来存储数据，类型不是整数，比如说区块信息，那这个东西就很有用了，其实这个东西就是主要用来存放区块信息，比如说返回一个区块头列表，一个区块中所有的交易数据等等。这就是compact格式。</b></p>
 <h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/followtheart/bitcoin-notes/blob/master/bignum.h.adoc" target="_blank" rel="noopener">比特币源码分析之大数类CBigNum</a></p>
 
       
