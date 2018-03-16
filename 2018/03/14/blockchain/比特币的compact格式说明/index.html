@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：123456789101112public static BigInteger decodeCompactBits(long compact) &amp;#123;    // 32位中取得高八位    int size = ((int) (compact &amp;gt;&amp;g">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-15T12:43:57.000Z">
+<meta property="og:updated_time" content="2018-03-15T13:00:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="比特币的compact格式说明">
 <meta name="twitter:description" content="在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：123456789101112public static BigInteger decodeCompactBits(long compact) &amp;#123;    // 32位中取得高八位    int size = ((int) (compact &amp;gt;&amp;g">
@@ -391,6 +391,7 @@
 <p><b style="color:red">还有一个注意点：就是一旦发现高位的符号是1，那么如果直接表示的话，可能数字就会变成负数，所以这个时候通常是在数字前面加一个字节0，这样变成Compact格式后也不会出现数字符号改变，唯一的缺点就是损失了一个字节的精度。</b></p>
 <h2 id="关于数字恢复"><a href="#关于数字恢复" class="headerlink" title="关于数字恢复"></a>关于数字恢复</h2><p>我们看到上面的公式为：<code>N =（-1 ^ sign）尾数 256 ^（指数-3）</code>，其实这个公式比较笼统，可能乍看起来是有问题的。其实我觉得应该是<code>N=符号*23位尾数*（256 ^([8位指数-3],这个值不能小于0)）</code>.</p>
 <p>这样的话，这个才是完整的compact解析。</p>
+<p><b style="color:red">对于这个难度值，值越小，前面的0越多，那么挖矿的难度就越大！至于损失精度是没有关系的，因为这个数字只在意解析后的数字前面有多少个0而已，其他无需考虑。</b></p>
 <h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/followtheart/bitcoin-notes/blob/master/bignum.h.adoc" target="_blank" rel="noopener">比特币源码分析之大数类CBigNum</a><br><a href="https://yushuangqi.com/blog/2017/understand-bitcoin-difficulty.html" target="_blank" rel="noopener">理解与计算比特币难度值Difficulty</a></p>
 
       
@@ -517,7 +518,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">46</span>
+                    <span class="site-state-item-count">47</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -673,7 +674,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">51</span>
+                      
+                    
+                    <span class="site-state-item-count">52</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
