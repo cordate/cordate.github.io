@@ -276,6 +276,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/bitcoin智能合约的实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/16/blockchain/bitcoin智能合约的实现/" itemprop="url">bitcoin智能合约的实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-16T14:26:03+08:00">2018-03-16</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一提起智能合约，大家首先想到的一定是以太坊的智能合约，但是很少有人会想到比特币也可以搭建智能合约，只是很少有人会在意到这一点，我也是在阅读bitcoinj的源码的时候，发现了一个字段想起来的。这个在交易中的字段名叫<code>sequence</code>。随后去比特币的wiki中查到了比特币contract的描述，下面就简单描述一下，不会直接翻译文档。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>分布式合约是使用比特币区块链和其他人生成合同的方法。契约不会让以前不可能的任何事情变得可能，但是它们允许您以最小化信任的方式解决常见问题。最小的信任通过让人们的判断被排除在循环之外使事情更加方便（主要还是脚本语言非图灵完备的），从而实现完全的自动化。</p>
+<p>通过构建与比特币交互的低信任协议，可以创建全新的产品：</p>
+<ul>
+<li>智能财产是可以通过区块链进行自动交易和借出的财产。</li>
+<li>可转让的虚拟财产是可交易但不重复的数字项目。</li>
+<li>代理人是自主的程序，用于维护自己的钱包，这样用于购买服务时间。货币是通过代理人销售服务获得的。 如果需求超过供应量，那么代理商可以培育可能生存或死亡的孩子，这取决于他们是否能够获得足够的业务。</li>
+<li>分布式市场是实施点对点债券和股票交易的一种方式，允许比特币发展成为国际金融体系的完全竞争者。</li>
+</ul>
+<p>这篇文章下面会举一些列子。</p>
+<h2 id="关于mempool交易替换机制的警告"><a href="#关于mempool交易替换机制的警告" class="headerlink" title="关于mempool交易替换机制的警告"></a>关于mempool交易替换机制的警告</h2><p>这个页面指出的是使用nSequence字段进行交易mempool机制替换的能力。该机制在2010年被禁用，由于担心它容易遭受Dos攻击，最近代码被彻底删除。实现者应该考虑到这一点，并尝试创建不依赖于mempool替换的合约机制，如果他们希望实现其当前实现的实现。 如果比特币在未来发生变化以再次进行mempool替换，该页面将会更新。</p>
+<h2 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h2><p>比特币中的每笔交易都有一个或多个输入和输出。每个输入/输出都有一个与之相关的小型纯函数，称为脚本。脚本可以包含交易本身简化形式的签名。</p>
+<p>每笔交易都可以拥有与之相关的锁定时间。这允许交易处于挂起状态并且可以替换，直到将指定为块索引或时间戳（对于两者都使用相同字段，但小于5亿的值被解释为块索引）指定的未来时间为止。如果交易的锁定时间已经达到，我们说它是最终的。</p>
+<p><b style="color:red">每个交易输入都有一个序列号sequence。在正常交易中，只是将值周围移动，序列号都是UINT_MAX，锁定时间为零。如果锁定时间尚未达到，但所有序列号均为UINT_MAX，则交易也被视为最终(不能修改)。序列号可用于发布新版本的交易，而不会使其他输入签名无效，例如，在交易中的每个输入来自不同方的情况下，每个输入可以以序列号0开始，并且这些数字可以独立增加。</b></p>
+<p><b style="color:red">签名检查是灵活的，因为签名的交易形式可以通过使用SIGHASH标志来控制，这些标志卡在签名末尾。</b>通过这种方式，可以构建各方签订合同的合同，允许其他部分在没有其参与的情况下进行更改。 SIGHASH标志有两个部分，一个模式和ANYONECANPAY修饰符：</p>
+<ul>
+<li>SIGHASH_ALL：这是默认设置。它表示除了输入脚本之外，关于交易的所有内容都已签名。签名输入脚本显然会使构建交易变得不可能，所以它们总是被删除。但请注意，输入的其他属性（如连接的输出和序列号）已被签名;只有不是的脚本。直观地说，它意味着“如果每个人都投入资金并且产出是这样的，我同意投入我的资金”。</li>
+<li>SIGHASH_NONE：输出没有签名，可以是任何东西。用它来表示“只要每个人都投入资金，我同意投入资金，但我不在乎输出结果如何”。该模式允许其他人通过更改输入序列号来更新交易。</li>
+<li>SIGHASH_SINGLE：与SIGHASH_NONE一样，输入已签名，但序号已空白，所以其他人可以创建新版本的交易。但是，唯一被签名的输出是与输入位置相同的输出。用这个来表示“我同意，只要我的输出是我想要的;我不关心其他人”。</li>
+<li>SIGHASH_ANYONECANPAY修饰符可以与上述三种模式结合使用。设置后，只有该输入被签名，其他输入可以是任何东西。</li>
+</ul>
+<p>脚本可以包含CHECKMULTISIG操作码。 此操作码提供n-m检查：您提供多个公钥，并指定必须存在的有效签名的数量。签名的数量可以少于公钥的数量。通过将输出设置为如下形式，输出可能需要使用两个签名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIGVERIFY</span><br></pre></td></tr></table></figure></p>
+<p>安全创建合同一般有两种模式：</p>
+<ol>
+<li>交易以部分完整或无效的形式在P2P网络外部传递。</li>
+<li>使用两个交易：一个（合同）被创建并签名，但不能立即广播。 相反，其他交易（付款）在合同同意锁定资金后播出，然后广播合同。</li>
+</ol>
+<p>这是为了确保人们总是知道他们同意。</p>
+<p>总之，这些功能让我们可以在区块链之上构建有趣的新金融工具。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>官网列出了很多的示例，这里我们只翻译一个即可。</p>
+<p>想象一下，你在一个网站（例如论坛或维基）上开设一个帐户，并希望与运营商建立可信赖关系，但是你没有任何预先存在的声誉可以利用。一个解决方案是通过向网站支付一些钱来购买信任。但是如果你在某个时候关闭了你的账户，你可能想拿回这笔钱。您可能不相信该网站有足以向提供的花费存款（也就是保证金并不在账户上）。还有一个风险就是该网站有一天可能会消失。</p>
+<p>我们的目标是证明你做出了某种牺牲，所以网站知道你不是spambot(垃圾邮件，这里不知道什么意思，估计类似骗子啥的吧！)，但你不希望他们能够花钱（你的保证金）。如果操作员消失了，你最终不想要他们任何东西，只希望你的钱能够回来。</p>
+<p>我们可以用合同解决这个问题：</p>
+<ul>
+<li>用户和网站互相发送一个新生成的公钥。</li>
+<li>用户创建交易Tx1（付款），将10BTC放入需要用户和网站签名但不广播它的输出。他们使用该网站上一步的密钥。（当前交易网站还不知道）</li>
+<li><b style="color:red">用户发送Tx1的hash值到网站。（不发送本体）</b></li>
+<li><b style="color:red">该网站创建一个交易Tx2（合同）。 Tx2花费Tx1并通过他在第一步中提供的地址将其支付回给用户。请注意，Tx1需要两个签名，所以此事务不能完成。</b> nLockTime被设置为将来某个日期（例如六个月）。input上的序列号被设置为零。</li>
+<li>最后，将不完整（半签名）的交易发回给用户。用户检查合同是否如预期的那样 - 硬币最终会回到他身上 - 但是，除非事情发生变化，否则只能在六个月后。由于序号为零，如果双方同意，合同将来可以修改。input中的脚本尚未完成;只有用户的签名应该是零。他通过签署合同并将新signature放在适当位置来解决这个问题。</li>
+<li>用户广播Tx1，然后广播Tx2。</li>
+</ul>
+<p>在这个阶段，10BTC处于用户和网站都不能独立使用的状态。六个月后，即使网站消失，合同也将完成，用户将收回硬币。</p>
+<p>如果用户希望提早结账，该怎么办？该网站创建一个新版本的Tx2，并将nLockTime设置为零，并将输入序列号设置为UINT_MAX，然后重新签名。该网站将tx交还给用户，用户也签名。然后用户广播交易，提前终止合同并释放硬币。</p>
+<p><b style="color:red">如果六个月快到了，用户希望保留他的账户呢？同样的事情也适用：合同可以用一个更新的nLockTime辞职，序列号1比前一个更高，并重播2 ^ 32次。无论发生什么事，双方都必须同意合同改变。</b></p>
+<p>显然，如果用户原来是滥用（即垃圾邮件发送者），该网站将不允许提前结束合同。如果过多的滥用行为，存款的规模可能会增加，或者合同的长度可能会增加。(这意思是每次改动都需要追加保证金？)</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们大概了解了，这个合同的实现过程，不管怎么说还是业务抽象成了一个比特币的执行脚本，最终需要双方的公私钥来实现而已，交易锁定所有人都知道，只有sequence大于1的值，才能使得交易被改动。否则不能改动。<b style="color:red">其实说白了，还是交易本位的思想来实现智能合约。</b>相比于以太坊的智能合约，这种交易本身没有更多的智能化。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Contract" target="_blank" rel="noopener">Contract</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/bitcoin协议中数字的压缩存储/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1773,165 +1968,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/通用日志表的设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/系统设计/通用日志表的设计/" itemprop="url">通用日志表的设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:40:58+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="1-快照表"><a href="#1-快照表" class="headerlink" title="1. 快照表"></a>1. 快照表</h3><p>表结构修改具有关联性，存储的数据比较多。可维护性很强。</p>
-<h3 id="2-JSON"><a href="#2-JSON" class="headerlink" title="2. JSON"></a>2. JSON</h3><h4 id="2-1-记录修改前后值"><a href="#2-1-记录修改前后值" class="headerlink" title="2.1 记录修改前后值"></a>2.1 记录修改前后值</h4><p>这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。</p>
-<h4 id="2-2-记录修改后的值"><a href="#2-2-记录修改后的值" class="headerlink" title="2.2 记录修改后的值"></a>2.2 记录修改后的值</h4><p>修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。</p>
-<h4 id="2-3-记录修改的字段的值"><a href="#2-3-记录修改的字段的值" class="headerlink" title="2.3 记录修改的字段的值"></a>2.3 记录修改的字段的值</h4><p>这个和2.2 差不多只是，只序列化修改的字段，这样存储的信息更少。但是如果想要知道哪个字段的修改就无能为力，需要找到所有的更改记录。</p>
-<h3 id="3-操作表-更改表"><a href="#3-操作表-更改表" class="headerlink" title="3. 操作表+更改表"></a>3. 操作表+更改表</h3><p>就是一个记录基本操作信息的表，然后另一张表记录修改哪张表的哪个字段，哪个值被改为哪个值。如果要查改动之前的值就是会有查询的操作，另外就是批量更改可能会产生大量需要更改的数据。</p>
-<h4 id="3-1-原值-现值"><a href="#3-1-原值-现值" class="headerlink" title="3.1 原值+现值"></a>3.1 原值+现值</h4><p>依然还是存储想要的值，但是只有修改的字段的原值和现值。</p>
-<h4 id="3-2-只记录现值"><a href="#3-2-只记录现值" class="headerlink" title="3.2 只记录现值"></a>3.2 只记录现值</h4><p>还是通过parent_id记录修改的历史，但是root必须是原来的值，所以插入的时候需要保存一份在这个地方。</p>
-<p>原值的改动可以在第一次查询使用的时候，通过parent_id找到，这种方式的缺点是，无从知晓上一次本字段是在哪次编辑的，反正找打了就要存下来。如果原值不需要查询，那么在生成日志的时候就一起存下来。有的原值是NULL，这样就达不到缓存的策略，所以可以设置为空字符串也不要设置为NULL，这样缓存策略才能生效。</p>
-<p>其实parent_id这种方式只能保证更改的记录串行而已，但是无法确定一个字段的原值，通过parent-id进行回溯，可能存在次数过多的问题。所以应该在记录filed的这张表设置中加入被修改表的信息，以及修改的记录id的信息，通过记录id和字段名找到所有值，这样就可以知道原来的值是什么了，排序就是事件的发生顺序，所以应该没有问题。</p>
-<h3 id="4-No-SQL的存储"><a href="#4-No-SQL的存储" class="headerlink" title="4. No SQL的存储"></a>4. No SQL的存储</h3><p>这种存储方式，可能会出现数据不好解析的问题，因为我们可能是进行序列化的。MongoDB可能比较适合，我们能进行相应数据的查询。但是普遍没有事务的支持。</p>
-<p>还有一种文档存储就是基于Lucene的存储，一般我们不会直接使用Lucene，而是使用封装好的结构进行存储，比如说solr和EleasticSearch。</p>
-<h3 id="5-列存储"><a href="#5-列存储" class="headerlink" title="5. 列存储"></a>5. 列存储</h3><p>如果进行列存储的话，其实可以解决我们的不少问题。我其实比较倾向于使用列存储的方式来解决我们遇到的问题。表格存储最大的好处就是列信息可以变动。</p>
-<h3 id="6-日志文件打印"><a href="#6-日志文件打印" class="headerlink" title="6. 日志文件打印"></a>6. 日志文件打印</h3><p>日志文件的打印不一定是打入到文件里面去，也可以打印到流里面去。网上有很多网络流的工具，比如apache的flume。</p>
-<p>当然也可以打印到日志文件中，这样由第三方的工具再从日志文件中读取分析。但是读取的数据需要分析存储。当然这需要工具记录上次的读取位置。</p>
-<h3 id="7-MQ中继方式"><a href="#7-MQ中继方式" class="headerlink" title="7. MQ中继方式"></a>7. MQ中继方式</h3><p>将数据直接推送至MQ中，或者直接发给flume，再由flume推送到MQ中。一般有3层机制也有多层的架构机制。</p>
-<p>使用这些机制的原因是一层一层的速度放缓，其实这就是本质，flume快速接受，MQ推送可以暂存一部分数据，然后storm或者spark进行分析，进一步完成数据的分析过程，又是一层的数据放缓，最后存储最终整理或者分析后的数据。</p>
-<p>当然hadoop是用来处理离线数据的。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上就是我对通用日志的一些总结信息，想到数据分析的作用，日后如果有新的想法，我会继续加入改进。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1983,7 +2019,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">47</span>
+                    <span class="site-state-item-count">48</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
