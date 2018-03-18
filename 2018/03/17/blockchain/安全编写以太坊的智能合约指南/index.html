@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="智能合约,contract," />
+
+
+<meta name="description" content="安全的开发以太坊的智能合约，是非常需要花费精力的。已经有一些好的指南以及汇总，比如 Consensys的智能合约最佳实践，和Solidity官方文档的安全指南。但除非真正写代码，这些概念很难被记住和理解。 本文会尝试一个有点不同的办法。首先解释提升智能合约安全的一些策略，并展示一些不遵从，而引起问题的例子。最后给一些已经调整地，可以直接使用的最佳实践。希望，这能帮助你创建避免某些不安全行为的肌肉记">
+<meta name="keywords" content="智能合约,contract">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安全编写以太坊的智能合约指南">
+<meta property="og:url" content="http://cordate.github.io/2018/03/17/blockchain/安全编写以太坊的智能合约指南/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="安全的开发以太坊的智能合约，是非常需要花费精力的。已经有一些好的指南以及汇总，比如 Consensys的智能合约最佳实践，和Solidity官方文档的安全指南。但除非真正写代码，这些概念很难被记住和理解。 本文会尝试一个有点不同的办法。首先解释提升智能合约安全的一些策略，并展示一些不遵从，而引起问题的例子。最后给一些已经调整地，可以直接使用的最佳实践。希望，这能帮助你创建避免某些不安全行为的肌肉记">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-03-18T05:47:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安全编写以太坊的智能合约指南">
+<meta name="twitter:description" content="安全的开发以太坊的智能合约，是非常需要花费精力的。已经有一些好的指南以及汇总，比如 Consensys的智能合约最佳实践，和Solidity官方文档的安全指南。但除非真正写代码，这些概念很难被记住和理解。 本文会尝试一个有点不同的办法。首先解释提升智能合约安全的一些策略，并展示一些不遵从，而引起问题的例子。最后给一些已经调整地，可以直接使用的最佳实践。希望，这能帮助你创建避免某些不安全行为的肌肉记">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/17/blockchain/安全编写以太坊的智能合约指南/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>安全编写以太坊的智能合约指南 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/17/blockchain/安全编写以太坊的智能合约指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">安全编写以太坊的智能合约指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T12:14:09+08:00">2018-03-17</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><b style="color:blue">安全的开发以太坊的智能合约，是非常需要花费精力的。已经有一些好的指南以及汇总，比如 <a href="https://github.com/ConsenSys/smart-contract-best-practices" target="_blank" rel="noopener">Consensys的智能合约最佳实践</a>，和<a href="http://solidity.readthedocs.io/en/latest/security-considerations.html" target="_blank" rel="noopener">Solidity官方文档的安全指南</a>。但除非真正写代码，这些概念很难被记住和理解。</b></p>
+<p>本文会尝试一个有点不同的办法。首先解释提升智能合约安全的一些策略，并展示一些不遵从，而引起问题的例子。最后给一些已经调整地，可以直接使用的最佳实践。希望，这能帮助你创建避免某些不安全行为的肌肉记忆，从而在写代码的时候意识到可能的风险。</p>
+<p>不啰嗦了，进入正题吧。</p>
+<h2 id="尽早且明确的暴露问题"><a href="#尽早且明确的暴露问题" class="headerlink" title="尽早且明确的暴露问题"></a>尽早且明确的暴露问题</h2><p>一个简单且强大的最佳实践是，让<a href="https://oncodingstyle.blogspot.jp/2008/10/fail-early-fail-loudly.html" target="_blank" rel="noopener">尽早且明确的暴露问题</a>。接下来，看一个有问题的函数实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 有问题的代码，不要使用！</span><br><span class="line">contract BadFailEarly &#123;</span><br><span class="line">  uint constant DEFAULT_SALARY = 50000;</span><br><span class="line">  mapping(string =&gt; uint) nameToSalary;</span><br><span class="line"></span><br><span class="line">  function getSalary(string name) constant returns (uint) &#123;</span><br><span class="line">    if (bytes(name).length != 0 &amp;&amp; nameToSalary[name] != 0) &#123;</span><br><span class="line">      return nameToSalary[name];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      return DEFAULT_SALARY;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">为避免合约潜在的问题，或者让合约运行于一个不稳定或不一致的状态。上面例子中的函数getSalary应该在返回结果前，检查参数。那现在的例子有什么问题呢，问题在于，如果条件不满足，将返回默认值。这将掩盖参数的严重问题，因为仍然可以按正常业务逻辑返回值。这虽然是一个比较极端的例子，但却非常常见，原因是大家在程序设计时，担心程序兼容性不够，所以设置一些兜底方案。但真相是，越快失败，越容易发现问题。如果我们不恰当的掩盖错误，错误将扩散到代码的其它地方，从而引起非常难以跟踪的不一致错误。</b>快速失败也是一种很好的思想。下面是一个调整后的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">contract GoodFailEarly &#123;</span><br><span class="line">  mapping(string =&gt; uint) nameToSalary;</span><br><span class="line">  </span><br><span class="line">  function getSalary(string name) constant returns (uint) &#123;</span><br><span class="line">    // 快速失败，让程序尽快退出运行 </span><br><span class="line">    if (bytes(name).length == 0) throw;</span><br><span class="line">    // 快速失败，让程序尽快退出运行 </span><br><span class="line">    if (nameToSalary[name] == 0) throw;</span><br><span class="line">    </span><br><span class="line">    return nameToSalary[name];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个版本的代码，还展示了另外一种推荐的编码方式，一种将条件预检查分开，分开判断，验证失败的方式。原因是可以使用Solidity提供的修改器的特性，来实现重用。</p>
+<h2 id="在支付时使用（pull）模式而不是（push）模式"><a href="#在支付时使用（pull）模式而不是（push）模式" class="headerlink" title="在支付时使用（pull）模式而不是（push）模式"></a><b style="color:red">在支付时使用（pull）模式而不是（push）模式</b></h2><p>每次ether的转移，都需要考虑对应帐户，潜在的代码执行。一个接收的合约可以实现一个默认的回退函数，这个函数可能抛出错误。由此，我们永远要考虑在send执行中的可能的错误。一个解决方案是，我们应该在支付时使用（pull）模式而不是（push）模式。来看一个看起来没有问题的，关于竞标函数的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 有问题的代码，请不要直接使用！</span><br><span class="line">contract BadPushPayments &#123;</span><br><span class="line">  address highestBidder;</span><br><span class="line">  uint highestBid;</span><br><span class="line"> </span><br><span class="line">  function bid() &#123;</span><br><span class="line">    // 如果throw的话，别人转进来以太币，但是执行的操作却失败了，这样会导致一些问题。</span><br><span class="line">    if (msg.value &lt; highestBid) throw;</span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      // return bid to previous winner</span><br><span class="line">      // 这里调用了send函数, 进行退款（这个操作不是很安全）。</span><br><span class="line">      if (!highestBidder.send(highestBid)) &#123;</span><br><span class="line">        // 发生throw，那么可能别人的投资就失效了</span><br><span class="line">        throw;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述的合约，调用了send函数，检查了返回值，看起来是非常符合常理的。但它在函数中调用了send函数，这带来了不安全，为什么？需要时刻记住的一点是，就像之前说的，<b style="color:red">send会触发另外一个合约的代码执行。</b></p>
+<p><b style="color:blue">假如某个竞标的地址，它会在每次有人转帐给他时throw。而此时，其它人尝试追加价格竞标时会发生什么呢？那么send调用将总是会失败，从而错误向上抛，让bid函数产生一个异常。一个函数调用如果以错误结束，将会让状态不发生变更（所有的变化都将回滚）。这将意味着，没有人将能继续竞标，合约失效了。</b></p>
+<p>最简单的解决方案是，将支付分离到另一个函数中，让用户请求（pull）金额，而不依赖于余下的合约逻辑：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">contract GoodPullPayments &#123;</span><br><span class="line">  address highestBidder;</span><br><span class="line">  uint highestBid;</span><br><span class="line">  // 定义一个缓冲队列</span><br><span class="line">  mapping(address =&gt; uint) refunds;</span><br><span class="line">  </span><br><span class="line">  function bid() external &#123;</span><br><span class="line">    if (msg.value &lt; highestBid) throw;</span><br><span class="line">    </span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      // 先把数据放入缓冲队列中（map结构）。然后就返回。</span><br><span class="line">      refunds[highestBidder] += highestBid;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function withdrawBid() external &#123;</span><br><span class="line">    // 从缓冲队列中取出数据，进行投票（两阶段分开操作）</span><br><span class="line">    uint refund = refunds[msg.sender];</span><br><span class="line">    // 清零，接下来进行处理</span><br><span class="line">    refunds[msg.sender] = 0;</span><br><span class="line">    // 这里再进行send方法的调用。</span><br><span class="line">    if (!msg.sender.send(refund)) &#123;</span><br><span class="line">      refunds[msg.sender] = refund;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">这次，我们使用一个mapping来存储每个待退款的竞标者的信息，提供了一个withdraw用于退款。</b>如果在send调用时抛出异常，仅仅只是那个有问题的竞标者受到影响。这是一个非常简单的模式，却解决了非常多的问题（比如，可重入）。所以，记住一点，当发送ether时，使用（pull）模式而不是（push）模式。</p>
+<p>我已经实现了<a href="https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/payment/PullPayment.sol" target="_blank" rel="noopener">一个使用这个模式的合约，可以方便的继承使用。</a></p>
+<h2 id="函数代码的顺序：条件，行为，交互"><a href="#函数代码的顺序：条件，行为，交互" class="headerlink" title="函数代码的顺序：条件，行为，交互"></a>函数代码的顺序：条件，行为，交互</h2><p><b style="color:red">作为尽可能早的暴露问题的原则的一个延伸，一个好的实践是将你的函数结构化为：首先，检查所有前置的条件；然后，对合约的状态进行修改；最后，与其它合约进行交互。</b></p>
+<p>条件，行为，交互。坚持使用这样的函数结构，将会让你避免大部分的问题。下面来看使用了这个模式的一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function auctionEnd() &#123;</span><br><span class="line">  // 1. Conditions(条件)</span><br><span class="line">  if (now &lt;= auctionStart + biddingTime)</span><br><span class="line">    throw; // auction did not yet end</span><br><span class="line">  if (ended)</span><br><span class="line">    throw; // this function has already been called</span><br><span class="line"></span><br><span class="line">  // 2. Effects（行为，进行链外计算）</span><br><span class="line">  ended = true;</span><br><span class="line">  AuctionEnded(highestBidder, highestBid);</span><br><span class="line"></span><br><span class="line">  // 3. Interaction（交互，进行链上交易）</span><br><span class="line">  if (!beneficiary.send(highestBid))</span><br><span class="line">    throw;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这首先符合尽可能早的暴露问题的原则，因为条件在一开始就进行了检查。<b style="color:red">它让存在潜在交互风险的，与其它合约的交互，留到了最后。</b></p>
+<h2 id="留意平台局限性"><a href="#留意平台局限性" class="headerlink" title="留意平台局限性"></a>留意平台局限性</h2><p><b style="color:red">EVM有非常多的关于合约能做的硬限制。这些是平台级的安全考虑，如果你不知道的话，却可以会威胁你的合约安全。</b>下面来看一个看起来正常的，雇员津贴管理的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 不安全的代码，不要直接使用！</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (var i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = calculateBonus(employee);</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    // some expensive computation ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>读完代码，业务实现非常直接，看起来也没有什么问题，但却潜藏三个问题，基于平台的一些独特性。</p>
+<p><b style="color:red">第一个问题是i的类型将会是uint8，因为如果要存0，如果不指定类型，将自动选择一个占用空间最小的，恰当的类型，在这里将是uint8。所以如果这个数组的大小超过255个元素，这个循环将永远不会结束，最终将导致gas耗尽。</b><b style="color:blue">应当在定义变量时，尽可能的不要使用var，明确变量的类型，</b>下面我们来修正一下上面的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 仍然是不安全的代码，请不要使用！</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = calculateBonus(employee);</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    // some expensive computation ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二个你需要考虑的事情是gas的限制。gas是以太坊的一种机制，来对资源的使用收费。<b style="color:red">每一个修改状态的功能调用都会花费gas</b>。<b style="color:red">假如calculateBonus计算津贴时有些复杂的运算，比如需要跨多个项目计算利润。这将消耗非常多的gas，将会很容易的达到交易和区块的gas限制。如果一个交易达到了gas的限制，所有的状态的改变都将会撤销，但消耗的gas不会退回</b>。当使用循环的时候，尤其要注意变量对gas消耗的影响。让我们来优化一下上述的代码，将津贴计算与循环分开。但需要注意的是，拆开后仍然有数组变大后，带来的gas消耗增长的问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// UNSAFE CODE, DO NOT USE!</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  </span><br><span class="line">  address[] employees;</span><br><span class="line">  mapping(address =&gt; uint) bonuses;  </span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = bonuses[employee];</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    uint bonus = 0;</span><br><span class="line">    // some expensive computation modifying the bonus...</span><br><span class="line">    bonuses[employee] = bonus;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">最后，还有一个关于调用栈调用深度的限制。EVM栈调用的硬限制是1024。</b>这意味着如果嵌套调用的深度达到1024，合约调用将会失败。<b style="color:red">一个攻击者可以调用递归的调用我们的合约1023次，从而因为栈深度的限制，让send失败</b>。前述的（pull）模式，可以比较好的避免这个问题（译者注：原链接找不到了，但找下github上的讨论：<a href="https://github.com/OpenZeppelin/zeppelin-solidity/issues/15" target="_blank" rel="noopener">https://github.com/OpenZeppelin/zeppelin-solidity/issues/15</a> ）。</p>
+<p>下面是一个最终的修改版，解决了上述的所有问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract GoodArrayUse is PullPaymentCapable &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  // 还是先存在缓存中</span><br><span class="line">  mapping(address =&gt; uint) bonuses;</span><br><span class="line">  // 从缓存中一起发送红利</span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = bonuses[employee];</span><br><span class="line">      asyncSend(employee, bonus);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  // 计算红利的方法，给某一个人计算红利</span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    uint bonus = 0;</span><br><span class="line">    // some expensive computation...</span><br><span class="line">    bonuses[employee] = bonus;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>总结一下，需要记住的：</p>
+<ol>
+<li>使用的变量类型的限制</li>
+<li>合约的gas消耗</li>
+<li>栈调用1024的限制。</li>
+</ol>
+<h2 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h2><p>编写测试用例会占用大量的时间，但也能抵消你在添加新功能后<a href="https://en.wikipedia.org/wiki/Software_regression" target="_blank" rel="noopener">回归问题</a>需要花费的时间。回归问题具体是指在添加功能的修改过程中，导致之前的组件出现bug。</p>
+<p>我将尽快写一个更加广泛的关于测试的指南，如果你比较好奇，可以先看看<a href="http://truffleframework.com/docs/getting_started/testing" target="_blank" rel="noopener">关于Truffle的测试指南</a>。</p>
+<h2 id="容错及自动bug奖励"><a href="#容错及自动bug奖励" class="headerlink" title="容错及自动bug奖励"></a>容错及自动bug奖励</h2><p>首先感谢Peter Borah带来的这两个想法的灵感。代码审查和安全审核对保证安全来说还不足够。我们的代码需要做好最坏情况的准备。<b style="color:red">当我们的智能合约中有漏洞时，应该有一种方法可以安全的恢复</b>。<b style="color:blue">不止如此，我们也应该尽可能早的发现漏洞。下面是一个内置的自动bug奖励机制带来的作用</b>。</p>
+<p>下面我们就来看一个自动bug奖励的假设的代币管理的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line">import &apos;./Token.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract Bounty is PullPaymentCapable &#123;</span><br><span class="line">  bool public claimed;</span><br><span class="line">  mapping(address =&gt; address) public researchers;</span><br><span class="line">  </span><br><span class="line">  function() &#123;</span><br><span class="line">    if (claimed) throw;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function createTarget() returns(Token) &#123;</span><br><span class="line">    Token target = new Token(0);</span><br><span class="line">    researchers[target] = msg.sender;</span><br><span class="line">    return target;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function claim(Token target) &#123;</span><br><span class="line">    address researcher = researchers[target];</span><br><span class="line">    if (researcher == 0) throw;</span><br><span class="line">    </span><br><span class="line">    // check Token contract invariants</span><br><span class="line">    if (target.totalSupply() == target.balance) &#123;</span><br><span class="line">      throw;</span><br><span class="line">    &#125;</span><br><span class="line">    asyncSend(researcher, this.balance);</span><br><span class="line">    claimed = true;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先，正如前面所述，我们使用PullPaymentCapable来让我们的支付更加安全。这个赏金合约，允许研究者创建当前我们审核的Token合约的副本。任何人都可以参与到这个赏金项目，通过发送交易到这个赏金项目地址。<b style="color:red">如果任何研究者可以攻破他自己的Token合约的拷贝，让一些本不该变的情况变化（比如这里，让总代币发行量与当前代币余额不一致），他将获得对应的赏金。一旦赏金被领取了，合约将不再继续接受新的资金（无名的函数被称为合约的回退函数，在每次合约接收ether时自动执行）。</b></p>
+<p>正如你看到的，它有一个非常好的特性是分离了合约，不需要对原始的Token合约进行修改。<a href="https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/Bounty.sol" target="_blank" rel="noopener">这里有一个完整，任何人都可以使用的版本</a>。</p>
+<p>而对于容错性，我们需要修改我们原来的合约来增加额外的安全机制。<b style="color:red">一种简单的方案是允许合约的监督者可以冻结合约，作为一种紧急的机制</b>。我们来看一个通过继承实现这种行为的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">contract Stoppable &#123;</span><br><span class="line">  address public curator;</span><br><span class="line">  bool public stopped;</span><br><span class="line">  modifier stopInEmergency &#123; if (!stopped) _ &#125;</span><br><span class="line">  modifier onlyInEmergency &#123; if (stopped) _ &#125;</span><br><span class="line">  </span><br><span class="line">  function Stoppable(address _curator) &#123;</span><br><span class="line">    if (_curator == 0) throw;</span><br><span class="line">    curator = _curator;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function emergencyStop() external &#123;</span><br><span class="line">    if (msg.sender != curator) throw;</span><br><span class="line">    stopped = true;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Stoppable允许指定一个监督者，可以来停止整个合约。实现方式是，通过继承这个合约，在对应的功能上使用修改器stopInEmergency和onlyInEmergency，下面我们来看一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line">import &apos;./Stoppable.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract StoppableBid is Stoppable, PullPaymentCapable &#123;</span><br><span class="line">  address public highestBidder;</span><br><span class="line">  uint public highestBid;</span><br><span class="line">  </span><br><span class="line">  function StoppableBid(address _curator)</span><br><span class="line">    Stoppable(_curator)</span><br><span class="line">    PullPaymentCapable() &#123;&#125;</span><br><span class="line">  </span><br><span class="line">  function bid() external stopInEmergency &#123;</span><br><span class="line">    if (msg.value &lt;= highestBid) throw;</span><br><span class="line">    </span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      asyncSend(highestBidder, highestBid);</span><br><span class="line">    &#125;</span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function withdraw() onlyInEmergency &#123;</span><br><span class="line">    suicide(curator);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">在上面这个非常简单的例子中，bid可以被一个监督者停止，监督者在合约创建时指定</b>。StoppableBid在正常情况下，只有bid函数可以被调用，而当出现紧急情况时，监督者可以介入，并激活紧急状态。并让bid函数不再可用，同时激活withdraw功能。</p>
+<p>在上面的例子中，紧急模式将允许监督者销毁合约，恢复资金。但在实际场景中，恢复的逻辑更为复杂（举例来说，需要返还资金给每个投资者）。</p>
+<h2 id="限制可存入的资金"><a href="#限制可存入的资金" class="headerlink" title="限制可存入的资金"></a>限制可存入的资金</h2><p><b style="color:blue">另一个保护我们智能合约远离攻击的方式是限制。攻击者最有可能针对管理数百万美元的高调合同。并不是所有的合约，有这样的高的资金量。尤其是当我们正在初期。在这种情形下，限制合约可以接收的资金量就将非常有用。最简单的方式，可以实现为一个余额的硬上限。</b></p>
+<p>下面是一个简单的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">contract LimitFunds &#123;</span><br><span class="line">  </span><br><span class="line">  uint LIMIT = 5000;</span><br><span class="line">  </span><br><span class="line">  function() &#123; throw; &#125;</span><br><span class="line">  </span><br><span class="line">  function deposit() &#123;</span><br><span class="line">    if (this.balance &gt; LIMIT) throw;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>回退函数里，会拒绝接收所有的直接支付。deposit函数会首先检查合约的余额是否已经超限，超限将直接抛出异常。其它一些更有意思的，<b style="color:red">比如动态上限，管理限制也很容易实现</b>。</p>
+<h2 id="简单和模块化的代码"><a href="#简单和模块化的代码" class="headerlink" title="简单和模块化的代码"></a>简单和模块化的代码</h2><p>安全来自，我们想写的与代码实际可以做的距离。这非常的难以验证，特别是当代码量又大，又混乱时。这就是为什么写简单和模块化的代码变得非常重要。</p>
+<p>这意味着，函数应该尽可能的简单，代码之间的依赖应该极尽可能的少，文件应该尽可能的小，将独立的逻辑放进模块，每块的职责更加单一。</p>
+<p>命名是我们在编码过程中表达我们意图的方式。想一个好的名字，尽可能的让名字清晰。</p>
+<p>让我们来看一个关于<a href="https://solidity.readthedocs.io/en/latest/contracts.html#events" target="_blank" rel="noopener">Event</a>的差命名的例子。看看<a href="https://github.com/slockit/DAO/blob/develop/DAO.sol#L618-L691" target="_blank" rel="noopener">DAO里的函数</a>。其中的函数代码都太长了。</p>
+<p>最大的问题是太长，而且功能复杂。尽可能的让你的函数短小，比如，最多不超过30到40行代码。理想情况下，你应该在1分钟内弄明白函数的意图。另一个问题是关于事件Transfer在第685行的命名。这个名字与一个叫<a href="https://github.com/slockit/DAO/blob/develop/DAO.sol#L755" target="_blank" rel="noopener">transfer的函数名</a>只有一字之差。这将带来误解。<b style="color:red">一般来说，关于事件的推荐命名是使用Log打头</b>，这样的话，这个事件应该命名为LogTransfer。</p>
+<p>记住，尽可能的将你的合约写得简单，模块化，良好的命名。这将极大的帮助其它人和你自己审查你自己的代码。</p>
+<h2 id="不要从0开始写所有的代码"><a href="#不要从0开始写所有的代码" class="headerlink" title="不要从0开始写所有的代码"></a>不要从0开始写所有的代码</h2><p>最后，正如一句格言所说，“不要从头发明你自己的加密币”。我想它也适用于智能合约代码。你的操作与钱有关，你的数据是公开的，你正在一个全新的成长中的平台上。代价非常高，糟蹋机会的人无处不在。</p>
+<p>上述这些实践帮助我们写出更安全的合约。但最终，我们应该开发出更好的创建智能合约的工具。这里有一些先行者，包括<a href="https://www.youtube.com/watch?v=H2uwUdzVD9I&amp;feature=youtu.be" target="_blank" rel="noopener">better type systems</a>，<a href="https://blog.ethereum.org/2015/12/24/understanding-serenity-part-i-abstraction/" target="_blank" rel="noopener">Serenity Abstractions</a> 和<a href="https://www.rsk.co/" target="_blank" rel="noopener">the Rootstock platform</a>。</p>
+<p>现在已经有非常多的安全的代码，以及框架出现了。我们整合了一部分最佳实践到<a href="https://github.com/OpenZeppelin/zeppelin-solidity" target="_blank" rel="noopener">Github的资源库Open Zeppelin</a>。欢迎看看以及贡献新代码，以及提供代码审查建议。</p>
+<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><p>回顾一下，这篇文章中描述的安全模式有：</p>
+<ul>
+<li>尽早且明确的暴露问题。</li>
+<li>使用（pull）模式而不是（push）模式</li>
+<li>代码结构遵从：条件，行为，交互</li>
+<li>注意平台限制</li>
+<li>测试用例</li>
+<li>容错及自动bug奖励</li>
+<li>限制存入的资金</li>
+<li>简单与模块化的代码</li>
+<li>不要从零开始写代码</li>
+<li>如果你想讨论与智能合约相关的问题，欢迎加入Slack，让我们一起来提升智能合约编程标准。</li>
+</ul>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="https://blog.zeppelin.solutions/onward-with-ethereum-smart-contract-security-97a827e47702" target="_blank" rel="noopener">Onward with Ethereum Smart Contract Security</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/智能合约/" rel="tag"># 智能合约</a>
+          
+            <a href="/tags/contract/" rel="tag"># contract</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/17/blockchain/bitcoin脚本解析/" rel="next" title="bitcoin脚本解析">
+                <i class="fa fa-chevron-left"></i> bitcoin脚本解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">50</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">54</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#尽早且明确的暴露问题"><span class="nav-number">1.</span> <span class="nav-text">尽早且明确的暴露问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在支付时使用（pull）模式而不是（push）模式"><span class="nav-number">2.</span> <span class="nav-text">在支付时使用（pull）模式而不是（push）模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数代码的顺序：条件，行为，交互"><span class="nav-number">3.</span> <span class="nav-text">函数代码的顺序：条件，行为，交互</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#留意平台局限性"><span class="nav-number">4.</span> <span class="nav-text">留意平台局限性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试用例"><span class="nav-number">5.</span> <span class="nav-text">测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容错及自动bug奖励"><span class="nav-number">6.</span> <span class="nav-text">容错及自动bug奖励</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制可存入的资金"><span class="nav-number">7.</span> <span class="nav-text">限制可存入的资金</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单和模块化的代码"><span class="nav-number">8.</span> <span class="nav-text">简单和模块化的代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不要从0开始写所有的代码"><span class="nav-number">9.</span> <span class="nav-text">不要从0开始写所有的代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结一下"><span class="nav-number">10.</span> <span class="nav-text">总结一下</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用和参考"><span class="nav-number">11.</span> <span class="nav-text">引用和参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

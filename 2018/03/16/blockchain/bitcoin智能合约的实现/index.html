@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="一提起智能合约，大家首先想到的一定是以太坊的智能合约，但是很少有人会想到比特币也可以搭建智能合约，只是很少有人会在意到这一点，我也是在阅读bitcoinj的源码的时候，发现了一个字段想起来的。这个在交易中的字段名叫sequence。随后去比特币的wiki中查到了比特币contract的描述，下面就简单描述一下，不会直接翻译文档。 前言分布式合约是使用比特币区块链和其他人生成合同的方法。契约不会让以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-16T07:57:31.000Z">
+<meta property="og:updated_time" content="2018-03-18T05:33:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="bitcoin智能合约的实现">
 <meta name="twitter:description" content="一提起智能合约，大家首先想到的一定是以太坊的智能合约，但是很少有人会想到比特币也可以搭建智能合约，只是很少有人会在意到这一点，我也是在阅读bitcoinj的源码的时候，发现了一个字段想起来的。这个在交易中的字段名叫sequence。随后去比特币的wiki中查到了比特币contract的描述，下面就简单描述一下，不会直接翻译文档。 前言分布式合约是使用比特币区块链和其他人生成合同的方法。契约不会让以">
@@ -414,7 +414,7 @@
 <p><b style="color:red">如果六个月快到了，用户希望保留他的账户呢？同样的事情也适用：合同可以用一个更新的nLockTime辞职，序列号1比前一个更高，并重播2 ^ 32次。无论发生什么事，双方都必须同意合同改变。</b></p>
 <p>显然，如果用户原来是滥用（即垃圾邮件发送者），该网站将不允许提前结束合同。如果过多的滥用行为，存款的规模可能会增加，或者合同的长度可能会增加。(这意思是每次改动都需要追加保证金？)</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们大概了解了，这个合同的实现过程，不管怎么说还是业务抽象成了一个比特币的执行脚本，最终需要双方的公私钥来实现而已，交易锁定所有人都知道，只有sequence大于1的值，才能使得交易被改动。否则不能改动。<b style="color:red">其实说白了，还是交易本位的思想来实现智能合约。</b>相比于以太坊的智能合约，这种交易本身没有更多的智能化。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Contract" target="_blank" rel="noopener">Contract</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Contract" target="_blank" rel="noopener">Contract</a><br><a href="https://medium.com/@maraoz/smart-contracts-and-bitcoin-a5d61011d9b1" target="_blank" rel="noopener">智能合约和比特币</a></p>
 
       
     </div>
@@ -459,6 +459,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/blockchain/bitcoin脚本解析/" rel="prev" title="bitcoin脚本解析">
+                bitcoin脚本解析 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -536,7 +540,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -694,7 +698,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">52</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">54</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
