@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="比特币,脚本,多签名," />
+
+
+<meta name="description" content="这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。 地址首先关于钱包地址大概有以下几种：    类型 版本前缀（hex） Base58结果的前缀     传统bitcoin地址 0x0">
+<meta name="keywords" content="比特币,脚本,多签名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币地址和脚本">
+<meta property="og:url" content="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。 地址首先关于钱包地址大概有以下几种：    类型 版本前缀（hex） Base58结果的前缀     传统bitcoin地址 0x0">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E4%BC%A0%E7%BB%9F%E6%AF%94%E7%89%B9%E5%B8%81%E5%9C%B0%E5%9D%80%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.png">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/blockchain/p2pkh%E8%84%9A%E6%9C%AC%E5%9B%BE%E7%A4%BA.png?raw=true">
+<meta property="og:updated_time" content="2018-03-19T14:04:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="比特币地址和脚本">
+<meta name="twitter:description" content="这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。 地址首先关于钱包地址大概有以下几种：    类型 版本前缀（hex） Base58结果的前缀     传统bitcoin地址 0x0">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E4%BC%A0%E7%BB%9F%E6%AF%94%E7%89%B9%E5%B8%81%E5%9C%B0%E5%9D%80%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>比特币地址和脚本 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">比特币地址和脚本</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T20:37:58+08:00">2018-03-19</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。</p>
+<h2 id="地址"><a href="#地址" class="headerlink" title="地址"></a>地址</h2><p>首先关于钱包地址大概有以下几种：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">版本前缀（hex）</th>
+<th style="text-align:center">Base58结果的前缀</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">传统bitcoin地址</td>
+<td style="text-align:center">0x00</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">P2SH</td>
+<td style="text-align:center">0x05</td>
+<td style="text-align:center">3</td>
+</tr>
+<tr>
+<td style="text-align:center">比特币测试网络地址</td>
+<td style="text-align:center">0x6F</td>
+<td style="text-align:center">m或者n</td>
+</tr>
+<tr>
+<td style="text-align:center">私钥WIF</td>
+<td style="text-align:center">0x80</td>
+<td style="text-align:center">5、K、L</td>
+</tr>
+<tr>
+<td style="text-align:center">BIP-38编码私钥</td>
+<td style="text-align:center">0x0142</td>
+<td style="text-align:center">6P</td>
+</tr>
+<tr>
+<td style="text-align:center">BIP-32编码私钥</td>
+<td style="text-align:center">0x0488B21E</td>
+<td style="text-align:center">xpub</td>
+</tr>
+</tbody>
+</table>
+<p>其实地址的类型和交易的解锁也是有很大的相关关系的。<b style="color:blue">如果你创造了一种新的地址类型，并配置了相关的加密和解密脚本，那么这个地址是可以工作的，只是没有钱包支持，你需要提供能够利用这种地址类型，发送解密和加密脚本的客户端，这样你的地址就可以生效了，当然你也要兼容其他类型，如果发送的地址类型是其他的，那你的输出脚本要按照对应地址类型的要求来才行</b>。</p>
+<p>比特币地址的生成规则如下：</p>
+<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E4%BC%A0%E7%BB%9F%E6%AF%94%E7%89%B9%E5%B8%81%E5%9C%B0%E5%9D%80%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.png" alt=""></p>
+<h2 id="传统的比特币地址脚本P2PKH"><a href="#传统的比特币地址脚本P2PKH" class="headerlink" title="传统的比特币地址脚本P2PKH"></a>传统的比特币地址脚本P2PKH</h2><p>对于比特币脚本的语言介绍这里不提太多，比特币脚本其实就是一种基于堆栈的脚本语言，堆栈是一个非常简单的数据结构，可以被视为一叠卡片。栈允许两个操作：push和pop（推送和弹出）。</p>
+<p>对于解锁脚本大概是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_DUP OP_HASH160 &lt;Cafe Public Key Hash&gt; OP_EQUALVERIFY OP_CHECKSIG</span><br></pre></td></tr></table></figure></p>
+<p>前面输出的锁定脚本是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sig&gt; &lt;pubk&gt;</span><br></pre></td></tr></table></figure></p>
+<p>那么整体的脚本是这样的：<br><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/p2pkh%E8%84%9A%E6%9C%AC%E5%9B%BE%E7%A4%BA.png?raw=true" alt=""></p>
+<h2 id="P2SH"><a href="#P2SH" class="headerlink" title="P2SH"></a>P2SH</h2><p>Gavin Andresen在bip16提出一种P2SH(pay to Script Hash)方法，主要目的有两个，一是容许发送者构造丰富的交易类型，二是将字节从A-&gt;B的output转移到B-&gt;C的input(A-&gt;B的output script中将是固定长度)。</p>
+<p>对于解锁的脚本是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_HASH256 6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000 OP_EQUAL</span><br></pre></td></tr></table></figure></p>
+<p>我们可以理解成解数学中的难题，hash(x) = 6fe28c0ab6f1b372c1a6 我们只是提供一个x满足这个条件，就可以证明我可以花费这笔钱了。这里<code>6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000</code>不是简单的一个数字的hash，而是一段script的hash(简称redeemScript), <b style="color:red">我们可以理解成只要你提供了一段script，它的二进制hash和目标匹配，那么你就可以花费这笔钱了，注意这里是前端脚本执行的输出是x就行了。</b>.</p>
+<p><b style="color:red">请注意，虽然这样的交易很有趣，但它们并不安全，因为它们不包含任何签名，因此任何试图花费它们的交易都可以用将资金发送到其他地方，用不同的交易来替代</b>。</p>
+<h3 id="P2SH地址生成"><a href="#P2SH地址生成" class="headerlink" title="P2SH地址生成"></a>P2SH地址生成</h3><p>可以使用 go-bitcoin-multisig 生成，<a href="https://github.com/soroushjp/go-bitcoin-multisig" target="_blank" rel="noopener">Github地址</a>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig keys --count 3 --concise</span><br></pre></td></tr></table></figure></p>
+<p>生成结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">--------------</span><br><span class="line">KEY #1  </span><br><span class="line">Private key:  </span><br><span class="line">5JruagvxNLXTnkksyLMfgFgf3CagJ3Ekxu5oGxpTm5mPfTAPez3  </span><br><span class="line">Public key hex:  </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1JzVFZSN1kxGLTHG41EVvY5gHxLAX7q1Rh  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #2  </span><br><span class="line">Private key:  </span><br><span class="line">5JX3qAwDEEaapvLXRfbXRMSiyRgRSW9WjgxeyJQWwBugbudCwsk  </span><br><span class="line">Public key hex:  </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">14JfSvgEq8A8S7qcvxeaSCxhn1u1L71vo4  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #3  </span><br><span class="line">Private key:  </span><br><span class="line">5JjHVMwJdjPEPQhq34WMUhzLcEd4SD7HgZktEh8WHstWcCLRceV  </span><br><span class="line">Public key hex:  </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1Kyy7pxzSKG75L9HhahRZgYoer9FePZL4R  </span><br><span class="line">--------------</span><br></pre></td></tr></table></figure></p>
+<p>接着我们取出里面所有的Public key（hex格式）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Key A: </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd </span><br><span class="line">Key B: </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187 </span><br><span class="line">Key C: </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
+<p>然后就可以使用这三组Public key组合起来（A,B,C）进行多重签名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig address --m 2 --n 3 --public-keys 04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd,046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187,0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
+<p>接着就生成了P2SH地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">---------------------</span><br><span class="line">Your *P2SH ADDRESS* is:  </span><br><span class="line">347N1Thc213QqfYCz3PZkjoJpNv5b14kBd  </span><br><span class="line">Give this to sender funding multisig address with Bitcoin.  </span><br><span class="line">---------------------</span><br><span class="line">---------------------</span><br><span class="line">Your *REDEEM SCRIPT* is:  </span><br><span class="line">524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e8353ae  </span><br><span class="line">Keep private and provide this to redeem multisig balance later.  </span><br><span class="line">---------------------</span><br></pre></td></tr></table></figure></p>
+<h2 id="多重签名地址"><a href="#多重签名地址" class="headerlink" title="多重签名地址"></a>多重签名地址</h2><p>在bitcoin bips历史上先有M-of-N Transaction(bip-11),然后才有Pay To Script Hash(bip-16)(简称P2SH). 按照这个顺序，其实比特币中实现多重签名有两种方法：</p>
+<h3 id="原始的方法-bip-11"><a href="#原始的方法-bip-11" class="headerlink" title="原始的方法(bip-11)"></a>原始的方法(bip-11)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptPubKey : m &#123;pubkey&#125;...&#123;pubkey&#125; n OP_CHECKMULTISIG</span><br><span class="line">scriptSig : OP_0 ...signatures...</span><br></pre></td></tr></table></figure>
+<p>可以查看一下实例：<a href="https://blockchain.info/tx/09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790" target="_blank" rel="noopener">09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790</a></p>
+<h3 id="用P2SH来实现"><a href="#用P2SH来实现" class="headerlink" title="用P2SH来实现"></a>用P2SH来实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptSig: [signature] &#123;[pubkey] OP_CHECKSIG&#125;</span><br><span class="line">scriptPubKey: OP_HASH160 [20-byte-hash of &#123;[pubkey] OP_CHECKSIG&#125; ] OP_EQUAL</span><br></pre></td></tr></table></figure>
+<p>这里{[pubkey] OP_CHECKSIG}就是我们提到redeemScript代码. 实例：<a href="https://blockchain.info/tx/3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac" target="_blank" rel="noopener">3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>首先P2SH和MultiSig是完全不同两码事，很多文章将P2SH表述成MultiSig，这是不恰当的。只不过现在可以用P2SH来实现MultiSig。</li>
+<li>比特币的关键是认证，刚开始中本聪提供用私钥认证，后来人发明了用hash(redeemScript)认证.</li>
+<li>P2SH丰富了交易类型，简单易扩展</li>
+</ol>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://8btc.com/thread-23440-1-1.html" target="_blank" rel="noopener">http://8btc.com/thread-23440-1-1.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/比特币/" rel="tag"># 比特币</a>
+          
+            <a href="/tags/脚本/" rel="tag"># 脚本</a>
+          
+            <a href="/tags/多签名/" rel="tag"># 多签名</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/18/blockchain/以太坊智能合同搭建简易指南/" rel="next" title="以太坊智能合同搭建简易指南">
+                <i class="fa fa-chevron-left"></i> 以太坊智能合同搭建简易指南
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">52</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#地址"><span class="nav-number">1.</span> <span class="nav-text">地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传统的比特币地址脚本P2PKH"><span class="nav-number">2.</span> <span class="nav-text">传统的比特币地址脚本P2PKH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P2SH"><span class="nav-number">3.</span> <span class="nav-text">P2SH</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#P2SH地址生成"><span class="nav-number">3.1.</span> <span class="nav-text">P2SH地址生成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多重签名地址"><span class="nav-number">4.</span> <span class="nav-text">多重签名地址</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原始的方法-bip-11"><span class="nav-number">4.1.</span> <span class="nav-text">原始的方法(bip-11)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用P2SH来实现"><span class="nav-number">4.2.</span> <span class="nav-text">用P2SH来实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">6.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
