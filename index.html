@@ -1859,7 +1859,23 @@
 </tr>
 </tbody>
 </table>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">第四章 密钥和地址</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html" target="_blank" rel="noopener">第六章 交易</a><br><a href="https://en.bitcoin.it/wiki/Script" target="_blank" rel="noopener">Script</a><br><a href="http://www.8btc.com/bitcoin_scripts" target="_blank" rel="noopener">比特币脚本</a><br><a href="http://www.8btc.com/understand-bitcoin-script" target="_blank" rel="noopener">理解比特币脚本</a></p>
+<h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p>
+<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png" alt=""></p>
+<p>这里面的实现其实比较简单，没有什么特别需要说明的。</p>
+<p>我们大概解释这里面的类的含义：</p>
+<ol>
+<li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li>
+<li>ScriptError是脚本所有的错误集</li>
+<li>ScriptException是关于脚本的所有异常</li>
+<li>ScriptChunk是脚本的每个命令的抽象</li>
+<li>ScriptOpCodes是存放脚本命令的集合和编码</li>
+<li>TransactionSignature是交易的签名</li>
+<li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li>
+<li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li>
+</ol>
+<p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p>
+<h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">第四章 密钥和地址</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html" target="_blank" rel="noopener">第六章 交易</a><br><a href="https://en.bitcoin.it/wiki/Script" target="_blank" rel="noopener">Script</a><br><a href="http://www.8btc.com/bitcoin_scripts" target="_blank" rel="noopener">比特币脚本</a><br><a href="http://www.8btc.com/understand-bitcoin-script" target="_blank" rel="noopener">理解比特币脚本</a><br><a href="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash" target="_blank" rel="noopener">Working with contracts</a></p>
 
           
         
