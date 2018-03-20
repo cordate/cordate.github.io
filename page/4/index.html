@@ -276,6 +276,217 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/08/java/Java中Queue学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/08/java/Java中Queue学习/" itemprop="url">Java中Queue学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-08T12:07:50+08:00">2018-03-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在上一篇的博文中，我们分析了Deque的知识，其实感觉是反了，应该是先分析Queue，分析完之后再去分析Deque，不过这都没啥关系，单向的队列或许更容易学习。</p>
+<h2 id="Queue接口"><a href="#Queue接口" class="headerlink" title="Queue接口"></a>Queue接口</h2><p>还是先从Queue接口开始吧，这个接口继承Collection，Queue接口定义了几个方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add</td>
+<td>增加一个元索</td>
+<td>如果队列已满，则抛出一个IIIegaISlabEepeplian异常</td>
+</tr>
+<tr>
+<td>remove</td>
+<td>移除并返回队列头部的元素</td>
+<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
+</tr>
+<tr>
+<td>element</td>
+<td>返回队列头部的元素</td>
+<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
+</tr>
+<tr>
+<td>offer</td>
+<td>添加一个元素并返回true</td>
+<td>如果队列已满，则返回false</td>
+</tr>
+<tr>
+<td>poll</td>
+<td>移除并返问队列头部的元素</td>
+<td>如果队列为空，则返回null</td>
+</tr>
+<tr>
+<td>peek</td>
+<td>返回队列头部的元素</td>
+<td>如果队列为空，则返回null</td>
+</tr>
+</tbody>
+</table>
+<h2 id="AbstractQueue"><a href="#AbstractQueue" class="headerlink" title="AbstractQueue"></a>AbstractQueue</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractQueue&lt;E&gt;</span><br><span class="line">    extends AbstractCollection&lt;E&gt;</span><br><span class="line">    implements Queue&lt;E&gt; &#123;</span><br></pre></td></tr></table></figure>
+<p>继承了AbstractCollection，实现了Queue接口。主要是提供了Queue的基础实现。都是一些常规的方法，这里就不做更多的介绍了。</p>
+<h2 id="一些基础实现"><a href="#一些基础实现" class="headerlink" title="一些基础实现"></a>一些基础实现</h2><p>我们知道Deque是继承于Queue的，所以只要实现Deque的类基本上都是Queue的实现。在上一篇的博文中我们提到了LinkedList、ArrayDeque和LinkedBlockingDeque都是Queue的实现了，这里就不多介绍了。</p>
+<h2 id="优先队列-PriorityQueue"><a href="#优先队列-PriorityQueue" class="headerlink" title="优先队列 PriorityQueue"></a>优先队列 PriorityQueue</h2><p>实际上是一个堆（不指定Comparator时默认为最小堆）。<b style="color:red">队列既可以根据元素的自然顺序来排序，也可以根据 Comparator来设置排序规则。</b>队列的头是按指定排序方式的最小元素。如果多个元素都是最小值，则头是其中一个元素。新建对象的时候可以指定一个初始容量，其容量会自动增加。</p>
+<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><p>继承自AbstractQueue，实现了序列化接口。</p>
+<h3 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private static final int DEFAULT_INITIAL_CAPACITY = 11;</span><br><span class="line">private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;</span><br><span class="line">private transient Object[] queue;</span><br><span class="line">private int size = 0;</span><br><span class="line">private final Comparator&lt;? super E&gt; comparator;</span><br><span class="line">private transient int modCount = 0;</span><br></pre></td></tr></table></figure>
+<p>感觉这里面的都是老朋友了，默认初始化容量是11个。基础的数据结构是数组，优先级通过比较器来进行实现。最大无限制，应该是留下来进行扩展使用的。</p>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>就是进行数组的初始化（必须大于1）和比较器的传入（可为空）。比较值得一看的构造器应该是下面的两个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">public PriorityQueue(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    if (c instanceof SortedSet&lt;?&gt;) &#123;</span><br><span class="line">        SortedSet&lt;? extends E&gt; ss = (SortedSet&lt;? extends E&gt;) c;</span><br><span class="line">        this.comparator = (Comparator&lt;? super E&gt;) ss.comparator();</span><br><span class="line">        initElementsFromCollection(ss);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (c instanceof PriorityQueue&lt;?&gt;) &#123;</span><br><span class="line">        PriorityQueue&lt;? extends E&gt; pq = (PriorityQueue&lt;? extends E&gt;) c;</span><br><span class="line">        this.comparator = (Comparator&lt;? super E&gt;) pq.comparator();</span><br><span class="line">        initFromPriorityQueue(pq);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        this.comparator = null;</span><br><span class="line">        initFromCollection(c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initFromPriorityQueue(PriorityQueue&lt;? extends E&gt; c) &#123;</span><br><span class="line">    if (c.getClass() == PriorityQueue.class) &#123;</span><br><span class="line">        this.queue = c.toArray();</span><br><span class="line">        this.size = c.size();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        initFromCollection(c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initElementsFromCollection(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    Object[] a = c.toArray();</span><br><span class="line">    // If c.toArray incorrectly doesn&apos;t return Object[], copy it.</span><br><span class="line">    if (a.getClass() != Object[].class)</span><br><span class="line">        a = Arrays.copyOf(a, a.length, Object[].class);</span><br><span class="line">    int len = a.length;</span><br><span class="line">    if (len == 1 || this.comparator != null)</span><br><span class="line">        for (int i = 0; i &lt; len; i++)</span><br><span class="line">            if (a[i] == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">    this.queue = a;</span><br><span class="line">    this.size = a.length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initFromCollection(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    initElementsFromCollection(c);</span><br><span class="line">    // 在整个树中建立堆不变量（如上所述），在调用之前不假设元素的顺序。</span><br><span class="line">    heapify();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主要是通过原来的集合中的比较器作为当前PriorityQueue的比较器而已，插入的方式就不说了，原来是数组，所以直接调用toArray方法进行赋值即可。如果原来不是有序的话，可能还要进行排序吧！可能比较器不一样，排序的规则也不一样，这个就是下面三个方法在处理的一些事情。这里注意的是，如果是Collection的话，需要进行排序。heapify()的目的是建立一个二叉树，其实就是堆结构。</p>
+<h3 id="扩展策略"><a href="#扩展策略" class="headerlink" title="扩展策略"></a>扩展策略</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    int oldCapacity = queue.length;</span><br><span class="line">    // Double size if small; else grow by 50%</span><br><span class="line">    int newCapacity = oldCapacity + ((oldCapacity &lt; 64) ?</span><br><span class="line">                                        (oldCapacity + 2) :</span><br><span class="line">                                        (oldCapacity &gt;&gt; 1));</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    queue = Arrays.copyOf(queue, newCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><b style="color:red">原来容量大小小于64时双倍扩展还要加上一个2；大于64，50%扩展.</b></p>
+<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>以offer方法为例吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = size;</span><br><span class="line">    // 这是队列满了才进行扩容吗？&gt;=可能会发生同步问题，而导致大于问题的存在。</span><br><span class="line">    if (i &gt;= queue.length)</span><br><span class="line">        // 最起码保证当前容量能加1</span><br><span class="line">        grow(i + 1);</span><br><span class="line">    size = i + 1;</span><br><span class="line">    if (i == 0)</span><br><span class="line">        // 如果没有元素的话，不用移位操作</span><br><span class="line">        queue[0] = e;</span><br><span class="line">    else</span><br><span class="line">        // 如果队列有元素.就要通过当前位置</span><br><span class="line">        siftUp(i, e);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">神奇，居然是队列满了，才进行相应的扩容操作。</b>接着分析<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">private void siftUp(int k, E x) &#123;</span><br><span class="line">    // 是否使用comparator比较器</span><br><span class="line">    if (comparator != null)</span><br><span class="line">        siftUpUsingComparator(k, x);</span><br><span class="line">    else</span><br><span class="line">        siftUpComparable(k, x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void siftUpUsingComparator(int k, E x) &#123;</span><br><span class="line">    while (k &gt; 0) &#123;</span><br><span class="line">        // 很像是在使用二分法</span><br><span class="line">        int parent = (k - 1) &gt;&gt;&gt; 1;</span><br><span class="line">        // 取得parent处的元素</span><br><span class="line">        Object e = queue[parent];</span><br><span class="line">        if (comparator.compare(x, (E) e) &gt;= 0)</span><br><span class="line">            break;</span><br><span class="line">        // 将e移出来，放到后面，原来是这样的。</span><br><span class="line">        queue[k] = e;</span><br><span class="line">        k = parent;</span><br><span class="line">    &#125;</span><br><span class="line">    // 如果k&lt;0,不是会有异常吗？，其实就是找到了合适的位置插入</span><br><span class="line">    queue[k] = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">一开始没有看明白这里面在干啥，现在明白了，原来是使用类似二分法，将比插入元素大的值，不停地向后移，直到找到合适的位置插入。siftUpComparable(k, x);的实现是相似的。可是如果插入的X是最大的，最后的key会不会小于0，如果key小于0，最后那句执行不就出现异常了么？注意经过推演，初始k一定大于0，而且k永远是整数，而k右移一位也不会改变属性还是大于0，所以最终k只能为0跳出循环，因为k-1会先减到0。所以k最小值为0，也就是如果出现上述情况，会按照理想的状态放入到索引0处。</b></p>
+<p><b style="color:red">其实这个操作是在向二叉树里面插入元素而已。因为正常大家都是通过链表实现二叉树，这里是通过数组来实现二叉树，所以一时间没有看懂。这里也可以看出，这个是一个小根堆的结构。</b></p>
+<h3 id="获取"><a href="#获取" class="headerlink" title="获取"></a>获取</h3><p>我们以poll为例吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public E poll() &#123;</span><br><span class="line">    if (size == 0)</span><br><span class="line">        return null;</span><br><span class="line">    int s = --size;</span><br><span class="line">    modCount++;</span><br><span class="line">    E result = (E) queue[0];</span><br><span class="line">    // 取得最后一个元素</span><br><span class="line">    E x = (E) queue[s];</span><br><span class="line">    // 最后的元素清除</span><br><span class="line">    queue[s] = null;</span><br><span class="line">    // 如果是0的话，队列是空的啥都不做。</span><br><span class="line">    if (s != 0)</span><br><span class="line">        // 从最后一个元素开始，找到一个新的最小值。</span><br><span class="line">        siftDown(0, x);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">这里看起来是只要返回最前面的那个元素就好了，的确每次插入都能保证，最小的值在前面，也好理解。</b> 这样看来siftDown就是再将最小的值移到前面去。我们看一下这里面的实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">private void siftDown(int k, E x) &#123;</span><br><span class="line">    if (comparator != null)</span><br><span class="line">        siftDownUsingComparator(k, x);</span><br><span class="line">    else</span><br><span class="line">        siftDownComparable(k, x);</span><br><span class="line">&#125;</span><br><span class="line">private void siftDownUsingComparator(int k, E x) &#123;</span><br><span class="line">    int half = size &gt;&gt;&gt; 1;</span><br><span class="line">    while (k &lt; half) &#123;</span><br><span class="line">        int child = (k &lt;&lt; 1) + 1;</span><br><span class="line">        Object c = queue[child];</span><br><span class="line">        int right = child + 1;</span><br><span class="line">        if (right &lt; size &amp;&amp;</span><br><span class="line">            comparator.compare((E) c, (E) queue[right]) &gt; 0)</span><br><span class="line">            c = queue[child = right];</span><br><span class="line">        if (comparator.compare(x, (E) c) &lt;= 0)</span><br><span class="line">            break;</span><br><span class="line">        queue[k] = c;</span><br><span class="line">        k = child;</span><br><span class="line">    &#125;</span><br><span class="line">    queue[k] = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是堆的维护，关于堆的实现请看下面的引用。</p>
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p>看了一下内部的迭代器实现，并没有按照堆内顺序进行返回，而是按照数组的顺序进行返回，所以返回的数组并不是有序的，这点要注意。</p>
+<h3 id="关于堆"><a href="#关于堆" class="headerlink" title="关于堆"></a>关于堆</h3><p><b style="color:red">其实堆就是一个完全二叉树，分为小端堆和大端堆。与平衡二叉树相比：</b></p>
+<ul>
+<li>堆整体没有顺序，但是每条路径有顺序。</li>
+<li>堆维护成本比较低，每次调整，都要取最右边的那个元素过来进行重新调整。但是调整要比平衡二叉树要快很多。</li>
+<li>如果是用来排序的话，堆的成本还是挺高的。如果是动态排序，堆的维护成本却能大大降低。</li>
+</ul>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a><br><a href="http://blog.csdn.net/zdp072/article/details/14150877" target="_blank" rel="noopener">大话数据结构十四：二叉树的顺序存储结构（数组实现）</a><br><a href="http://blog.csdn.net/u013309870/article/details/68578011" target="_blank" rel="noopener">堆排序HeapSort（Java）</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java中双端队列/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1896,166 +2107,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/java-Set学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/05/java/java-Set学习/" itemprop="url">java Set学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T15:25:13+08:00">2018-03-05</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Set和list是很相似的，只是List可以存在相同元素，而Set却不可以，其他都是类似的。</p>
-<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>讲到这个当然先说说Set接口了，这个比较简单，就不过多去说了。几乎和List是一样的。</p>
-<h2 id="AbstractSet"><a href="#AbstractSet" class="headerlink" title="AbstractSet"></a>AbstractSet</h2><p>我们来看一下这个类，继承自AbstractCollection，也没啥定义了一些通用方法，比如实现了equals、hashCode和removeAll方法。</p>
-<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure>
-<p>内部定义了一个hashMap作为实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>HashSet的构造函数比较重要：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 默认的无参构造器，构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会初始化一个空的HashMap，并使用默认初始容量为16和加载因子0.75。</span><br><span class="line"> */</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 构造一个包含指定collection中的元素的新set。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层使用默认的加载因子0.75和足以包含指定collection中所有元素的初始容量来创建一个HashMap。</span><br><span class="line"> * @param c 其中的元素将存放在此set中的collection。</span><br><span class="line"> */</span><br><span class="line">public HashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(Math.max((int) (c.size()/.75f) + 1, 16));</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity构造一个空的HashSet。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层以相应的参数及加载因子loadFactor为0.75构造一个空的HashMap。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> */</span><br><span class="line">public HashSet(int initialCapacity) &#123;</span><br><span class="line">    map = new HashMap&lt;E,Object&gt;(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 以指定的initialCapacity和loadFactor构造一个新的空链接哈希集合。此构造函数为包访问权限，不对外公开，</span><br><span class="line"> * 实际只是是对LinkedHashSet的支持。</span><br><span class="line"> *</span><br><span class="line"> * 实际底层会以指定的参数构造一个空LinkedHashMap实例来实现。</span><br><span class="line"> * @param initialCapacity 初始容量。</span><br><span class="line"> * @param loadFactor 加载因子。</span><br><span class="line"> * @param dummy 标记。</span><br><span class="line"> */</span><br><span class="line">HashSet(int initialCapacity, float loadFactor, boolean dummy) &#123;</span><br><span class="line">    map = new LinkedHashMap&lt;E,Object&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意这里可以利用LinkedHashMap实现，这个作用比较大，因为HashSet中元素的遍历是通过map的迭代器，但是也不一定，如果数量比较少，利用hashMap的迭代器进行迭代，速度也不应该会慢，这要相对的看。</p>
-<h3 id="add方法"><a href="#add方法" class="headerlink" title="add方法"></a>add方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    return map.put(e, PRESENT)==null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>用hash表实现的Set本身就不用考虑相同的值被插入进来。这里的PRESENT是一个Object常量。其他的还是阅读源码吧！</p>
-<h2 id="SortedSet"><a href="#SortedSet" class="headerlink" title="SortedSet"></a>SortedSet</h2><p>继承Set的接口，定义和SortedMap类似，都会出现子树等形式的函数。</p>
-<h2 id="EnumSet"><a href="#EnumSet" class="headerlink" title="EnumSet"></a>EnumSet</h2><p>看到JDK有这样的一个类，所以过来学习一下。这个类和HashSet差不多，不过只针对枚举，也有缓存。EnumSet是一个抽象类，有两个实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; noneOf(Class&lt;E&gt; elementType) &#123;</span><br><span class="line">    Enum[] universe = getUniverse(elementType);</span><br><span class="line">    if (universe == null)</span><br><span class="line">        throw new ClassCastException(elementType + &quot; not an enum&quot;);</span><br><span class="line"></span><br><span class="line">    if (universe.length &lt;= 64)</span><br><span class="line">        return new RegularEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">    else</span><br><span class="line">        return new JumboEnumSet&lt;&gt;(elementType, universe);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h2><p>这个类是基于HashSet实现的，由于HashSet和HashMap不同，已经做了数组的缓存，所以LinkedHash几乎完全基于HashSet实现。看其中的一个构造方法即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public LinkedHashSet(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    super(Math.max(2*c.size(), 11), .75f, true);</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>传入的第三个参数就是告诉HashSet使用LinkedHashMap实现，具体原因查看HashSet的构造函数就明白了。</p>
-<h2 id="NavigableSet"><a href="#NavigableSet" class="headerlink" title="NavigableSet"></a>NavigableSet</h2><p>对Set进行树形结构操作的规范接口。这个接口继承自SortedSet。</p>
-<h2 id="TreeSet接口"><a href="#TreeSet接口" class="headerlink" title="TreeSet接口"></a>TreeSet接口</h2><p>这也是一个比较简单的类。基于红黑树实现的Set集。TreeSet 底层实际使用的存储容器就是 TreeMap。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class TreeSet&lt;E&gt; extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements NavigableSet&lt;E&gt;, Cloneable, java.io.Serializable</span><br></pre></td></tr></table></figure></p>
-<p>TreeSet是基于TreeMap实现的。TreeSet中的元素支持2种排序方式：自然排序 或者 根据创建TreeSet 时提供的 Comparator 进行排序。这取决于使用的构造方法。</p>
-<p>TreeSet为基本操作（add、remove 和 contains）提供受保证的 log(n) 时间开销。<br>另外，TreeSet是非同步的。 它的iterator 方法返回的迭代器是fail-fast的。</p>
-<p>具体可以查看TreeSet的源码进行解读。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/mawming/article/details/52438387" target="_blank" rel="noopener">Java 之EnumSet与EnumMap</a><br><a href="https://www.ibm.com/developerworks/cn/java/j-lo-tree/index.html" target="_blank" rel="noopener">通过分析 JDK 源代码研究 TreeMap 红黑树算法实现</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2107,7 +2158,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">53</span>
+                    <span class="site-state-item-count">54</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2275,7 +2326,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">57</span>
+                      
+                    
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
