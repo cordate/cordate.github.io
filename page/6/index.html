@@ -276,6 +276,373 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/01/eth-wiki/Web3-Secret存储定义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/01/eth-wiki/Web3-Secret存储定义/" itemprop="url">Web3 Secret存储定义</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-01T16:41:15+08:00">2018-03-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/以太坊官网/" itemprop="url" rel="index"><span itemprop="name">以太坊官网</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>我最近在阅读以太坊官网的一些源代码，看到keystore的那篇源码之后发现官网关于以太坊生成的UTF8格式的json文件的定义标准，所以去官网看了一下，不是很明白，所以想边看看边记录一下这里面的知识。一开始的阅读确实比较难理解，这里我们先补充一点基础知识便于阅读。</p>
+<p>这里主要写的是关于以太坊keystore的知识，以太坊的存储是一个内容经过加密的json文件，以太坊的密钥与比特币的密钥不同，除了记住私钥，你还要记住密码。其实就是这个json文件和这个json文件内容解密的密码，否则你就找不到你的账户了。下面的讲解就是这个文件是怎么生成的，加密的方式，json文件中内容以及意义等等。这个我们可以先给出一个这样的json文件，以便于后面正文的阅读。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ cat ~/.ethereum/keystore/UTC--&lt;created_date_time&gt;--  008aeeda4d805471df9b2a5b0f38a0c3bcba786b</span><br><span class="line">&#123;</span><br><span class="line">    &quot;crypto&quot; : &#123;</span><br><span class="line">        &quot;cipher&quot; : &quot;aes-128-ctr&quot;,</span><br><span class="line">        &quot;cipherparams&quot; : &#123;</span><br><span class="line">            &quot;iv&quot; : &quot;83dbcc02d8ccb40e466191a123791e0e&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ciphertext&quot; : &quot;d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c&quot;,</span><br><span class="line">        &quot;kdf&quot; : &quot;scrypt&quot;,</span><br><span class="line">        &quot;kdfparams&quot; : &#123;</span><br><span class="line">            &quot;dklen&quot; : 32,</span><br><span class="line">            &quot;n&quot; : 262144,</span><br><span class="line">            &quot;r&quot; : 1,</span><br><span class="line">            &quot;p&quot; : 8,</span><br><span class="line">            &quot;salt&quot; : &quot;ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;mac&quot; : &quot;2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;id&quot; : &quot;3198bc9c-6672-5ab3-d995-4942343ae5b6&quot;,</span><br><span class="line">    &quot;version&quot; : 3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在下文的讲解中有些定义没有将清除，这里先对文件中的几个字段做个说明好了，便于阅读：</p>
+<ul>
+<li>cipher：对称 AES 算法的名称;</li>
+<li>cipherparams：上述 cipher 算法需要的参数;</li>
+<li>ciphertext：你的以太坊私钥使用上述 cipher 算法进行加密;</li>
+<li>kdf：密钥生成函数，用于让你用密码加密 keystore 文件;</li>
+<li>kdfparams：上述 kdf 算法需要的参数;</li>
+<li>Mac：用于验证密码的代码。</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为了让您的应用程序能够在以太坊上运行，您可以使用web3.js库提供的web3对象。它通过RPC调用与本地节点通信。web3与任何暴露RPC层的以太坊节点一起工作。</p>
+<p>web3包含eth对象 - web3.eth（专门用于以太坊区块链交互）和shh对象 - web3.shh（用于Whisper交互）。随着时间的推移，我们将为其他每个web3协议引入其他对象。下面是一个具体的例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">var fs = require(&apos;fs&apos;);</span><br><span class="line">var recognizer = require(&apos;ethereum-keyfile-recognizer&apos;);</span><br><span class="line"></span><br><span class="line">fs.readFile(&apos;keyfile.json&apos;, (err, data) =&gt; &#123;</span><br><span class="line">var json = JSON.parse(data);</span><br><span class="line">var result = recognizer(json);</span><br><span class="line">/** result</span><br><span class="line">  *               [ &apos;web3&apos;, 3 ]   web3 (v3) keyfile</span><br><span class="line">  *  [ &apos;ethersale&apos;, undefined ]   Ethersale keyfile</span><br><span class="line">  *                        null     invalid keyfile</span><br><span class="line"> */</span><br><span class="line"> &#125;));</span><br></pre></td></tr></table></figure></p>
+<p>这是Web3 secret存储定义的第三版。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>除了AES-128-CBC不再固定加密算法（AES-128-CTR现在是最低要求）之外，文件的实际编码和解码在版本1上基本保持不变。除了mac将衍生密钥的最后16个字节与完整字符串ciphertext联起来进行SHA3（keccak-256）之外，大部分meanings/algorithm与版本1类似。</p>
+<p>密钥文件直接存储在~/.web3/keystore（对于类Unix系统）和~/AppData/Web3/keystore（对于Windows）。它们可以被随意命名，但是比较好的约定是<uuid>.json，这里<uuid>是给出私钥的128位的UUID（私钥地址的隐私保护代理）。</uuid></uuid></p>
+<p>所有这些文件都有一个关联的密码。要导出给定.json文件的密钥，首先要导出文件的加密密钥;这是通过获取文件的密码并根据kdf参数所描述的，通过私钥派生函数传递密码。KDF决定KDF函数的静态和动态参数在kdfparams关键字中有说明。</p>
+<p>PBKDF2必须得到所有最低限度兼容的实现的支持，表示为：</p>
+<ul>
+<li>kdf: pbkdf2</li>
+</ul>
+<p>对于PBKDF2， kdfparams包含以下的一些内容：</p>
+<ul>
+<li>prf：必须是hmac-sha256（可能会在将来扩展）</li>
+<li>c：迭代次数</li>
+<li>salt： 传给PBKDF的盐</li>
+<li>dklen： 生成key的长度，必须&gt;=32</li>
+</ul>
+<p>一旦文件的key被生成出来，就应该通过Mac的派生器来验证。MAC应该计算为字节数组的SHA3（keccak-256）散列，形成为派生密钥的左二十六个字节与ciphertext密钥内容的连接，即：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">KECCAK(DK[16..31] ++ &lt;ciphertext&gt;)  // （其中++是连接运算符）</span><br></pre></td></tr></table></figure></p>
+<p>这个值应该与mac密钥的内容进行比较; 如果它们不同，则应请求替代密码（或取消操作）。</p>
+<p>文件密钥验证完成后，密文（ciphertext文件中的密钥）可以使用密钥指定的对称加密算法进行解密，cipher并通过密钥进行参数化cipherparams。如果导出的密钥大小和算法的密钥大小不匹配，则应使用派生密钥的零填充最右边的字节作为算法的密钥。</p>
+<p>所有最低限度兼容的实施必须支持AES-128-CTR算法，表示为：</p>
+<ul>
+<li>cipher： aes-128-ctr</li>
+</ul>
+<p>该密码采用以下参数，作为密钥的cipherparams键：</p>
+<ul>
+<li>iv：密码的128位初始化向量。</li>
+</ul>
+<p>密码的关键是派生密钥的最左边的16个字节，即 DK[0..15]</p>
+<p>密钥的创建/加密应基本上与这些指令相反。确保uuid，salt并且iv实际上是随机的。</p>
+<p>除了version应该作为版本的“硬”标识符的字段之外，实现还可以minorversion用于追踪对格式的更小的，不中断的更改。</p>
+<h2 id="测试举例"><a href="#测试举例" class="headerlink" title="测试举例"></a>测试举例</h2><p>细节：</p>
+<ul>
+<li>Address: 008aeeda4d805471df9b2a5b0f38a0c3bcba786b</li>
+<li>ICAP: XE542A5PZHH8PYIZUBEJEO0MFWRAPPIL67</li>
+<li>UUID: 3198bc9c-6672-5ab3-d9954942343ae5b6</li>
+<li>Password: testpassword</li>
+<li>Secret: 7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d</li>
+</ul>
+<h3 id="PBKDF2-SHA-256"><a href="#PBKDF2-SHA-256" class="headerlink" title="PBKDF2-SHA-256"></a>PBKDF2-SHA-256</h3><p>使用AES-128-CTR和PBKDF2-SHA-256的测试向量：</p>
+<p>文件内容~/.web3/keystore/3198bc9c-6672-5ab3-d9954942343ae5b6.json：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">     “ crypto ”：&#123;</span><br><span class="line">         “ cipher ”：“ aes-128-ctr ”，</span><br><span class="line">         “ cipherparams ”：&#123;</span><br><span class="line">             “ iv ”：“ 6087dab2f9fdbbfaddc31a909735c1e6 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ ciphertext ”： “ 5318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46 ”，</span><br><span class="line">         “ kdf ”： “ pbkdf2 ”，</span><br><span class="line">         “ kdfparams ”：&#123;</span><br><span class="line">             “ c ”： 262144，</span><br><span class="line">             “ dklen ”： 32，</span><br><span class="line">             “ prf ”： “ hmac-sha256 ”，</span><br><span class="line">             “ salt ”：“ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd “</span><br><span class="line">        &#125;，</span><br><span class="line">        “ mac ”： “ 517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2 ”</span><br><span class="line">    &#125;，</span><br><span class="line">    “ id ”： “ 3198bc9c-6672-5ab3-d995-4942343ae5b6 ”，</span><br><span class="line">     “ version ”： 3 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>中间结果：</p>
+<ul>
+<li>Derived key: f06d69cdc7da0faffb1008270bca38f5e31891a3a773950e6d0fea48a7188551</li>
+<li>MAC Body: e31891a3a773950e6d0fea48a71885515318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46</li>
+<li>MAC 517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2</li>
+<li>Cipher key: f06d69cdc7da0faffb1008270bca38f5<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3>使用AES-128-CTR和Scrypt的测试矢量：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;crypto&quot; : &#123;</span><br><span class="line">        &quot;cipher&quot; : &quot;aes-128-ctr&quot;,</span><br><span class="line">        &quot;cipherparams&quot; : &#123;</span><br><span class="line">            &quot;iv&quot; : &quot;83dbcc02d8ccb40e466191a123791e0e&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;ciphertext&quot; : &quot;d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c&quot;,</span><br><span class="line">        &quot;kdf&quot; : &quot;scrypt&quot;,</span><br><span class="line">        &quot;kdfparams&quot; : &#123;</span><br><span class="line">            &quot;dklen&quot; : 32,</span><br><span class="line">            &quot;n&quot; : 262144,</span><br><span class="line">            &quot;r&quot; : 1,</span><br><span class="line">            &quot;p&quot; : 8,</span><br><span class="line">            &quot;salt&quot; : &quot;ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;mac&quot; : &quot;2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;id&quot; : &quot;3198bc9c-6672-5ab3-d995-4942343ae5b6&quot;,</span><br><span class="line">    &quot;version&quot; : 3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>中间结果</p>
+<ul>
+<li>Derived key: fac192ceb5fd772906bea3e118a69e8bbb5cc24229e20d8766fd298291bba6bd</li>
+<li>MAC Body bb5cc24229e20d8766fd298291bba6bdd172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c</li>
+<li>MAC: 2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097</li>
+<li>Cipher key: fac192ceb5fd772906bea3e118a69e8b</li>
+</ul>
+<h2 id="版本1中的更改"><a href="#版本1中的更改" class="headerlink" title="版本1中的更改"></a>版本1中的更改</h2><p>该版本修复了此处发布的版本1的几个不一致之处。简而言之，这些是：</p>
+<ul>
+<li>大小写不合理且不一致（scrypt小写，Kdf混合大小写，MAC大写）。</li>
+<li>Address 不必要和妥协的隐私。</li>
+<li>Salt 本质上是密钥派生函数的一个参数，值得关联它，而不是一般的密码。</li>
+<li>SaltLen不必要的（从中推导出来Salt）。</li>
+<li>给出了密钥导出函数，但加密算法很难确定。</li>
+<li>Version 本质上是数字，但是是一个字符串（可以使用字符串进行结构化版本控制，但可以认为超出了很少更改的配置文件格式）。</li>
+<li>KDF和密码是概念上的兄弟概念，但组织方式不同。</li>
+<li>MAC是通过一个空白不可知的数据块来计算的（！）</li>
+</ul>
+<p>已对格式进行了更改，以提供以下文件，功能上与前面链接页面上给出的示例相同：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">     “ crypto ”：&#123;</span><br><span class="line">         “ cipher ”：“ aes-128-cbc ”，</span><br><span class="line">         “ ciphertext ”：“ 07533e172414bfa50e99dba4a0ce603f654ebfa1ff46277c3e0c577fdc87f6bb4e4fe16c5a94ce6ce14cfa069821ef9b ”，</span><br><span class="line">         “ cipherparams ”：&#123;</span><br><span class="line">             “ iv ”：“ 16d67ba0ce5a339ff2f07951253e6ba8 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ kdf ”： “ scrypt ”，</span><br><span class="line">         “ kdfparams ”：&#123;</span><br><span class="line">             “ dklen ”： 32，</span><br><span class="line">             “ n ”： 262144，</span><br><span class="line">             “ p ”： 1，</span><br><span class="line">             “ r ”： 8，</span><br><span class="line">             “ salt ”： “ 06870e5e6a24e183a5c807bd1c43afd86d573f7db303ff4853d135cd0fd3fe91 ”</span><br><span class="line">        &#125;，</span><br><span class="line">        “ mac ”： “ 8ccded24da2e99a11d48cda146f9cc8213eb423e2ea0d8427f41c3be414424dd ”，</span><br><span class="line">         “版本”： 1</span><br><span class="line">    &#125;，</span><br><span class="line">    “ id ”： “ 0498f19a-59db-4d54-ac95-33901b4f1870 ”，</span><br><span class="line">     “ version ”： 2 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="版本2中的更改"><a href="#版本2中的更改" class="headerlink" title="版本2中的更改"></a>版本2中的更改</h2><p>版本2是一个早期的C++实现，带有许多错误。所有其中的东西保持不变。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition" target="_blank" rel="noopener">Web3 Secret Storage Definition</a><br><a href="http://ethfans.org/posts/what-is-an-ethereum-keystore-file" target="_blank" rel="noopener">科普 | 什么是以太坊私钥储存（Keystore）文件？</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/28/syslib/mmap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/28/syslib/mmap/" itemprop="url">mmap</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-28T11:21:10+08:00">2018-02-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/操作系统扩展/" itemprop="url" rel="index"><span itemprop="name">操作系统扩展</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在计算机中，mmap(2)是符合POSIX标准的Unix 系统调用，可将文件或设备映射到内存中。它是内存映射文件 I/O的一种方法。它自然地实现了需求分页，因为文件内容最初不是从磁盘读取的，根本不使用物理RAM。在访问特定位置后，实际从磁盘读取数据的操作将以“懒惰”方式执行。在不再需要存储器之后，munmap(2)指向它的指针很重要。保护信息可以使用管理mprotect(2)，特殊处理可以使用强制执行madvise(2)。</p>
+<p>个人的理解就是，直接跳过操作系统的内核空间，直接在你的进程内存空间映射到文件系统，这样就可已省去用户空间到内核空间的拷贝操作，可以多进程共同访问文件，但是会出现一些并发同步修改等问题。</p>
+<p>详细的说明见引文，里面已经有很好的说明了。</p>
+<h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#_label0" target="_blank" rel="noopener">认真分析mmap：是什么 为什么 怎么用</a><br><a href="http://man7.org/linux/man-pages/man2/mmap.2.html" target="_blank" rel="noopener">Linux &gt; man-pages</a><br><a href="http://akaedu.github.io/book/ch28s08.html" target="_blank" rel="noopener">mmap</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/Mycat简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1164,7 +1531,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-count">57</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1336,7 +1703,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">59</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
