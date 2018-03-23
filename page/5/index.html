@@ -128,7 +128,7 @@
     sidebar: "",
   };
 </script>
-  <title>柳絮纷飞</title>
+  <title>柳絮纷飞 - 成牛之路 </title>
   
 
 
@@ -260,6 +260,226 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/SecurityManager深入学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/06/java/SecurityManager深入学习/" itemprop="url">SecurityManager深入学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T13:31:35+08:00">2018-03-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SecurityManager在Java中被用来检查应用程序是否能访问一些有限的资源，例如文件、套接字(socket)等等。它可以用在那些具有高安全性要求的应用程序中。通过打开这个功能， 我们的系统资源可以只允许进行安全的操作。</p>
+<p>当Java虚拟机启动时，它首先通过检查系统属性java.security.manager来确定SecurityManager是否打开了。如果打开了，那么SecurityManager实例将被创建，它可以被用来检查不同的权限。默认情况下，SecurityManager是关闭的，但是这里有一些方法可以打开SecurityManager。</p>
+<ol>
+<li>可以指定JVM命令<code>-Djava.security.manager</code> 使SecurityManager运行。</li>
+<li>通过程序打开SecurityManager</li>
+</ol>
+<p>现在，如果我们真的想通过我们的程序打开SecurityManager，我们也能做到。 System类中有一个叫 setSecurityManager() 的方法可以做到这一点。这个方法的参数是一个SecurityManager实例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SecurityManager sm=new SecurityManager();</span><br><span class="line">System.setSecurityManager(sm);</span><br></pre></td></tr></table></figure></p>
+<p>通过这个,我们可以打开SecurityManager.。如果之后我们想要关闭SecurityManager, 我们该怎么做? 下面的代码能做到吗？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SecurityManager sm=System.getSecurityManager();</span><br><span class="line">if(sm!=null)&#123;</span><br><span class="line">    System.setSecurityManager(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码只有你在位于${JAVA_HOME}/lib/security目录下或者其他指定目录下的java.policy文件中指定了一个权限才会奏效。 这个权限是:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permission java.lang.RuntimePermission &quot;setSecurityManager&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>上面的一行将被用来允许代码设置SecurityManager.</p>
+<ol>
+<li>在build文件中</li>
+</ol>
+<p>如果我们使用Ant构建应用程序时, 我们可以加上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sysproperty key=&quot;java.security.manager&quot; value=&quot;&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="JAAS简介"><a href="#JAAS简介" class="headerlink" title="JAAS简介"></a>JAAS简介</h2><p>Java 认证和授权服务（Java Authentication and Authorization Service，JAAS）是JDK3开始引入的，JDK4以后作为核心功能部分。我将首先对 Java 2 平台安全体系结构作一概述，重点放在这个体系结构如何利用两个基本概念 – 安全策略和保护域 – 来定义、组织和聚集静态和/或动态访问权限。</p>
+<h2 id="以代码为中心的授权"><a href="#以代码为中心的授权" class="headerlink" title="以代码为中心的授权"></a>以代码为中心的授权</h2><p>JDK 1.x 模型和 Java 2 平台 SDK 版本 1.2 的新安全结构之间的最大区别是引入了新的、可配置的安全策略，这样就可以实现细化的和可管理的访问控制。所有代码（不管是本地还是下载的，不管是签名或者没有签名的）都可以受到定义良好的安全策略的约束，它为不同的代码授予（可能是重叠的）权限。同时，随着在 JVM 中引入了多进程能力（请参阅 参考资料），出现了对基于用户的访问控制的要求。这也就出现沙箱的概念。</p>
+<p><b style="color:red">Java 2 平台安全体系结构背后的基本原理可以总结如下：一个系统级的 安全策略定义了按 保护域组织的执行代码的 访问权限(按照应用程序的需要）。安全策略用于访问控制检查，这是由 JVM 在运行时执行的。</b></p>
+<h2 id="Permission类型化对象"><a href="#Permission类型化对象" class="headerlink" title="Permission类型化对象"></a>Permission类型化对象</h2><p>所有访问权限都是类型化的并且有层次结构（主要是指继承的结构），其根是抽象类java.security.Permission。通常一个 Permission 包含一个目标（“由这个权限控制的操作将对谁执行？”）和一个操作（“如果这个权限允许的话，对这个目标将执行什么操作？”）。</p>
+<p>在允许一段运行的代码对特定的“目标”执行特定的“操作”这一上下文中，一个重要的概念是代码不一定被授予与所需要完全一样的 Permission 。相反，只要可以从实际授予这段代码的 Permission 中推断出或者隐含了所需要的 Permission 就可以。例如，如果一段运行代码授予了读目录 /x 中所有文件的权限，那么它就不需要对目标文件 /x/in.xtx 执行 读操作的显式权限，因为前一个权限隐含了后者。</p>
+<p>显然，某个 Permission 是否隐含另一个 Permission 的定义将取决于这两个 Permission 是如何定义的。至少，这两个 Permission 必须为同一类型。不过，不能指望运行时进行进一步的判断，并且必须将这种隐含推断逻辑指派给所涉及的 Permission 类。<b style="color:red">运行时通过调用一个恰当地取名为 implies 的方法来查询 Permission 类的隐含推断逻辑。这就是Permission中抽象出来的implies的作用。</b></p>
+<h3 id="聚集的权限-PermissionCollection"><a href="#聚集的权限-PermissionCollection" class="headerlink" title="聚集的权限 PermissionCollection"></a>聚集的权限 PermissionCollection</h3><p><b style="color:red">PermissionCollection 可以聚集同一类型的 Permission 对象的多个实例。</b> 例如，一个 PermissionCollection 可能包含两个 java.io.FilePermission 实例，表示读取两个不同文件的特权。</p>
+<p>不用在每次要检查权限时对每一个对象分别调用 implies() 方法，Java 运行时只是调用由 PermissionCollection 对象提供的 implies() 方法并等待其响应。可以为所创建的每一个自定义 Permission 对象定义一种新的 PermissionCollection 类型。当然， PermissionCollection 中 implies() 方法的具体实现取决于给定 Permission 对象的特性。也可能是通过内部类的方式进行实现的。</p>
+<h3 id="Permissions对象"><a href="#Permissions对象" class="headerlink" title="Permissions对象"></a>Permissions对象</h3><p>Permissions是PermissionCollection的实现类，其内部有多个PermissionCollection。除了对特定的 Permission 类型有多个实例，任何给定的一段运行代码都将得到不同类型的 Permission 。Permissions会通过Permission来找到相应的PermissionCollection对象。以 Permissions 对象的形式提供了一组 PermissionCollection 对象。Permissions 类还提供了一个 implies() 方法。不过，要记住为了让一个 Permission 隐含另一个，它们必须是同一类型的。因此，调用 Permissions 对象的 implies() 方法会使后者首先在其内部集合中定位正确的 PermissionCollection 实例（那个包含一组正确类型的 Permission 对象的实例），然后调用由此获得的 PermissionCollection 对象的 implies() 方法，并向它传递要检查的 Permission 。</p>
+<h2 id="安全策略和保护域ProtectionDomain"><a href="#安全策略和保护域ProtectionDomain" class="headerlink" title="安全策略和保护域ProtectionDomain"></a>安全策略和保护域ProtectionDomain</h2><p>适用于一个系统的安全策略实质上是一个良好定义的“仓库”，它存储了授予这个系统中不同实体的访问权限的断言。根据 保护域（protection domain）的经典定义（请参阅 参考资料），域是由系统中当前获得授权的一个实体可以直接访问的一组对象所界定的（按照这个定义，实际上可以将 JDK 版本 1.1 中的 Java 沙箱想像为一个具有固定边界的保护域）。在此基础上构建的 Java 2 平台安全策略设计为根据 ProtectionDomain 授权访问权限，而不是向单个的一段运行代码授权这种权限。因此，每一个类或者对象“属于”一个 ProtectionDomain ，安全策略对这个保护域授予了某种访问权限。重申 ProtectionDomain 的观点，一个特定的 ProtectionDomain 封装了一组类（例如，所有从特定位置上装载、并用特定密钥签名的所有类），它们的实例将会授予同样的一组权限。</p>
+<p>这种间接性（即，权限不是直接授予类和对象）背后的理由是可扩展性 – 它应当可以改变和/或细化构成 ProtectionDomain 的定义，而不会影响权限的授予。（确实，JAAS 之前的 ProtectionDomain 只由“属于”它的代码描述，而 JAAS 后的 ProtectionDomain 还由运行代码的、经过认证的用户描述。由于每一位用户都分配到了设置了他或者她的权限的特定 ProtectionDomain ，进行用户认证可以使给定的一段代码根据当前认证用户而用不同的一组权限运行。我将在讨论 JAAS 授权体系结构时，对所有这些内容给予更详细的描述。）</p>
+<h3 id="保护域-ProtectionDomain-和代码源-CodeSource"><a href="#保护域-ProtectionDomain-和代码源-CodeSource" class="headerlink" title="保护域(ProtectionDomain)和代码源(CodeSource)"></a>保护域(ProtectionDomain)和代码源(CodeSource)</h3><p>显然，一定要能惟一地标识一段运行代码以保证它的访问权限没有冲突。运行代码的惟一标识属性共有两项：代码的来源CodeSource（代码装载到内存所用的 URL）和代码的 signer 实体CodeSigner（由对应于运行代码的数字签名的一组公共密钥指定）。这两种特性的组合在 Java 2 平台安全体系结构中编写为给定运行代码的 CodeSource 。现在可以提供 ProtectionDomain 的更严格定义了： ProtectionDomain 是一组 CodeSource 及其访问权限。换一种说法， ProtectionDomain 表示授予特定 CodeSource 的所有权限。</p>
+<p>Java 运行时通过名为 java.security.Policy 的类（的具体扩展）设置 ProtectionDomain 与授予它的权限之间的映射。这个类的默认扩展是 sun.security.provider.PolicyFile 。正如其名字所表明的， sun.security.provider.PolicyFile 从一个文件中获得 CodeSource （由位置 URL 和 signer 标识别名）与授予它的权限之间的映射。可以通过环境变量 java.security.policy 将这个文件的位置作为输入提供给 JVM。 Policy 类提供了一个名为 getPermissions() 的方法，可以调用它以获得授予特定 CodeSource 的一组权限。</p>
+<p>ProtectionDomain封装了codeSource、Permissions，classLoader和principals，具体看构造方法（其他的方法暂时忽略）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public ProtectionDomain(CodeSource codesource,</span><br><span class="line">                        PermissionCollection permissions,</span><br><span class="line">                        ClassLoader classloader,</span><br><span class="line">                        Principal[] principals) &#123;</span><br><span class="line">    this.codesource = codesource;</span><br><span class="line">    if (permissions != null) &#123;</span><br><span class="line">        this.permissions = permissions;</span><br><span class="line">        this.permissions.setReadOnly();</span><br><span class="line">        if (permissions instanceof Permissions &amp;&amp;</span><br><span class="line">            ((Permissions)permissions).allPermission != null) &#123;</span><br><span class="line">            hasAllPerm = true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    this.classloader = classloader;</span><br><span class="line">    this.principals = (principals != null ? principals.clone():</span><br><span class="line">                        new Principal[0]);</span><br><span class="line">    staticPermissions = false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关于CodeSource和CodeSigner的代码以后再来研究吧！我可能需要深入学习java的类加载机制才能明白这里面的知识，否则很难学习的。SecureClassLoader就是生成CodeSource和ProtectionDomain关系的类加载器。也对这个东西本来就是需要类加载器来实现，否则很多的事情是做不了的。的确用类加载器来实现沙箱的功能，的确很赞。</p>
+<h3 id="SecureClassLoader"><a href="#SecureClassLoader" class="headerlink" title="SecureClassLoader"></a>SecureClassLoader</h3><p>一个类与 其 ProtectionDomain 之间的映射是在类第一次装载时设置的，并在类被垃圾收集之前不会改变。一个类通常是由一个名为 SecureClassLoader 的特殊类装载的。 SecureClassLoader 首先从相应 URL 处装载字节，如果需要还会验证包围文档文件的数字签名。然后它调用上述 getPermissions() 方法获得授予类的 CodeSource 的一个填充了静态绑定权限的异类 PermissionCollection 。然后 SecureClassLoader 创建新的 ProtectionDomain ，传递 CodeSource 及其相关的权限作为其构造函数的参数（当然，这假定对于给定 CodeSource 还不存在 ProtectionDomain 。如果用一个现有的 CodeSource 装载类，那么就会重复使用它已经建立的 ProtectionDomain ） 。 最后，用装载的类字节向 JVM 定义一个类，并在关联的 ProtectionDomain 中维护一个引用指针。</p>
+<p>默认情况下，会创建一个 ProtectionDomain ，并作为“特殊”情况处理，即属于这个域的代码被认为是受信任的并可以获得特殊的权限。这称为 系统域并包括由 系统（应用程序）装载器、扩展装载器和 bootstrap 装载器装载的类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">protected PermissionCollection getPermissions(CodeSource codesource)</span><br><span class="line">&#123;</span><br><span class="line">    check();</span><br><span class="line">    return new Permissions(); // ProtectionDomain defers the binding</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private ProtectionDomain getProtectionDomain(CodeSource cs) &#123;</span><br><span class="line">    if (cs == null)</span><br><span class="line">        return null;</span><br><span class="line"></span><br><span class="line">    // 创建一个新的ProtectionDomain</span><br><span class="line">    ProtectionDomain pd = null;</span><br><span class="line">    synchronized (pdcache) &#123;</span><br><span class="line">        pd = pdcache.get(cs);</span><br><span class="line">        if (pd == null) &#123;</span><br><span class="line">            // 创建新的Permissions数组</span><br><span class="line">            PermissionCollection perms = getPermissions(cs);</span><br><span class="line">            // 进行环境装配打包</span><br><span class="line">            pd = new ProtectionDomain(cs, perms, this, null);</span><br><span class="line">            // 缓存数据</span><br><span class="line">            pdcache.put(cs, pd);</span><br><span class="line">            if (debug != null) &#123;</span><br><span class="line">                debug.println(&quot; getPermissions &quot;+ pd);</span><br><span class="line">                debug.println(&quot;&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我在查看ClassLoader的代码的时候也发现了，ClassLoader和ProtectionDomain，CodeSource有关系，等我认真查看ClassLoader源码的时候再来查看，现在就不用去考虑这么多了。</p>
+<h3 id="动态权限"><a href="#动态权限" class="headerlink" title="动态权限"></a>动态权限</h3><p>直到 Java 平台 1.3，都只能用（上面描述的）以 CodeSource 和相关权限为参数的构造函数创建 ProtectionDomain 。这意味着授予特定 ProtectionDomain 的权限必须在构建时就已经知道，并且没有动态刷新所授予的一组权限的灵活性。然而在 Java 2 平台 SDK 1.4 中， ProtectionDomain 可以同时封装（通过其构造函数传递的）静态权限和动态权限。</p>
+<p>动态权限是在权限检查时由生效的策略所授予的、并由 ProtectionDomain 隐式地处理。对 ProtectionDomain 调用 implies() 方法时（实质上是对权限进行检查时），它调用安装的 Policy 类的 getPolicyNoCheck() 方法。因而 Policy 类提供了刷新所授予的一组权限并向调用 ProtectionDomain 返回这个刷新的权限的可能。这保证了针对在构造时提供的 PermissionCollection 和在那一瞬间绑定的 Policy 的组合进行权限检查。</p>
+<p>关于Policy的加载，我们可以通过Policy的静态方法来一探究竟：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">static Policy getPolicyNoCheck()</span><br><span class="line">&#123;</span><br><span class="line">    // 默认是没有Policy的</span><br><span class="line">    PolicyInfo pi = policy.get();</span><br><span class="line">    // Use double-check idiom to avoid locking if system-wide policy is</span><br><span class="line">    // already initialized</span><br><span class="line">    // policy是空的，或没有初始化</span><br><span class="line">    if (pi.initialized == false || pi.policy == null) &#123;</span><br><span class="line">        // 同步加锁，可以对类加锁</span><br><span class="line">        synchronized (Policy.class) &#123;</span><br><span class="line">            // 再取一遍，防止出错</span><br><span class="line">            PolicyInfo pinfo = policy.get();</span><br><span class="line">            if (pinfo.policy == null) &#123;</span><br><span class="line">                String policy_class = AccessController.doPrivileged(</span><br><span class="line">                    new PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                    public String run() &#123;</span><br><span class="line">                        // 这里我们发现是从policy.provider属性中取得policy_class</span><br><span class="line">                        return Security.getProperty(&quot;policy.provider&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">                if (policy_class == null) &#123;</span><br><span class="line">                    // 如果policy.provider属性为空，那么默认使用sun.security.provider.PolicyFile</span><br><span class="line">                    policy_class = &quot;sun.security.provider.PolicyFile&quot;;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                try &#123;</span><br><span class="line">                    // 这里使用policyProvider来创建实例</span><br><span class="line">                    pinfo = new PolicyInfo(</span><br><span class="line">                        (Policy) Class.forName(policy_class).newInstance(),</span><br><span class="line">                        true);</span><br><span class="line">                &#125; catch (Exception e) &#123;</span><br><span class="line">                    /*</span><br><span class="line">                        * The policy_class seems to be an extension</span><br><span class="line">                        * so we have to bootstrap loading it via a policy</span><br><span class="line">                        * provider that is on the bootclasspath.</span><br><span class="line">                        * If it loads then shift gears to using the configured</span><br><span class="line">                        * provider.</span><br><span class="line">                        *</span><br><span class="line">                        * 如果policy_class是一个扩展类，那么我们不得不通过一个policy provider加载，在bootclasspath上。</span><br><span class="line">                        * 如果它加载了，那么需要换挡要使用配置</span><br><span class="line">                        */</span><br><span class="line"></span><br><span class="line">                    // install the bootstrap provider to avoid recursion</span><br><span class="line">                    // 如果创建失败了，还是使用PolicyFile这个类来创建</span><br><span class="line">                    Policy polFile = new sun.security.provider.PolicyFile();</span><br><span class="line">                    pinfo = new PolicyInfo(polFile, false);</span><br><span class="line">                    // 设置policyInfo</span><br><span class="line">                    policy.set(pinfo);</span><br><span class="line"></span><br><span class="line">                    final String pc = policy_class;</span><br><span class="line">                    Policy pol = AccessController.doPrivileged(</span><br><span class="line">                        new PrivilegedAction&lt;Policy&gt;() &#123;</span><br><span class="line">                        public Policy run() &#123;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                ClassLoader cl =</span><br><span class="line">                                        ClassLoader.getSystemClassLoader();</span><br><span class="line">                                // we want the extension loader</span><br><span class="line">                                ClassLoader extcl = null;</span><br><span class="line">                                // 我们需要扩展类加载器</span><br><span class="line">                                while (cl != null) &#123;</span><br><span class="line">                                    extcl = cl;</span><br><span class="line">                                    cl = cl.getParent();</span><br><span class="line">                                &#125;</span><br><span class="line">                                // 加载policy_class类</span><br><span class="line">                                return (extcl != null ? (Policy)Class.forName(</span><br><span class="line">                                        pc, true, extcl).newInstance() : null);</span><br><span class="line">                            &#125; catch (Exception e) &#123;</span><br><span class="line">                                if (debug != null) &#123;</span><br><span class="line">                                    debug.println(&quot;policy provider &quot; +</span><br><span class="line">                                                pc +</span><br><span class="line">                                                &quot; not available&quot;);</span><br><span class="line">                                    e.printStackTrace();</span><br><span class="line">                                &#125;</span><br><span class="line">                                return null;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">                    /*</span><br><span class="line">                        * if it loaded install it as the policy provider. Otherwise</span><br><span class="line">                        * continue to use the system default implementation</span><br><span class="line">                        */</span><br><span class="line">                    if (pol != null) &#123;</span><br><span class="line">                        pinfo = new PolicyInfo(pol, true);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        if (debug != null) &#123;</span><br><span class="line">                            debug.println(&quot;using sun.security.provider.PolicyFile&quot;);</span><br><span class="line">                        &#125;</span><br><span class="line">                        pinfo = new PolicyInfo(polFile, true);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                policy.set(pinfo);</span><br><span class="line">            &#125;</span><br><span class="line">            return pinfo.policy;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pi.policy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">我们其实可以通过指定policy.provider属性来切换Policy的生成，可以从数据库中、二进制文件、ASCII文件等等获取，默认是PolicyFile实现。关于Policy文件的读取路径和解析，可以查看类PolicyFile的实现，由于里面代码量比较大，而且这个类很少使用，所以我决定不深入研究了，具体怎么用网上找找资料就能解决了。</b></p>
+<p>关于policy文件如何进行编写处理的网站如下所示：<a href="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/" target="_blank" rel="noopener">如何配置Policy文件进行Java安全策略的设置</a></p>
+<h2 id="运行时访问检查"><a href="#运行时访问检查" class="headerlink" title="运行时访问检查"></a>运行时访问检查</h2><p>在默认情况下不安装安全管理器，必须通过一个在启动时传递给 JVM 的、名为 java.security.manager 的环境变量显式地指定。任何应用程序都可找到安装的 SecurityManager 并调用它相应的 check<xxx> 方法。如果所要求的权限在给定运行时上下文中是授予的，那么调用将无声地返回（void）。如果权限没有授予，那么将抛出一个 java.security.AccessControlException 。</xxx></p>
+<p>在 Java 1.1 的时代， SecurityManager 通过其内部逻辑负责管理所有权限本身。因此，任何需要自定义逻辑进行访问决定的应用程序都必须实现并安装一个自定义的 SecurityManager 。Java 2 平台安全体系结构通过引入一个名为 AccessController 的新类使这一切变得简单了，并更具有可扩展性。这个类的目的与 SecurityManager 是一样的，即它负责做出访问决定。当然， 为了向后兼容性保留了 SecurityManager 类，但是其更新的实现委派给了底层的 AccessController 。对 SecurityManager 类进行的所有 check<xxx> 方法调用都解释为相应的 Permission 对象，并将它作为输入参数传递给 AccessController 类的 checkPermission() 方法。</xxx></p>
+<h3 id="Java-程序中的执行线程"><a href="#Java-程序中的执行线程" class="headerlink" title="Java 程序中的执行线程"></a>Java 程序中的执行线程</h3><p>在 Java 程序的执行过程中，可能需要在不同的时间访问“受保护的”资源。当我谈到执行 Java 程序时，我的意思是在特定类 C 1 中（因而在特定的方法中，如 main() ）中启动、通过类 C 2 到 C n-1 、并“结束”于 C n 的执行线程。下面是一个 Java 程序执行的典型控制流程：</p>
+<p>调用类 C 1 的 main() 方法 -&gt; C 1 的 main() 方法调用 C 2 的 m C2 方法 -&gt; C 2 的 m C2 方法调用 C 3 类的 m C3 方法 -&gt; … -&gt; 类 C n-1 的 m Cn-1 方法调用类 C n 的 m Cn 方法。</p>
+<p>假定方法 m Cn 必须访问一个受保护的资源以完成其功能，它调用系统中生效的 AccessController 以确认是否可以继续请求的对特定“受保护的”资源的访问。如果 AccessController 同意放行，那么就执行所要求的操作，控制返回给调用者（ C n-1 类的 m Cn-1 方法），它又将控制返回给其调用者（ C n-2 类的 m Cn-2 方法），如此继续。</p>
+<p>在 JVM 中，线程的控制流表示为 帧堆栈（stack of frame）。每个帧基本上维护有关特定 m Ck 方法、它的类 C k 以及这个方法调用的变量/参数的信息。图 1 显示了一个典型的调用堆栈。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/JAAS%E5%85%B8%E5%9E%8B%E8%B0%83%E7%94%A8%E5%A0%86%E6%A0%88%E7%9A%84%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7.gif?raw=true" alt=""></p>
+<p>上面堆栈中的每个类属于一个 ProtectionDomain ，它由其 CodeSource 惟一地标识。一般来说，这样遍历的一组 ProtectionDomain 将包含 &lt;=n个元素。（您可能还记得，一组中的每一个 ProtectionDomain 都有相关的一组权限 – P i .）像图 1 显示的这样一个调用堆栈快照将编写为（codified）为一个 AccessControlContext 并由 AccessController 对象提供的本机方法调用返回。</p>
+<h2 id="访问检查内幕"><a href="#访问检查内幕" class="headerlink" title="访问检查内幕"></a>访问检查内幕</h2><p>最后得到的一组适用权限的算法是要计算所有权限的交集。换句话说，某一权限，只有与这个特定瞬间、这个线程的执行堆栈上出现的所有类 C i 相应的 ProtectionDomain 相 关联时，这个权限才适用于给定的执行线程。</p>
+<p>这种算法的正确性是很显然的。通过计算与调用堆栈上所有 ProtectionDomain s 相关联的权限集的交集，它保证了不会因为两个类中间的一个（系统/应用程序）调用另一个，而使系统类（通常与更大的 – 如果不是全部的 – 一组权限相关联）“泄露”权限给应用程序类（通常与更少的一组权限相关联）。基本上，属于能力更低的域的类不能通过调用属于能力更高的域的类而变得更强大，而属于能力更高的域中的类会在调用能力更低的类时损失其能力。</p>
+<h3 id="访问控制方法"><a href="#访问控制方法" class="headerlink" title="访问控制方法"></a>访问控制方法</h3><p>确定权限集的交集的算法是在 AccessController 类的 checkPermission 方法中间接实现的。本质上，调用这个方法所发生的事情是对那一瞬间调用堆栈和一组相互交叠的权限进行快照。所请求的权限必须包含在交集结果中或者是它所隐含的。如果这种检查判断为 true，那么 checkPermission() 方法就安静地返回，如果不是，那么就抛出一个异常。（显然， 图 1中描述的调用堆栈中最后一帧实际上是对 AccessController 类的 checkPermission() 方法的调用。）</p>
+<p>注意，直到现在我还没有提到图 1 中描述的调用堆栈的线程起源。这个线程 T 2 可能是由另一个线程 T 1 在其调用堆栈中的某一点上创建的，只要 JVM 为在系统中执行的每一个线程维护单独的调用堆栈。可以直观地假定， T 2 将继承 T 1 调用堆栈（不过只是 T 1 已经运行的那部分）以保证继承的 ProtectionDomain 的权限集也与 T 2 自己的调用堆栈的 ProtectionDomain 取交集。这将保证子线程（这里是 T 2 ）不会偷偷地得到它的父线程（在这里是 T 1 ）所拒绝的某个权限。</p>
+<h3 id="跨域调用问题"><a href="#跨域调用问题" class="headerlink" title="跨域调用问题"></a>跨域调用问题</h3><p>如果属于能力更低的域的类调用属于能力更高的域中的类，就有可能出现奇怪的现象。能力更高的域（类），例如 C n 拥有可以访问所需要的“受保护的” 资源的权限，如果它是由没有相关权限的、能力更低的域（类） C n-1 所调用的，它就不能访问这些资源了。如果 C n 一定要访问受保护的资源才能工作怎么办？不应当有这样一种机制吗：在确定有效的权限集，让 C n 可以告诉安全系统忽略其调用者（及调用者的调用者，并上推到调用堆栈最上层的类）的权限？</p>
+<p>现在，Java 2 平台安全体系结构提供了一种机制，提供的就是这种功能。 AccessController 类有一个名为 doPrivileged 的方法（实际上提供了这个方法的许多变种，但是基本思路是相同的），它用特殊的旗标标记调用堆栈中有关的帧。在这个执行线程中调用 checkPermission 方法时，只有在这个堆栈帧 中和它下面出现的类的权限集才会取交集。调用类和它的上级（即所有在它 上面的堆栈帧）的权限集都 不包括在交集计算中。</p>
+<p>不难看出为什么要包括在调用堆栈以下发生的所有类的权限集：需要考虑属于能力更高的域的类调用属于更能力更低的域的类的情况。更明确地说，需要防止能力更高的域 ( C k ) 将其额外的能力传递给能力更低的域 ( C k+1 )。</p>
+<p>doPrivileged 方法的所有变种都以一个类型为 PrivilegedAction 的对象作为输入。这个对象必须有一个名为 run() 的方法，在调用堆栈中的当前帧特别做了如上所述的标记时，由运行时执行这个方法。因此，任何时候如果有一些代码，希望在执行时让它的权限 临时性地授予给调用堆栈帧前面的代码时，必须将代码包装为 PrivilegedAction 的形式并用这个对象作为输入调用 AccessController 的 doPrivileged() 方法。</p>
+<p>我在想这种机制我们是否可以做一些其他的处理。</p>
+<h3 id="调用堆栈优化"><a href="#调用堆栈优化" class="headerlink" title="调用堆栈优化"></a>调用堆栈优化</h3><p>在 图 1中看到的调用堆栈快照（或者 AccessControlContext ）是在对 AccessController 进行 checkPermission 调用时获得的。在内部， AccessController 在确定这个调用堆栈时进行一些优化，以使访问检查循环尽可能地快。这些优化包括：</p>
+<ul>
+<li>返回的 ProtectionDomain 只到达（并包括）通过调用 AccessController 的 doPrivileged 特别标记的第一个堆栈帧。从前面对 doPrivileged 调用的讨论中显然可以看出这样做的原因。</li>
+<li>返回的 ProtectionDomain s 不包括系统域。系统域定义为具有所有权限，所以不需要检查是否“隐含”了所需要的权限（它总是隐含的）。</li>
+<li>返回的 ProtectionDomain 都是惟一的（即如果多个堆栈帧对应于同一个 ProtectionDomain ，那么只会返回一个 ProtectionDomain ）。</li>
+</ul>
+<p>如果搜索完当前 AccessControlContext 并且没有抛出 AccessControlException ，那么将对这个线程在创建时从其父线程“继承”的 AccessControlContext 进行同样的搜索（ AccessControlContext 被继承，即一个孙子线程将继承它的所有上级的调用堆栈）。</p>
+<h3 id="doPrivileged-方法的变种"><a href="#doPrivileged-方法的变种" class="headerlink" title="doPrivileged() 方法的变种"></a>doPrivileged() 方法的变种</h3><p>在前面看到调用 AccessController 的 doPrivileged() 方法是用一个特殊旗标标识调用堆栈的当前帧，指明控制流中所有前面的帧都不进行访问检查。还看到调用堆栈快照（或者 AccessControlContext ）是在对 AccessController 进行 checkPermission 调用时获得的。不过，这个 AccessControlContext 不一定就是应当用来确定是否授予所请求的权限的那一个 。 例如，请求可能是由客户机发起并发送给服务器进行处理。服务器通常代表客户机执行请求实施代码。</p>
+<p>因为服务器的一部分用于完成请求，如果它调用 AccessController ，那么返回的调用堆栈将是服务器的。显然，不希望（只） 使用服务器的 AccessControlContext 给客户机授权。（当然，希望保证服务器代码本身对试图访问的资源有相应的权限，不过更重要的是保证客户机对服务器代表它访问的资源有相应的权限）。服务器运行时通常是已经授予了权限，因此，真正希望使用的是在客户端向服务器发送请求时存在的客户端调用堆栈。</p>
+<p>AccessController 类提供了 doPrivileged() 方法的另一个变种，它以 AccessControlContext 的实例作为输入。假定客户机设法获得了其 AccessControlContext 的一个副本（ AccessController 类提供了实现这个目的的方法）并将它传递给服务器，服务器可以通过调用以从客户端获得的上述 AccessControlContext 作为输入的 doPrivileged ，将请求的完成代码作为 PrivilegedAction 执行。</p>
+<p>在这种情况下，权限检查的算法（假定在过程某处，在对 PrivilegedAction 的 run() 方法调用后，调用了 checkPermission 时）通过执行上述的循环推进，直到在堆栈中遇到了特别标记的帧，这时，调用作为输入传递的 AccessControlContext 对象的 checkPermission() 方法。这个调用实质上会执行同一个算法，但是是对于在这个 AccessControlContext 中封装的调用堆栈（属于客户机）执行。</p>
+<h2 id="为何要使用以用户为中心的授权？"><a href="#为何要使用以用户为中心的授权？" class="headerlink" title="为何要使用以用户为中心的授权？"></a>为何要使用以用户为中心的授权？</h2><p>Java 2 平台安全体系结构的以代码为中心的授权基于这样的假设，即必须保护用户不受外界影响。为了保证恶意 Java 程序（由世界上恶意破坏者编写的）不会损坏用户的系统，所有移动代码都视为不受信任的，并且那怕进行最无害的操作也要求具有特殊的访问权限。</p>
+<p>相反，JAAS 的以用户为中心的认证模型是以保护世界不受用户影响的思路开发的。随着越来越多的移动和企业网络的出现， 信任概念有了不同的定义。在现实生活中，如果我信任某人 X 多于信任任何某人 Y，我将允许 X 有比 Y 更多的自由度。与此类似，如果一个 Java 应用程序将由多位用户使用（其中一些人实际上可能是恶意破坏者），那么最好将访问权限扩展为以 每个用户为基础。在这种新模型下，根据每位用户受信任的程度，对他或者她授权使用应用程序的某一范围的功能。</p>
+<p>在下面一节中，我将重点介绍 Java 认证和授权服务（Java Authentication and Authorization Service）的以用户为中心的授权模型。虽然 JAAS 代表了 Java 平台安全体系结构的价值的翻天覆地的变化（即它从基于代码的模型转移到以用户为基础的模型），但是您会看到它的许多组件是熟悉的，尽管它们已经更新过以满足新的要求。</p>
+<h2 id="JAAS-授权体系结构"><a href="#JAAS-授权体系结构" class="headerlink" title="JAAS 授权体系结构"></a>JAAS 授权体系结构</h2><p>JAAS 最初是作为 JDK 的一个扩展引入的，在版本 1.4 时成为了核心 JDK 的一部分。既然 JAAS 的目的是为了以每位用户为基础控制任何一段代码所能做的事情，因此需要首先能够准确和惟一地标识用户，换句话说，必须能够对他们进行认证。虽然在这里我不会在 JAAS 的“认证”方面花很多时间，但是我将重点介绍它的一个核心组件： Subject 类。</p>
+<p>就像以前一直说的，JAAS 是一种用以用户为中心进行授权的方式。在 JAAS 下，相关的问题不再是（像在 Java 2 平台安全体系结构中那样）“哪些是这段代码可以做的？”，而变为“这个认证用户的访问权限是什么？”因此，在本文的其余部分我将着重介绍 JAAS 中 Subject 类的作用，并深入讨论基于 subject 的访问控制。</p>
+<h2 id="基于-subject-的访问控制"><a href="#基于-subject-的访问控制" class="headerlink" title="基于 subject 的访问控制"></a>基于 subject 的访问控制</h2><p>Subject 类用于表示在给定系统中认证的用户（即填充的 Subject 是 JAAS 认证过程的结果）。在内部， Subject 包含一组 Principal 对象（和其他有关用户的信息），其中每个 Principal 对象表示同一个用户的不同“身份”。例如，一个 Principal 可能是我在一个终端系统上的用户 ID，而另一个可能是我在同一系统上所属于的“组”。</p>
+<p>在前面我介绍过 生效的 Policy 是如何在系统中设置 ProtectionDomain （以及由相关的 CodeSource 标识的、“属于”它的类）和授予它的权限之间的映射的。JAAS 通过要求用一组 Principal 进一步描述 ProtectionDomain （超越了 CodeSource ）而强化了这种概念。当系统 Policy 设置了这样的 ProtectionDomain （即除了 CodeSource ，还用一组 Principal s 描述）和授予它的权限之间的映射后，如果要用 ProtectionDomain 的权限检查是否应当授予用户某个请求的权限，那么在 Subject 中包含的、与运行这段代码的认证用户相对应的 Principal 对象必须匹配在这个 ProtectionDomain 中包含的 Principal 对象。</p>
+<p>既然 Java 2 平台已经有了干净的、高效的、使用调用堆栈（通过 AccessControlContext ）的授权实现，那么保持它就容易得多了，只要提供一种机制将运行这段代码的用户的身份（如由用户的 Subject 所提供的）“注入”到在权限检查瞬间调用堆栈中的 ProtectionDomain 。</p>
+<p>为此，JAAS Subject 类提供了两个静态方法，称为 doAs 和 doAsPrivileged 。 这些方法期待的输入是认证的用户的 Subject 实例和 PrivilegedAction 的一个实例（它的 run() 方法应当包含需要访问受保护的资源的业务逻辑）。基本思路是应用程序应当首先认证用户，对认证的用户建立了 Subject 后，这个用户可能希望执行的每一个操作都包装为 PrivilegedAction 、并由应用程序作为 Subject （就像方法自己的名字所表明的 – doAs() ！）执行。这两个方法之间有细微但是重要的区别，我们将在稍后介绍。</p>
+<p>为了能够将操作作为 Subject 执行，必须在调用堆 栈中将 Subject引入（或者注入）ProtectionDomain 。这是在一个名为 DomainCombiner 的专用接口的帮助下实现的，我将在开始 doAs() 和 doAsPrivileged() 方法的内幕之前介绍这个接口。</p>
+<h3 id="DomainCombiner"><a href="#DomainCombiner" class="headerlink" title="DomainCombiner"></a>DomainCombiner</h3><p>如前所述，对于一个 AccessControlContext (一个调用堆栈），在 JAAS 中将 Subject 注入堆栈中的 ProtectionDomain 是通过实现 DomainCombiner 接口（一个特定的实现是 SubjectDomainCombiner ）所处理的。</p>
+<p>注入是在将 SubjectDomainCombiner 作为构造函数参数传递以构建 AccessControlContext 时执行的。（作为参数传递给 doAs 调用的 Subject 被封装到 SubjectDomainCombiner 对象中，这种封装是在创建后者时，将 Subject 作为构造函数参数传递而完成的。）不过，真正的工作是在 SubjectDomainCombiner 的 combine() 方法中完成的。您将在稍后看到在这个方法中所发生的过程。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.ibm.com/developerworks/cn/java/j-javaauth/" target="_blank" rel="noopener">Java 授权内幕</a><br><a href="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/" target="_blank" rel="noopener">如何配置Policy文件进行Java安全策略的设置</a><br><a href="https://www.cnblogs.com/youxia/p/java006.html" target="_blank" rel="noopener">JAAS 是个什么梗</a><br><a href="http://www.cnblogs.com/youxia/p/java004.html" target="_blank" rel="noopener">使用 SecurityManager 和 Policy File 管理 Java 程序的权限</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1953,157 +2173,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/01/golang/Go语言如何实现继承和多态/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/01/golang/Go语言如何实现继承和多态/" itemprop="url">Go语言如何实现继承和多态</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-01T18:38:37+08:00">2018-03-01</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go语言/" itemprop="url" rel="index"><span itemprop="name">Go语言</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>其实golang里是不提倡继承的，也不提倡重载的。但是有些场景下，我们还是想试验一下传统C++或Java语言里的继承和重载能否用在golang里。这里是利用了Go语言结构体和接口的特性实现的。</p>
-<p>可以理解接口就是一种抽象，而结构体就是最终干活的，注意这种实现关系并没有java那样直接需要你去implements，所以这种继承和实现的关系，没有那么直观也没有那么富有语法约束能力。也就是我想实现就实现。缺点：</p>
-<ol>
-<li>阅读代码难，可能存在误解</li>
-<li>没有检查机制（其实可以在Go语言的基础上自己写一些插件来进行约束，可以通过变更语法或者逻辑判断，比如说命名）</li>
-</ol>
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">type Person struct &#123;</span><br><span class="line">	Id   int</span><br><span class="line">	Name string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Tester interface &#123;</span><br><span class="line">	Test()</span><br><span class="line">	Eat()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Person) Test() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Person.Test&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Person) Eat() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Person.Eat&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Employee 从Person继承, 直接继承了 Eat 方法，并且将 Test 方法覆盖了。</span><br><span class="line">type Employee struct &#123;</span><br><span class="line">	Person</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (this *Employee) Test() &#123;</span><br><span class="line">	fmt.Println(&quot;\tthis =&quot;, &amp;this, &quot;Employee.Test&quot;)</span><br><span class="line">	this.Person.Test() // 调用父类的方法，且该方法被子类覆盖了</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	fmt.Println(&quot;An Employee instance :&quot;)</span><br><span class="line">	var nu Employee</span><br><span class="line">	nu.Id = 2</span><br><span class="line">	nu.Name = &quot;NTom&quot;</span><br><span class="line">	nu.Test()</span><br><span class="line">	nu.Eat()</span><br><span class="line">	fmt.Println()</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;A Tester interface to Employee instance :&quot;)</span><br><span class="line">	var t Tester</span><br><span class="line">	t = &amp;nu</span><br><span class="line">	t.Test()</span><br><span class="line">	t.Eat()</span><br><span class="line">	fmt.Println()</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;A Tester interface to Person instance :&quot;)</span><br><span class="line">	t = &amp;nu.Person</span><br><span class="line">	t.Test()</span><br><span class="line">	t.Eat()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="程序执行输出"><a href="#程序执行输出" class="headerlink" title="程序执行输出"></a>程序执行输出</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">An Employee instance :</span><br><span class="line">	this = 0xc082024020 Employee.Test</span><br><span class="line">	this = 0xc082024028 Person.Test</span><br><span class="line">	this = 0xc082024030 Person.Eat</span><br><span class="line"></span><br><span class="line">A Tester interface to Employee instance :</span><br><span class="line">	this = 0xc082024038 Employee.Test</span><br><span class="line">	this = 0xc082024040 Person.Test</span><br><span class="line">	this = 0xc082024048 Person.Eat</span><br><span class="line"></span><br><span class="line">A Tester interface to Person instance :</span><br><span class="line">	this = 0xc082024050 Person.Test</span><br><span class="line">	this = 0xc082024058 Person.Eat</span><br></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>多态的实现是通过地址实现，继承是通过结构体复用的逻辑实现的。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.runoob.com/go/go-interfaces.html" target="_blank" rel="noopener">Go 语言接口</a><br><a href="http://blog.codeg.cn/2015/02/12/golang-derive-override/" target="_blank" rel="noopener">golang学习之继承和重载</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2155,7 +2224,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">57</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2196,7 +2265,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">14</span>
+                      
+                    
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2335,7 +2406,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">63</span>
+                      
+                    
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
