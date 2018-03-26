@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="椭圆曲线," />
+
+
+<meta name="description" content="概述一直觉得加密算法比较神奇，但是比特币中使用的椭圆双曲线算法一直让我感觉很神奇，之前看的时候没有看懂，这次认真看了两篇文档之后，终于理解了这种算法的奇妙之处，看来数学这个东西其实没有大家想像的那么难，也许就是很简单的东西堆砌成一个庞然大物，以至于你不再看得清楚了。 椭圆曲线的形状,并不是椭圆.是因为椭圆曲线的描述方程,类似于计算一个椭圆的周长的方程得名。 从阿贝尔群开始群的定义是定义了二元操作“">
+<meta name="keywords" content="椭圆曲线">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于椭圆曲线的理解">
+<meta property="og:url" content="http://cordate.github.io/2018/03/26/算法/关于椭圆曲线的理解/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="概述一直觉得加密算法比较神奇，但是比特币中使用的椭圆双曲线算法一直让我感觉很神奇，之前看的时候没有看懂，这次认真看了两篇文档之后，终于理解了这种算法的奇妙之处，看来数学这个东西其实没有大家想像的那么难，也许就是很简单的东西堆砌成一个庞然大物，以至于你不再看得清楚了。 椭圆曲线的形状,并不是椭圆.是因为椭圆曲线的描述方程,类似于计算一个椭圆的周长的方程得名。 从阿贝尔群开始群的定义是定义了二元操作“">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%AE%97%E6%B3%95/ecdsa%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B.png">
+<meta property="og:updated_time" content="2018-03-26T10:17:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于椭圆曲线的理解">
+<meta name="twitter:description" content="概述一直觉得加密算法比较神奇，但是比特币中使用的椭圆双曲线算法一直让我感觉很神奇，之前看的时候没有看懂，这次认真看了两篇文档之后，终于理解了这种算法的奇妙之处，看来数学这个东西其实没有大家想像的那么难，也许就是很简单的东西堆砌成一个庞然大物，以至于你不再看得清楚了。 椭圆曲线的形状,并不是椭圆.是因为椭圆曲线的描述方程,类似于计算一个椭圆的周长的方程得名。 从阿贝尔群开始群的定义是定义了二元操作“">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%AE%97%E6%B3%95/ecdsa%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/03/26/算法/关于椭圆曲线的理解/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>关于椭圆曲线的理解 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/算法/关于椭圆曲线的理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于椭圆曲线的理解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-26T11:30:55+08:00">2018-03-26</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>一直觉得加密算法比较神奇，但是比特币中使用的椭圆双曲线算法一直让我感觉很神奇，之前看的时候没有看懂，这次认真看了两篇文档之后，终于理解了这种算法的奇妙之处，看来数学这个东西其实没有大家想像的那么难，也许就是很简单的东西堆砌成一个庞然大物，以至于你不再看得清楚了。</p>
+<p>椭圆曲线的形状,并不是椭圆.是因为椭圆曲线的描述方程,类似于计算一个椭圆的周长的方程得名。</p>
+<h2 id="从阿贝尔群开始"><a href="#从阿贝尔群开始" class="headerlink" title="从阿贝尔群开始"></a>从阿贝尔群开始</h2><p>群的定义是定义了二元操作“运算”并且用符号+表示的一个集合。假定我们要操作的群用 𝔾表示，那么我们在这个群上面要定义的“运算”必须符合以下几个属性：</p>
+<ul>
+<li>闭包。如果a和b都是𝔾的成员，那么a+b也是𝔾的成员。</li>
+<li>组合性。(a+b)+c=a+(b+c)</li>
+<li>单位元。存在确切的一个值，称之为单位元，0可以保证该等式成立 a+0=0+a=a</li>
+<li>逆元。每个成员都有一个相反数：对于任意值a必定存在b使得a+b=0</li>
+</ul>
+<p>如果加上第五条这要求：</p>
+<ul>
+<li>交换性a+b=b+a</li>
+</ul>
+<p><b style="color:red">这样的群我们称之为 阿贝尔群。</b></p>
+<h2 id="椭圆曲线"><a href="#椭圆曲线" class="headerlink" title="椭圆曲线"></a>椭圆曲线</h2><p>椭圆曲线是一个对数函数，<b style="color:red">曲线上的每个点都必须是非奇异的，所谓的”非奇异”或”光滑”的,在数学中是指曲线上任意一点都存在切线。</b>椭圆曲线对于X轴是对称的，记住这点很重要。关于这个函数的更多说明，还是参照引用的文章吧，里面提到的比我说的详细多了。</p>
+<h2 id="椭圆曲线的阿贝尔群"><a href="#椭圆曲线的阿贝尔群" class="headerlink" title="椭圆曲线的阿贝尔群"></a>椭圆曲线的阿贝尔群</h2><p><b style="color:red">其实关于阿贝尔群，大家一定认为加法就是指数学中的那个加法，而对于椭圆曲线，这个加法还不一定非要是数学数字中的加法，这里的加法是指线相交，而加法中的元素也不是数字，而是一个点。举例来说，P+Q=R是指P与Q的连线与曲线相较于点Q，那么对于这个公式P-R=-Q又该如何解释呢？其实减号意味着点对于X轴对称的另一个点，另外公式变换一个P+(-R)=-Q，你再想想对称性，这个公式是不是成立的？这就是这个曲线的妙处所在。至于结合律就更好理解了，3点一线，不管你取那两个点，第三个点都能算出来不是么？至于0就是无穷远处的点就是0，这个适用于，直线平行于X轴或者y轴的时候使用。</b></p>
+<h2 id="关于乘法"><a href="#关于乘法" class="headerlink" title="关于乘法"></a>关于乘法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mP = P + P + ...... + P = Q</span><br></pre></td></tr></table></figure>
+<p>注意这里的乘法就是，一次一次加法算出来的，如果m越大，那么计算的量也就越大。<b style="color:blue">我们学的椭圆曲线密码体制就是利用以上的这个困难问题来设计的。</b></p>
+<h2 id="素数域Fp"><a href="#素数域Fp" class="headerlink" title="素数域Fp"></a>素数域Fp</h2><p><b style="color:blue">如果椭圆曲线上一点P，存在最小的正整数n，使得数乘 nP=0∞，则将n称为P的阶，若n 不存在，我们说P是无限阶的。</b></p>
+<p><b style="color:red">事实上，在有限域上定义的椭圆曲线上所有的点的阶n都是存在的。</b></p>
+<h2 id="加解密过程"><a href="#加解密过程" class="headerlink" title="加解密过程"></a>加解密过程</h2><p><b style="color:red">终于到了学习，这个算法是如何进行加解密的过程的原理了，其实就是利用了上面提到的乘法和素数域的知识，另外也有了几个参数，这几个参数对应我们之前在bitcoin中使用的各种参数调节的问题，这里就应该是调节的本质了吧.</b>。好了下面我们来分析》》》</p>
+<p>描述一条Fp上的椭圆曲线，常用到六个参量：T=(p,a,b,n,x,y)。</p>
+<ul>
+<li>（p 、a 、b） 用来确定一条椭圆曲线，p为素数域内点的个数，a和b是其内的两个大数；（这个p就是最后y mod p 的那个值，应该说p的取值决定了n的个数）</li>
+<li>x,y为G基点的坐标，也是两个大数；</li>
+<li>n为点G基点的阶；</li>
+</ul>
+<p>以上六个量就可以描述一条椭圆曲线，有时候我们还会用到h(椭圆曲线上所有点的个数p与n相除的整数部分)。</p>
+<p><b style="color:red">现在我们描述一个利用椭圆曲线进行加密通信的过程</b>：</p>
+<ol>
+<li>A机器选定一条椭圆曲线 Ep(a,b) 并取椭圆曲线上一点，作为基点G。</li>
+<li>A机器选择一个私有密钥k，并生成公开密钥 K=kG。</li>
+<li>A机器将 Ep(a,b) 和点K，G传给用户B。</li>
+<li>B机器接到信息后 ，将待传输的明文编码到Ep(a,b)上一点M（编码方法很多，这里不作讨论），并产生一个随机整数r。</li>
+<li>B机器计算。<code>C1 = M + rK; C2=rG.</code></li>
+<li>B机器将点C1、C2传给A机器。</li>
+<li>A接到信息后，计算C1-kC2，结果就是点M。因为<code>C1-kC2=M+rK-k(rG)=M+rk-r(kG)=M</code>, 再对点M进行解码就可以得到明文。这样值就通过0运算神奇地还原了，注意这里的计算一是设计椭圆计算，椭圆计算是基于数学计算的过程的。</li>
+</ol>
+<p>在这个加密通信中，如果有一个偷窥者H ，他只能看到Ep(a,b)、K、G、C1、C2，而通过K、G 求k 或通过C2、G求r 都是相对困难的，因此，H无法得到A、B间传送的明文信息。</p>
+<h2 id="ECDH"><a href="#ECDH" class="headerlink" title="ECDH"></a>ECDH</h2><p>是基于ECC（Elliptic Curve Cryptosystems，椭圆曲线密码体制，参看ECC）的DH（ Diffie-Hellman）密钥交换算法。其实就是双方互相传送公钥，然后通过双方的公钥计算出双方都知道的加密密钥S（注意这里面没有随机数传送，所以整个过程是安全的。）。</p>
+<p>该算法可以用来解决如下问题：两端（Alice 和 Bob）想要安全的交换信息并且第三方不能获取到该信息。当然这是TLS协议中的目的之一，我们给出一个例子。<br>（其实下面的描述其实是ECDHE,而不是ECDH）</p>
+<ol>
+<li>Alice 和 Bob 生成他们自己的私钥和公钥，即Alice 有 da、Ha = da<em>G；Bob有db、Hb = db </em>G </li>
+<li>Alice把Ha发给Bob，Bob把Hb发给Alice。这样Alice 有da,Ha,Hb，Bob有db,Ha,Hb。 </li>
+<li>Alice计算S = da<em>Hb（即自己的私钥乘上Bob的公钥），同样的，Bob计算S = db</em>Ga（自己的私钥乘上Alice的公钥）。两边计算的S是相同的。</li>
+</ol>
+<h2 id="ECDSA签名算法"><a href="#ECDSA签名算法" class="headerlink" title="ECDSA签名算法"></a>ECDSA签名算法</h2><p><b style="color:red">现在有一个场景：Alice想要用私钥签名一个数据，Bob想要使用Alice的公钥验证这个签名；只有Alice能够进行计算签名然后得到签名，每个人都能验证签名值。</b></p>
+<p>首先Alice和Bob拥有相同的椭圆曲线参数，算法被签名称之为ECDSA，是DSA算法的一个变体。</p>
+<p><b style="color:red">ECDSA签名算法的输入 是 数据的哈希值</b>，而不是数据的本身，至于哈希算法选用哪一个就取决于自己了。为了使得ECDSA的输入值的比特数和子群的阶n的比特数一样，哈希值可能会被截断。我们把ECDSA输入称之为Z。<br>算法工作流程如下： </p>
+<ol>
+<li>取一个范围在[1, n - 1]的随机数k </li>
+<li>计算点P=kG (就是计算出公钥)</li>
+<li>计算r = x<sub>P</sub> mod n （算出r的值，n是基点的阶）</li>
+<li>如果 r == 0，执行第一步 </li>
+<li>计算s = k<sup>-1</sup> (z + r*d<sub>A</sub>) mod n （d<sub>A</sub>是Alice的公钥，k<sup>-1</sup> 是 k 对n的逆元, k是上面的随机数） </li>
+<li>如果s==0，执行第一步 </li>
+<li>二元组(r, s)就是签名值 </li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%AE%97%E6%B3%95/ecdsa%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B.png" alt=""></p>
+<p>上图中，Alice使用私钥da对z进行签名，生成二元组(r, s)。<br>Bob使用Alice的公钥对(r, s)和Z进行验证。</p>
+<p>现在我们来看看Bob如何验证的： </p>
+<ol>
+<li>计算u<sub>1</sub> = s<sup>-1</sup> * z mod n </li>
+<li>计算u<sub>2</sub> = s<sup>-1</sup> * r mod n </li>
+<li>计算P = u<sub>1</sub>*G + u<sub>2</sub>*H<sub>A</sub></li>
+<li>如果r == x<sub>P</sub> mod n，则验证正确</li>
+</ol>
+<p>过程证明请查看相应的引用。</p>
+<h2 id="椭圆算法总结"><a href="#椭圆算法总结" class="headerlink" title="椭圆算法总结"></a>椭圆算法总结</h2><p>通过最后的示例我们可以看出，椭圆算法的公私钥其实是一样的，其实说白了就双方都不需要知晓别人给定的那个k和r的值，因为kr相乘之后，大家的值都是一致的，但是不能在网上随便传输k和r的值吧，这样还有什么安全性，这里很巧妙地利用了归的技术，隐藏了这种特性的原始值。这种特性就是椭圆曲线的对称性而衍生的阿贝尔群的特性。</p>
+<p>鉴于np=0，所以一个私钥理论上是可以对应多个公钥的，一个公钥也可以对应多个私钥。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.jianshu.com/p/2e6031ac3d50" target="_blank" rel="noopener">椭圆曲线算法：入门（1）</a><br><a href="https://4hou.win/wordpress/?p=12084" target="_blank" rel="noopener">椭圆曲线算法（ECC）学习（一)</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">钱包和地址</a><br><a href="http://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/" target="_blank" rel="noopener">Elliptic Curve Cryptography: a gentle introduction</a><br><a href="http://andrea.corbellini.name/2015/05/23/elliptic-curve-cryptography-finite-fields-and-discrete-logarithms/" target="_blank" rel="noopener">Elliptic Curve Cryptography: finite fields and discrete logarithms</a><br><a href="https://blog.csdn.net/mrpre/article/details/72850598" target="_blank" rel="noopener">有限域和离散对数问题(ECC椭圆曲线算法2)</a><br><a href="https://blog.csdn.net/mrpre/article/details/72850644" target="_blank" rel="noopener">ECDH and ECDSA(ECC椭圆曲线算法3)</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/椭圆曲线/" rel="tag"># 椭圆曲线</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/23/blockchain/共识算法概述/" rel="next" title="共识算法概述">
+                <i class="fa fa-chevron-left"></i> 共识算法概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">60</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">67</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从阿贝尔群开始"><span class="nav-number">2.</span> <span class="nav-text">从阿贝尔群开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#椭圆曲线"><span class="nav-number">3.</span> <span class="nav-text">椭圆曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#椭圆曲线的阿贝尔群"><span class="nav-number">4.</span> <span class="nav-text">椭圆曲线的阿贝尔群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于乘法"><span class="nav-number">5.</span> <span class="nav-text">关于乘法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#素数域Fp"><span class="nav-number">6.</span> <span class="nav-text">素数域Fp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加解密过程"><span class="nav-number">7.</span> <span class="nav-text">加解密过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ECDH"><span class="nav-number">8.</span> <span class="nav-text">ECDH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ECDSA签名算法"><span class="nav-number">9.</span> <span class="nav-text">ECDSA签名算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#椭圆算法总结"><span class="nav-number">10.</span> <span class="nav-text">椭圆算法总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">11.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
