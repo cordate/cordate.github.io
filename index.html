@@ -276,6 +276,375 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/关于以太坊的签名/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/27/blockchain/关于以太坊的签名/" itemprop="url">关于以太坊的签名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T14:54:18+08:00">2018-03-27</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在之前的博文当中我们已经提到过关于区块链技术的基础密码学之<a href="/2018/03/26/算法/关于椭圆曲线的理解/">椭圆曲线</a>的知识.</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在正常的ecdsa算法中发现签名都是（r,s），但是以太坊中的签名返回好像还有一个v，而且在RFC6979中也没有提到这个v，我实在不知道这个v到底是一个什么的东西，今天特地来深入地研究一番。</p>
+<p>这个v其实是用于椭圆曲线点恢复使用的，在椭圆曲线中（ecdsa）点的y轴是经过mod p的，这样你获得的点可能是经过转换的，你可以查看<a href="https://bitcoin.stackexchange.com/questions/38351/ecdsa-v-r-s-what-is-v" target="_blank" rel="noopener">ECDSA: (v, r, s), what is v?</a>。另外比特币中是直接使用v=0|1，但是以太坊中v=27|28，这又是为啥呢？这主要是为了防止被攻击，可以查看<a href="https://ethereum.stackexchange.com/questions/15766/what-does-v-r-s-in-eth-gettransactionbyhash-mean" target="_blank" rel="noopener">What does v, r, s in eth_getTransactionByHash mean?</a>中的回答，主要的说明在<a href="https://github.com/ethereum/EIPs/issues/155" target="_blank" rel="noopener">EIP 155</a>当中。</p>
+<h2 id="签名"><a href="#签名" class="headerlink" title="签名"></a>签名</h2><p>实施签名需要两个部分：待签名的数据+实施签名的账户。签名过程可以使用web3.eth.sign()来实现，具体代码为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; let msg = web3.sha3(&apos;today is 20171026&apos;)</span><br><span class="line">&gt; let signature = web3.eth.sign(address, msg)</span><br><span class="line">0x125a275046b65a96f11fdb7cd1072054e67526a76f54b1622fde4e4592d6fe2d5bf664ace77da52c6f94f08a56077e5d7a80048f70c38a92169205df3c9c43ea1b</span><br></pre></td></tr></table></figure></p>
+<p>该返回值总共132字节（去掉前面的’0x’的话是130字节）。因为以太坊采用的ECDSA签名算法，根据ECDSA: (v, r, s), what is v?的介绍， 返回值可以分为三个部分：r, s, v。其中前0~66个字节为r， 66~130之间的字节为s， 130~132的字节为v。代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let r = signature.slice(0, 66)</span><br><span class="line">let s = &apos;0x&apos; + signature.slice(66, 130)</span><br><span class="line">let v = &apos;0x&apos; + signature.slice(130, 132)</span><br><span class="line">v = web3.toDecimal(v)</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们可以将它打印出来，在接下来验证签名的部分会用到。</p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><b style="color:red">签名完成了，我们如何验证某些签名后的数据是哪个账户签名的呢？在web3.js 发布1.0版本以前，验证签名只能通过智能合约的ecrecover函数来实现</b>。新版的web3.js提供了web3.eth.accounts.recover函数用于验证签名。这里我们仍然使用传统的智能合约ecrecover方式。</p>
+<p>ecrecover接收数据的哈希值以及r/s/v等参数作为输入，返回实施该签名的账户地址。因此我们只需要通过合约拿到实施签名的地址，和我们真正的地址进行对比，如果地址一致，就说明验证通过了。</p>
+<p><b style="color:red">智能合约代码如下：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.15;</span><br><span class="line">// 专门写了一个用于验证签名的合约呀</span><br><span class="line">contract Auth &#123;      </span><br><span class="line">    function verify( bytes32 hash, uint8 v, bytes32 r, bytes32 s) constant returns(address retAddr) &#123;</span><br><span class="line">      bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;</span><br><span class="line">      bytes32 prefixedHash = sha3(prefix, hash);</span><br><span class="line">      // 验证过程(这里就可以看出，通过v返回address)</span><br><span class="line">      return ecrecover(prefixedHash, v, r, s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们调用合约进行交互：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const contract=web3.eth.contract(abi).at(&apos;0x2e2A4cD2869862492C744307310847466c008257&apos;);</span><br><span class="line">console.log(contract.verify(msg, v, r, s));</span><br><span class="line">console.log(address)</span><br></pre></td></tr></table></figure></p>
+<p>本地执行结果为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ node sign.js</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br></pre></td></tr></table></figure></p>
+<p>可以看到实施签名的地址和验证后返回的地址一致，签名通过验证。在以太坊中完成对数据的签名和验证还是比较简单的。并且账户不仅可以对交易进行签名，还可以对任意数据进行签名并验证。</p>
+<p><b style="color:red">还有就是我们可以通过发合约来利用solidity帮我们处理一些自己写代码比较复杂的事情，比如说这里的验证签名，这个是一个很好的思路，记下了！</b></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><b style="color:blue">签名的算法比较奇特，这里我在网上搜索资料的时候发现了一篇<a href="http://www.5bite.com/post/862.html" target="_blank" rel="noopener">DFINITY区块链：密码学技术介绍</a>，我们先不理会这里面关于密码学深入的问题，里面的图其实和椭圆曲线大概是一致的，因为椭圆曲线中基点不停地加之后就是将所有的点联系起来，也就形成了这篇文章中的那些点线。感觉之前在看椭圆曲线的时候，还停留在代数基础上，其实去掉理论就会发现现在变成图了。然后思维就被打开了。</b></p>
+<p>关于验签是如何成功返回公钥的，这个可能是去找所有的公钥进行匹配，哪个公钥成功了就是这个人前的吧！不过确实合约中好像没有公钥，那么这个公钥是如何生成的呢？这个需要进一步地学习，我想生成是可以的因为有私钥，基点等数据，关键就是k这个值。因为<code>P=k*G</code>，只要从公式中导出这个就可以了。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zhuanlan.zhihu.com/p/30481292" target="_blank" rel="noopener">基于以太坊(Ethereum)完成对数据的签名及验证</a><br><a href="http://me.tryblockchain.org/web3js-sign-ecrecover-decode.html" target="_blank" rel="noopener">区块链语言Solidity校验椭圆曲线加密数字签名（附实例）</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/隔离见证、闪电网络理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/27/blockchain/隔离见证、闪电网络理解/" itemprop="url">隔离见证、闪电网络理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T14:07:26+08:00">2018-03-27</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我记得刚开始接触区块链的时候应该是2017年12月份左右，后来就投入到项目的开发中，但是对于区块链基础知识的学习，我想我还是差得很远，当时去理解隔离见证和雷电网络的时候有点捉襟见肘，大概的意思吧！现在也明白了这里面的意思，但是觉得还是需要写一篇博客记录一下，免得自己又忘记了，这可不是什么好现象。</p>
+<h2 id="隔离见证"><a href="#隔离见证" class="headerlink" title="隔离见证"></a>隔离见证</h2><p>隔离见证已经于2017年8月在比特币上激活了。最近比特币正在朝着下一个扩容方案努力，闪电网络 Lightning Network。闪电网络的启动必须基于更多的用户使用隔离见证地址。</p>
+<h3 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h3><p>现在的比特币网络交易量特别大，但是区块10分钟一个，一个区块限制1M大小，这就造成了比特币网络的拥堵。如果大家了解交易结构就一定知道加解密脚本，这些脚本都是放在区块里面的，于是大家就想如何能把脚本从区块中拿出来单独存储，这样一个区块不就可以容纳更多的交易了吗？于是下图的结构就出现了：</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9A%94%E7%A6%BB%E8%A7%81%E8%AF%81%E5%8C%BA%E5%9D%97%E5%9B%BE%E8%A7%A3.jpg?raw=true" alt=""></p>
+<p>隔离见证的其中一个好处是能缓解我们交易堵塞的问题。但是最重要的是为了闪电网络铺路。一种建立在比特币底层网络的智能合约。</p>
+<p>隔离验证确实不是很好的解决之道，因为脚本还是需要存储的，没有脚本的交易，那么这个交易是不是可以随便花费。另外对于钱包节点都是要去检查脚本的准确性，这个还是需要有脚本数据的，所以这个也不是简单的事情吧！</p>
+<h3 id="分叉"><a href="#分叉" class="headerlink" title="分叉"></a>分叉</h3><p>隔离见证可以应用软分叉或者硬分叉，当然最终实施的是软分叉。新的节点是可以兼容后者的，但是旧节点是不是兼容新版本的区块这个是需要考虑的，如果不兼容那么就肯定出现软分叉。但是官方的说明是旧版本的节点不用升级，这句话的话外之音就是旧节点也是支持新版的区块（包含隔离见证）。看来这项技术很好。至于BCH应该是人为的硬分叉了。这部分知识可参考<a href="http://8btc.com/thread-45833-1-1.html" target="_blank" rel="noopener">隔离见证比任何硬分叉都高级</a></p>
+<p>上篇的文章中提到了Core团队很多的问题，也许确实有问题，但是作为开发者，考虑前后版本兼容也是应该的，毕竟谁都不想出问题。另外还有一点就是一旦一个项目上线，可做的可能真的就不多了，一是改动复杂，程序员不想动，二是工作量比较大！对于这场战争我还是当个第三者吧，看惯了公司风风雨雨，拿刀开干的人还是很少的。一旦变革失败也不会有人同情，core团队可能有自己的考量。毕竟对于资本市场来说一切都是那么的浮躁。</p>
+<h2 id="闪电网络"><a href="#闪电网络" class="headerlink" title="闪电网络"></a>闪电网络</h2><p>闪电网络提供了一个可扩展的微支付通道网络。交易双方若在区块链上预先设有支付通道，就可以多次、高频、双向地通过轧差方式实现瞬间确认的微支付；双方若无直接的点对点支付通道，只要网络中存在一条连通双方的、由多个支付通道构成的支付路径，闪电网络也可以利用这条支付路径实现资金在双方之间的可靠转移。</p>
+<p>上面的这段话可能比较难于理解，总的来说就是通过多签名实现多重交易的划分，这里需要了解比<a href="/2018/03/16/blockchain/bitcoin智能合约的实现/">特币的智能合约</a>和<a href="/2018/03/17/blockchain/bitcoin脚本解析/">P2SH脚本</a>的相关知识。</p>
+<p><b style="color:red">闪电网络并不试图解决单次支付的银货对付问题，其假设是单次支付的金额足够小，即使一方违约另一方的损失也非常小，风险可以承受。因此使用时必须注意“微支付”这个前提。多少资金算“微”，显然应该根据业务而定。</b></p>
+<h3 id="技术本质"><a href="#技术本质" class="headerlink" title="技术本质"></a>技术本质</h3><p><b style="color:red">闪电网络的关键技术有三，后后依赖于前前，依次是：RSMC，HTLC和闪电网络。技术实现虽然复杂，但本质却很简单。</b></p>
+<p><b style="color:blue">RSMC解决了通道中币单向流动问题，HTLC解决了币跨节点传递的问题。这两个类型的交易组合构成了闪电网络。这里面还会用到我们之前提到的<a href="/2018/03/26/blockchain/BIP-65%20OP-CHECKLOCKTIMEVERIFY/">BIP-65 OP_CHECKLOCKTIMEVERIFY</a>和<a href="/2018/03/26/blockchain/BIP-68使用共识序列号记录相对锁定时间/">BIP-68使用共识序列号记录相对锁定时间</a>，这两篇文档提到了交易锁定的问题，也提到了分叉的问题。</b></p>
+<h3 id="RSMC"><a href="#RSMC" class="headerlink" title="RSMC"></a>RSMC</h3><p>我们先来创建一个序列到期可撤销合约（RSMC），Alice和Bob是合作方，经常有比特币往来，所以他们决定各拿出0.5BTC放入<b style="color:red">通道</b>中，便于业务往来。解释一下下方RSMC交易的结构（图X），左侧为Alice的视角，右侧为Bob的视角。中间Funding Tx为共同可见，C1a和RD1a为Alice持有，C1b和RD1b为Bob持有。交易图中带有尖括号的签名表示待填入。</p>
+<h4 id="创建交易"><a href="#创建交易" class="headerlink" title="创建交易"></a>创建交易</h4><p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/RSMC%E4%BA%A4%E6%98%93%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt=""></p>
+<p>来对上面的图进行一番解释：</p>
+<ol>
+<li>双方各拿出0.5BTC，构建Funding Tx，输出为Alice和Bob的2/2多重签名。此时，Funding Tx未签名，更不广播。</li>
+<li>Alice构造Commitment Tx：C1a和RD1a，并交给Bob签名。C1a的第一个输出为多重签名地址，Alice的另一把私钥Alice2和Bob的2/2多重签名，第二个输出为Bob 0.5BTC。</li>
+<li>RD1a为C1a第一个输出的花费交易，输出给Alice0.5BTC，但此类型交易带有sequence，作用是阻止当前交易进块，只有前向交易有sequence个确认时才能进块。</li>
+<li>Bob构造Commitment Tx：C1b和RD1b，并交给Alice签名。结构与C1a、RD1a是对称关系。</li>
+<li>Bob对C1a和RD1a进行签名，并将签名给Alice；同理，Alice对C1b和RD1b签名，完成后给Bob。此时，由于并未对Funding Tx进行签名，任何一方均无法作恶，任何一方也不会有任何损失。</li>
+<li>双方均完成对commitment Tx的签名并交换后，各自再对Funding Tx进行签名，并交换。此时，Funding Tx是完整的交易，广播之。</li>
+</ol>
+<p>上述过程以及结构图的描述，就是创建RSMC的全部过程。C1a, C1b两笔交易花费的是同一个输出，故他们两个交易只有一个能进块。若Alice广播C1a，则Bob立即拿到0.5BTC（C1a的第二个输出），而Alice需要等C1a得到1000个确认，才能通过RD1a的输出拿到0.5BTC。另一方，若Bob广播C1b，则Alice立即拿到0.5BTC，Bob等待C1b得到1000个确认，才能通过RD1b拿到0.5BTC。也就是说，单方广播交易终止合约的那一方会延迟拿到币，而另一放则立即拿币。</p>
+<h4 id="交易更新"><a href="#交易更新" class="headerlink" title="交易更新"></a>交易更新</h4><p>Alice和Bob各自0.5BTC的余额，此时Alice从Bob处购买了一件商品，价格为0.1BTC，那么余额应该变为Alice 0.4BTC，Bob 0.6BTC。于是创建新的Commitment Tx，对于Alice来说是C2a 和RD2a，对于Bob来说是C2b和RD2b，过程与上面类似。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%BA%A4%E6%98%93%E6%9B%B4%E6%96%B0.jpg?raw=true" alt=""></p>
+<p>此时两个状态均是有效的，那么最核心的问题来了，如何才能彻底废弃掉C1a和C1b呢？<br>RSMC采用了一个非常巧妙的方法，在C1a的第一个输出中，采用了Alice2和Bob的多重签名，Alice将Alice2的私钥交给Bob，即表示Alice放弃C1a，承认C2a。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%BA%A4%E6%98%93%E6%9B%B4%E6%96%B02.jpg?raw=true" alt=""></p>
+<p>Alice交出Alice2的私钥给Bob，那么Bob就可以修改RD1a的输出给他自己，形成新的交易BR1a。若Alice破坏合约存在C2a的情况下依然广播出C1a，那么Alice的惩罚就是失去她全部的币。Alice交出Alice2的私钥，或者对交易BR1a进行签名，两者是等同的，都是对C1a的放弃。反之亦然，Bob交出Bob2的私钥给Alice即意味放弃C1b，而仅能认可C2b。引入sequence的目的是，阻止后续交易进块（RD1a），给出一个实施惩罚窗口期，当发现对方破坏合约时，可以有1000个块确认的时间去实施惩罚交易，即广播BR1a代替RD1a。若错过1000个块时间窗口，则无法再实施惩罚了（RD1a进块了）。</p>
+<h4 id="交易关闭"><a href="#交易关闭" class="headerlink" title="交易关闭"></a>交易关闭</h4><p>关闭RSMC，直接按照最终的余额构造出一个Commitment TX即可，例如输出为Alice0.1BTC，Bob0.9BTC，无需再设置多重签名，构造惩罚交易等。</p>
+<h4 id="中转交易（真实的闪电网络，HTLC）"><a href="#中转交易（真实的闪电网络，HTLC）" class="headerlink" title="中转交易（真实的闪电网络，HTLC）"></a>中转交易（真实的闪电网络，HTLC）</h4><p>我们来看一下基本的流程图吧！<br><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%B8%AD%E8%BD%AC%E4%BA%A4%E6%98%93%E5%9B%BE.png?raw=true" alt=""><br>这里面的R就是支付的口令，其实就是交易节点之间没有直连的通道，需要其他人待转，这些人会收手续费。这里面需要解决几个问题（我的思考）：</p>
+<ol>
+<li>如何建立初始的支付通道</li>
+<li>如果两个节点间无直接支付通道，如何找到最佳的支付通道。</li>
+<li>如何保证第三方不作弊，防止现金丢失（前面的讲的都是这个问题）</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="RSMC-1"><a href="#RSMC-1" class="headerlink" title="RSMC"></a>RSMC</h4><p>闪电网络的基础是交易双方之间的双向微支付通道，RSMC（Recoverable Sequence Maturity Contract）定义了该双向微支付通道的最基本工作方式。这是要求双方都拿出资金放到合约上，然后输出动态分配，最后确认输出后上链，这样的好处就是支付完全是在链下执行。</p>
+<p><b style="color:red">为了鼓励双方尽可能久地利用通道进行交易，RSMC对主动终止通道方给予了一定的惩罚：主动提出方其资金到账将比对方晚，因此谁发起谁吃亏。这个设计虽然增加了技术复杂度，但应该说是合理的。</b> 这样许多交易就会在区块链下面执行，不会产生交易（只产生预备交易），最后交易才会上链。还有就是交易的凭证怎么保证？所以这个方式或许也有很多技术和现实的缺陷所在。</p>
+<p><b style="color:red">通道余额分配方案的本质是结算准备金。在此安排下，因为要完全控制资金交收风险，每笔交易都不能突破当前结算准备金所施限制。</b></p>
+<h4 id="HTLC"><a href="#HTLC" class="headerlink" title="HTLC"></a>HTLC</h4><p>RSMC只支持最简单的无条件资金支付，HTLC（Hashed Timelock Contract）进一步实现了有条件的资金支付，通道余额的分配方式也因此变得更为复杂。</p>
+<p>通过HTLC，Alice和Bob可以达成这样一个协议：协议将锁定Alice的0.1 BTC，在时刻T到来之前（T以未来的某个区块链高度表述），如果Bob能够向Alice出示一个适当的R（称为秘密），使得R的哈希值等于事先约定的值H(R)，Bob就能获得这0.1 BTC；如果直到时刻T过去Bob仍然未能提供一个正确的R，这0.1 BTC将自动解冻并归还Alice。</p>
+<h2 id="雷电网络"><a href="#雷电网络" class="headerlink" title="雷电网络"></a>雷电网络</h2><p>基于闪电网络的思路，以太坊社区也提出了自己的链下微支付通道解决方案：雷电网络（Raiden Network）。<br>延续了以太坊的风格，把本来较简单的问题复杂智能化。大致与闪电网络相同，但细节有些地方更复杂。例如：第一层面的那个旧版本作废，其实只要加上时间戳看哪个时间新就可以了。但是其额外增加了一个单增的Sequence Number字段来标明哪个有效。还有记录分配余额即可，但雷电网络记录的是增减变动量。在第二个层面上，雷电网络引入了较HTLC更通用和复杂的“Smart Condition”。就是说HTLC中采用的成熟简单地求HASH函数，在雷电网络中替代成了用户可自己设置的任意函数，就是说向外扩展了，更加智能，但同时面临的风险可能就越大。</p>
+<h2 id="Corda"><a href="#Corda" class="headerlink" title="Corda"></a>Corda</h2><p>相近技术的低层思想是相通的，受到闪电网络思想的启发，知名的R3也宣布发布非区块链的分布式账本应用Corda，其本质思想应该是与闪电网络较相近似。<br>关于Corda的资料较少，如整个R3较闭源封闭一样，只是R3 CEV的首席技术官Richard Brown之前在博客中披露些Corda的主要特点：</p>
+<ol>
+<li>没有多余的全局数据共享：有合法需求的参与方才可按照协议获取数据；</li>
+<li>Corda编写和配置在企业间流转，无中心控制者；</li>
+<li>Corda在企业间单个交易水平达成共识，而不是在系统水平上；</li>
+<li>系统设计直接支持监管观察员节点；</li>
+<li>交易直接由交易双方验证，而不是由一大群不相干的验证者进行；</li>
+<li>支持多种共识机制；</li>
+<li>记录了智能合约代码和人类语言法律文件的清晰联系；</li>
+<li>用行业标准工具创建；</li>
+<li>没有原始加密货币。</li>
+</ol>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>将交易和智能合约的执行放在链下快速地执行，仅在必要时才将其在链上公开结算执行，这就是闪电网络带给我们的绝佳思路。同时可增加对闪电结链上算时的手续费，减轻链上压力的同时有可能提升矿工收入，因理论上不可能所有交易都闪电。比特币主链上交易有其它任何形式链下交易或侧链交易所无法替代的优点。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zhuanlan.zhihu.com/p/32613487" target="_blank" rel="noopener">三分钟让你了解什么是Segwit隔离见证</a><br><a href="http://8btc.com/thread-45833-1-1.html" target="_blank" rel="noopener">隔离见证比任何硬分叉都高级</a><br><a href="http://www.8btc.com/bitcoin-expansion-problem" target="_blank" rel="noopener">比特币扩容为什么选择2MB？</a><br><a href="https://www.zhihu.com/question/46515457" target="_blank" rel="noopener">什么是比特币的闪电网络？</a><br><a href="https://www.zhihu.com/question/58567061" target="_blank" rel="noopener">什么是隔离见证？</a><br><a href="http://www.8btc.com/ln-rn-corda" target="_blank" rel="noopener">详解最近大热的闪电网络、雷电网络和CORDA</a><br><a href="https://mp.weixin.qq.com/s/lM0p3ikVBdw1zE50IWtMZA" target="_blank" rel="noopener">6.9Bite酱一闪电网络⚡大白话零门槛讲解</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/BIP-65 OP-CHECKLOCKTIMEVERIFY/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -424,6 +793,7 @@
 <li><a href="https://github.com/mruddy/bip65-demos" target="_blank" rel="noopener">https://github.com/mruddy/bip65-demos</a></li>
 </ul>
 <h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>该文件置于公共领域。</p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.chidaolian.com/article-680-4" target="_blank" rel="noopener">BIP65：检查锁定时间验证</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki" target="_blank" rel="noopener">bips/bip-0065.mediawiki</a></p>
 
           
         
@@ -607,6 +977,7 @@
 <p>BIP112：<a href="https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki</a></p>
 <p>BIP113：<a href="https://github.com/bitcoin/bips/blob/master/bip-0113.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0113.mediawiki</a></p>
 <p>散列时间片契约（HTLCs）：<a href="https://github.com/ElementsProject/lightning/raw/master/doc/deployable-lightning.pdf" target="_blank" rel="noopener">https://github.com/ElementsProject/lightning/raw/master/doc/deployable-lightning.pdf</a></p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.chidaolian.com/article-680-5" target="_blank" rel="noopener">BIP68：使用序列号的相对锁定时间</a></p>
 
           
         
@@ -2011,362 +2382,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/" itemprop="url">BIP125：可选的交易费用替换信号【翻译】</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
-<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
-<ul>
-<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
-<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
-</ul>
-<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
-<ul>
-<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
-<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
-</ul>
-<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
-<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
-<ul>
-<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
-<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
-<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
-<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
-<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
-</ul>
-<p>最初的实现可以在<a href="https://github.com/bitcoin/bitcoin/pull/6871" target="_blank" rel="noopener">比特核心PR＃6871</a>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
-<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
-<ul>
-<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
-<li>在确认之前忽略选择性（opt-in）交易。</li>
-</ul>
-<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
-<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
-<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin的Wiki页面</a>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
-<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<a href="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434" target="_blank" rel="noopener">允许</a> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
-<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<a href="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522" target="_blank" rel="noopener">删除了替代品</a>，仅留下评论“暂时禁用替换功能”。</p>
-<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
-<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
-<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
-<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
-<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
-<p>在满足两个条件之前，实际更换可能不可靠：</p>
-<ul>
-<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
-<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
-</ul>
-<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
-<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
-<li><a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin Wiki上的交易可替换性</a>旨在帮助钱包作者使用RBF</li>
-<li>用于创建选择性全RBF交易的工具：<a href="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools" target="_blank" rel="noopener">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools</a></li>
-<li>Reddit：<a href="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/" target="_blank" rel="noopener">关于选择性RBF的问题</a>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
-</ol>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener">Opt-in Full Replace-by-Fee Signaling</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/比特币粉尘和空块/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/20/blockchain/比特币粉尘和空块/" itemprop="url">比特币粉尘和空块</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T16:00:55+08:00">2018-03-20</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近看了bitcoinj的TransactionOutput类发现了里面的关于粉尘的一些功能。网上搜索关于比特币粉尘的知识，发现了空块攻击和粉尘攻击的一些说明，但是只是简单地进行表述而已。也看到了矿工如何利用各种手段进行作弊，这个可能就是区块链所不能监控的了。所以我觉得区块链的问题还是很多的。</p>
-<h2 id="什么是空块攻击"><a href="#什么是空块攻击" class="headerlink" title="什么是空块攻击"></a>什么是空块攻击</h2><p>空块的意思很明确，就是区块中没有交易，其实不管怎么样应该是有一笔交易的，就是挖矿奖励的coinbase交易。但是呢块被接收是经过大量的计算工作量的，所以这个看起来有点不太现实。从经济的角度来说这是不太靠谱，但是这种攻击最大的好处就是不用启动算力攻击。比如说你有全网1%的算力，那么发起空包攻击的概率也是很大的，但是就是这1%的算力也是不小的投入。算力攻击其实就是能控制全网51%的算力，这个时候你可以随意更改区块的信息。我在想以后会不会出现网络攻击，瘫痪大部分网络，在一小片网络中占据算力，从本质上说，区域网内的机器也可以进行挖矿，所以也比较困难。</p>
-<p>另外个别情况下偶尔一次，也没有问题，但短期内频繁空块就是攻击了，其效果是使交易内存池变大，交易平均确认时间变长。其实已经有很多矿池消灭了空块的，技术上没有难度的。打包空块并不会比打包满块有优势。但是有ASICBoost专利就不同了，空块有利于ASICBoost专利的实施。</p>
-<h2 id="粉尘攻击"><a href="#粉尘攻击" class="headerlink" title="粉尘攻击"></a>粉尘攻击</h2><p>如果要想理解粉尘攻击就必须先理解什么是粉尘。任何会消耗其费用三分之一以上的交易输出都不是比特币系统现在想要处理的东西，所以我们称之为“粉尘输出”，并且它们是非标准的。</p>
-<p>一个典型的输出是33字节（pubkey hash +操作码），需要输入148字节的消耗，所以我们将它们加在一起以找出用于传输这个数值的总数据量。请注意，这个公式对于任何不是付费地址输出的东西都是错误的，不幸的是，我们必须遵循比特币核心的错误以确保我们被认为是标准。一个更好的公式可以估计满足所有不同脚本类型所需的数据大小，或者只是使用硬编码33。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 这个是根据实时的数据进行的计算。</span><br><span class="line">public Coin getMinNonDustValue(Coin feePerKb) &#123;</span><br><span class="line">    final long size = this.unsafeBitcoinSerialize().length + 148;</span><br><span class="line">    // 计算交易费</span><br><span class="line">    return feePerKb.multiply(size).divide(1000);</span><br><span class="line">&#125;</span><br><span class="line">// 默认是费用的3倍</span><br><span class="line">public Coin getMinNonDustValue() &#123;</span><br><span class="line">    return getMinNonDustValue(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.multiply(3));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>上面的这段代码就是用来计算最小的输出，如果小于这个输出值，我们就认为这个输出是粉尘输出。</p>
-<h2 id="关于小金额的问题"><a href="#关于小金额的问题" class="headerlink" title="关于小金额的问题"></a>关于小金额的问题</h2><p>如果地址上未花费输出比较小，那么很有可能就是使用的时候，这笔钱都不能支付交易费（这就是粉尘判断所不能接受的），这样会损失金额。也可以通过账户不停地将账户的钱转移到大账户里面去，看来不管是何种数字货币，都不能避免零头损失的问题。我们做钱包的应用多少都存在这样的问题。但是以太坊不是基于UTXO，而是基于账户多少能缓解不少的问题。</p>
-<h2 id="广播攻击"><a href="#广播攻击" class="headerlink" title="广播攻击"></a>广播攻击</h2><p>如果不停地向网络广播大量的垃圾交易会阻塞网络，如果我们的节点能检测出这个交易是非法的，并且停止广播，那么这个问题就不会很严重，但是如果修改了代码，不做这个的检测就会出现大问题。比如说矿池大量发送这样的交易，这就会引起灾难性的后果。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2418,7 +2433,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2616,7 +2631,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">70</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

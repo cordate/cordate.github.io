@@ -276,6 +276,348 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/P2P平台流水设计与业务设计反思/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/系统设计/P2P平台流水设计与业务设计反思/" itemprop="url">P2P平台流水设计与业务设计反思</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:16:46+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在上一篇的博客中我们提到了平级和层级账户的设计，其实里面或多或少有反应出账户表的设计其实和业务表有很大的关联。所以本次讨论基本上是关于三个类型数据的设计，业务表，账户表和流水表。</p>
+<p>在业务表里面又可以分为两种；一种是用于显示的业务交易类型的数据，二是基本用于交易的数据。</p>
+<p>流水表的设计理论上是有明细流水和汇总流水这两种方式。它不应该直接给用户来显示，所以上面我们提到了显示交易类型的交易业务数据。</p>
+<p>账户表的设计，这里我们不得不提就是账户关联的可能是用户、也可能是企业集团等，也可能是一个产品，也可能是一个事物，也可能是一种中间态。还有就是账户颗粒度的问题。账户分为两种一种是有真实现金的账户，一种是完全的记账的账户。</p>
+<h2 id="三权分立"><a href="#三权分立" class="headerlink" title="三权分立"></a>三权分立</h2><p>这里的三权分立指的是业务、账户、流水这三个类型。基本的思想是这样的，先有业务，然后才会去调整账户，调整账户就必须记录本次的调整流水。</p>
+<p>但是注意上面也提到过业务可能是可感知性的业务，但是还有一些业务是非感知性的业务，就比如说每日计息，正常的做法是直接调整金额并计入流水。并没有业务的影子，那我们可以通过把计息作为一种系统内部业务处理，或者说本次计息是一个事件，我要把这个事件记录下来，那么这个记录下来的事件就可以被当做是业务记录。然后再去调整账户并记录流水。</p>
+<p>当然，这只是一种思想，这种思想有利于我们下面对这个东西的处理。解决流水不同形式的显示问题。</p>
+<h2 id="业务"><a href="#业务" class="headerlink" title="业务"></a>业务</h2><p>一种是与账户或者现金有关的交易类型。这个时候我们一般会先建立一笔业务记录，然后通过业务记录记录流水，然后记录账户信息。这种形式的数据其实比较明显地展示出系统的边界，也就是说你很铭感地知道你要在这个地方建立记录数据。因为这里是显示的。</p>
+<p>第二种可能就是隐藏的业务，可能有些中间的数据你是觉得可以记录也可以不记录的数据，或者有的时候团队成员觉得这部分的数据是可以不予显示的，那么我们会面临很多的选择问题，是否需要记录。还有一些可能你都没察觉到这里面要想想一些数据是否要记录，所以以后我们还是要关注一下中间数据。</p>
+<p>处理中间数据我们需要对中间的数据进行定性分析，然后决定你存储这个数据的方式和抽象。一旦抽象的比较好，也许你的系统设计就会比较灵活了，具有很强的灵活性。</p>
+<p>还有就是系统产生的业务，上面也提到了每日计息的列子，以及我们的思维方式。抽象出事件的概念，这个事件就是我们的业务类型。</p>
+<p>还有就是显示性的业务，可能是多种业务的杂合，也就是说多种业务进行的整合业务，这个其实是为了汇总显示。这给系统带来了一定的维护成本。另外就是这种数据可能也并不是一定要存到数据库里面去，存到不同的地方就要考虑结构，查询速度、读速度、如何保证并发访问没问题，如何保证数据不损坏，数据一致性也能得到保证。==以后可以单独写一篇关于数据存储的博客来简单讨论一下。== 下面还会在讲到这些内容。</p>
+<h2 id="账户"><a href="#账户" class="headerlink" title="账户"></a>账户</h2><p>上面也提到了账户的建立，如果是财务系统账户的主体应该是公司、系统、分账的维度问题等等。</p>
+<p>但是对于具体的业务系统的账户，应该是一个具体的实体，也可能是一个抽象的实体，比如说一次投资建立的临时账户。所以账户这个东西其实不是一个很简单的东西。</p>
+<p>上一篇博客讲到了平级和层级账户体系，对应会计中的复帐和明细账。一般来说我们会为一个总的实体分配一个大的账户，然后根据里面的维度细化，进一步进行子账户的设计。然后不同的实体之间的账户是不会相关联的。</p>
+<p>其实对于业务系统的设计还是应该采用层级账户的设计思想，但是如果说系统出现问题，层级账户少了一层，如果新加一层比较麻烦，而新加的那一层也只是为了解决统计的问题，那么其实是可以不加的，那么我们就要考虑使用平级账户来处理。而且有的时候账户与业务你不一定分的清楚。有些业务形式比如每一次投资记录，可以使用一次投资一个账户的概念来解决问题，也可以记录总账，但是每次投资就是记录，不在当做账户处理。记录中可以记录投资的详情。</p>
+<p>这里的一个点就是不同的结构导致的最后扩展性支持是不一样的，还有就是统计是否会麻烦。需要根据具体的场景来进行相应的设计方案选型。</p>
+<p>另外记住账户不是确切存在的一个实体，它应该与业务有所关联，至于这个业务是什么我们上面也说了，要学会抽象，没有单独存在的账户。</p>
+<h2 id="流水"><a href="#流水" class="headerlink" title="流水"></a>流水</h2><p>一旦账户变动就必须建立流水。流水反映了账户变动的实质。不能把业务记录当成流水，业务记录只是一个事情，流水是跟着账户走的，而流水的出现是因为业务导致的账户变动。所以流水表中也会记录业务的类型。</p>
+<h3 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h3><p>流水表的设计基本和通用日志表的设计有很多的相似之处，我们的流水表设计基本上是根据快照表的方式建立的，我觉得这种是最好的解决方案，如果想了解更多，就去看一下我的关于通用日志表设计的博客。</p>
+<p>流水表的信息一般包括，各种账户的信息，包括调整前金额，调整的金额和调整后的金额。这个是金额方面的设计，一般我们会加上remark说明字段。还会加上多态关联的信息。也许会加个字段序列化一些额外信息。有的时候两笔流水间有关系，我们可能还会加上parent_id找父流水的设计。</p>
+<p>我们也会在流水中加入业务类型的一个字段。OK，以上的这些设计都是没有问题的，但是我们要面对的可能是流水的重回和结构化的查询问题。</p>
+<p>我们可能遇到以下的问题：</p>
+<ul>
+<li>流水过滤的问题：如果我们在查询特定正常情况下的流水，进行某种业务流水的展示，本来这没有什么问题，但是一旦重回流水进来，可能你原来的查询条件是不能拿到的，或者一个随机的调整流水波及到了你的账户，那么怎么获取呢？我一般是想通过where语句中，找到对应的账户调整额不为0的。这样列表就出来了。但是好像不好走索引。</li>
+<li>流水显示的问题：一般是加上一个is_show的字段，然后我们生成的时候加上某种判断策略。</li>
+<li>冲回流水的标记问题，应该打上标记。还有就是调整流水的标记问题。</li>
+</ul>
+<p>其他其实问题不大，最大的问题就是流水的冲回问题和调整问题。这导致的流水过滤真是件令人感到麻烦的事。一般的做法就是抽象多功能的业务记录，不直接展示流水信息。但是微信的那种到账通知应该展示的是流水信息，但和推送系统有关，与我们无关。</p>
+<h3 id="显示"><a href="#显示" class="headerlink" title="显示"></a>显示</h3><p>添加业务记录来展示流水，这种方式最大的好处就是可以集成各种流水数据和各个层级的流水数据，以后流水很多，分的也比较散，这样你是没有办法找到流水数据的，而且你还要聚合。有了这一层之后我们就可以解耦，前端也好展示，聚合过来的数据我们还可以分表分库。这样是一种比较好的做法。</p>
+<p>但是重回和数据调整对业务记录也是有影响的，只是这种影响应该不大，我们也可以在业务异常中显示重回的数据。</p>
+<p><b style="color:red">那我们应该展示的数据是什么？这里又有一个问题，一笔流水中可能展示多个账户的调整，而用户在操作时应该只是单笔账户的微调，比如提现功能，用户并不关心充值中账户，应该向用户展示余额或者可用余额账户就可以了。充值中更应该在账户信息中提现出来，但是不会在流水（前端可能显示为交易）显示出来。然后充值到账后，前端的交易记录才会显示。这里请注意一个细节就是交易记录里面只会展示一个账户的调整，而且还不是双向账户的微调。所以这个交易记录表就是给用户特列化一种交易信息展示，只会显示用户账户一侧的资金变化，而不会展示另一边的账户信息的变化。</b></p>
+<p>这下我们就更清晰于账户资金变动的显示了。那么这张表是需要高度抽象的，一般信息有如下的信息：</p>
+<ul>
+<li>交易时间</li>
+<li>交易的说明（比如说利息到账）</li>
+<li>交易前金额（非必填）</li>
+<li>交易的金额（必填）</li>
+<li>交易后金额（非必填）</li>
+<li>交易的账户（这个其实应该和交易说明类似）</li>
+<li>具体的产品分类（这个产品可能有很多，所以要加入这个维度）</li>
+<li>交易的状态（表明这次交易是否成功）</li>
+<li>是否用户可见（主要用于冲回等）</li>
+<li>remark字段</li>
+<li>extra存放序列化信息</li>
+</ul>
+<h4 id="加层业务层处理"><a href="#加层业务层处理" class="headerlink" title="加层业务层处理"></a>加层业务层处理</h4><p>这个可以查看上面的详细分析过程。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>账户的设计其实没想象中的那么简单，也没想象中那么难，你要抽象出你想要的那个东西就可以了。重点还是抽象能力，系统的设计也是抽象能力的一种体现，抽象的好，那你的系统是完备的，否则，你的系统就是不完备的。玩不出一个新花样出来。</p>
+<p><b style="color:red">不过确实我们当时确实没有考虑从用户的角度分析表，还有就是零散的各种数据确实需要统一的地方进行集合处理，否则会出大问题的。这次又学到了不少的知识。</b></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/债权打包资金选取策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/债权打包资金选取策略/" itemprop="url">债权打包资金选取策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:57:20+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我现在有个需求就是，在一些定额的债权订单中，进行打包，需要从这些不同额的债权中打出比如100w、1000w等各种金额不等的债权。其实一开始想这个问题的时候我也没啥思路，网上也没有看到比较好的解决思路，最后明白有这个时间，不如自己写代码来进行实现。</p>
+<h2 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h2><p>债权的选取具有一定的规律性，越老的订单需要先打包。所以在一些特殊情况下，一些策略的实现也是要做必要的调整。</p>
+<p>如果无法配平，我的策略就是打包超过，然后人工剔除，也可以人工选择加入一笔债权。这当然是弥补措施不是我们解决问题之道。</p>
+<h2 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h2><p>我实现的那一版的思路是一定有一个调整额，而之前也有考虑过配平，这就类似于之前写的关于散标匹配的算法。因为在我看来金额固定的情况下，可以选取一个调整额，然后每笔债权留单，最后利用留下来的单子进行配平即可。</p>
+<p>最后我选取了一个阈值，然后按照这种思路实现了我们的打包策略，由于债权分布良好，所以我一直在想，如果金额不定的话，我们如何进行适配。</p>
+<p>这个当然就是后面的思考了。我后来想到的思路是阈值通过金额的最小公倍数进行计算，然后到了调整的阈值时，进行配平。留单的策略就是最小公倍数除以金额，得到的就是要留该金额多少单。这种方式最大的问题就是如果金额非常散，那么可能一开始就没有单子被选中，一直处于留单状态，这对我们的系统没有好处，可以设置最大的阈值，但是这样就解决不了我们的问题。如果说留单成功了，那么下面就是类似求24点的问题了。</p>
+<p>之前我们提到了散标匹配的算法，所以你应该明白这里也可以使用递归的方式进行债券的选取，但是可能不太适合老的优先原则。我觉得还是使用留单的技术，先用老的单子填补阈值开外的空间。等达到阈值的时候，再利用递归的方式，填补阈值进行配平。</p>
+<h2 id="递归的方式"><a href="#递归的方式" class="headerlink" title="递归的方式"></a>递归的方式</h2><p>如果需要进行配平，基本上就是在最后的时候进行简单配平，或者使用递归的思想进行实现，比如果100w的包，先按照规则将可能即将失效的先放进去90w或者多一些，然后统计剩余的债权量，通过递归回溯的方式去配平最后的10w左右的量。因为债权基本都是500-2000，以500递增的倍数，所以可以进行计数统计，配平的时候再去取债权。因为我们关注的是数字本身而不是债权。关心债权的原因是，要不最旧的先打进去。</p>
+<p><b style="color:red">这种递归我称为计数式的递归使用。</b></p>
+<h2 id="债权预热"><a href="#债权预热" class="headerlink" title="债权预热"></a>债权预热</h2><p>基本上对方要债权包都是整数的，所以可以在债权进入的时候，按1w先打个小包，之后打包的时候，直接按时间选择一定的数量就可以了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>具体实现代码就不写了，这涉及到公司的机密，还有就是代码太长，一大堆异常情况的判断不太适合在这里贴出来。总之思想就是这样的，结合具体的业务场景进行细节的拆分，你总能得到你想要的那个解决方案。这就是我们不得不处理的事情，发现并解决问题。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/最近24小时热点问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1663,406 +2005,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/08/java/Java中Queue学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/08/java/Java中Queue学习/" itemprop="url">Java中Queue学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-08T12:07:50+08:00">2018-03-08</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在上一篇的博文中，我们分析了Deque的知识，其实感觉是反了，应该是先分析Queue，分析完之后再去分析Deque，不过这都没啥关系，单向的队列或许更容易学习。</p>
-<h2 id="Queue接口"><a href="#Queue接口" class="headerlink" title="Queue接口"></a>Queue接口</h2><p>还是先从Queue接口开始吧，这个接口继承Collection，Queue接口定义了几个方法。</p>
-<table>
-<thead>
-<tr>
-<th>方法名</th>
-<th>功能</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>add</td>
-<td>增加一个元索</td>
-<td>如果队列已满，则抛出一个IIIegaISlabEepeplian异常</td>
-</tr>
-<tr>
-<td>remove</td>
-<td>移除并返回队列头部的元素</td>
-<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
-</tr>
-<tr>
-<td>element</td>
-<td>返回队列头部的元素</td>
-<td>如果队列为空，则抛出一个NoSuchElementException异常</td>
-</tr>
-<tr>
-<td>offer</td>
-<td>添加一个元素并返回true</td>
-<td>如果队列已满，则返回false</td>
-</tr>
-<tr>
-<td>poll</td>
-<td>移除并返问队列头部的元素</td>
-<td>如果队列为空，则返回null</td>
-</tr>
-<tr>
-<td>peek</td>
-<td>返回队列头部的元素</td>
-<td>如果队列为空，则返回null</td>
-</tr>
-</tbody>
-</table>
-<h2 id="AbstractQueue"><a href="#AbstractQueue" class="headerlink" title="AbstractQueue"></a>AbstractQueue</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractQueue&lt;E&gt;</span><br><span class="line">    extends AbstractCollection&lt;E&gt;</span><br><span class="line">    implements Queue&lt;E&gt; &#123;</span><br></pre></td></tr></table></figure>
-<p>继承了AbstractCollection，实现了Queue接口。主要是提供了Queue的基础实现。都是一些常规的方法，这里就不做更多的介绍了。</p>
-<h2 id="一些基础实现"><a href="#一些基础实现" class="headerlink" title="一些基础实现"></a>一些基础实现</h2><p>我们知道Deque是继承于Queue的，所以只要实现Deque的类基本上都是Queue的实现。在上一篇的博文中我们提到了LinkedList、ArrayDeque和LinkedBlockingDeque都是Queue的实现了，这里就不多介绍了。</p>
-<h2 id="优先队列-PriorityQueue"><a href="#优先队列-PriorityQueue" class="headerlink" title="优先队列 PriorityQueue"></a>优先队列 PriorityQueue</h2><p>实际上是一个堆（不指定Comparator时默认为最小堆）。<b style="color:red">队列既可以根据元素的自然顺序来排序，也可以根据 Comparator来设置排序规则。</b>队列的头是按指定排序方式的最小元素。如果多个元素都是最小值，则头是其中一个元素。新建对象的时候可以指定一个初始容量，其容量会自动增加。</p>
-<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><p>继承自AbstractQueue，实现了序列化接口。</p>
-<h3 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private static final int DEFAULT_INITIAL_CAPACITY = 11;</span><br><span class="line">private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;</span><br><span class="line">private transient Object[] queue;</span><br><span class="line">private int size = 0;</span><br><span class="line">private final Comparator&lt;? super E&gt; comparator;</span><br><span class="line">private transient int modCount = 0;</span><br></pre></td></tr></table></figure>
-<p>感觉这里面的都是老朋友了，默认初始化容量是11个。基础的数据结构是数组，优先级通过比较器来进行实现。最大无限制，应该是留下来进行扩展使用的。</p>
-<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>就是进行数组的初始化（必须大于1）和比较器的传入（可为空）。比较值得一看的构造器应该是下面的两个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">public PriorityQueue(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    if (c instanceof SortedSet&lt;?&gt;) &#123;</span><br><span class="line">        SortedSet&lt;? extends E&gt; ss = (SortedSet&lt;? extends E&gt;) c;</span><br><span class="line">        this.comparator = (Comparator&lt;? super E&gt;) ss.comparator();</span><br><span class="line">        initElementsFromCollection(ss);</span><br><span class="line">    &#125;</span><br><span class="line">    else if (c instanceof PriorityQueue&lt;?&gt;) &#123;</span><br><span class="line">        PriorityQueue&lt;? extends E&gt; pq = (PriorityQueue&lt;? extends E&gt;) c;</span><br><span class="line">        this.comparator = (Comparator&lt;? super E&gt;) pq.comparator();</span><br><span class="line">        initFromPriorityQueue(pq);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        this.comparator = null;</span><br><span class="line">        initFromCollection(c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initFromPriorityQueue(PriorityQueue&lt;? extends E&gt; c) &#123;</span><br><span class="line">    if (c.getClass() == PriorityQueue.class) &#123;</span><br><span class="line">        this.queue = c.toArray();</span><br><span class="line">        this.size = c.size();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        initFromCollection(c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initElementsFromCollection(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    Object[] a = c.toArray();</span><br><span class="line">    // If c.toArray incorrectly doesn&apos;t return Object[], copy it.</span><br><span class="line">    if (a.getClass() != Object[].class)</span><br><span class="line">        a = Arrays.copyOf(a, a.length, Object[].class);</span><br><span class="line">    int len = a.length;</span><br><span class="line">    if (len == 1 || this.comparator != null)</span><br><span class="line">        for (int i = 0; i &lt; len; i++)</span><br><span class="line">            if (a[i] == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">    this.queue = a;</span><br><span class="line">    this.size = a.length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void initFromCollection(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    initElementsFromCollection(c);</span><br><span class="line">    // 在整个树中建立堆不变量（如上所述），在调用之前不假设元素的顺序。</span><br><span class="line">    heapify();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>主要是通过原来的集合中的比较器作为当前PriorityQueue的比较器而已，插入的方式就不说了，原来是数组，所以直接调用toArray方法进行赋值即可。如果原来不是有序的话，可能还要进行排序吧！可能比较器不一样，排序的规则也不一样，这个就是下面三个方法在处理的一些事情。这里注意的是，如果是Collection的话，需要进行排序。heapify()的目的是建立一个二叉树，其实就是堆结构。</p>
-<h3 id="扩展策略"><a href="#扩展策略" class="headerlink" title="扩展策略"></a>扩展策略</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    int oldCapacity = queue.length;</span><br><span class="line">    // Double size if small; else grow by 50%</span><br><span class="line">    int newCapacity = oldCapacity + ((oldCapacity &lt; 64) ?</span><br><span class="line">                                        (oldCapacity + 2) :</span><br><span class="line">                                        (oldCapacity &gt;&gt; 1));</span><br><span class="line">    // overflow-conscious code</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    queue = Arrays.copyOf(queue, newCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><b style="color:red">原来容量大小小于64时双倍扩展还要加上一个2；大于64，50%扩展.</b></p>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>以offer方法为例吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">    modCount++;</span><br><span class="line">    int i = size;</span><br><span class="line">    // 这是队列满了才进行扩容吗？&gt;=可能会发生同步问题，而导致大于问题的存在。</span><br><span class="line">    if (i &gt;= queue.length)</span><br><span class="line">        // 最起码保证当前容量能加1</span><br><span class="line">        grow(i + 1);</span><br><span class="line">    size = i + 1;</span><br><span class="line">    if (i == 0)</span><br><span class="line">        // 如果没有元素的话，不用移位操作</span><br><span class="line">        queue[0] = e;</span><br><span class="line">    else</span><br><span class="line">        // 如果队列有元素.就要通过当前位置</span><br><span class="line">        siftUp(i, e);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">神奇，居然是队列满了，才进行相应的扩容操作。</b>接着分析<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">private void siftUp(int k, E x) &#123;</span><br><span class="line">    // 是否使用comparator比较器</span><br><span class="line">    if (comparator != null)</span><br><span class="line">        siftUpUsingComparator(k, x);</span><br><span class="line">    else</span><br><span class="line">        siftUpComparable(k, x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void siftUpUsingComparator(int k, E x) &#123;</span><br><span class="line">    while (k &gt; 0) &#123;</span><br><span class="line">        // 很像是在使用二分法</span><br><span class="line">        int parent = (k - 1) &gt;&gt;&gt; 1;</span><br><span class="line">        // 取得parent处的元素</span><br><span class="line">        Object e = queue[parent];</span><br><span class="line">        if (comparator.compare(x, (E) e) &gt;= 0)</span><br><span class="line">            break;</span><br><span class="line">        // 将e移出来，放到后面，原来是这样的。</span><br><span class="line">        queue[k] = e;</span><br><span class="line">        k = parent;</span><br><span class="line">    &#125;</span><br><span class="line">    // 如果k&lt;0,不是会有异常吗？，其实就是找到了合适的位置插入</span><br><span class="line">    queue[k] = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">一开始没有看明白这里面在干啥，现在明白了，原来是使用类似二分法，将比插入元素大的值，不停地向后移，直到找到合适的位置插入。siftUpComparable(k, x);的实现是相似的。可是如果插入的X是最大的，最后的key会不会小于0，如果key小于0，最后那句执行不就出现异常了么？注意经过推演，初始k一定大于0，而且k永远是整数，而k右移一位也不会改变属性还是大于0，所以最终k只能为0跳出循环，因为k-1会先减到0。所以k最小值为0，也就是如果出现上述情况，会按照理想的状态放入到索引0处。</b></p>
-<p><b style="color:red">其实这个操作是在向二叉树里面插入元素而已。因为正常大家都是通过链表实现二叉树，这里是通过数组来实现二叉树，所以一时间没有看懂。这里也可以看出，这个是一个小根堆的结构。</b></p>
-<h3 id="获取"><a href="#获取" class="headerlink" title="获取"></a>获取</h3><p>我们以poll为例吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public E poll() &#123;</span><br><span class="line">    if (size == 0)</span><br><span class="line">        return null;</span><br><span class="line">    int s = --size;</span><br><span class="line">    modCount++;</span><br><span class="line">    E result = (E) queue[0];</span><br><span class="line">    // 取得最后一个元素</span><br><span class="line">    E x = (E) queue[s];</span><br><span class="line">    // 最后的元素清除</span><br><span class="line">    queue[s] = null;</span><br><span class="line">    // 如果是0的话，队列是空的啥都不做。</span><br><span class="line">    if (s != 0)</span><br><span class="line">        // 从最后一个元素开始，找到一个新的最小值。</span><br><span class="line">        siftDown(0, x);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">这里看起来是只要返回最前面的那个元素就好了，的确每次插入都能保证，最小的值在前面，也好理解。</b> 这样看来siftDown就是再将最小的值移到前面去。我们看一下这里面的实现。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">private void siftDown(int k, E x) &#123;</span><br><span class="line">    if (comparator != null)</span><br><span class="line">        siftDownUsingComparator(k, x);</span><br><span class="line">    else</span><br><span class="line">        siftDownComparable(k, x);</span><br><span class="line">&#125;</span><br><span class="line">private void siftDownUsingComparator(int k, E x) &#123;</span><br><span class="line">    int half = size &gt;&gt;&gt; 1;</span><br><span class="line">    while (k &lt; half) &#123;</span><br><span class="line">        int child = (k &lt;&lt; 1) + 1;</span><br><span class="line">        Object c = queue[child];</span><br><span class="line">        int right = child + 1;</span><br><span class="line">        if (right &lt; size &amp;&amp;</span><br><span class="line">            comparator.compare((E) c, (E) queue[right]) &gt; 0)</span><br><span class="line">            c = queue[child = right];</span><br><span class="line">        if (comparator.compare(x, (E) c) &lt;= 0)</span><br><span class="line">            break;</span><br><span class="line">        queue[k] = c;</span><br><span class="line">        k = child;</span><br><span class="line">    &#125;</span><br><span class="line">    queue[k] = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这是堆的维护，关于堆的实现请看下面的引用。</p>
-<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p>看了一下内部的迭代器实现，并没有按照堆内顺序进行返回，而是按照数组的顺序进行返回，所以返回的数组并不是有序的，这点要注意。</p>
-<h3 id="关于堆"><a href="#关于堆" class="headerlink" title="关于堆"></a>关于堆</h3><p><b style="color:red">其实堆就是一个完全二叉树，分为小端堆和大端堆。与平衡二叉树相比：</b></p>
-<ul>
-<li>堆整体没有顺序，但是每条路径有顺序。</li>
-<li>堆维护成本比较低，每次调整，都要取最右边的那个元素过来进行重新调整。但是调整要比平衡二叉树要快很多。</li>
-<li>如果是用来排序的话，堆的成本还是挺高的。如果是动态排序，堆的维护成本却能大大降低。</li>
-</ul>
-<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.cnblogs.com/end/archive/2012/10/25/2738493.html" target="_blank" rel="noopener">java中queue的使用</a><br><a href="http://blog.csdn.net/zdp072/article/details/14150877" target="_blank" rel="noopener">大话数据结构十四：二叉树的顺序存储结构（数组实现）</a><br><a href="http://blog.csdn.net/u013309870/article/details/68578011" target="_blank" rel="noopener">堆排序HeapSort（Java）</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java中双端队列/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/07/java/Java中双端队列/" itemprop="url">Java中双向队列Deque</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T19:31:34+08:00">2018-03-07</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天来简单研究一下双向队列的实现。以前用C语言实现的时候，我最喜欢使用链表的方式进行实现。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>双向队列在java中的接口规范是Deque。我们先来看一下继承的结构。（这里漏画了Deque是继承Queue，Queue继承Collection）</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/deque%E7%B1%BB%E5%9B%BE.png?raw=true" alt=""></p>
-<p>再来看一下Deque里面定义的一些方法：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/Deque%E6%96%B9%E6%B3%95.png?raw=true" alt=""></p>
-<p>这里面需要分两个维度去看，一个是Queue里面的方法，二是queue加入的方法。这里我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><p>这个估计没啥可讲的，因为之前我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="ArrayDeque"><a href="#ArrayDeque" class="headerlink" title="ArrayDeque"></a>ArrayDeque</h2><h3 id="大概思路"><a href="#大概思路" class="headerlink" title="大概思路"></a>大概思路</h3><p>对于数组实现的Deque来说，数据结构上比较简单，只需要一个存储数据的数组以及头尾两个索引即可。由于数组是固定长度的，所以很容易就得到数组的头和尾，那么对于数组的操作只需要移动头和尾的索引即可。</p>
-<p>特别说明的是ArrayDeque并不是一个固定大小的队列，每次队列满了以后就将队列容量扩大一倍（doubleCapacity()），因此加入一个元素总是能成功，而且也不会抛出一个异常。也就是说ArrayDeque是一个没有容量限制的队列。</p>
-<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><p>先看一下继承结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayDeque&lt;E&gt; extends AbstractCollection&lt;E&gt;</span><br><span class="line">                           implements Deque&lt;E&gt;, Cloneable, Serializable</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public ArrayDeque() &#123;</span><br><span class="line">    // 默认初始化16个</span><br><span class="line">    elements = (E[]) new Object[16];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(int numElements) &#123;</span><br><span class="line">    allocateElements(numElements);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    allocateElements(c.size());</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void allocateElements(int numElements) &#123;</span><br><span class="line">    int initialCapacity = MIN_INITIAL_CAPACITY;</span><br><span class="line">    // Find the best power of two to hold elements.</span><br><span class="line">    // Tests &quot;&lt;=&quot; because arrays aren&apos;t kept full.</span><br><span class="line">    if (numElements &gt;= initialCapacity) &#123;</span><br><span class="line">        initialCapacity = numElements;</span><br><span class="line">        // 如果不是2的倍数，就进行修正</span><br><span class="line">        // 根据所给的数组长度，得到一个比该长度大的最小的2^p的真实长度，并建立真实长度的空数组</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  1);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  2);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  4);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  8);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt; 16);</span><br><span class="line">        initialCapacity++;</span><br><span class="line"></span><br><span class="line">        if (initialCapacity &lt; 0)   // Too many elements, must back off</span><br><span class="line">            initialCapacity &gt;&gt;&gt;= 1;// Good luck allocating 2 ^ 30 elements</span><br><span class="line">    &#125;</span><br><span class="line">    elements = (E[]) new Object[initialCapacity];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从上面的代码看，ArrayDeque默认初始化16个；你可以指定大小，但是会被修正成大过initialCapacity的最小2的n次方的值。</p>
-<h3 id="添加的操作"><a href="#添加的操作" class="headerlink" title="添加的操作"></a>添加的操作</h3><p>我们看一下添加的函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">public void addFirst(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">    elements[head = (head - 1) &amp; (elements.length - 1)] = e;</span><br><span class="line">    // 如果队列满了就进行扩容处理</span><br><span class="line">    if (head == tail)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void addLast(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException()</span><br><span class="line">    // tail指向的地方是没有值得的</span><br><span class="line">    elements[tail] = e;</span><br><span class="line">    // 避免tail+1越界，&amp;操作之后就不用对长度进行取余，主要还是因为2的指数倍</span><br><span class="line">    if ( (tail = (tail + 1) &amp; (elements.length - 1)) == head)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* Double the capacity of this deque.  Call only when full, i.e.,</span><br><span class="line">* when head and tail have wrapped around to become equal.</span><br><span class="line">*</span><br><span class="line">* 当队列首尾指向同一个引用时，扩充队列的容量为原来的两倍，并对元素重新定位到新数组中</span><br><span class="line">*/</span><br><span class="line">private void doubleCapacity() &#123;</span><br><span class="line">    assert head == tail;// tail=head代表数组满了，一开始tail与head一定不相交，一旦相交就要扩容。</span><br><span class="line">    int p = head;</span><br><span class="line">    int n = elements.length;</span><br><span class="line">    int r = n - p; // number of elements to the right of p</span><br><span class="line">    // 容量增一倍</span><br><span class="line">    int newCapacity = n &lt;&lt; 1;</span><br><span class="line">    if (newCapacity &lt; 0)</span><br><span class="line">        throw new IllegalStateException(&quot;Sorry, deque too big&quot;);</span><br><span class="line">    Object[] a = new Object[newCapacity];</span><br><span class="line">    // 拷贝数组head右边的元素，放到新数组的0开始，长度是r</span><br><span class="line">    // 这里注意，tail&lt;head的情况，不过这边都可以处理（主要还是因为满了的话tail一般都是小于head的）</span><br><span class="line">    System.arraycopy(elements, p, a, 0, r);</span><br><span class="line">    // 将左侧元素，复制到后面，这个时候head就是0了</span><br><span class="line">    System.arraycopy(elements, 0, a, r, p);</span><br><span class="line">    elements = (E[])a;</span><br><span class="line">    head = 0;</span><br><span class="line">    // tail为n，是因为队列满了</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">我们可以看出，tail==head就是队列满了，(head+1)&amp;(length-1)==tail就是队列空掉的条件。一旦队列满了就会立即扩容，方式就是双倍扩容。</b></p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>其他的方法就不用说了，即使不知道也大概明白思路。对于出队，当然要检查队列是不是空的，如果是空的就不用处理了（或者返回null），感觉还是要看一下源码确认一下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public E pollFirst() &#123;</span><br><span class="line">    int h = head;</span><br><span class="line">    E result = elements[h]; // Element is null if deque empty</span><br><span class="line">    // 如果取得值为空，就表示队列空了</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 如果有值就移除</span><br><span class="line">    elements[h] = null;     // Must null out slot</span><br><span class="line">    // 重新设置head</span><br><span class="line">    head = (h + 1) &amp; (elements.length - 1);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E pollLast() &#123;</span><br><span class="line">    // tail向后移，防止出现负数</span><br><span class="line">    int t = (tail - 1) &amp; (elements.length - 1);</span><br><span class="line">    E result = elements[t];</span><br><span class="line">    // 如果为null啥都不做</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 不为null，移除。tail后移</span><br><span class="line">    elements[t] = null;</span><br><span class="line">    tail = t;</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总的感觉这个类的实现，还是比较简单的，比较容易理解。</p>
-<h2 id="双向并发阻塞队列-LinkedBlockingDeque"><a href="#双向并发阻塞队列-LinkedBlockingDeque" class="headerlink" title="双向并发阻塞队列 LinkedBlockingDeque"></a>双向并发阻塞队列 LinkedBlockingDeque</h2><p>LinkedBlockingDeque是双向链表实现的双向并发阻塞队列。该阻塞队列同时支持FIFO和FILO两种操作方式，即可以从队列的头和尾同时操作(插入/删除)；并且，该阻塞队列是支持线程安全。</p>
-<p>此外，LinkedBlockingDeque还是可选容量的(防止过度膨胀)，即可以指定队列的容量。如果不指定，默认容量大小等于Integer.MAX_VALUE。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/LinkedBlockingDeque%E7%9A%84%E5%8E%9F%E7%90%86%E5%9B%BE.jpg?raw=true" alt=""></p>
-<h3 id="继承结构-1"><a href="#继承结构-1" class="headerlink" title="继承结构"></a>继承结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedBlockingDeque&lt;E&gt;</span><br><span class="line">    extends AbstractQueue&lt;E&gt;</span><br><span class="line">    implements BlockingDeque&lt;E&gt;,  java.io.Serializable &#123;</span><br></pre></td></tr></table></figure>
-<p>LinkedBlockingDeque继承于AbstractQueue，它本质上是一个支持FIFO和FILO的双向的队列。AbstractQueue只是基础的Queue的实现而已。</p>
-<p>LinkedBlockingDeque实现了BlockingDeque接口，它支持多线程并发。当多线程竞争同一个资源时，某线程获取到该资源之后，其它线程需要阻塞等待。</p>
-<h3 id="属性一探"><a href="#属性一探" class="headerlink" title="属性一探"></a>属性一探</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">transient Node&lt;E&gt; first;</span><br><span class="line">transient Node&lt;E&gt; last;</span><br><span class="line">private transient int count;</span><br><span class="line">private final int capacity;</span><br><span class="line">final ReentrantLock lock = new ReentrantLock();</span><br><span class="line">// 等待takes操作的Condition</span><br><span class="line">private final Condition notEmpty = lock.newCondition();</span><br><span class="line">// 等待puts操作的Condition</span><br><span class="line">private final Condition notFull = lock.newCondition();</span><br></pre></td></tr></table></figure>
-<p>lock是控制对LinkedBlockingDeque的互斥锁，当多个线程竞争同时访问LinkedBlockingDeque时，某线程获取到了互斥锁lock，其它线程则需要阻塞等待，直到该线程释放lock，其它线程才有机会获取lock从而获取cpu执行权。</p>
-<p>notEmpty和notFull分别是“非空条件”和“未满条件”。通过它们能够更加细腻进行并发控制。</p>
-<p><b style="color:blue">若某线程(线程A)要取出数据时，队列正好为空，则该线程会执行notEmpty.await()进行等待；当其它某个线程(线程B)向队列中插入了数据之后，会调用notEmpty.signal()唤醒“notEmpty上的等待线程”。此时，线程A会被唤醒从而得以继续运行。 此外，线程A在执行取操作前，会获取takeLock，在取操作执行完毕再释放takeLock。</b><br><b style="color:blue">若某线程(线程H)要插入数据时，队列已满，则该线程会它执行notFull.await()进行等待；当其它某个线程(线程I)取出数据之后，会调用notFull.signal()唤醒“notFull上的等待线程”。此时，线程H就会被唤醒从而得以继续运行。 此外，线程H在执行插入操作前，会获取putLock，在插入操作执行完毕才释放putLock。</b></p>
-<p>这里看一下Node链表的结构吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// Deque里面的Node的class定义，这是一个链表结构</span><br><span class="line">static final class Node&lt;E&gt; &#123;</span><br><span class="line">    E item;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(E x) &#123;</span><br><span class="line">        item = x;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><p>其他构造函数就不看了，主要来看一下这个构造函数，加入元素的时候使用了锁。<b style="color:red">注意这个初始化元素使用的是尾部插入法</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public LinkedBlockingDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    this(Integer.MAX_VALUE);</span><br><span class="line">    // 取得lock</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 从未竞争过，但是对于可视性来说是必要</span><br><span class="line">    lock.lock(); // Never contended, but necessary for visibility</span><br><span class="line">    try &#123;</span><br><span class="line">        for (E e : c) &#123;</span><br><span class="line">            if (e == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">            // 逐条加入</span><br><span class="line">            if (!linkLast(new Node&lt;E&gt;(e)))</span><br><span class="line">                throw new IllegalStateException(&quot;Deque full&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">本来再想锁的粒度问题，我想如果linkLast这个函数也加了锁，不就有问题了吗，查了这个函数发现是私有方法，没有加锁，没毛病。加锁的实现和功能的实现是分离，这个也是常规的做法。</b></p>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>这里面设计几个方面：</p>
-<ol>
-<li>队列先加锁</li>
-<li>执行插入</li>
-<li>通知所有阻塞监听队列内容的线程</li>
-<li>释放放锁</li>
-</ol>
-<p>这里我们只是举个例子，不进行源代码的深入分析, 下面的源码就是对上面过程的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    return offerLast(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean offerLast(E e) &#123;</span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    // 新建节点</span><br><span class="line">    Node&lt;E&gt; node = new Node&lt;E&gt;(e);</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        // 将“新节点”添加到双向链表的末尾</span><br><span class="line">        return linkLast(node);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private boolean linkLast(Node&lt;E&gt; node) &#123;</span><br><span class="line">    // 如果“双向链表的节点数量” &gt; “容量”，则返回false，表示插入失败。</span><br><span class="line">    if (count &gt;= capacity)</span><br><span class="line">        return false;</span><br><span class="line">    // 将“node添加到链表末尾”，并设置node为新的尾节点</span><br><span class="line">    Node&lt;E&gt; l = last;</span><br><span class="line">    node.prev = l;</span><br><span class="line">    last = node;</span><br><span class="line">    if (first == null)</span><br><span class="line">        first = node;</span><br><span class="line">    else</span><br><span class="line">        l.next = node;</span><br><span class="line">    // 将“节点数量”+1</span><br><span class="line">    ++count;</span><br><span class="line">    // 插入节点之后，唤醒notEmpty上的等待线程。</span><br><span class="line">    notEmpty.signal();</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="删除获取"><a href="#删除获取" class="headerlink" title="删除获取"></a>删除获取</h3><p>获取方式有3种：</p>
-<ul>
-<li>一种是取数据不删除数据</li>
-<li>取数据移除数据并不阻塞，没有返回null即可</li>
-<li>取数据移除数据并没有会阻塞等待</li>
-</ul>
-<p>刚才提到通知的问题，我们在线程池中也大概了解到阻塞队列，取消息的时候会阻塞，那么我们就来看看这个阻塞是如何实现的。下面是take的实现，属于第三种。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">public E take() throws InterruptedException &#123;</span><br><span class="line">    return takeFirst();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E takeFirst() throws InterruptedException &#123;</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        E x;</span><br><span class="line">        // 若“队列为空”，则一直等待。否则，通过unlinkFirst()删除第一个节点。</span><br><span class="line">        while ( (x = unlinkFirst()) == null)</span><br><span class="line">            notEmpty.await();</span><br><span class="line">        return x;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private E unlinkFirst() &#123;</span><br><span class="line">    // assert lock.isHeldByCurrentThread();</span><br><span class="line">    Node&lt;E&gt; f = first;</span><br><span class="line">    if (f == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 删除并更新“第一个节点”</span><br><span class="line">    Node&lt;E&gt; n = f.next;</span><br><span class="line">    E item = f.item;</span><br><span class="line">    f.item = null;</span><br><span class="line">    f.next = f; // help GC</span><br><span class="line">    first = n;</span><br><span class="line">    if (n == null)</span><br><span class="line">        last = null;</span><br><span class="line">    else</span><br><span class="line">        n.prev = null;</span><br><span class="line">    // 将“节点数量”-1</span><br><span class="line">    --count;</span><br><span class="line">    // 删除节点之后，唤醒notFull上的等待线程。</span><br><span class="line">    notFull.signal();</span><br><span class="line">    return item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">在takeFirst方法中，我们发现notEmpty.await();阻塞等待，但是注意这里的lock.lock();你可能认为发生了死锁，其实并没有，这就是Lock，condition的组合使用，Condition是基于Lock生成的对象，notEmpty.await();是会释放lock锁的，被唤醒继续执行的时候会重新尝试获取lock锁，只是这个被封装了一下，变得不那么清除了而已。</b></p>
-<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p><b style="color:blue">这部分的知识就不用说了，使用了内部的迭代器。内部类的迭代器遍历有一个好处就是没有Collection的传入，也可复用外部类的方法。总之呢，就是利用了内部类的机制，做自己想做的事情，这种设计思路，我们也可以使用，一定要活学活用。</b>这个迭代器比别的多了缓存的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">private abstract class AbstractItr implements Iterator&lt;E&gt; &#123;</span><br><span class="line">    // next是下一次调用next()会返回的节点。</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    // nextItem是next()返回节点对应的数据。</span><br><span class="line">    E nextItem;</span><br><span class="line">    // 上一次next()返回的节点。</span><br><span class="line">    private Node&lt;E&gt; lastRet;</span><br><span class="line">    // 返回第一个节点</span><br><span class="line">    abstract Node&lt;E&gt; firstNode();</span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    abstract Node&lt;E&gt; nextNode(Node&lt;E&gt; n);</span><br><span class="line"></span><br><span class="line">    AbstractItr() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        // 获取“LinkedBlockingDeque的互斥锁”</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // 获取“双向队列”的表头</span><br><span class="line">            next = firstNode();</span><br><span class="line">            // 获取表头对应的数据</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // 释放“LinkedBlockingDeque的互斥锁”</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取n的后继节点</span><br><span class="line">    private Node&lt;E&gt; succ(Node&lt;E&gt; n) &#123;</span><br><span class="line">        // Chains of deleted nodes ending in null or self-links</span><br><span class="line">        // are possible if multiple interior nodes are removed.</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            Node&lt;E&gt; s = nextNode(n);</span><br><span class="line">            if (s == null)</span><br><span class="line">                return null;</span><br><span class="line">            else if (s.item != null)</span><br><span class="line">                return s;</span><br><span class="line">            else if (s == n)</span><br><span class="line">                return firstNode();</span><br><span class="line">            else</span><br><span class="line">                n = s;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 更新next和nextItem。</span><br><span class="line">    void advance() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // assert next != null;</span><br><span class="line">            next = succ(next);</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回“下一个节点是否为null”</span><br><span class="line">    public boolean hasNext() &#123;</span><br><span class="line">        return next != null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    public E next() &#123;</span><br><span class="line">        if (next == null)</span><br><span class="line">            throw new NoSuchElementException();</span><br><span class="line">        lastRet = next;</span><br><span class="line">        E x = nextItem;</span><br><span class="line">        advance();</span><br><span class="line">        return x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 删除下一个节点</span><br><span class="line">    public void remove() &#123;</span><br><span class="line">        Node&lt;E&gt; n = lastRet;</span><br><span class="line">        if (n == null)</span><br><span class="line">            throw new IllegalStateException();</span><br><span class="line">        lastRet = null;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (n.item != null)</span><br><span class="line">                unlink(n);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>关于双向队列的知识就是这么多了，其实底层还是那样，要么是数组实现，要么是链表实现。但是在实现的过程确实有比较巧妙的设计。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.cnblogs.com/skywang12345/p/3503480.html" target="_blank" rel="noopener">Java多线程系列–“JUC集合”09之 LinkedBlockingDeque</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2114,7 +2056,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2312,7 +2254,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">70</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

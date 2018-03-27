@@ -276,6 +276,362 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/" itemprop="url">BIP125：可选的交易费用替换信号【翻译】</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
+<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
+<ul>
+<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
+<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
+</ul>
+<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
+<ul>
+<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
+<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
+</ul>
+<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
+<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
+<ul>
+<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
+<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
+<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
+<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
+<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
+</ul>
+<p>最初的实现可以在<a href="https://github.com/bitcoin/bitcoin/pull/6871" target="_blank" rel="noopener">比特核心PR＃6871</a>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
+<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
+<ul>
+<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
+<li>在确认之前忽略选择性（opt-in）交易。</li>
+</ul>
+<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
+<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
+<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin的Wiki页面</a>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
+<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<a href="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434" target="_blank" rel="noopener">允许</a> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
+<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<a href="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522" target="_blank" rel="noopener">删除了替代品</a>，仅留下评论“暂时禁用替换功能”。</p>
+<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
+<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
+<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
+<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
+<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
+<p>在满足两个条件之前，实际更换可能不可靠：</p>
+<ul>
+<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
+<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
+</ul>
+<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
+<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
+<li><a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin Wiki上的交易可替换性</a>旨在帮助钱包作者使用RBF</li>
+<li>用于创建选择性全RBF交易的工具：<a href="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools" target="_blank" rel="noopener">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools</a></li>
+<li>Reddit：<a href="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/" target="_blank" rel="noopener">关于选择性RBF的问题</a>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
+</ol>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener">Opt-in Full Replace-by-Fee Signaling</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/比特币粉尘和空块/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/20/blockchain/比特币粉尘和空块/" itemprop="url">比特币粉尘和空块</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T16:00:55+08:00">2018-03-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近看了bitcoinj的TransactionOutput类发现了里面的关于粉尘的一些功能。网上搜索关于比特币粉尘的知识，发现了空块攻击和粉尘攻击的一些说明，但是只是简单地进行表述而已。也看到了矿工如何利用各种手段进行作弊，这个可能就是区块链所不能监控的了。所以我觉得区块链的问题还是很多的。</p>
+<h2 id="什么是空块攻击"><a href="#什么是空块攻击" class="headerlink" title="什么是空块攻击"></a>什么是空块攻击</h2><p>空块的意思很明确，就是区块中没有交易，其实不管怎么样应该是有一笔交易的，就是挖矿奖励的coinbase交易。但是呢块被接收是经过大量的计算工作量的，所以这个看起来有点不太现实。从经济的角度来说这是不太靠谱，但是这种攻击最大的好处就是不用启动算力攻击。比如说你有全网1%的算力，那么发起空包攻击的概率也是很大的，但是就是这1%的算力也是不小的投入。算力攻击其实就是能控制全网51%的算力，这个时候你可以随意更改区块的信息。我在想以后会不会出现网络攻击，瘫痪大部分网络，在一小片网络中占据算力，从本质上说，区域网内的机器也可以进行挖矿，所以也比较困难。</p>
+<p>另外个别情况下偶尔一次，也没有问题，但短期内频繁空块就是攻击了，其效果是使交易内存池变大，交易平均确认时间变长。其实已经有很多矿池消灭了空块的，技术上没有难度的。打包空块并不会比打包满块有优势。但是有ASICBoost专利就不同了，空块有利于ASICBoost专利的实施。</p>
+<h2 id="粉尘攻击"><a href="#粉尘攻击" class="headerlink" title="粉尘攻击"></a>粉尘攻击</h2><p>如果要想理解粉尘攻击就必须先理解什么是粉尘。任何会消耗其费用三分之一以上的交易输出都不是比特币系统现在想要处理的东西，所以我们称之为“粉尘输出”，并且它们是非标准的。</p>
+<p>一个典型的输出是33字节（pubkey hash +操作码），需要输入148字节的消耗，所以我们将它们加在一起以找出用于传输这个数值的总数据量。请注意，这个公式对于任何不是付费地址输出的东西都是错误的，不幸的是，我们必须遵循比特币核心的错误以确保我们被认为是标准。一个更好的公式可以估计满足所有不同脚本类型所需的数据大小，或者只是使用硬编码33。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 这个是根据实时的数据进行的计算。</span><br><span class="line">public Coin getMinNonDustValue(Coin feePerKb) &#123;</span><br><span class="line">    final long size = this.unsafeBitcoinSerialize().length + 148;</span><br><span class="line">    // 计算交易费</span><br><span class="line">    return feePerKb.multiply(size).divide(1000);</span><br><span class="line">&#125;</span><br><span class="line">// 默认是费用的3倍</span><br><span class="line">public Coin getMinNonDustValue() &#123;</span><br><span class="line">    return getMinNonDustValue(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.multiply(3));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的这段代码就是用来计算最小的输出，如果小于这个输出值，我们就认为这个输出是粉尘输出。</p>
+<h2 id="关于小金额的问题"><a href="#关于小金额的问题" class="headerlink" title="关于小金额的问题"></a>关于小金额的问题</h2><p>如果地址上未花费输出比较小，那么很有可能就是使用的时候，这笔钱都不能支付交易费（这就是粉尘判断所不能接受的），这样会损失金额。也可以通过账户不停地将账户的钱转移到大账户里面去，看来不管是何种数字货币，都不能避免零头损失的问题。我们做钱包的应用多少都存在这样的问题。但是以太坊不是基于UTXO，而是基于账户多少能缓解不少的问题。</p>
+<h2 id="广播攻击"><a href="#广播攻击" class="headerlink" title="广播攻击"></a>广播攻击</h2><p>如果不停地向网络广播大量的垃圾交易会阻塞网络，如果我们的节点能检测出这个交易是非法的，并且停止广播，那么这个问题就不会很严重，但是如果修改了代码，不做这个的检测就会出现大问题。比如说矿池大量发送这样的交易，这就会引起灾难性的后果。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2596,337 +2952,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/比特币的compact格式说明/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/blockchain/比特币的compact格式说明/" itemprop="url">比特币的compact格式说明</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T21:02:23+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static BigInteger decodeCompactBits(long compact) &#123;</span><br><span class="line">    // 32位中取得高八位</span><br><span class="line">    int size = ((int) (compact &gt;&gt; 24)) &amp; 0xFF;</span><br><span class="line">    // 设置字节数组大小，大小+4</span><br><span class="line">    byte[] bytes = new byte[4 + size];</span><br><span class="line">    // 将第四个字节设置为size</span><br><span class="line">    bytes[3] = (byte) size;</span><br><span class="line">    if (size &gt;= 1) bytes[4] = (byte) ((compact &gt;&gt; 16) &amp; 0xFF);</span><br><span class="line">    if (size &gt;= 2) bytes[5] = (byte) ((compact &gt;&gt; 8) &amp; 0xFF);</span><br><span class="line">    if (size &gt;= 3) bytes[6] = (byte) (compact &amp; 0xFF);</span><br><span class="line">    return decodeMPI(bytes, true);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="为啥有Compact格式"><a href="#为啥有Compact格式" class="headerlink" title="为啥有Compact格式"></a>为啥有Compact格式</h2><p>因为生活中总有大数的概念。有时不好表示，所以需要进行编码，就有点像以太坊的RLP编码。</p>
-<h2 id="Compact格式"><a href="#Compact格式" class="headerlink" title="Compact格式"></a>Compact格式</h2><ul>
-<li>“Compact”格式是一个256位数字的一种表示形式</li>
-<li>数字N使用类似于无符号32位数浮点格式</li>
-<li>最高有效8位是基数为256的无符号指数。</li>
-<li><b style="color:red">该指数可以被认为是“N的有效字节数”.比如0x11的有效位数为8位，即有效字节数为1,则compact形式的最高八位应该是0x01,对应的compact形式为0x01000011</b></li>
-<li>较低的23位是尾数。</li>
-<li>位数24（0x800000）表示N的符号。</li>
-<li>N =（-1 ^ sign）尾数 256 ^（指数-3）</li>
-<li>Satoshi的原始实现使用BN_bn2mpi（）和BN_mpi2bn（）。</li>
-<li>MPI使用第一个字节的最高有效位作为符号。</li>
-<li>因此0x1234560000的紧凑型式为（0x05123456）其中0x05123456,最高8位05表示整个数有效位数为5个字节,40位.</li>
-<li>0xc0de000000是紧凑的（0x0600c0de）注意紧凑形式的（0x05c0de00）将为-0x40de000000,24位表示符号</li>
-<li>CBigNum bnProofOfWorkLimit(~uint256(0) &gt;&gt; 32);如果认为有效位为256-32=224=28(0x1c个字节)*8,则取最高24位为尾数即ffffff(24位为符号位,不方便表示符号),如果认为有效位为256-24=232=29(0x1d个字节)*8,则取最高24位为尾数即00ffff,则compact形式为0x1d00ffff(比特币基因块的目标难度位)</li>
-</ul>
-<h3 id="2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数"><a href="#2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数" class="headerlink" title="2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)"></a>2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)</h3><p>比特币只使用这种“Compact”格式来编码难度目标，无符号256位数量。 所以，所有的符号位的复杂度和使用256的大概可能是一个实施意外。</p>
-<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p><b style="color:red">就是32位整数用来表示256位的数字，最高的8位是指后面有多少字节的数据，低位在前面，高位在后面，这样如果高位为0的话，那么就不用去考虑了。但这里并不是这样，这里最多是3个字节。第24位到代表正负，较低的23位是尾数。注意低位的0是可以被忽略的，因为有长度的说明。</b></p>
-<p><b style="color:blue">这其实就是有精度限制的，也就是说数字不大的话，精度是可以的，否则就会损失精度。一旦字节长过3（不包括）个字节，那么就会损失精度。大概的意思就是这样。也许浮点数的计算也是这样的吧！这个有利于你理解float、double等一些数据范围比较大的数据的实现。</b></p>
-<p><b style="color:red">当然，如果这个东西是用来序列化整数，那自然是有精度的问题。可是如果就是用来存储数据，类型不是整数，比如说区块信息，那这个东西就很有用了，其实这个东西就是主要用来存放区块信息，比如说返回一个区块头列表，一个区块中所有的交易数据等等。这时候可能就不是compact格式了。其实这里讲的就是如何使用32位数表示256进制的数字</b></p>
-<p><b style="color:red">还有一个注意点：就是一旦发现高位的符号是1，那么如果直接表示的话，可能数字就会变成负数，所以这个时候通常是在数字前面加一个字节0，这样变成Compact格式后也不会出现数字符号改变，唯一的缺点就是损失了一个字节的精度。</b></p>
-<h2 id="关于数字恢复"><a href="#关于数字恢复" class="headerlink" title="关于数字恢复"></a>关于数字恢复</h2><p>我们看到上面的公式为：<code>N =（-1 ^ sign）尾数 256 ^（指数-3）</code>，其实这个公式比较笼统，可能乍看起来是有问题的。其实我觉得应该是<code>N=符号*23位尾数*（256 ^([8位指数-3],这个值不能小于0)）</code>.</p>
-<p>这样的话，这个才是完整的compact解析。</p>
-<p><b style="color:red">对于这个难度值，值越小，前面的0越多，那么挖矿的难度就越大！至于损失精度是没有关系的，因为这个数字只在意解析后的数字前面有多少个0而已，其他无需考虑。</b></p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/followtheart/bitcoin-notes/blob/master/bignum.h.adoc" target="_blank" rel="noopener">比特币源码分析之大数类CBigNum</a><br><a href="https://yushuangqi.com/blog/2017/understand-bitcoin-difficulty.html" target="_blank" rel="noopener">理解与计算比特币难度值Difficulty</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/Linux下如何使用比特币命令/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/blockchain/Linux下如何使用比特币命令/" itemprop="url">Linux下如何使用比特币命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T18:44:51+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天由于要去对接usdt，发现usdt其实是颜色币或者称为比特币上的代币。这种币原来是基于omni协议做的。omni基于比特币的客户端做了一个和比特币客户端兼容的代币客户端，负责解析各种货币。具体的知识就不深入探究了。我本来是看到代币输出中出现了“Unable to decode output address ”，重点是这种输出上居然有钱，可以查看这笔代币的调用<a href="https://blockchain.info/tx/48013644ceee5b5605cc589ecee35ab03e7900aac3837cbf04cbb3355caad0c5" target="_blank" rel="noopener">https://blockchain.info/tx/48013644ceee5b5605cc589ecee35ab03e7900aac3837cbf04cbb3355caad0c5</a> 。网上也查了一下，其实就是OP_RETURN脚本导致的，其实就是为了附加信息而已。后来想看看原本的脚本输出，突然忘记命令怎么打了，悲剧了，所以还是记录一下吧！</p>
-<p><a href="https://omniexplorer.info/" target="_blank" rel="noopener">omni浏览器</a><br><a href="https://blockchain.info/" target="_blank" rel="noopener">比特币浏览器</a><br><a href="http://www.omnilayer.org" target="_blank" rel="noopener">omni官网</a></p>
-<h2 id="bitcoin如何安装"><a href="#bitcoin如何安装" class="headerlink" title="bitcoin如何安装"></a>bitcoin如何安装</h2><p>不用安装，官网有二进制的压缩包，所以安装的人很少。鄙人不信这个邪偏要源码编译安装，各种坑（其实我是为了运维能够顺利部署，提前采坑而已）。我发现很少有人在CentOS上安装，于是安装的时候经常出问题，为了安装花了一周时间，哎，大家还是下载二进制版本吧！我搞以太坊的时候也搞了一周，主要是geth节点同步区块慢，而且p2p节点老丢，换成parity节点好一些，但是还是出问题。后来以太坊官网更新了geth节点，立马重新安装问题才解决。为了破节点，前前后后浪费了大半个月。</p>
-<h2 id="bitcoin命令介绍"><a href="#bitcoin命令介绍" class="headerlink" title="bitcoin命令介绍"></a>bitcoin命令介绍</h2><p>不管是bitcoin还是bitcash都有两个节点一个服务端和一个客户端，其实服务端也可以直接执行命令返回。</p>
-<p>首先先运行服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bitcoind</span><br></pre></td></tr></table></figure></p>
-<p>这个命令在哪我就不说了，最好做一下ln链接，这样你就可以直接使用这个命令了；当然如果想做一些配置的话，就写一个服务吧。要想知道服务启动的运行参数可以运行<code>bitcoind --help</code>命令，这样更加有利于你写服务脚本。</p>
-<p>然后利用客户端执行一条命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bitcoin-cli getinfo</span><br></pre></td></tr></table></figure></p>
-<p>结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# bitcoin-cli getinfo</span><br><span class="line">&#123;</span><br><span class="line">    &quot;version&quot; : 90500,</span><br><span class="line">    &quot;protocolversion&quot; : 70002,</span><br><span class="line">    &quot;walletversion&quot; : 60000,</span><br><span class="line">    &quot;balance&quot; : 0.00000000,</span><br><span class="line">    &quot;blocks&quot; : 356480,</span><br><span class="line">    &quot;timeoffset&quot; : 0,</span><br><span class="line">    &quot;connections&quot; : 3,</span><br><span class="line">    &quot;proxy&quot; : &quot;&quot;,</span><br><span class="line">    &quot;difficulty&quot; : 47643398017.80344391,</span><br><span class="line">    &quot;testnet&quot; : false,</span><br><span class="line">    &quot;keypoololdest&quot; : 1514465769,</span><br><span class="line">    &quot;keypoolsize&quot; : 101,</span><br><span class="line">    &quot;paytxfee&quot; : 0.00000000,</span><br><span class="line">    &quot;relayfee&quot; : 0.00001000,</span><br><span class="line">    &quot;errors&quot; : &quot;URGENT: Alert key compromised, upgrade required&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>以前我敲命令挺溜的，现在都忘记了，我们来看一下帮助文档吧！也可以使用<code>bitcoind</code>;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# bitcoin-cli help</span><br><span class="line">addmultisigaddress nrequired [&quot;key&quot;,...] ( &quot;account&quot; )</span><br><span class="line">addnode &quot;node&quot; &quot;add|remove|onetry&quot;</span><br><span class="line">backupwallet &quot;destination&quot;</span><br><span class="line">createmultisig nrequired [&quot;key&quot;,...]</span><br><span class="line">createrawtransaction [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n&#125;,...] &#123;&quot;address&quot;:amount,...&#125;</span><br><span class="line">decoderawtransaction &quot;hexstring&quot;</span><br><span class="line">decodescript &quot;hex&quot;</span><br><span class="line">dumpprivkey &quot;bitcoinaddress&quot;</span><br><span class="line">dumpwallet &quot;filename&quot;</span><br><span class="line">encryptwallet &quot;passphrase&quot;</span><br><span class="line">getaccount &quot;bitcoinaddress&quot;</span><br><span class="line">getaccountaddress &quot;account&quot;</span><br><span class="line">getaddednodeinfo dns ( &quot;node&quot; )</span><br><span class="line">getaddressesbyaccount &quot;account&quot;</span><br><span class="line">getbalance ( &quot;account&quot; minconf )</span><br><span class="line">getbestblockhash</span><br><span class="line">getblock &quot;hash&quot; ( verbose )</span><br><span class="line">getblockchaininfo</span><br><span class="line">getblockcount</span><br><span class="line">getblockhash index</span><br><span class="line">getblocktemplate ( &quot;jsonrequestobject&quot; )</span><br><span class="line">getconnectioncount</span><br><span class="line">getdifficulty</span><br><span class="line">getgenerate</span><br><span class="line">gethashespersec</span><br><span class="line">getinfo</span><br><span class="line">getmininginfo</span><br><span class="line">getnettotals</span><br><span class="line">getnetworkhashps ( blocks height )</span><br><span class="line">getnetworkinfo</span><br><span class="line">getnewaddress ( &quot;account&quot; )</span><br><span class="line">getpeerinfo</span><br><span class="line">getrawchangeaddress</span><br><span class="line">getrawmempool ( verbose )</span><br><span class="line">getrawtransaction &quot;txid&quot; ( verbose )</span><br><span class="line">getreceivedbyaccount &quot;account&quot; ( minconf )</span><br><span class="line">getreceivedbyaddress &quot;bitcoinaddress&quot; ( minconf )</span><br><span class="line">gettransaction &quot;txid&quot;</span><br><span class="line">gettxout &quot;txid&quot; n ( includemempool )</span><br><span class="line">gettxoutsetinfo</span><br><span class="line">getunconfirmedbalance</span><br><span class="line">getwalletinfo</span><br><span class="line">getwork ( &quot;data&quot; )</span><br><span class="line">help ( &quot;command&quot; )</span><br><span class="line">importprivkey &quot;bitcoinprivkey&quot; ( &quot;label&quot; rescan )</span><br><span class="line">importwallet &quot;filename&quot;</span><br><span class="line">keypoolrefill ( newsize )</span><br><span class="line">listaccounts ( minconf )</span><br><span class="line">listaddressgroupings</span><br><span class="line">listlockunspent</span><br><span class="line">listreceivedbyaccount ( minconf includeempty )</span><br><span class="line">listreceivedbyaddress ( minconf includeempty )</span><br><span class="line">listsinceblock ( &quot;blockhash&quot; target-confirmations )</span><br><span class="line">listtransactions ( &quot;account&quot; count from )</span><br><span class="line">listunspent ( minconf maxconf  [&quot;address&quot;,...] )</span><br><span class="line">lockunspent unlock [&#123;&quot;txid&quot;:&quot;txid&quot;,&quot;vout&quot;:n&#125;,...]</span><br><span class="line">move &quot;fromaccount&quot; &quot;toaccount&quot; amount ( minconf &quot;comment&quot; )</span><br><span class="line">ping</span><br><span class="line">sendfrom &quot;fromaccount&quot; &quot;tobitcoinaddress&quot; amount ( minconf &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">sendmany &quot;fromaccount&quot; &#123;&quot;address&quot;:amount,...&#125; ( minconf &quot;comment&quot; )</span><br><span class="line">sendrawtransaction &quot;hexstring&quot; ( allowhighfees )</span><br><span class="line">sendtoaddress &quot;bitcoinaddress&quot; amount ( &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">setaccount &quot;bitcoinaddress&quot; &quot;account&quot;</span><br><span class="line">setgenerate generate ( genproclimit )</span><br><span class="line">settxfee amount</span><br><span class="line">signmessage &quot;bitcoinaddress&quot; &quot;message&quot;</span><br><span class="line">signrawtransaction &quot;hexstring&quot; ( [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n,&quot;scriptPubKey&quot;:&quot;hex&quot;,&quot;redeemScript&quot;:&quot;hex&quot;&#125;,...] [&quot;privatekey1&quot;,...] sighashtype )</span><br><span class="line">stop</span><br><span class="line">submitblock &quot;hexdata&quot; ( &quot;jsonparametersobject&quot; )</span><br><span class="line">validateaddress &quot;bitcoinaddress&quot;</span><br><span class="line">verifychain ( checklevel numblocks )</span><br><span class="line">verifymessage &quot;bitcoinaddress&quot; &quot;signature&quot; &quot;message&quot;</span><br></pre></td></tr></table></figure></p>
-<h2 id="以太坊节点"><a href="#以太坊节点" class="headerlink" title="以太坊节点"></a>以太坊节点</h2><p>这里就不做更多的介绍了。因为以太坊的命令使用相对简单。只要使用<code>geth help</code>命令查看一下即可。下面是我写的以太坊启动脚本。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"># source function library</span><br><span class="line">. /etc/rc.d/init.d/functions</span><br><span class="line"></span><br><span class="line">USER=root</span><br><span class="line">ENV=&quot;sudo -u $USER -H &quot;</span><br><span class="line">PROG=geth</span><br><span class="line">GETH_CMD=/data/block/go-ethereum/build/bin/geth</span><br><span class="line">GETH_DIR=/data/chain/eth</span><br><span class="line">LOG_PATH=$GETH_DIR/geth.log</span><br><span class="line">NODE_105=&quot;enode://f630e5e22c12a81ae14b7b7779c215b31790da44c87d5f8d781bb59d33aa572c4c13ff33dbdbf2512cdd914b82e9239fc4a6004a26405bd9aed40457f31ade97@192.168.3.105:30303&quot;</span><br><span class="line"># NODE_LIST=&quot;--nodiscover --light --bootnodes $NODE_105&quot;</span><br><span class="line">NODE_LIST=&quot;--nodiscover --syncmode light --bootnodes $NODE_105&quot;</span><br><span class="line"># MINER=&quot;--mine --minerthreads 1&quot;</span><br><span class="line">MINER=&quot;--verbosity 5&quot;</span><br><span class="line">API_OPTS=&quot;--rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --rpccorsdomain \&quot;*\&quot; --ws --vmdebug --debug&quot;</span><br><span class="line">RUN_TAGS=&quot;$API_OPTS $MINER --datadir $GETH_DIR $NODE_LIST&quot;</span><br><span class="line"></span><br><span class="line">LOCK_FILE=/var/lock/subsys/$PROG</span><br><span class="line">PID_FILE=/var/run/$&#123;PROG&#125;.pid</span><br><span class="line">GETH_CON=`ps -ef | grep geth |grep datadir |wc -l`</span><br><span class="line"></span><br><span class="line">start() &#123;</span><br><span class="line">      [ `id -u` -ne 0  ] &amp;&amp; echo &quot;The user permission denied the service...&quot;  &amp;&amp; exit 0</span><br><span class="line">      [ -x $started ] || exit 5</span><br><span class="line">      # echo -n $&quot;Starting $prog:&quot;</span><br><span class="line">      echo $&quot;Starting $prog:&quot;</span><br><span class="line">      echo &quot;command: $ENV $GETH_CMD $RUN_TAGS&quot;</span><br><span class="line">      $ENV $GETH_CMD $RUN_TAGS &gt;&gt;$LOG_PATH 2&gt;&amp;1 &amp;</span><br><span class="line">      shift</span><br><span class="line">      echo $! &gt; $PID_FILE</span><br><span class="line">      success ||  failure</span><br><span class="line">      retval=$?</span><br><span class="line">      echo</span><br><span class="line">      if [ $retval -eq 0 ]; then</span><br><span class="line">            touch $LOCK_FILE || retval=4</span><br><span class="line">      fi</span><br><span class="line">      return $retval</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop() &#123;</span><br><span class="line">     [ `id -u` -ne 0  ] &amp;&amp; echo &quot;The user permission denied the service...&quot;  &amp;&amp; exit 0</span><br><span class="line">     if [ $GETH_CON -gt 0 ]; then</span><br><span class="line">          #cat $PID_FILE | xargs kill -kill</span><br><span class="line">          kill `cat $PID_FILE`</span><br><span class="line">          GETH_PID=`ps -aux |grep geth |grep datadir |awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">          while [ -n &quot;$GETH_PID&quot; ]; do</span><br><span class="line">              kill -kill $GETH_PID</span><br><span class="line">              GETH_PID=`ps -aux |grep geth |grep datadir |awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">          done</span><br><span class="line">          echo -n $&quot;Stopping $prog: &quot;</span><br><span class="line">          success ||  failure</span><br><span class="line">          retval=$?</span><br><span class="line">          echo</span><br><span class="line">          [ $retval -eq 0 ] &amp;&amp;  rm  -rf $LOCK_FILE &amp;&amp; rm -rf $PID_FILE</span><br><span class="line">          return $retval</span><br><span class="line">     else</span><br><span class="line">          echo -e &quot;The apps server is not running... &quot;  &gt;&gt;/dev/null 2&gt;&amp;1</span><br><span class="line">     fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">restart() &#123;</span><br><span class="line">    stop</span><br><span class="line">    start</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reload() &#123;</span><br><span class="line">    restart</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rh_status() &#123;</span><br><span class="line">    status -p $&#123;PID_FILE&#125; $PROG</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rh_status_q() &#123;</span><br><span class="line">    rh_status &gt;/dev/null 2&gt;&amp;1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">start)</span><br><span class="line">     rh_status_q &amp;&amp; exit 0</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">stop)</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">restart)</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">status)</span><br><span class="line">     rh_status</span><br><span class="line">     ;;</span><br><span class="line">*)</span><br><span class="line"></span><br><span class="line">echo $&quot;Usage: $0 &#123;start|stop|status|restart|status&#125;&quot;</span><br><span class="line">     exit 2</span><br><span class="line">esac</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2978,7 +3003,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3176,7 +3201,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">70</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

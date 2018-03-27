@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="抽象该BIP为比特币脚本系统描述了一个新的操作码（OP_CHECKLOCKTIMEVERIFY），该操作码允许交易输出在未来的某个点之前变得不可花费。 概要CHECKLOCKTIMEVERIFY重新定义了现有的NOP2操作码(其实就是OP_CHECKLOCKTIMEVERIFY命令替换了OP_NOP2命令)。执行时，如果以下任何一个条件成立，则脚本解释器将以错误终止：  堆栈是空的;  堆栈中的顶">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-26T14:06:24.000Z">
+<meta property="og:updated_time" content="2018-03-27T02:39:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BIP-65 OP_CHECKLOCKTIMEVERIFY">
 <meta name="twitter:description" content="抽象该BIP为比特币脚本系统描述了一个新的操作码（OP_CHECKLOCKTIMEVERIFY），该操作码允许交易输出在未来的某个点之前变得不可花费。 概要CHECKLOCKTIMEVERIFY重新定义了现有的NOP2操作码(其实就是OP_CHECKLOCKTIMEVERIFY命令替换了OP_NOP2命令)。执行时，如果以下任何一个条件成立，则脚本解释器将以错误终止：  堆栈是空的;  堆栈中的顶">
@@ -421,6 +421,7 @@
 <li><a href="https://github.com/mruddy/bip65-demos" target="_blank" rel="noopener">https://github.com/mruddy/bip65-demos</a></li>
 </ul>
 <h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>该文件置于公共领域。</p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.chidaolian.com/article-680-4" target="_blank" rel="noopener">BIP65：检查锁定时间验证</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki" target="_blank" rel="noopener">bips/bip-0065.mediawiki</a></p>
 
       
     </div>
@@ -463,6 +464,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/27/blockchain/隔离见证、闪电网络理解/" rel="prev" title="隔离见证、闪电网络理解">
+                隔离见证、闪电网络理解 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -540,7 +545,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -738,7 +743,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">70</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -774,7 +789,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">2.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">3.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三方托管"><span class="nav-number">4.</span> <span class="nav-text">第三方托管</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非交互式时间锁定退款"><span class="nav-number">5.</span> <span class="nav-text">非交互式时间锁定退款</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双因素钱包"><span class="nav-number">5.1.</span> <span class="nav-text">双因素钱包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#付款渠道"><span class="nav-number">5.2.</span> <span class="nav-text">付款渠道</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用于发布数据的无信任支付"><span class="nav-number">6.</span> <span class="nav-text">用于发布数据的无信任支付</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明牺牲矿工的收费"><span class="nav-number">7.</span> <span class="nav-text">证明牺牲矿工的收费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冻结资金"><span class="nav-number">8.</span> <span class="nav-text">冻结资金</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完全替换nLockTime字段"><span class="nav-number">9.</span> <span class="nav-text">完全替换nLockTime字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#详细规则"><span class="nav-number">10.</span> <span class="nav-text">详细规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">11.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPV客户"><span class="nav-number">12.</span> <span class="nav-text">SPV客户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#积分"><span class="nav-number">13.</span> <span class="nav-text">积分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">14.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">15.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#版权"><span class="nav-number">16.</span> <span class="nav-text">版权</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">2.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">3.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三方托管"><span class="nav-number">4.</span> <span class="nav-text">第三方托管</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非交互式时间锁定退款"><span class="nav-number">5.</span> <span class="nav-text">非交互式时间锁定退款</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双因素钱包"><span class="nav-number">5.1.</span> <span class="nav-text">双因素钱包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#付款渠道"><span class="nav-number">5.2.</span> <span class="nav-text">付款渠道</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用于发布数据的无信任支付"><span class="nav-number">6.</span> <span class="nav-text">用于发布数据的无信任支付</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明牺牲矿工的收费"><span class="nav-number">7.</span> <span class="nav-text">证明牺牲矿工的收费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冻结资金"><span class="nav-number">8.</span> <span class="nav-text">冻结资金</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完全替换nLockTime字段"><span class="nav-number">9.</span> <span class="nav-text">完全替换nLockTime字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#详细规则"><span class="nav-number">10.</span> <span class="nav-text">详细规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">11.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPV客户"><span class="nav-number">12.</span> <span class="nav-text">SPV客户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#积分"><span class="nav-number">13.</span> <span class="nav-text">积分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">14.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">15.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#版权"><span class="nav-number">16.</span> <span class="nav-text">版权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用和参考"><span class="nav-number">17.</span> <span class="nav-text">引用和参考</span></a></li></ol></div>
             
 
           </div>

@@ -112,7 +112,7 @@
 <meta property="og:description" content="抽象该BIP介绍了的相对锁定时间（RLT），RLT使用序列号字段来实现强一致性语义，以使已签名的交易输入在确认其相应的输出后在限定的时间段内保持无效。 动机比特币交易每个输入都有一个序列号字段。最初的想法似乎是mempool中的交易将被替换为具有更高序列值的相同输入。虽然这没有得到很好的实施，但假设即使较低的序列号利润更高，矿工会喜欢较高的序列号。然而，一个仅仅依靠利润动机的矿工会完全打破这个假设">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://github.com/bitcoin/bips/raw/master/bip-0068/encoding.png">
-<meta property="og:updated_time" content="2018-03-26T12:38:05.000Z">
+<meta property="og:updated_time" content="2018-03-27T02:43:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BIP-68使用共识序列号记录相对锁定时间">
 <meta name="twitter:description" content="抽象该BIP介绍了的相对锁定时间（RLT），RLT使用序列号字段来实现强一致性语义，以使已签名的交易输入在确认其相应的输出后在限定的时间段内保持无效。 动机比特币交易每个输入都有一个序列号字段。最初的想法似乎是mempool中的交易将被替换为具有更高序列值的相同输入。虽然这没有得到很好的实施，但假设即使较低的序列号利润更高，矿工会喜欢较高的序列号。然而，一个仅仅依靠利润动机的矿工会完全打破这个假设">
@@ -405,6 +405,7 @@
 <p>BIP112：<a href="https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0112.mediawiki</a></p>
 <p>BIP113：<a href="https://github.com/bitcoin/bips/blob/master/bip-0113.mediawiki" target="_blank" rel="noopener">https://github.com/bitcoin/bips/blob/master/bip-0113.mediawiki</a></p>
 <p>散列时间片契约（HTLCs）：<a href="https://github.com/ElementsProject/lightning/raw/master/doc/deployable-lightning.pdf" target="_blank" rel="noopener">https://github.com/ElementsProject/lightning/raw/master/doc/deployable-lightning.pdf</a></p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.chidaolian.com/article-680-5" target="_blank" rel="noopener">BIP68：使用序列号的相对锁定时间</a></p>
 
       
     </div>
@@ -530,7 +531,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -728,7 +729,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">70</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -764,7 +775,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">2.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规范"><span class="nav-number">3.</span> <span class="nav-text">规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#履行"><span class="nav-number">4.</span> <span class="nav-text">履行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#致谢"><span class="nav-number">5.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">6.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#兼容性"><span class="nav-number">7.</span> <span class="nav-text">兼容性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">2.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规范"><span class="nav-number">3.</span> <span class="nav-text">规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#履行"><span class="nav-number">4.</span> <span class="nav-text">履行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#致谢"><span class="nav-number">5.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">6.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#兼容性"><span class="nav-number">7.</span> <span class="nav-text">兼容性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用和参考"><span class="nav-number">9.</span> <span class="nav-text">引用和参考</span></a></li></ol></div>
             
 
           </div>
