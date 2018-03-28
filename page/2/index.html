@@ -276,6 +276,1153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/blockchain/共识算法概述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/23/blockchain/共识算法概述/" itemprop="url">共识算法概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T15:46:06+08:00">2018-03-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一开始就认为共识算法其实比较简单，但是一直没有认真地总结，导致这块知识一直都是短板。其实共识算法的本质是分布式一致性的问题，但是显然这和分布式一致性略有区别。有以下两个主要的区别：</p>
+<ol>
+<li>传统的分布式一致性算法认为，每个节点都不会欺诈，如果出现问题一般都是网络分区，请求顺序的问题。但是共识算法不能保证每一个节点都是正常节点，可能就是欺诈节点。</li>
+<li>传统的一致性算法只要有值就行，不太关心哪个节点写入数据。<b style="color:red">但是共识算法，必须公平地对待每一个节点，选取这个节点必须是公平的，于是就有了POW和POS机制的出现。这个就好像是选择值本来一个很纯粹的事情绑定了特定的业务，所以要处理的事情就变得很复杂了。所以在分析共识算法的时候要将这个点剥离出来，拨出来之后这就是一个分布式一致性的问题。</b></li>
+</ol>
+<p>所以说共识算法，剥离了上面两个方面的因素就是一个纯粹的分布式一致性算法。<b style="color:red">其实说白了共识算法就是分布式一致性在P2P网络中的应用。</b></p>
+<p>其他的分布式协议：<a href="/2018/03/22/算法/Paxos协议详解/">Paxos</a>、<a href="/2018/03/23/算法/Raft算法简介/">Raft</a>。</p>
+<h2 id="从拜占庭将军问题谈起"><a href="#从拜占庭将军问题谈起" class="headerlink" title="从拜占庭将军问题谈起"></a>从拜占庭将军问题谈起</h2><p>这是一个很经典的分布式一致性问题的提出，这里我们就不做很多的说明。可以查看维基百科中关于这点的描述。</p>
+<h2 id="拜占庭容错-BFT"><a href="#拜占庭容错-BFT" class="headerlink" title="拜占庭容错 BFT"></a>拜占庭容错 BFT</h2><p>这是拜占庭将军问题的早期的解决方案。在1982年的论文中提过几个解决方案。方案中把问题往下拆解，认为在“拜占庭将军”的问题可以在“军官与士官的问题”里解决，以降低将军问题的发生。而所谓的“军官与士官的问题”，就是探讨军官与他的士官是否能忠实实行命令。</p>
+<p>其中一个解决方案认为即使出现了伪造或错误的消息。只要有问题的将军的数量不到三分之一，仍可以达到“拜占庭容错”。原因是把同样的标准下放到“军官与士官的问题”时，在背叛的军士官不足三分之一的情况下，有问题的军士官可以很容易的被纠出来。<b style="color:blue">比如有军官A，士官B与士官C。当A要求B进攻，却要求C撤退时</b>。<b style="color:red">只要B与C交换所收到的命令，就会立刻发现A有问题</b>。<b style="color:blue">以函数来表示，将军的总数为n，n里面背叛者的数量为t，则只要n &gt; 3t就可以容错。</b></p>
+<p><b style="color:red">另一个解决方案需要有无法消去的签名。在现今许多高度信息安全要求的关键系统里，数字签名就经常被用来实现拜占庭容错，找出有问题的将军。然而，在生命攸关系统里，使用 错误侦测码就可以大幅降低问题的发生。无论系统是否存在拜占庭将军问题。所以需要做密码军算的数字签名也不一定适合这类系统。</b></p>
+<p>假如上述两个解决方案里，将军们无法直接通信时，该论文亦有进一步的解决方案。<br>此外，1980年代还有其他用来达到拜占庭容错的架构被提出，如：FTMP、MMFCS 与 SIFT。</p>
+<h2 id="使用拜占庭容错算法-PBFT"><a href="#使用拜占庭容错算法-PBFT" class="headerlink" title="使用拜占庭容错算法 PBFT"></a>使用拜占庭容错算法 PBFT</h2><p>1999年，卡斯托（Miguel Castro）与李斯克夫（Barbara Liskov）提出了实用拜占庭容错（PBFT）算法。该算法能提供高性能的运算，使得系统可以每秒处理成千的请求，比起旧式系统快了一些。<b style="color:red">后来也有针对BFT算法的各种优化版，但是优化的方向不同，有的是为了加强健壮性，有的是为了加强网络速度等。</b>下面来提一下这个PBFT算法的一些简要知识，具体请查看：<a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/PBFT%E6%B5%81%E7%A8%8B.png?raw=true" alt="PFBT流程图"><br>上面是PBFT的图示，下面我们讲个上面流程的故事。</p>
+<ol>
+<li>总司令给军长下命令向前行军500公里；</li>
+<li>军长将消息（不只有命令）传递给所有师长；</li>
+<li>1号2号师长又把消息传给其他师长，3号师长处于叛逃状态；</li>
+<li>军长再次询问各位师长是否同意执行命令。</li>
+<li>所有军官（包括军长和师长）向总司令汇报结果。</li>
+</ol>
+<p><b style="color:blue">这个算法的实用性为何高于BFT呢？因为在BFT的描述中，我们可以发现每个节点都不知道其他节点的情况，都会去询问所有的人他们所获得情况，进而做出自己的判断（只要大多数人同意的就是正确的）。这个过程达成一致性的时间比较长，而且耗费大量的P2P网络资源，不适合共识算法（规模不大是可以的）</b>。<b style="color:red">PBFT算法就是校验放给一个人去校验就可以了，而不需要全体所有的人来进行校验，你也不知道进行校验的人是谁，所以是安全的，分布式一致性也很容易达成。</b></p>
+<h2 id="节点验证的机制"><a href="#节点验证的机制" class="headerlink" title="节点验证的机制"></a>节点验证的机制</h2><p>节点验证的方式其实是两方面的，一是节点未篡改通讯协议，二是节点的选举极具公平意义。现在区块链上的实现主要是POW和POS两种方式。</p>
+<h2 id="工作量证明-POW"><a href="#工作量证明-POW" class="headerlink" title="工作量证明 POW"></a>工作量证明 POW</h2><p>这是比特币使用的共识机制，主要是通过不停地hash计算，算出nonce已满足难度系数。这样请求不易伪造，而且谁先解决难题谁就有记账权，我觉得这个是不可被攻击的。要想攻击必须具有51%以上的算力。</p>
+<h2 id="权益证明-POS"><a href="#权益证明-POS" class="headerlink" title="权益证明 POS"></a>权益证明 POS</h2><p>这种安全的机制比较简单就是你持有币所获得的权限。</p>
+<p>POS：也称股权证明，类似于财产储存在银行，这种模式会根据你持有数字货币的量和时间，分配给你相应的利息。 </p>
+<p>简单来说，就是一个根据你持有货币的量和时间，给你发利息的一个制度，在股权证明POS模式下，有一个名词叫币龄，每个币每天产生1币龄，比如你持有100个币，总共持有了30天，那么，此时你的币龄就为3000，这个时候，如果你发现了一个POS区块，你的币龄就会被清空为0。你每被清空365币龄，你将会从区块中获得0.05个币的利息(假定利息可理解为年利率5%)，那么在这个案例中，利息 = 3000 * 5% / 365 = 0.41个币，这下就很有意思了，持币有利息。</p>
+<h2 id="委任权益证明-DPOS"><a href="#委任权益证明-DPOS" class="headerlink" title="委任权益证明 DPOS"></a>委任权益证明 DPOS</h2><p>比特股的DPoS机制，中文名叫做股份授权证明机制（又称受托人机制），它的原理是让每一个持有比特股的人进行投票，由此产生101位代表 , 我们可以将其理解为101个超级节点或者矿池，而这101个超级节点彼此的权利是完全相等的。从某种角度来看，DPOS有点像是议会制度或人民代表大会制度。如果代表不能履行他们的职责（当轮到他们时，没能生成区块），他们会被除名，网络会选出新的超级节点来取代他们。DPOS的出现最主要还是因为矿机的产生，大量的算力在不了解也不关心比特币的人身上，类似演唱会的黄牛，大量囤票而丝毫不关心演唱会的内容。</p>
+<h2 id="Casper"><a href="#Casper" class="headerlink" title="Casper"></a>Casper</h2><p>这个协议也是POS，是以太坊正在开发的下一代以太坊共识协议。</p>
+<p>以太坊社区提出的正在研发中的共识协议名为Casper。Casper的基本思路是，任何人抵押足够多的以太币到系统中就可以成为矿工参与到挖矿过程。共识算法要求所有的矿工诚实工作，如果一个矿工有意破坏，不遵守协议，系统就会对矿工做出惩罚：没收之前抵押的以太币。有人把Casper这样的挖矿机制称为“虚拟挖矿”，比特币的矿工要参与挖矿需要先购买矿机，Casper则要先抵押以太币到系统中；比特币的矿工如果不按规则挖矿，则会损失电费以及可能的挖矿收益，而Casper中，不守规则的惩罚更为严重，除了失去挖矿收益，还要销毁“矿机”：抵押的以太币会被系统没收！</p>
+<h2 id="有向无环图-DAG"><a href="#有向无环图-DAG" class="headerlink" title="有向无环图 DAG"></a>有向无环图 DAG</h2><p>DAG则采用异步机制替代链式检查点的同步策略，在优秀的软件实现中如果能够有效控制网络风暴带来的带宽需求指数增加，其不失为一种对最终一致性场景有较好应用前景的算法。但是DAG的局限性也极为明显，其体系无法被利用在需要进行同步操作或一致性要求较高的操作中（例如支付结算等）。</p>
+<p>第一次提出DAG跟区块链结合是在Nxt社区，可以发现DAG最初出现就是为了解决区块链的效率问题。比特币的效率一直比较低，基于工作量证明共识下的出块机制是一个原因，由于链式的存储结构，整个网络中同时只能有一条链，导致出块无法并发执行。社区有人提出DAG的拓扑结构来存储区块，这个时候更多还是类似侧链的解决思路，不同的链条存储不同类型的交易，这样降低出现双花的可能，在之后某个节点需要合并的时候，几个分支再归并到一个区块。</p>
+<h2 id="共识规则和软分叉"><a href="#共识规则和软分叉" class="headerlink" title="共识规则和软分叉"></a>共识规则和软分叉</h2><p>共识规则决定着每个交易或每个区块的有效性。比特币网络上的每个用户和矿工都遵守着同一套共识规则，代表着他们都愿意接受和同意一个账本。</p>
+<p>当大多数用户和/或矿工决定采用更严格的共识规则时，软分叉就可能出现，这使一些以前有效的交易/区块将变为无效，而不是相反。如果大多数人执行新的规则的话，其他任何违规分叉（统计上）都不会在工作量证明方面赶上新的更严格的共识分叉。遵守旧规则的少数人将始终遵循更长，更严格的分叉，使得网络上的每个人都会最终接受和同意一个账本。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>共识算法的知识很多这里就不做更多地说明了。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98#%E5%AF%A6%E7%94%A8%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%AE%B9%E9%8C%AF" target="_blank" rel="noopener">拜占庭将军问题</a><br><a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a><br><a href="https://www.jianshu.com/p/fb5edf031afd" target="_blank" rel="noopener">区块链核心技术：拜占庭共识算法之PBFT</a><br><a href="http://www.chidaolian.com/article-680-1" target="_blank" rel="noopener">案例分析软分叉的艺术——政策规则保护</a><br><a href="http://8btc.com/thread-40113-1-1.html" target="_blank" rel="noopener">以太坊紫皮书（中文版）</a><br><a href="https://blog.csdn.net/lsttoy/article/details/61624287" target="_blank" rel="noopener">[区块链]共识算法（POW,POS,DPOS,PBFT）介绍和心得</a><br><a href="http://8btc.com/thread-35475-1-1.html" target="_blank" rel="noopener">以太坊共识协议Casper原理是怎样的？</a><br><a href="http://chainx.org/news/index/detail/id/14.html" target="_blank" rel="noopener">拜占庭容错(BFT)算法介绍</a><br><a href="http://www.btc38.com/others/other_all/49.html" target="_blank" rel="noopener">加密的钱包如何获得POS利息</a><br><a href="http://www.btc38.com/altcoin/general/47.html" target="_blank" rel="noopener">深度教程：POS和POW全解析</a><br><a href="http://www.chidaolian.com/article-828-8" target="_blank" rel="noopener">盘点区块链共识机制——论PoW，PoS，DPos和DAG的优缺点对比分析</a><br><a href="https://www.7234.cn/dag/36392" target="_blank" rel="noopener">DAG也许是真正的区块链3.0</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/算法/Raft算法简介/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/23/算法/Raft算法简介/" itemprop="url">Raft算法简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T11:24:29+08:00">2018-03-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>分布式一致性算法中大家最熟悉还是Paxos，但是这个算法理解起来比较难，实现这个算法的难度也很高，最后都会对协议本身进行修改实现。</p>
+<p>为了提高理解性，Raft 将一致性算法分为了几个部分，例如领导选取（leader selection），日志复制（log replication）和安全性（safety），同时它使用了更强的一致性来减少了必须需要考虑的状态。</p>
+<h2 id="几个特性"><a href="#几个特性" class="headerlink" title="几个特性"></a>几个特性</h2><ul>
+<li>强领导者（Strong Leader）：Raft 使用一种比其他算法更强的领导形式。例如，日志条目只从领导者发送向其他服务器。这样就简化了对日志复制的管理，使得 Raft 更易于理解。</li>
+<li>领导选取（Leader Selection）：Raft 使用随机定时器来选取领导者。这种方式仅仅是在所有算法都需要实现的心跳机制上增加了一点变化，它使得在解决冲突时更简单和快速。</li>
+<li>成员变化（Membership Change）：Raft 为了调整集群中成员关系使用了新的联合一致性（joint consensus）的方法，这种方法中大多数不同配置的机器在转换关系的时候会交迭（overlap）。这使得在配置改变的时候，集群能够继续操作。</li>
+</ul>
+<h2 id="复制状态机"><a href="#复制状态机" class="headerlink" title="复制状态机"></a>复制状态机</h2><p>分布式一致性的解决方案就是<b style="color:red">复制状态机</b>, 在一组服务器的状态机产生同样的状态的副本因此即使有一些服务器崩溃了这组服务器也还能继续执行。<b style="color:red">但是集群中有一个Leader节点，Leader选举是使用一个单独的复制状态机,并存储配置信息，防止leader崩溃。</b></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/%E5%A4%8D%E5%88%B6%E7%8A%B6%E6%80%81%E6%9C%BA.jpg?raw=true" alt=""></p>
+<p>从图上我们可以发现共识模块是处理分布式一致性的，Log模块记录操作的记录（这个操作很重要），最后是每台机器的状态机。<b style="color:red">复制状态机是通过复制日志实现的，每台服务器都保存一份日志，日志中包含一系列的命令，状态机会按照顺序执行这些命令。</b></p>
+<p>应用于实际系统的一致性算法一般有以下特性：</p>
+<ul>
+<li>确保安全性（从来不会返回一个错误的结果），即使在所有的非拜占庭（Non-Byzantine）情况下，包括网络延迟、分区、丢包、冗余和乱序的情况下。</li>
+<li>高可用性，只要集群中的大部分机器都能运行，可以互相通信并且可以和客户端通信，这个集群就可用。</li>
+<li>不依赖时序保证一致性，时钟错误和极端情况下的消息延迟在最坏的情况下才会引起可用性问题。</li>
+<li>通常情况下，一条命令能够尽可能快的在大多数节点对一轮远程调用作出相应时完成，一少部分慢的机器不会影响系统的整体性能。</li>
+</ul>
+<h2 id="易于理解的设计"><a href="#易于理解的设计" class="headerlink" title="易于理解的设计"></a>易于理解的设计</h2><p>设计 Raft 的目标有如下几个（我想任何算法都应该是这样的）：</p>
+<ul>
+<li>能提供一个完整的、实际的基础来进行系统构建，减少开发者的工作</li>
+<li>在任何情况下都能保证安全可用。</li>
+<li>对于常规的操作，必须是高效的。</li>
+<li>易于理解（这样才能便于应用）</li>
+<li>它必须能让开发者有一个直观的认识，这样才能使系统构建者们去对它进行扩展。（其实我觉得这点有点啰嗦）</li>
+</ul>
+<p>Raft使用了两种方式来简化算法的复杂度。</p>
+<p><b style="color:blue">一是问题分解</b>：尽可能将问题分解成为若干个可解决的、可被理解的小问题。例如，在 Raft 中，我们把问题分解成为了<b style="color:blue">领导选取（leader election）</b>、<b style="color:blue">日志复制（log replication）</b>、<b style="color:blue">安全（safety）</b>和<b style="color:blue">成员变化（membership changes）</b>。</p>
+<p><b style="color:blue">第二个方法是通过减少需要考虑的状态的数量将状态空间简化，这能够使得整个系统更加一致并且尽可能消除不确定性。</b>特别地，日志之间不允许出现空洞，并且 Raft 限制了限制了日志不一致的可能性。尽管在大多数情况下，我们都都在试图消除不确定性，但是有时候有些情况下，不确定性使得算法更易理解。尤其是，随机化方法使得不确定性增加，但是它减少了状态空间。我们使用随机化来简化了 Raft 中的领导选取算法。</p>
+<h2 id="Raft-一致性算法"><a href="#Raft-一致性算法" class="headerlink" title="Raft 一致性算法"></a>Raft 一致性算法</h2><h3 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h3><p>在所有服务器上持久存在的：（在响应远程过程调用 RPC 之前稳定存储的）</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>currentTerm</td>
+<td>服务器最后知道的任期号（从0开始递增）</td>
+</tr>
+<tr>
+<td>votedFor</td>
+<td>在当前任期内收到选票的候选人 id（如果没有就为 null）</td>
+</tr>
+<tr>
+<td>log[]</td>
+<td>日志条目；每个条目包含状态机的要执行命令和从领导人处收到时的任期号</td>
+</tr>
+</tbody>
+</table>
+<p>在所有服务器上不稳定存在的：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>commitIndex</td>
+<td>已知的被提交的最大日志条目的索引值（从0开始递增）</td>
+</tr>
+<tr>
+<td>lastApplied</td>
+<td>被状态机执行的最大日志条目的索引值（从0开始递增）</td>
+</tr>
+</tbody>
+</table>
+<p>在领导人服务器上不稳定存在的：（在选举之后初始化的）</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nextIndex[]</td>
+<td>对于每一个服务器，记录需要发给它的下一个日志条目的索引（初始化为领导人上一条日志的索引值+1）</td>
+</tr>
+<tr>
+<td>matchIndex[]</td>
+<td>对于每一个服务器，记录已经复制到该服务器的日志的最高索引值（从0开始递增）</td>
+</tr>
+</tbody>
+</table>
+<p><b style="color:red">这个是每台机器内部的状态量，根据这些信息我们可以查看相应的节点状态，每个节点也可以通过这些状态来检查网络中各节点的状态，最终需要leader节点进行同步。</b></p>
+<h3 id="附加日志远程过程调用-（AppendEntries-RPC）"><a href="#附加日志远程过程调用-（AppendEntries-RPC）" class="headerlink" title="附加日志远程过程调用 （AppendEntries RPC）"></a>附加日志远程过程调用 （AppendEntries RPC）</h3><p>由领导人来调用复制日志（5.3节）；也会用作heartbeat</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>领导人的任期号</td>
+</tr>
+<tr>
+<td>leaderId</td>
+<td>领导人的 id，为了其他服务器能重定向到客户端</td>
+</tr>
+<tr>
+<td>prevLogIndex</td>
+<td>最新日志之前的日志的索引值</td>
+</tr>
+<tr>
+<td>prevLogTerm</td>
+<td>最新日志之前的日志的领导人任期号</td>
+</tr>
+<tr>
+<td>entries[]</td>
+<td>将要存储的日志条目（表示 heartbeat 时为空，有时会为了效率发送超过一条）</td>
+</tr>
+<tr>
+<td>leaderCommit</td>
+<td>领导人提交的日志条目索引值</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>当前的任期号，用于领导人更新自己的任期号</td>
+</tr>
+<tr>
+<td>success</td>
+<td>如果其它服务器包含能够匹配上 prevLogIndex 和 prevLogTerm 的日志时为真</td>
+</tr>
+</tbody>
+</table>
+<p>接受者需要实现：</p>
+<ol>
+<li>如果 term &lt; currentTerm返回 false（5.1节）(这个应该是发现了最新的leader)</li>
+<li>如果在prevLogIndex处的日志的任期号与prevLogTerm不匹配时，返回 false（5.3节）（发现问题，3解决）</li>
+<li>如果一条已经存在的日志与新的冲突（index 相同但是任期号 term 不同），则删除已经存在的日志和它之后所有的日志（5.3节）（解决2中存在的问题，回滚）</li>
+<li>添加任何在已有的日志中不存在的条目（恢复数据）</li>
+<li>如果leaderCommit &gt; commitIndex，将commitIndex设置为leaderCommit和最新日志条目索引号中较小的一个（获取新日志后更新）</li>
+</ol>
+<p><b style="color:red">这个心跳检测和同步日志消息其实就是检测当前节点与Leader节点异同，如果发现数据异常，根据Leader节点的数据进行回滚，拉取最新的日志，根据日志恢复状态机。如果发现漏了很多日志就同步日志恢复状态机。</b></p>
+<h3 id="投票请求RPC（RequestVote-RPC）"><a href="#投票请求RPC（RequestVote-RPC）" class="headerlink" title="投票请求RPC（RequestVote RPC）"></a>投票请求RPC（RequestVote RPC）</h3><p>由候选人发起收集选票（5.2节）</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>候选人的任期号</td>
+</tr>
+<tr>
+<td>candidateId</td>
+<td>请求投票的候选人 id</td>
+</tr>
+<tr>
+<td>lastLogIndex</td>
+<td>候选人最新日志条目的索引值</td>
+</tr>
+<tr>
+<td>lastLogTerm</td>
+<td>候选人最新日志条目对应的任期号</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>目前的任期号，用于候选人更新自己</td>
+</tr>
+<tr>
+<td>voteGranted</td>
+<td>如果候选人收到选票为 true</td>
+</tr>
+</tbody>
+</table>
+<p>接受者需要实现：</p>
+<ol>
+<li>如果term &lt; currentTerm返回 false（5.1节）(可能是旧的Leader，但现在有新的了，忽略)</li>
+<li>如果votedFor为空或者与candidateId相同，并且候选人的日志和自己的日志一样新，则给该候选人投票（5.2节 和 5.4节）</li>
+</ol>
+<p><b style="color:blue">服务器需要遵守的规则：</b></p>
+<p>所有服务器：</p>
+<ul>
+<li>如果commitIndex &gt; lastApplied，lastApplied自增，将log[lastApplied]应用到状态机（5.3节）</li>
+<li>如果 RPC 的请求或者响应中包含一个 term T 大于 currentTerm，则currentTerm赋值为 T，并切换状态为追随者（Follower）（5.1节）</li>
+</ul>
+<p>追随者（followers）: 5.2节</p>
+<ul>
+<li>响应来自候选人和领导人的 RPC</li>
+<li><b style="color:red">如果在超过选取领导人时间之前没有收到来自当前领导人的AppendEntries RPC或者没有收到候选人的投票请求，则自己转换状态为候选人</b></li>
+</ul>
+<p>候选人：5.2节</p>
+<ul>
+<li>转变为选举人之后开始选举：<ul>
+<li>currentTerm自增</li>
+<li>给自己投票</li>
+<li>重置选举计时器</li>
+<li>向其他服务器发送RequestVote RPC</li>
+</ul>
+</li>
+<li>如果收到了来自大多数服务器的投票：成为领导人</li>
+<li><b style="color:red">如果收到了来自新领导人的AppendEntries RPC（heartbeat）：转换状态为追随者</b></li>
+<li>如果选举超时：开始新一轮的选举</li>
+</ul>
+<p>领导人：</p>
+<ul>
+<li>一旦成为领导人：向其他所有服务器发送空的AppendEntries RPC（heartbeat）;在空闲时间重复发送以防止选举超时（5.2节）</li>
+<li>如果收到来自客户端的请求：向本地日志增加条目，在该条目应用到状态机后响应客户端（5.3节）</li>
+<li>对于一个追随者来说，如果上一次收到的日志索引大于将要收到的日志索引（nextIndex）：通过AppendEntries RPC将 nextIndex 之后的所有日志条目发送出去</li>
+<li>如果发送成功：将该追随者的 nextIndex和matchIndex更新</li>
+<li>如果由于日志不一致导致AppendEntries RPC失败：nextIndex递减并且重新发送（5.3节）</li>
+<li>如果存在一个满足N &gt; commitIndex和matchIndex[i] &gt;= N并且log[N].term == currentTerm的 N，则将commitIndex赋值为 N</li>
+</ul>
+<h3 id="Raft-一致性算法的特性"><a href="#Raft-一致性算法的特性" class="headerlink" title="Raft 一致性算法的特性"></a>Raft 一致性算法的特性</h3><p>Raft 算法保证这些特性任何时刻都成立</p>
+<table>
+<thead>
+<tr>
+<th>性质</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>选举安全原则（Election Safety）</td>
+<td>一个任期（term）内最多允许有一个领导人被选上（5.2节）</td>
+</tr>
+<tr>
+<td>领导人只增加原则（Leader Append-Only）</td>
+<td>领导人永远不会覆盖或者删除自己的日志，它只会增加条目</td>
+</tr>
+<tr>
+<td>日志匹配原则（Log Matching）</td>
+<td>如果两个日志在相同的索引位置上的日志条目的任期号相同，那么我们就认为这个日志从头到这个索引位置之间的条目完全相同（5.3 节）</td>
+</tr>
+<tr>
+<td>领导人完全原则（Leader Completeness)</td>
+<td>如果一个日志条目在一个给定任期内被提交，那么这个条目一定会出现在所有任期号更大的领导人中</td>
+</tr>
+<tr>
+<td>状态机安全原则（State Machine Safety）</td>
+<td>如果一个服务器已经将给定索引位置的日志条目应用到状态机中，则所有其他服务器不会在该索引位置应用不同的条目（5.4.3节）</td>
+</tr>
+</tbody>
+</table>
+<p><b style="color:red">Raft 通过首先选出一个领导人来实现一致性，然后给予领导人完全管理复制日志（replicated log）的责任。领导人接收来自客户端的日志条目，并把它们复制到其他的服务器上，领带人还要告诉服务器们什么时候将日志条目应用到它们的状态机是安全的。通过选出领导人能够简化复制日志的管理工作。例如，领导人能够决定将新的日志条目放到哪，而并不需要和其他的服务器商议，数据流被简化成从领导人流向其他服务器。如果领导人宕机或者和其他服务器失去连接，就可以选取下一个领导人。</b></p>
+<p>通过选出领导人，Raft 将一致性问题分解成为三个相对独立的子问题：</p>
+<ul>
+<li>领导人选取（Leader election）： 在一个领导人宕机之后必须要选取一个新的领导人（5.2节）</li>
+<li>日志复制（Log replication）： 领导人必须从客户端接收日志然后复制到集群中的其他服务器，并且强制要求其他服务器的日志保持和自己相同</li>
+<li>安全性（Safety）： Raft 的关键的安全特性是 表-3 中提到的状态机安全原则（State Machine Safety）:如果一个服务器已经将给定索引位置的日志条目应用到状态机中，则所有其他服务器不会在该索引位置应用不同的条目。5.4节阐述了 Raft 是如何保证这条原则的，解决方案涉及到一个对于选举机制另外的限制，这一部分会在 5.2节 中说明。</li>
+</ul>
+<p>在说明了一致性算法之后，本章会讨论有关可用性（availability）的问题和系统中时序（timing）的问题。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>raft的Leader选举机制和策略总觉得和redis的集群模式很像，后来查看资料，果然redis内部使用的就是raft协议。也就大概明白raft协议的意思了。这里就不再过多地去说明了。</p>
+<p>但是论文的后面还有大量的实现说明，我在讨论了，可以查看论文原文，里面提到了很多细节问题，都是我们不得不考虑的事情。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.infoq.com/cn/articles/raft-paper#" target="_blank" rel="noopener">Raft 一致性算法论文译文</a><br><a href="http://blog.csdn.net/gBbQRglVIr3dYi82/article/details/79386536" target="_blank" rel="noopener">图解分布式协议-RAFT</a><br><a href="https://blog.csdn.net/sanwenyublog/article/details/53385616" target="_blank" rel="noopener">redis集群实现(五) sentinel的架构与raft协议</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/java/Java中ThreadLocal学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/22/java/Java中ThreadLocal学习/" itemprop="url">Java中ThreadLocal学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T17:09:55+08:00">2018-03-22</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在java中，并发的操作包中有copyOnWrite，但是这个类不是用来处理数据隔离的，也就是不能达到保持线程上下文的问题，但是ThreadLocal类可以。这里我们简单介绍一下，就不做更多阐述了。以下代码是Java8的实现。</p>
+<h2 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h2><p>这个类就是ThreadLocal里面存放数据使用的数据结构了。<b style="color:red">不用我说大家都知道这个类是单例模式的，key呢就是ThreadLocal，也就是说ThreadLocal本身是多例程序，是的就是这样，因为Thread是通过TheadLocal获取的ThreadLocalMap里面的值。</b></p>
+<p>这个Map没有继承Map，而且是利用数组进行的实现，比较简单。<b style="color:red">特别需要说明的就是hash冲突的问题，一旦发生hash冲突就会从当前位置一步一步向下找空余的地方放置新值，找的时候如果没找到就从hash位置开始一个一个向下找。</b>以前在学习数据结构时候就比较好奇这种解决hash键冲突的方式，当时还是觉得这种方式比较不靠谱（主要当前基本都是使用C和C++，特别喜欢使用链表），今天看到这个应用觉得也还是不错的解决之道。</p>
+<p>关于Hash计算就是ThreadLocal中的threadLocalHashCode &amp; （length-1）计算出来。</p>
+<p><b style="color:red">关于初始化和扩容：默认创建16个元素，满三分之二后进行扩容。</b></p>
+<p><b style="color:red">每次数据遍历访问都会进行key的判断，如果元素已经失效就会进行删除，但是这不能完全解决ThreadLocal的内存泄露问题。</b></p>
+<h2 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h2><p>在Thread里面有两个属性，系统退出时会设置为null，用于释放资源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 包内访问的元素。</span><br><span class="line">ThreadLocal.ThreadLocalMap threadLocals = null;</span><br><span class="line">ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;</span><br></pre></td></tr></table></figure></p>
+<p>看一下exit方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">private void exit() &#123;</span><br><span class="line">    if (group != null) &#123;</span><br><span class="line">        group.threadTerminated(this);</span><br><span class="line">        group = null;</span><br><span class="line">    &#125;</span><br><span class="line">    /* Aggressively null out all reference fields: see bug 4006245 */</span><br><span class="line">    target = null;</span><br><span class="line">    /* Speed the release of some of these resources */</span><br><span class="line">    threadLocals = null;</span><br><span class="line">    inheritableThreadLocals = null;</span><br><span class="line">    inheritedAccessControlContext = null;</span><br><span class="line">    blocker = null;</span><br><span class="line">    uncaughtExceptionHandler = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="关于ThreadLocal"><a href="#关于ThreadLocal" class="headerlink" title="关于ThreadLocal"></a>关于ThreadLocal</h2><p>其实这个类只是起着链接ThreadLocalMap和Thread的链接访问而已。具体可以查看代码实现。这里就不做更多的说明了。</p>
+<h2 id="SuppliedThreadLocal"><a href="#SuppliedThreadLocal" class="headerlink" title="SuppliedThreadLocal"></a>SuppliedThreadLocal</h2><p>java8新的类，这里就是将ThreadLocal对象封装在supplier里面，防止为null而已，实现也比较简单。</p>
+<h2 id="关于内存泄露的问题"><a href="#关于内存泄露的问题" class="headerlink" title="关于内存泄露的问题"></a>关于内存泄露的问题</h2><p>我们来看一下ThreadLocalMap中Entry的数据结构，发现是一个弱引用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    /** The value associated with this ThreadLocal. */</span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    // key为ThreadLocal（这个需要深入学习一下）</span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        super(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用来引用它，那么系统 GC 的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value永远无法回收，造成内存泄漏。</b></p>
+<p>其实，ThreadLocalMap的设计中已经考虑到这种情况，也加上了一些防护措施：在ThreadLocal的get(),set(),remove()的时候都会清除线程ThreadLocalMap里所有key为null的value。</p>
+<p>但是这些被动的预防措施并不能保证不会内存泄漏：</p>
+<p>使用static的ThreadLocal，延长了ThreadLocal的生命周期，可能导致的内存泄漏（参考ThreadLocal 内存泄露的实例分析）。<br>分配使用了ThreadLocal又不再调用get(),set(),remove()方法，那么就会导致内存泄漏。</p>
+<h2 id="为什么使用弱引用"><a href="#为什么使用弱引用" class="headerlink" title="为什么使用弱引用"></a>为什么使用弱引用</h2><p>为了应对非常大和长时间的用途，哈希表使用弱引用的 key。</p>
+<p>ThreadLocal内存泄漏的根源是：由于ThreadLocalMap的生命周期跟Thread一样长，如果没有手动删除对应key就会导致内存泄漏，而不是因为弱引用。</p>
+<p>那么如何解决这个问题呢？</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>向Entry中注册ReferenceQueue，利用一个线程定期清除这个Queue里面的被垃圾回收的数据就可以了。但是多付出了一个线程的开销。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.importnew.com/22039.html" target="_blank" rel="noopener">深入分析 ThreadLocal 内存泄漏问题</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/算法/Paxos协议详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/22/算法/Paxos协议详解/" itemprop="url">Paxos协议详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T15:40:51+08:00">2018-03-22</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Paxos协议/算法是分布式系统中比较重要的协议，它有多重要呢？</p>
+<p><a href="https://coolshell.cn/articles/10910.html" target="_blank" rel="noopener">&lt;分布式系统的事务处理&gt;</a>：</p>
+<ul>
+<li>Google Chubby的作者Mike Burrows说过这个世界上只有一种一致性算法，那就是Paxos，其它的算法都是残次品。</li>
+</ul>
+<p><a href="https://book.douban.com/subject/25723658/" target="_blank" rel="noopener">&lt;大规模分布式存储系统&gt;</a>：</p>
+<ul>
+<li>理解了这两个分布式协议之后(Paxos/2PC)，学习其他分布式协议会变得相当容易。</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>记得一年前去看Paxos的算法，那真是云里雾里根本不知道在讲什么，后来看了网上的一个视频（<a href="http://cxh.me/2014/08/26/paxos-study/" target="_blank" rel="noopener">知行学社的分布式系统与Paxos算法视频课程</a>）终于记住了。但是时间一长又忘记了，但是永远记住了两个规则，我觉得总结的很好。这个视频讲解的也十分到位。</p>
+<ol>
+<li>Prepare阶段喜新厌旧</li>
+<li>Commit阶段后者认同前者</li>
+<li>最终少数服从多数</li>
+</ol>
+<h2 id="算法的说明"><a href="#算法的说明" class="headerlink" title="算法的说明"></a>算法的说明</h2><p><b style="color:red">首先将议员的角色分为proposers，acceptors，和learners（允许身兼数职）</b>。proposers提出提案，提案信息包括提案编号和提议的value；acceptor收到提案后可以<b style="color:red">接受</b>（accept）提案，若提案获得多数acceptors的接受，则称该提案被<b style="color:red">批准（chosen）</b>；learners只能<b style="color:red">“学习”</b>被批准的提案。划分角色后，就可以更精确的定义问题：</p>
+<ul>
+<li><b style="color:red">决议（value）</b>只有在被proposers提出后才能被批准（未经批准的决议称为“提案（proposal）”）；</li>
+<li>在一次Paxos算法的执行实例中，只<b style="color:red">批准（chosen）</b>一个value；</li>
+<li>learners只能获得<b style="color:red">被批准（chosen）</b>的value。</li>
+</ul>
+<p>另外还需要保证progress。这一点以后再讨论。作者通过不断加强上述3个约束（主要是第二个）获得了Paxos算法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P1：一个acceptor必须接受（accept）第一次收到的提案。</span><br></pre></td></tr></table></figure>
+<p>这个比较好理解。（但是这里忽略了预提交阶段的事情了）。然后下面就是后者认同前者了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2：一旦一个具有value v的提案被批准（chosen），那么之后批准（chosen）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>这个是对接收者后者认同前者的说明，但是貌似只是对一个acceptor有约束，所以必须成为所有acceptors的共识，于是有了P2a。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2a：一旦一个具有value v的提案被批准（chosen），那么之后任何acceptor再次接受（accept）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>之前说的后者认同前者都是针对acceptor，但如果对于Proposer呢？于是又出现了P2b：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2b：一旦一个具有value v的提案被批准（chosen），那么以后任何proposer提出的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>但是根据P2b难以提出实现手段。因此需要进一步加强P2b。虽然以上规则很美好，但是总会出现各种异常的情况，但总会出现被大多数人接收的提案（少数服从多数原则）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">P2c：如果一个编号为n的提案具有value v，那么存在一个多数派，要么他们中所有人都没有接受（accept）编号小于n</span><br><span class="line">的任何提案，要么他们已经接受（accept）的所有编号小于n的提案中编号最大的那个提案具有value v。</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">最后这一条可能大家都不太明白，其实大概是这样的，当一个Proposer发现自己已经获得超过半数的之后后，就会进行广播说“我的提案通过啦，新的提案就不要再提出来啦”，于是众人开始学习（有点像区块链中挖出矿的幸运儿有木有）。对于掉队的孩子又找到队伍了，发起的旧协议终于到了“我提出一个提案，xxx”，于是其他人对他说“还提这些陈芝麻烂谷子干嘛，我们已经通过这个问题的提案了，就是XXX”，于是新人说那是晚到的邮件啊，我其实早就收到消息了呀！</b>不知你看懂没有，这就是Paxos协议。</p>
+<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>以上就是理解这个Paxos算法的思路，如果你想具体了解这个算法的过程，可以查看视频，也可以看wiki百科里面关于Paxos的示例，写得已经很明白了，只有按照前言中的三条规则向下面走，你一定会明白，这个应该不是特别难于理解。</p>
+<h2 id="决议的发布（主acceptor）"><a href="#决议的发布（主acceptor）" class="headerlink" title="决议的发布（主acceptor）"></a>决议的发布（主acceptor）</h2><p>一个显而易见的方法是当acceptors批准一个value时，将这个消息发送给所有learner。但是这个方法会导致消息量过大。</p>
+<p>由于假设没有Byzantine failures，learners可以通过别的learners获取已经通过的决议。因此acceptors只需将批准的消息发送给指定的某一个learner，其他learners向它询问已经通过的决议。这个方法降低了消息量，但是指定learner失效将引起系统失效。</p>
+<p><b style="color:red">因此acceptors需要将accept消息发送给learners的一个子集，然后由这些learners去通知所有learners。</b></p>
+<p>但是由于消息传递的不确定性，可能会没有任何learner获得了决议批准的消息。当learners需要了解决议通过情况时，可以让一个proposer重新进行一次提案。注意一个learner可能兼任proposer。</p>
+<h2 id="Progress的保证-主Proposer"><a href="#Progress的保证-主Proposer" class="headerlink" title="Progress的保证(主Proposer)"></a>Progress的保证(主Proposer)</h2><p><b style="color:red">根据上述过程当一个proposer发现存在编号更大的提案时将终止提案。这意味着提出一个编号更大的提案会终止之前的提案过程。如果两个proposer在这种情况下都转而提出一个编号更大的提案，就可能陷入活锁</b>，违背了Progress的要求。这种情况下的解决方案是选举出一个leader，仅允许leader提出提案。但是由于消息传递的不确定性，可能有多个proposer自认为自己已经成为leader。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://new-play.tudou.com/v/446596938.html?spm=a2hzp.8253869.0.0" target="_blank" rel="noopener">paxos和分布式系统</a><br><a href="https://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95#.E5.AE.9E.E4.BE.8B" target="_blank" rel="noopener">Paxos算法</a><br><a href="http://codemacro.com/2014/10/15/explain-poxos/" target="_blank" rel="noopener">图解分布式一致性协议Paxos</a><br><a href="http://blog.jobbole.com/106327/" target="_blank" rel="noopener">图解 Paxos 一致性协议</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/21/java/Java中volatile解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/21/java/Java中volatile解析/" itemprop="url">Java中volatile解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-21T15:44:05+08:00">2018-03-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这几天又想起volatile的知识，我只是知道是为了可见性，多拷贝导致的不一致性，别的好像想不起来了，所以今天就来深入了解一下，免得忘记（网上的文章真长，有比要吗？）。</p>
+<h2 id="计算机内存模型"><a href="#计算机内存模型" class="headerlink" title="计算机内存模型"></a>计算机内存模型</h2><p>这个是计算机体系结构的相关知识，计算机的数据存储大概是这样的。 CPU-&gt;寄存器-&gt;高速缓存块（cache）【可能不进cache】-&gt; 主存（内存）。所以操作一个对象的时候，可能就有存储多拷贝而引起的数据可见性的问题（多线程的情况下）。硬件上解决的话就是总线锁进行处理。</p>
+<p>对于操作系统还存储内核空间和用户空间的数据拷贝的问题。</p>
+<h2 id="并发三个概念"><a href="#并发三个概念" class="headerlink" title="并发三个概念"></a>并发三个概念</h2><p>在并发编程中，我们通常会遇到以下三个问题：原子性问题，可见性问题，有序性问题。</p>
+<h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>多步操作完成一件事的时候才会出现的问题，大多数的操作都是多步完成的。</p>
+<h3 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h3><p>多拷贝操作（并发计算等）进行数据回写的时候可能出现的问题。</p>
+<h3 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h3><p>一般来说指令在CPU中是顺序执行的，但是CPU有时会进行指令重排序，但是保证不会影响执行的结果，但是会影响逻辑结果。</p>
+<h3 id="指令重排序的危害"><a href="#指令重排序的危害" class="headerlink" title="指令重排序的危害"></a>指令重排序的危害</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//线程1:</span><br><span class="line">context = loadContext();   //语句1</span><br><span class="line">inited = true;             //语句2</span><br><span class="line"> </span><br><span class="line">//线程2:</span><br><span class="line">while(!inited )&#123;</span><br><span class="line">  sleep()</span><br><span class="line">&#125;</span><br><span class="line">doSomethingwithconfig(context);</span><br></pre></td></tr></table></figure>
+<p>在上面这个例子中，如果线程1执行时语句1和语句2进行了对换，那么当线程2利用inited判断上下文是否被加载成功的时候可能会被误判，这是很危险的。</p>
+<h2 id="Java的内存模型"><a href="#Java的内存模型" class="headerlink" title="Java的内存模型"></a>Java的内存模型</h2><p>基于栈帧的结构每个Java线程都有自己的工作内存。线程对变量的所有操作都必须在工作内存中进行，而不能直接对主存进行操作。并且每个线程不能访问其他线程的工作内存。</p>
+<p>那么来看看java中对并发的处理情况：</p>
+<h3 id="原子性-1"><a href="#原子性-1" class="headerlink" title="原子性"></a>原子性</h3><p>请分析以下哪些操作是原子性操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x = 10;         //语句1</span><br><span class="line">y = x;         //语句2</span><br><span class="line">x++;           //语句3</span><br><span class="line">x = x + 1;     //语句4</span><br></pre></td></tr></table></figure></p>
+<p>咋一看，有些朋友可能会说上面的4个语句中的操作都是原子性操作。其实只有语句1是原子性操作，其他三个语句都不是原子性操作。</p>
+<ul>
+<li>语句1是直接将数值10赋值给x，也就是说线程执行这个语句的会直接将数值10写入到工作内存中。</li>
+<li>语句2实际上包含2个操作，它先要去读取x的值，再将x的值写入工作内存，虽然读取x的值以及 将x的值写入工作内存 这2个操作都是原子性操作，但是合起来就不是原子性操作了。</li>
+<li>语句3与4，x++和 x = x+1包括3个操作：读取x的值，进行加1操作，写入新的值。</li>
+</ul>
+<p>所以上面4个语句只有语句1的操作具备原子性。</p>
+<p><b style="color:red">不过这里有一点需要注意：在32位平台下，对64位数据的读取和赋值是需要通过两个操作来完成的，不能保证其原子性。但是好像在最新的JDK中，JVM已经保证对64位数据的读取和赋值也是原子性操作了。</b></p>
+<p><b style="color:red">从上面可以看出，Java内存模型只保证了基本读取和赋值是原子性操作，如果要实现更大范围操作的原子性，可以通过synchronized和Lock来实现。由于synchronized和Lock能够保证任一时刻只有一个线程执行该代码块，那么自然就不存在原子性问题了，从而保证了原子性。</b></p>
+<h3 id="可见性-1"><a href="#可见性-1" class="headerlink" title="可见性"></a>可见性</h3><p>对于可见性，Java提供了volatile关键字来保证可见性。</p>
+<p><b style="color:red">另外，通过synchronized和Lock也能够保证可见性，synchronized和Lock能保证同一时刻只有一个线程获取锁然后执行同步代码，并且在释放锁之前会将对变量的修改刷新到主存当中。因此可以保证可见性。</b></p>
+<h3 id="有序性-1"><a href="#有序性-1" class="headerlink" title="有序性"></a>有序性</h3><p><b style="color:blue">在Java内存模型中，允许编译器和处理器对指令进行重排序，但是重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。</b></p>
+<p><b style="color:red">在Java里面，可以通过volatile关键字来保证一定的“有序性”（具体原理在下一节讲述）。另外可以通过synchronized和Lock来保证有序性，很显然，synchronized和Lock保证每个时刻是有一个线程执行同步代码，相当于是让线程顺序执行同步代码，自然就保证了有序性。</b></p>
+<p><b style="color:red">另外，Java内存模型具备一些先天的“有序性”，即不需要通过任何手段就能够得到保证的有序性，这个通常也称为 happens-before 原则。如果两个操作的执行次序无法从happens-before原则推导出来，那么它们就不能保证它们的有序性，虚拟机可以随意地对它们进行重排序。</b></p>
+<p>下面就来具体介绍下happens-before原则（先行发生原则）：</p>
+<ul>
+<li>程序次序规则：一个线程内，按照代码顺序，书写在前面的操作先行发生于书写在后面的操作</li>
+<li>锁定规则：一个unLock操作先行发生于后面对同一个锁的lock操作</li>
+<li>volatile变量规则：对一个变量的写操作先行发生于后面对这个变量的读操作</li>
+<li>传递规则：如果操作A先行发生于操作B，而操作B又先行发生于操作C，则可以得出操作A先行发生于操作C</li>
+<li>线程启动规则：Thread对象的start()方法先行发生于此线程的每个一个动作</li>
+<li>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生</li>
+<li>线程终结规则：线程中所有的操作都先行发生于线程的终止检测，我们可以通过Thread.join()方法结束、Thread.isAlive()的返回值手段检测到线程已经终止执行</li>
+<li>对象终结规则：一个对象的初始化完成先行发生于他的finalize()方法的开始</li>
+</ul>
+<h2 id="volatile特性"><a href="#volatile特性" class="headerlink" title="volatile特性"></a>volatile特性</h2><h3 id="volatile关键字的两层语义"><a href="#volatile关键字的两层语义" class="headerlink" title="volatile关键字的两层语义"></a>volatile关键字的两层语义</h3><p>1）保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。</p>
+<p>2）禁止进行指令重排序。</p>
+<h3 id="volatile保证原子性吗？"><a href="#volatile保证原子性吗？" class="headerlink" title="volatile保证原子性吗？"></a>volatile保证原子性吗？</h3><p>不能保证，只能保证线程下次读取的值是最新的。类似于乐观锁而已。</p>
+<h3 id="volatile能保证有序性吗？"><a href="#volatile能保证有序性吗？" class="headerlink" title="volatile能保证有序性吗？"></a>volatile能保证有序性吗？</h3><p>在前面提到volatile关键字能禁止指令重排序，所以volatile能在一定程度上保证有序性。</p>
+<p>volatile关键字禁止指令重排序有两层意思：</p>
+<ol>
+<li><b style="color:red">当程序执行到volatile变量的读操作或者写操作时，在其前面的操作的更改肯定全部已经进行，且结果已经对后面的操作可见；在其后面的操作肯定还没有进行；</b></li>
+<li>在进行指令优化时，不能将在对volatile变量访问的语句放在其后面执行，也不能把volatile变量后面的语句放到其前面执行。</li>
+</ol>
+<h3 id="volatile的原理和实现机制"><a href="#volatile的原理和实现机制" class="headerlink" title="volatile的原理和实现机制"></a>volatile的原理和实现机制</h3><p><b style="color:red">观察加入volatile关键字和没有加入volatile关键字时所生成的汇编代码发现，加入volatile关键字时，会多出一个lock前缀指令(一种新的学习方法！)</b></p>
+<p>lock前缀指令实际上相当于一个内存屏障（也成内存栅栏），内存屏障会提供3个功能：</p>
+<ol>
+<li>它确保指令重排序时不会把其后面的指令排到内存屏障之前的位置，也不会把前面的指令排到内存屏障的后面；即在执行到内存屏障这句指令时，在它前面的操作已经全部完成；</li>
+<li>它会强制将对缓存的修改操作立即写入主存；</li>
+<li>如果是写操作，它会导致其他CPU中对应的缓存行无效。</li>
+</ol>
+<h2 id="使用volatile关键字的场景"><a href="#使用volatile关键字的场景" class="headerlink" title="使用volatile关键字的场景"></a>使用volatile关键字的场景</h2><p>通常来说，使用volatile必须具备以下2个条件：</p>
+<ol>
+<li>对变量的写操作不依赖于当前值</li>
+<li>该变量没有包含在具有其他变量的不变式中</li>
+</ol>
+<p>实际上，这些条件表明，可以被写入 volatile 变量的这些有效值独立于任何程序的状态，包括变量的当前状态。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.cnblogs.com/dolphin0520/p/3920373.html" target="_blank" rel="noopener">Java并发编程：volatile关键字解析</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1258,1700 +2405,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/17/blockchain/bitcoin脚本解析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/17/blockchain/bitcoin脚本解析/" itemprop="url">bitcoin脚本解析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T00:08:08+08:00">2018-03-17</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。</p>
-<p>在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public enum ScriptType &#123;</span><br><span class="line">    NO_TYPE,</span><br><span class="line">    P2PKH,</span><br><span class="line">    PUB_KEY,</span><br><span class="line">    P2SH</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>再看一下脚本的验证类型吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum VerifyFlag &#123;</span><br><span class="line">    P2SH, // Enable BIP16-style subscript evaluation.</span><br><span class="line">    STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.</span><br><span class="line">    DERSIG, // Passing a non-strict-DER signature to a checksig operation causes script failure (softfork safe, BIP66 rule 1)</span><br><span class="line">    LOW_S, // Passing a non-strict-DER signature or one with S &gt; order/2 to a checksig operation causes script failure</span><br><span class="line">    NULLDUMMY, // Verify dummy stack item consumed by CHECKMULTISIG is of zero-length.</span><br><span class="line">    SIGPUSHONLY, // Using a non-push operator in the scriptSig causes script failure (softfork safe, BIP62 rule 2).</span><br><span class="line">    MINIMALDATA, // Require minimal encodings for all push operations</span><br><span class="line">    DISCOURAGE_UPGRADABLE_NOPS, // Discourage use of NOPs reserved for upgrades (NOP1-10)</span><br><span class="line">    CLEANSTACK, // Require that only a single stack element remains after evaluation.</span><br><span class="line">    CHECKLOCKTIMEVERIFY, // Enable CHECKLOCKTIMEVERIFY operation</span><br><span class="line">    CHECKSEQUENCEVERIFY // Enable CHECKSEQUENCEVERIFY operation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="命令简介"><a href="#命令简介" class="headerlink" title="命令简介"></a>命令简介</h2><h3 id="常数"><a href="#常数" class="headerlink" title="常数"></a>常数</h3><p>当我们说脚本的时候，经常省略了这些把数字压入堆栈的关键字。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_0,OP_FALSE</td>
-<td>0</td>
-<td>0×00</td>
-<td>无</td>
-<td>空</td>
-<td>一个字节空串被推到堆栈中(并非no-op操作，有一个元素压入堆栈)</td>
-</tr>
-<tr>
-<td>N/A</td>
-<td>1-75</td>
-<td>0×01-0x4b</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下一个操作码字节是要被压入堆栈的数据</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA1</td>
-<td>76</td>
-<td>0x4c</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下一字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA2</td>
-<td>77</td>
-<td>0x4d</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下两个字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA4</td>
-<td>78</td>
-<td>0x4e</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下四个字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_1NEGATE</td>
-<td>79</td>
-<td>0x4f</td>
-<td>无</td>
-<td>-1</td>
-<td>数字-1被压入堆栈</td>
-</tr>
-<tr>
-<td>OP_1,OP_TRUE</td>
-<td>81</td>
-<td>0×51</td>
-<td>无</td>
-<td>1</td>
-<td>数字1被压入堆栈</td>
-</tr>
-<tr>
-<td>OP_2-OP_16</td>
-<td>82-96</td>
-<td>0×52-0×60</td>
-<td>无</td>
-<td>2-16</td>
-<td>与关键名相对应的数字被压入堆栈</td>
-</tr>
-</tbody>
-</table>
-<h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_NOP</td>
-<td>97</td>
-<td>0×61</td>
-<td>无</td>
-<td>无</td>
-<td>无任何操作</td>
-</tr>
-<tr>
-<td>OP_IF</td>
-<td>99</td>
-<td>0×63</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>–</td>
-<td>如果栈项元素值不为0，语句将被执行，栈项元素值被删除。</td>
-</tr>
-<tr>
-<td>OP_NOTIF</td>
-<td>100</td>
-<td>0×64</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>如果栈项元素值为0，语句将被执行，栈项元素值被删除。</td>
-</tr>
-<tr>
-<td>OP_ELSE</td>
-<td>103</td>
-<td>0×67</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>如果前述的OP_IF或 OP_NOTIF或OP_ELSE 未被执行，这些语句就会被执行；如果前述的OP_IF或 OP_NOTIF或OP_ELSE被执行，这些语句就不会被执行</td>
-</tr>
-<tr>
-<td>OP_ENDIF</td>
-<td>104</td>
-<td>0×68</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>结束if/else语言块</td>
-</tr>
-<tr>
-<td>OP_VERIFY</td>
-<td>105</td>
-<td>0×69</td>
-<td>True / false</td>
-<td>无 / False</td>
-<td>如果栈项元素值非真，则标记交易无效。True会被删除，False不会被删除。</td>
-</tr>
-<tr>
-<td>OP_RETURN</td>
-<td>106</td>
-<td>0x6a</td>
-<td>无</td>
-<td>无</td>
-<td>标记交易无效</td>
-</tr>
-</tbody>
-</table>
-<h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_TOALTSTACK</td>
-<td>107</td>
-<td>0x6b</td>
-<td>x1</td>
-<td>(alt)x1</td>
-<td>把输入压入辅堆栈的项部，从主堆栈删除。</td>
-</tr>
-<tr>
-<td>OP_FROMALTSTACK</td>
-<td>108</td>
-<td>0x6c</td>
-<td>(alt)x1</td>
-<td>x1</td>
-<td>把输入压入主堆栈的项部，从辅堆栈删除。</td>
-</tr>
-<tr>
-<td>OP_IFDUP</td>
-<td>115</td>
-<td>0×73</td>
-<td>x</td>
-<td>x / x x</td>
-<td>如果栈项元素值不为0，复制该元素值</td>
-</tr>
-<tr>
-<td>OP_DEPTH</td>
-<td>116</td>
-<td>0×74</td>
-<td>无</td>
-<td>&lt;堆栈大小&gt;</td>
-<td>把堆栈元素个数压入堆栈</td>
-</tr>
-<tr>
-<td>OP_DROP</td>
-<td>117</td>
-<td>0×75</td>
-<td>x</td>
-<td>无</td>
-<td>删除栈顶元素</td>
-</tr>
-<tr>
-<td>OP_DUP</td>
-<td>118</td>
-<td>0×76</td>
-<td>x</td>
-<td>x x</td>
-<td>复制栈顶元素</td>
-</tr>
-<tr>
-<td>OP_NIP</td>
-<td>119</td>
-<td>0×77</td>
-<td>x1 x2</td>
-<td>x2</td>
-<td>删除栈顶的下一个元素</td>
-</tr>
-<tr>
-<td>OP_OVER</td>
-<td>120</td>
-<td>0×78</td>
-<td>x1 x2</td>
-<td>x1 x2 x1</td>
-<td>复制栈顶的下一个元素到栈顶</td>
-</tr>
-<tr>
-<td>OP_PICK</td>
-<td>121</td>
-<td>0×79</td>
-<td>xn … x2 x1 x0 <n></n></td>
-<td>xn … x2 x1 x0 xn</td>
-<td>把堆栈的第n个元素拷贝到栈顶</td>
-</tr>
-<tr>
-<td>OP_ROLL</td>
-<td>122</td>
-<td>0x7a</td>
-<td>xn … x2 x1 x0 <n></n></td>
-<td>… x2 x1 x0 xn</td>
-<td>把堆栈的第n个元素移动到栈顶</td>
-</tr>
-<tr>
-<td>OP_ROT</td>
-<td>123</td>
-<td>0x7b</td>
-<td>x1 x2 x3</td>
-<td>x2 x3 x1</td>
-<td>栈顶的三个元素向左翻转</td>
-</tr>
-<tr>
-<td>OP_SWAP</td>
-<td>124</td>
-<td>0x7c</td>
-<td>x1 x2</td>
-<td>x2 x1</td>
-<td>栈顶的两个元素交换</td>
-</tr>
-<tr>
-<td>OP_TUCK</td>
-<td>125</td>
-<td>0x7d</td>
-<td>x1 x2</td>
-<td>x2 x1 x2</td>
-<td>把栈顶元素拷贝并插入到栈顶下一个元素之后。注意：原文为“插入到栈顶下一个元素之前”，可能有误，翻译时改为“之后”</td>
-</tr>
-<tr>
-<td>OP_2DROP</td>
-<td>109</td>
-<td>0x6d</td>
-<td>x1 x2</td>
-<td>无</td>
-<td>删除栈顶两个元素</td>
-</tr>
-<tr>
-<td>OP_2DUP</td>
-<td>110</td>
-<td>0x6e</td>
-<td>x1 x2</td>
-<td>x1 x2 x1 x2</td>
-<td>复制栈顶两个元素</td>
-</tr>
-<tr>
-<td>OP_3DUP</td>
-<td>111</td>
-<td>0x6f</td>
-<td>x1 x2 x3</td>
-<td>x1 x2 x3 x1 x2 x3</td>
-<td>复制栈顶三个元素</td>
-</tr>
-<tr>
-<td>OP_2OVER</td>
-<td>112</td>
-<td>0×70</td>
-<td>x1 x2 x3 x4</td>
-<td>x1 x2 x3 x4 x1 x2</td>
-<td>把栈底的两个元素拷贝到栈顶</td>
-</tr>
-<tr>
-<td>OP_2ROT</td>
-<td>113</td>
-<td>0×71</td>
-<td>x1 x2 x3 x4 x5 x6</td>
-<td>x3 x4 x5 x6 x1 x2</td>
-<td>以一对元素为单位，向左翻转。注意：原文大意“把第五和第六元素移动到栈顶”，明显有误</td>
-</tr>
-<tr>
-<td>OP_2SWAP</td>
-<td>114</td>
-<td>0×72</td>
-<td>x1 x2 x3 x4    x3 x4</td>
-<td>x1 x2</td>
-<td>以一对元素为单位，交换栈顶的两对元素的位置。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_CAT</td>
-<td>126</td>
-<td>0x7e</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>连接两个字符串，已禁用</td>
-</tr>
-<tr>
-<td>OP_SUBSTR</td>
-<td>127</td>
-<td>0x7f</td>
-<td>in begin size</td>
-<td>out</td>
-<td>返回字符串的一部分，已禁用</td>
-</tr>
-<tr>
-<td>OP_LEFT</td>
-<td>128</td>
-<td>0×80</td>
-<td>in size</td>
-<td>out</td>
-<td>在一个字符串中保留左边指定长度的子串，已禁用</td>
-</tr>
-<tr>
-<td>OP_RIGHT</td>
-<td>129</td>
-<td>0×81</td>
-<td>in size</td>
-<td>out</td>
-<td>在一个字符串中保留右边指定长度的子串，已禁用</td>
-</tr>
-<tr>
-<td>OP_SIZE</td>
-<td>130</td>
-<td>0×82</td>
-<td>in</td>
-<td>in size</td>
-<td>把栈顶元素的字符串长度压入堆栈(无需弹出元素)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="位逻辑"><a href="#位逻辑" class="headerlink" title="位逻辑"></a>位逻辑</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_INVERT</td>
-<td>131</td>
-<td>0×83</td>
-<td>in</td>
-<td>out</td>
-<td>所有输入的位取反，已禁用.</td>
-</tr>
-<tr>
-<td>OP_AND</td>
-<td>132</td>
-<td>0×84</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的所有位进行布尔与运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_OR</td>
-<td>133</td>
-<td>0×85</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的每一位进行布尔或运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_XOR</td>
-<td>134</td>
-<td>0×86</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的每一位进行布尔异或运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_EQUAL</td>
-<td>135</td>
-<td>0×87</td>
-<td>x1 x2</td>
-<td>True / false</td>
-<td>如果输入的两个数相等，返回1，否则返回0。</td>
-</tr>
-<tr>
-<td>OP_EQUALVERIFY</td>
-<td>136</td>
-<td>0×88</td>
-<td>x1 x2</td>
-<td>True / false</td>
-<td>与OP_EQUAL一样，之后运行OP_VERIFY 。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="算术逻辑"><a href="#算术逻辑" class="headerlink" title="算术逻辑"></a>算术逻辑</h3><p>注意：算术逻辑的输入限于有符号32位长整数，但输出有可能会溢出。</p>
-<p>如果任何命令的输入值长度超过4字节，脚本必须中止和失败返回。如果标记为已禁用的操作码出现在交易中，也必须终止和失败返回</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_1ADD</td>
-<td>139</td>
-<td>0x8b</td>
-<td>in</td>
-<td>out</td>
-<td>输入值加1</td>
-</tr>
-<tr>
-<td>OP_1SUB</td>
-<td>140</td>
-<td>0x8c</td>
-<td>in</td>
-<td>out</td>
-<td>输入值减1</td>
-</tr>
-<tr>
-<td>OP_2MUL</td>
-<td>141</td>
-<td>0x8d</td>
-<td>in</td>
-<td>out</td>
-<td>输入值乘2，已禁用</td>
-</tr>
-<tr>
-<td>OP_2DIV</td>
-<td>142</td>
-<td>0x8e</td>
-<td>in</td>
-<td>out</td>
-<td>输入值除2，已禁用</td>
-</tr>
-<tr>
-<td>OP_NEGATE</td>
-<td>143</td>
-<td>0x8f</td>
-<td>in</td>
-<td>out</td>
-<td>输入值符号取反</td>
-</tr>
-<tr>
-<td>OP_ABS</td>
-<td>144</td>
-<td>0×90</td>
-<td>in</td>
-<td>out</td>
-<td>输入值符号取正</td>
-</tr>
-<tr>
-<td>OP_NOT</td>
-<td>145</td>
-<td>0×91</td>
-<td>in</td>
-<td>out</td>
-<td>如果输入值为0或1，则输出1或0；否则输出0。I</td>
-</tr>
-<tr>
-<td>OP_0NOTEQUAL</td>
-<td>146</td>
-<td>0×92</td>
-<td>in</td>
-<td>out</td>
-<td>输入值为0输出0；否则输出1。</td>
-</tr>
-<tr>
-<td>OP_ADD</td>
-<td>147</td>
-<td>0×93</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a+b</td>
-</tr>
-<tr>
-<td>OP_SUB</td>
-<td>148</td>
-<td>0×94</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a-b</td>
-</tr>
-<tr>
-<td>OP_MUL</td>
-<td>149</td>
-<td>0×95</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a*b，已禁用</td>
-</tr>
-<tr>
-<td>OP_DIV</td>
-<td>150</td>
-<td>0×96</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a/b, 已禁用</td>
-</tr>
-<tr>
-<td>OP_MOD</td>
-<td>151</td>
-<td>0×97</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a/b的余数，已禁用</td>
-</tr>
-<tr>
-<td>OP_LSHIFT</td>
-<td>152</td>
-<td>0×98</td>
-<td>a b</td>
-<td>out</td>
-<td>把a向左移动b位，保留符号，已禁用</td>
-</tr>
-<tr>
-<td>OP_RSHIFT</td>
-<td>153</td>
-<td>0×99</td>
-<td>a b</td>
-<td>out</td>
-<td>把a向右移动b位，保留符号，已禁用</td>
-</tr>
-<tr>
-<td>OP_BOOLAND</td>
-<td>154</td>
-<td>0x9a</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a和b都不为0，输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_BOOLOR</td>
-<td>155</td>
-<td>0x9b</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a或b不为0，输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_NUMEQUAL</td>
-<td>156</td>
-<td>0x9c</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a=b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_NUMEQUALVERIFY</td>
-<td>157</td>
-<td>0x9d</td>
-<td>a b</td>
-<td>out</td>
-<td>与OP_NUMEQUAL一样，之后要运行OP_VERIFY</td>
-</tr>
-<tr>
-<td>OP_NUMNOTEQUAL</td>
-<td>158</td>
-<td>0x9e</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a!=b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_LESSTHAN</td>
-<td>159</td>
-<td>0x9f</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&lt;b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_GREATERTHAN</td>
-<td>160</td>
-<td>0xa0</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&gt;b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_LESSTHANOREQUAL</td>
-<td>161</td>
-<td>0xa1</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&lt;=b则输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_GREATERTHANOREQUAL</td>
-<td>162</td>
-<td>0xa2</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&gt;=b则输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_MIN</td>
-<td>163</td>
-<td>0xa3</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a,b中的最小值</td>
-</tr>
-<tr>
-<td>OP_MAX</td>
-<td>164</td>
-<td>0xa4</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a,b中的最大值</td>
-</tr>
-<tr>
-<td>OP_WITHIN</td>
-<td>165</td>
-<td>0xa5</td>
-<td>x min max</td>
-<td>out</td>
-<td>如果x在min和max之间，则输出1，否则输出</td>
-</tr>
-</tbody>
-</table>
-<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_RIPEMD160</td>
-<td>166</td>
-<td>0xa6</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用RIPEMD-160算法HASH</td>
-</tr>
-<tr>
-<td>OP_SHA1</td>
-<td>167</td>
-<td>0xa7</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-1算法HASH.</td>
-</tr>
-<tr>
-<td>OP_SHA256</td>
-<td>168</td>
-<td>0xa8</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-256算法HASH.</td>
-</tr>
-<tr>
-<td>OP_HASH160</td>
-<td>169</td>
-<td>0xa9</td>
-<td>in</td>
-<td>hash</td>
-<td>输入被HASH两次，先用 SHA-256，再用 RIPEMD-160.</td>
-</tr>
-<tr>
-<td>OP_HASH256</td>
-<td>170</td>
-<td>0xaa</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-256算法HASH两次.</td>
-</tr>
-<tr>
-<td>OP_CODESEPARATOR</td>
-<td>171</td>
-<td>0xab</td>
-<td>无</td>
-<td>无</td>
-<td>所有签名检查只需匹配最近一次执行的OP_CODESEPARATOR 操作数据的签名即可。</td>
-</tr>
-<tr>
-<td>OP_CHECKSIG</td>
-<td>172</td>
-<td>0xac</td>
-<td>sig pubkey</td>
-<td>True / false</td>
-<td>全部交易的输出、输入和脚本(从最近执行的OP_CODESEPARATOR操作到最)都被HASH，OP_CHECKSIG使用的签名必须是该HASH值和公钥的有效签名，如果是真则返回1，否则返回0。</td>
-</tr>
-<tr>
-<td>OP_CHECKSIGVERIFY</td>
-<td>173</td>
-<td>0xad</td>
-<td>sig pubkey</td>
-<td>True / false</td>
-<td>与OP_CHECKSIG一样，但之后执行 OP_VERIFY</td>
-</tr>
-<tr>
-<td>OP_CHECKMULTISIG</td>
-<td>174</td>
-<td>0xae</td>
-<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 <number of="" public="" keys=""></number></number></td>
-<td>True / False</td>
-<td>对于每个签名和公钥对，OP_CHECKSIG 都会被执行，如果公钥列得比签名多，一些公钥/签名对会失败。所有的签名要与公钥匹配。如果所有签名有效，输出1，否则返回0。因为存在BUG，一个未使用的外部值会从堆栈中删除。</td>
-</tr>
-<tr>
-<td>OP_CHECKMULTISIGVERIFY</td>
-<td>175</td>
-<td>0xaf</td>
-<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 … <number of="" public="" keys=""></number></number></td>
-<td>True / False</td>
-<td>与 OP_CHECKMULTISIG,一样，但是之后运行 OP_VERIFY。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="伪关键字"><a href="#伪关键字" class="headerlink" title="伪关键字"></a>伪关键字</h3><p>这些关键字仅供内部使用，用辅助进行交易匹配，如果使用在实际的交易中则是无效的。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_PUBKEYHASH</td>
-<td>253</td>
-<td>0xfd</td>
-<td>表示公钥用OP_HASH160操作码HASH</td>
-</tr>
-<tr>
-<td>OP_PUBKEY</td>
-<td>254</td>
-<td>0xfe</td>
-<td>表示与OP_CHECKSIG.兼容的一个公钥</td>
-</tr>
-<tr>
-<td>OP_INVALIDOPCODE</td>
-<td>255</td>
-<td>0xff</td>
-<td>匹配任何未指定的操作码</td>
-</tr>
-</tbody>
-</table>
-<h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_RESERVED</td>
-<td>80</td>
-<td>0×50</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VER</td>
-<td>98</td>
-<td>0×62</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VERIF</td>
-<td>101</td>
-<td>0×65</td>
-<td>交易无效，即使发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VERNOTIF</td>
-<td>102</td>
-<td>0×66</td>
-<td>交易无效，即使发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_RESERVED1</td>
-<td>137</td>
-<td>0×89</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_RESERVED2</td>
-<td>138</td>
-<td>0x8a</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_NOP1-OP_NOP10</td>
-<td>176-185</td>
-<td>0xb0-0xb9</td>
-<td>这些关键字被忽略</td>
-</tr>
-</tbody>
-</table>
-<h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p>
-<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png" alt=""></p>
-<p>这里面的实现其实比较简单，没有什么特别需要说明的。</p>
-<p>我们大概解释这里面的类的含义：</p>
-<ol>
-<li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li>
-<li>ScriptError是脚本所有的错误集</li>
-<li>ScriptException是关于脚本的所有异常</li>
-<li>ScriptChunk是脚本的每个命令的抽象</li>
-<li>ScriptOpCodes是存放脚本命令的集合和编码</li>
-<li>TransactionSignature是交易的签名</li>
-<li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li>
-<li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li>
-</ol>
-<p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p>
-<h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">第四章 密钥和地址</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html" target="_blank" rel="noopener">第六章 交易</a><br><a href="https://en.bitcoin.it/wiki/Script" target="_blank" rel="noopener">Script</a><br><a href="http://www.8btc.com/bitcoin_scripts" target="_blank" rel="noopener">比特币脚本</a><br><a href="http://www.8btc.com/understand-bitcoin-script" target="_blank" rel="noopener">理解比特币脚本</a><br><a href="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash" target="_blank" rel="noopener">Working with contracts</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/bitcoin智能合约的实现/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/16/blockchain/bitcoin智能合约的实现/" itemprop="url">bitcoin智能合约的实现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-16T14:26:03+08:00">2018-03-16</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>一提起智能合约，大家首先想到的一定是以太坊的智能合约，但是很少有人会想到比特币也可以搭建智能合约，只是很少有人会在意到这一点，我也是在阅读bitcoinj的源码的时候，发现了一个字段想起来的。这个在交易中的字段名叫<code>sequence</code>。随后去比特币的wiki中查到了比特币contract的描述，下面就简单描述一下，不会直接翻译文档。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>分布式合约是使用比特币区块链和其他人生成合同的方法。契约不会让以前不可能的任何事情变得可能，但是它们允许您以最小化信任的方式解决常见问题。最小的信任通过让人们的判断被排除在循环之外使事情更加方便（主要还是脚本语言非图灵完备的），从而实现完全的自动化。</p>
-<p>通过构建与比特币交互的低信任协议，可以创建全新的产品：</p>
-<ul>
-<li>智能财产是可以通过区块链进行自动交易和借出的财产。</li>
-<li>可转让的虚拟财产是可交易但不重复的数字项目。</li>
-<li>代理人是自主的程序，用于维护自己的钱包，这样用于购买服务时间。货币是通过代理人销售服务获得的。 如果需求超过供应量，那么代理商可以培育可能生存或死亡的孩子，这取决于他们是否能够获得足够的业务。</li>
-<li>分布式市场是实施点对点债券和股票交易的一种方式，允许比特币发展成为国际金融体系的完全竞争者。</li>
-</ul>
-<p>这篇文章下面会举一些列子。</p>
-<h2 id="关于mempool交易替换机制的警告"><a href="#关于mempool交易替换机制的警告" class="headerlink" title="关于mempool交易替换机制的警告"></a>关于mempool交易替换机制的警告</h2><p>这个页面指出的是使用nSequence字段进行交易mempool机制替换的能力。该机制在2010年被禁用，由于担心它容易遭受Dos攻击，最近代码被彻底删除。实现者应该考虑到这一点，并尝试创建不依赖于mempool替换的合约机制，如果他们希望实现其当前实现的实现。 如果比特币在未来发生变化以再次进行mempool替换，该页面将会更新。</p>
-<h2 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h2><p>比特币中的每笔交易都有一个或多个输入和输出。每个输入/输出都有一个与之相关的小型纯函数，称为脚本。脚本可以包含交易本身简化形式的签名。</p>
-<p>每笔交易都可以拥有与之相关的锁定时间。这允许交易处于挂起状态并且可以替换，直到将指定为块索引或时间戳（对于两者都使用相同字段，但小于5亿的值被解释为块索引）指定的未来时间为止。如果交易的锁定时间已经达到，我们说它是最终的。</p>
-<p><b style="color:red">每个交易输入都有一个序列号sequence。在正常交易中，只是将值周围移动，序列号都是UINT_MAX，锁定时间为零。如果锁定时间尚未达到，但所有序列号均为UINT_MAX，则交易也被视为最终(不能修改)。序列号可用于发布新版本的交易，而不会使其他输入签名无效，例如，在交易中的每个输入来自不同方的情况下，每个输入可以以序列号0开始，并且这些数字可以独立增加。</b></p>
-<p><b style="color:red">签名检查是灵活的，因为签名的交易形式可以通过使用SIGHASH标志来控制，这些标志卡在签名末尾。</b>通过这种方式，可以构建各方签订合同的合同，允许其他部分在没有其参与的情况下进行更改。 SIGHASH标志有两个部分，一个模式和ANYONECANPAY修饰符：</p>
-<ul>
-<li>SIGHASH_ALL：这是默认设置。它表示除了输入脚本之外，关于交易的所有内容都已签名。签名输入脚本显然会使构建交易变得不可能，所以它们总是被删除。但请注意，输入的其他属性（如连接的输出和序列号）已被签名;只有不是的脚本。直观地说，它意味着“如果每个人都投入资金并且产出是这样的，我同意投入我的资金”。</li>
-<li>SIGHASH_NONE：输出没有签名，可以是任何东西。用它来表示“只要每个人都投入资金，我同意投入资金，但我不在乎输出结果如何”。该模式允许其他人通过更改输入序列号来更新交易。</li>
-<li>SIGHASH_SINGLE：与SIGHASH_NONE一样，输入已签名，但序号已空白，所以其他人可以创建新版本的交易。但是，唯一被签名的输出是与输入位置相同的输出。用这个来表示“我同意，只要我的输出是我想要的;我不关心其他人”。</li>
-<li>SIGHASH_ANYONECANPAY修饰符可以与上述三种模式结合使用。设置后，只有该输入被签名，其他输入可以是任何东西。</li>
-</ul>
-<p>脚本可以包含CHECKMULTISIG操作码。 此操作码提供n-m检查：您提供多个公钥，并指定必须存在的有效签名的数量。签名的数量可以少于公钥的数量。通过将输出设置为如下形式，输出可能需要使用两个签名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIGVERIFY</span><br></pre></td></tr></table></figure></p>
-<p>安全创建合同一般有两种模式：</p>
-<ol>
-<li>交易以部分完整或无效的形式在P2P网络外部传递。</li>
-<li>使用两个交易：一个（合同）被创建并签名，但不能立即广播。 相反，其他交易（付款）在合同同意锁定资金后播出，然后广播合同。</li>
-</ol>
-<p>这是为了确保人们总是知道他们同意。</p>
-<p>总之，这些功能让我们可以在区块链之上构建有趣的新金融工具。</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>官网列出了很多的示例，这里我们只翻译一个即可。</p>
-<p>想象一下，你在一个网站（例如论坛或维基）上开设一个帐户，并希望与运营商建立可信赖关系，但是你没有任何预先存在的声誉可以利用。一个解决方案是通过向网站支付一些钱来购买信任。但是如果你在某个时候关闭了你的账户，你可能想拿回这笔钱。您可能不相信该网站有足以向提供的花费存款（也就是保证金并不在账户上）。还有一个风险就是该网站有一天可能会消失。</p>
-<p>我们的目标是证明你做出了某种牺牲，所以网站知道你不是spambot(垃圾邮件，这里不知道什么意思，估计类似骗子啥的吧！)，但你不希望他们能够花钱（你的保证金）。如果操作员消失了，你最终不想要他们任何东西，只希望你的钱能够回来。</p>
-<p>我们可以用合同解决这个问题：</p>
-<ul>
-<li>用户和网站互相发送一个新生成的公钥。</li>
-<li>用户创建交易Tx1（付款），将10BTC放入需要用户和网站签名但不广播它的输出。他们使用该网站上一步的密钥。（当前交易网站还不知道）</li>
-<li><b style="color:red">用户发送Tx1的hash值到网站。（不发送本体）</b></li>
-<li><b style="color:red">该网站创建一个交易Tx2（合同）。 Tx2花费Tx1并通过他在第一步中提供的地址将其支付回给用户。请注意，Tx1需要两个签名，所以此事务不能完成。</b> nLockTime被设置为将来某个日期（例如六个月）。input上的序列号被设置为零。</li>
-<li>最后，将不完整（半签名）的交易发回给用户。用户检查合同是否如预期的那样 - 硬币最终会回到他身上 - 但是，除非事情发生变化，否则只能在六个月后。由于序号为零，如果双方同意，合同将来可以修改。input中的脚本尚未完成;只有用户的签名应该是零。他通过签署合同并将新signature放在适当位置来解决这个问题。</li>
-<li>用户广播Tx1，然后广播Tx2。</li>
-</ul>
-<p>在这个阶段，10BTC处于用户和网站都不能独立使用的状态。六个月后，即使网站消失，合同也将完成，用户将收回硬币。</p>
-<p>如果用户希望提早结账，该怎么办？该网站创建一个新版本的Tx2，并将nLockTime设置为零，并将输入序列号设置为UINT_MAX，然后重新签名。该网站将tx交还给用户，用户也签名。然后用户广播交易，提前终止合同并释放硬币。</p>
-<p><b style="color:red">如果六个月快到了，用户希望保留他的账户呢？同样的事情也适用：合同可以用一个更新的nLockTime辞职，序列号1比前一个更高，并重播2 ^ 32次。无论发生什么事，双方都必须同意合同改变。</b></p>
-<p>显然，如果用户原来是滥用（即垃圾邮件发送者），该网站将不允许提前结束合同。如果过多的滥用行为，存款的规模可能会增加，或者合同的长度可能会增加。(这意思是每次改动都需要追加保证金？)</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们大概了解了，这个合同的实现过程，不管怎么说还是业务抽象成了一个比特币的执行脚本，最终需要双方的公私钥来实现而已，交易锁定所有人都知道，只有sequence大于1的值，才能使得交易被改动。否则不能改动。<b style="color:red">其实说白了，还是交易本位的思想来实现智能合约。</b>相比于以太坊的智能合约，这种交易本身没有更多的智能化。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Contract" target="_blank" rel="noopener">Contract</a><br><a href="https://medium.com/@maraoz/smart-contracts-and-bitcoin-a5d61011d9b1" target="_blank" rel="noopener">智能合约和比特币</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/bitcoin协议中数字的压缩存储/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/16/blockchain/bitcoin协议中数字的压缩存储/" itemprop="url">bitcoin协议中数字的压缩存储</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-16T11:31:24+08:00">2018-03-16</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>之前提过比特币的compact格式的问题，可那是针对比特币的挖矿难度的计算的。我们在Message类中，经常会见到VarInt这个类，其实这个类是为了协议二进制流中与应用数据中的数字进行的转化约定的实现。这里也涉及到数字压缩的问题，但是这里偏向可变的数字存储，并不是我们之前讲过的压缩存储。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public VarInt(byte[] buf, int offset) &#123;</span><br><span class="line">    // 取得低8位操作。</span><br><span class="line">    int first = 0xFF &amp; buf[offset];</span><br><span class="line">    if (first &lt; 253) &#123;</span><br><span class="line">        value = first;</span><br><span class="line">        originallyEncodedSize = 1; // 1 data byte (8 bits)</span><br><span class="line">    &#125; else if (first == 253) &#123;</span><br><span class="line">        value = (0xFF &amp; buf[offset + 1]) | ((0xFF &amp; buf[offset + 2]) &lt;&lt; 8);</span><br><span class="line">        originallyEncodedSize = 3; // 1 marker + 2 data bytes (16 bits)</span><br><span class="line">    &#125; else if (first == 254) &#123;</span><br><span class="line">        value = Utils.readUint32(buf, offset + 1);</span><br><span class="line">        originallyEncodedSize = 5; // 1 marker + 4 data bytes (32 bits)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        value = Utils.readInt64(buf, offset + 1);</span><br><span class="line">        originallyEncodedSize = 9; // 1 marker + 8 data bytes (64 bits)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由于这里比较简单，我就不做更多的说明。在这段代码中我们可以得出如下的结论：</p>
-<ol>
-<li>这里针对的都是无符号的整数</li>
-<li>小于253的数字，直接用一个字节来进行存储。</li>
-<li>大于253小于2^16的数字，使用3个字节存储，其中第一个字节为253，作为标记，后面两位是存储的值，总计需要3字节</li>
-<li>大于2^16小于2^32的数字，使用3个字节存储，其中第一个字节为254，作为标记，后面两位是存储的值，总计需要5字节</li>
-<li>大于2^32小于2^64的数字，使用5个字节存储，其中第一个字节为255，作为标记，后面两位是存储的值，总计需要9字节</li>
-</ol>
-<p>有了这个规则之后，我们看一下编码的函数就更好理解了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public byte[] encode() &#123;</span><br><span class="line">    byte[] bytes;</span><br><span class="line">    switch (sizeOf(value)) &#123;</span><br><span class="line">        case 1:</span><br><span class="line">            return new byte[]&#123;(byte) value&#125;;</span><br><span class="line">        case 3:</span><br><span class="line">            return new byte[]&#123;(byte) 253, (byte) (value), (byte) (value &gt;&gt; 8)&#125;;</span><br><span class="line">        case 5:</span><br><span class="line">            bytes = new byte[5];</span><br><span class="line">            bytes[0] = (byte) 254;</span><br><span class="line">            Utils.uint32ToByteArrayLE(value, bytes, 1);</span><br><span class="line">            return bytes;</span><br><span class="line">        default:</span><br><span class="line">            bytes = new byte[9];</span><br><span class="line">            bytes[0] = (byte) 255;</span><br><span class="line">            Utils.uint64ToByteArrayLE(value, bytes, 1);</span><br><span class="line">            return bytes;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/15/blockchain/比特币的checkpoint理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/15/blockchain/比特币的checkpoint理解/" itemprop="url">比特币的checkpoint理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-15T16:22:25+08:00">2018-03-15</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在写之前的bitcoinj的网络参数时候，有一个字段叫checkpoints。当时始终没有理解这个是用来做啥的，就知道是检查点，可就是不明白检查什么。今天研读到，bitcoinj中Block的组织方式处的代码的时候又见到了这个字段，但是还是不知其意。但是知道了一个类CheckpointManager，于是今天准备来好好说道这个类。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一开始看到这个类的时候还是不明白作用是啥，但是名字上呢是略知一二，看了说明也是云里雾里，于是网上搜索checkpoint也没有比较好的回答，随着代码的深入阅读，终于搞明白了这个类的作用，这可真是太棒了！在类的说明中也提到了SPV。那么checkpoints和SPV有啥关系呢？</p>
-<h2 id="解惑"><a href="#解惑" class="headerlink" title="解惑"></a>解惑</h2><p>我们知道，接收一个新块的时候需要很多的验证，否则可能会被别人进行分叉的攻击等等。检测点，是用于保护网络不受全网51%算力攻击，因为攻击者是不能逆转最后一个检测点前发生的那些交易的。</p>
-<p>检测点是通过硬编码方式写入标准客户端的。意味着标准客户端将在检测点之前将接受所有有效交易，这些交易将是不可逆的。如果任何人试图在检测点前从一个区块对区块链进行分叉，客户端将不会接受这个分叉，这使得那些区块一成不变（set in stone）。</p>
-<p>但其实在CheckpointManager类说明上我们也可以获得一些信息：在整个链中对StoredBlock进行了硬编码。Checkpoints有两个目的：</p>
-<ul>
-<li>他们作为一种安全机制来对抗可能会重写大块历史的巨大重组，只有在时间轴的最新部分中，将区块链限制为一种共识机制。</li>
-<li>它们可以让同步到链头上的新钱包/用户比同步创建块中的所有头部更快。</li>
-</ul>
-<p><b style="color:red">这个意思就是说，你只需要同步检查点数据，以及最新检查点之后的区块，然后你的链就可以建立起来了，这样的好处就是你不需要同步所有的链上的区块。总之你利用这个特性可以简化空间和验证hash的时间，我想SPV一定是基于这种方式进行的实现。这种思路特别像跳跃表的实现。</b></p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><b style="color:red">对了这里可能是bitcoinj的实现，至于比特币内部的实现，我是不知道的。但是都是相同的，即使bitcoinj实现方式不同，但是只要被所有区块接受，那就是有效的算法不是吗？</b></p>
-<p><b style="color:red">这里我就不写一大堆的文字，唯一要提示的就是流的编码问题。如果你读的是二进制的文件，那么开头必须是<code>&quot;CHECKPOINTS 1&quot;</code>，如果读的是文件必须是<code>&quot;TXT CHECKPOINTS 1&quot;</code>开头，还有就是txt有范例在resources目录下。SPVStoredBlock需要Compact格式化（序列化）存储，之前讲过compact格式，最长是256，所以有<code>private static final int MAX_SIGNATURES = 256;</code>.下面贴源码和我的注释，这里就不深入地去探讨了。</b></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line">public class CheckpointManager &#123;</span><br><span class="line">    private static final Logger log = LoggerFactory.getLogger(CheckpointManager.class);</span><br><span class="line"></span><br><span class="line">    // 二进制流的头部检查，这个好像没有example，不过知道是这回事就可以了。</span><br><span class="line">    private static final String BINARY_MAGIC = &quot;CHECKPOINTS 1&quot;;</span><br><span class="line">    // 文件格式的开头，查看resources目录下的txt文件即可</span><br><span class="line">    private static final String TEXTUAL_MAGIC = &quot;TXT CHECKPOINTS 1&quot;;</span><br><span class="line">    private static final int MAX_SIGNATURES = 256;</span><br><span class="line"></span><br><span class="line">    // Map of block header time to data.</span><br><span class="line">    // 存放检查点</span><br><span class="line">    protected final TreeMap&lt;Long, StoredBlock&gt; checkpoints = new TreeMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    protected final NetworkParameters params;</span><br><span class="line">    // sha256hash对象</span><br><span class="line">    protected final Sha256Hash dataHash;</span><br><span class="line"></span><br><span class="line">    // base64编码器</span><br><span class="line">    public static final BaseEncoding BASE64 = BaseEncoding.base64().omitPadding();</span><br><span class="line"></span><br><span class="line">    /** Loads the default checkpoints bundled with bitcoinj */</span><br><span class="line">    public CheckpointManager(Context context) throws IOException &#123;</span><br><span class="line">        this(context.getParams(), null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Loads the checkpoints from the given stream */</span><br><span class="line">    public CheckpointManager(NetworkParameters params, @Nullable InputStream inputStream) throws IOException &#123;</span><br><span class="line">        this.params = checkNotNull(params);</span><br><span class="line">        if (inputStream == null)</span><br><span class="line">            inputStream = openStream(params);</span><br><span class="line">        checkNotNull(inputStream);</span><br><span class="line">        inputStream = new BufferedInputStream(inputStream);</span><br><span class="line">        inputStream.mark(1);</span><br><span class="line">        int first = inputStream.read();</span><br><span class="line">        inputStream.reset();</span><br><span class="line">        if (first == BINARY_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readBinary(inputStream);</span><br><span class="line">        else if (first == TEXTUAL_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readTextual(inputStream);</span><br><span class="line">        else</span><br><span class="line">            throw new IOException(&quot;Unsupported format.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a checkpoints stream pointing to inside the bitcoinj JAR */</span><br><span class="line">    // 这个可以查看resources目录下的txt文件，你就能明白一二了。</span><br><span class="line">    public static InputStream openStream(NetworkParameters params) &#123;</span><br><span class="line">        return CheckpointManager.class.getResourceAsStream(&quot;/&quot; + params.getId() + &quot;.checkpoints.txt&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 看从这个流中是如何进行text读取，解析的步骤表明txt文件的格式。</span><br><span class="line">     * @param inputStream</span><br><span class="line">     * @return</span><br><span class="line">     * @throws IOException</span><br><span class="line">     */</span><br><span class="line">    private Sha256Hash readBinary(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        DataInputStream dis = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 信息分解器</span><br><span class="line">            MessageDigest digest = Sha256Hash.newDigest();</span><br><span class="line">            // 将数据读取，并进行分化</span><br><span class="line">            DigestInputStream digestInputStream = new DigestInputStream(inputStream, digest);</span><br><span class="line">            // 转为数据流</span><br><span class="line">            dis = new DataInputStream(digestInputStream);</span><br><span class="line">            digestInputStream.on(false);</span><br><span class="line">            byte[] header = new byte[BINARY_MAGIC.length()];</span><br><span class="line">            dis.readFully(header);</span><br><span class="line">            // 先读取header，查看header是否有效。</span><br><span class="line">            if (!Arrays.equals(header, BINARY_MAGIC.getBytes(&quot;US-ASCII&quot;)))</span><br><span class="line">                throw new IOException(&quot;Header bytes did not match expected version&quot;);</span><br><span class="line">            // 检查索引是否数组越界。</span><br><span class="line">            int numSignatures = checkPositionIndex(dis.readInt(), MAX_SIGNATURES, &quot;Num signatures out of range&quot;);</span><br><span class="line">            for (int i = 0; i &lt; numSignatures; i++) &#123;</span><br><span class="line">                byte[] sig = new byte[65];</span><br><span class="line">                // 读取签名</span><br><span class="line">                dis.readFully(sig);</span><br><span class="line">                // TODO: Do something with the signature here.</span><br><span class="line">            &#125;</span><br><span class="line">            digestInputStream.on(true);</span><br><span class="line">            // 继续读一个整型</span><br><span class="line">            int numCheckpoints = dis.readInt();</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            // 生成缓冲区大小，通过Compact编码读取数据。</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                if (dis.read(buffer.array(), 0, size) &lt; size)</span><br><span class="line">                    throw new IOException(&quot;Incomplete read whilst loading checkpoints.&quot;);</span><br><span class="line">                // 利用参数从数据中恢复，会进行校验检查</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                // 存入检查点</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            // 读取hash</span><br><span class="line">            Sha256Hash dataHash = Sha256Hash.wrap(digest.digest());</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), dataHash);</span><br><span class="line">            // 这里返回的hash，可能是整体文件的hash，也可能是最后的checkpoint的hash</span><br><span class="line">            return dataHash;</span><br><span class="line">        &#125; catch (ProtocolException e) &#123;</span><br><span class="line">            throw new IOException(e);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (dis != null) dis.close();</span><br><span class="line">            inputStream.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Sha256Hash readTextual(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        // google的sha256 hash函数</span><br><span class="line">        Hasher hasher = Hashing.sha256().newHasher();</span><br><span class="line">        BufferedReader reader = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.US_ASCII));</span><br><span class="line">            String magic = reader.readLine();</span><br><span class="line">            // 开头TXT CHECKPOINTS 1，这个可以查看txt下的checkpoints文件。</span><br><span class="line">            if (!TEXTUAL_MAGIC.equals(magic))</span><br><span class="line">                throw new IOException(&quot;unexpected magic: &quot; + magic);</span><br><span class="line">            int numSigs = Integer.parseInt(reader.readLine());</span><br><span class="line">            // 多签名的量，依次读取，txt中第二行都是0</span><br><span class="line">            for (int i = 0; i &lt; numSigs; i++)</span><br><span class="line">                reader.readLine(); // Skip sigs for now.</span><br><span class="line">            // 查找有多少的检查点</span><br><span class="line">            int numCheckpoints = Integer.parseInt(reader.readLine());</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            // Hash numCheckpoints in a way compatible to the binary format.</span><br><span class="line">            hasher.putBytes(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(numCheckpoints).array());</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                byte[] bytes = BASE64.decode(reader.readLine());</span><br><span class="line">                hasher.putBytes(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                buffer.put(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            HashCode hash = hasher.hash();</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), hash);</span><br><span class="line">            return Sha256Hash.wrap(hash.asBytes());</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (reader != null) reader.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Returns a &#123;@link StoredBlock&#125; representing the last checkpoint before the given time, for example, normally</span><br><span class="line">     * you would want to know the checkpoint before the earliest wallet birthday.</span><br><span class="line">     *</span><br><span class="line">     * 返回给定时间节点之前最近的StoredBlock类的checkpoints。</span><br><span class="line">     */</span><br><span class="line">    public StoredBlock getCheckpointBefore(long time) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 时间一定要比创世区块时间要晚</span><br><span class="line">            checkArgument(time &gt; params.getGenesisBlock().getTimeSeconds());</span><br><span class="line">            // This is thread safe because the map never changes after creation.</span><br><span class="line">            Map.Entry&lt;Long, StoredBlock&gt; entry = checkpoints.floorEntry(time);</span><br><span class="line">            if (entry != null) return entry.getValue();</span><br><span class="line">            Block genesis = params.getGenesisBlock().cloneAsHeader();</span><br><span class="line">            return new StoredBlock(genesis, genesis.getWork(), 0);</span><br><span class="line">        &#125; catch (VerificationException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);  // Cannot happen.</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns the number of checkpoints that were loaded. */</span><br><span class="line">    public int numCheckpoints() &#123;</span><br><span class="line">        return checkpoints.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a hash of the concatenated checkpoint data. */</span><br><span class="line">    // 返回串联检查点数据的散列。</span><br><span class="line">    public Sha256Hash getDataHash() &#123;</span><br><span class="line">        return dataHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * &lt;p&gt;Convenience method that creates a CheckpointManager, loads the given data, gets the checkpoint for the given</span><br><span class="line">     * time, then inserts it into the store and sets that to be the chain head. Useful when you have just created</span><br><span class="line">     * a new store from scratch and want to use configure it all in one go.&lt;/p&gt;</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;Note that time is adjusted backwards by a week to account for possible clock drift in the block headers.&lt;/p&gt;</span><br><span class="line">     */</span><br><span class="line">    public static void checkpoint(NetworkParameters params, InputStream checkpoints, BlockStore store, long time)</span><br><span class="line">            throws IOException, BlockStoreException &#123;</span><br><span class="line">        checkNotNull(params);</span><br><span class="line">        checkNotNull(store);</span><br><span class="line">        checkArgument(!(store instanceof FullPrunedBlockStore), &quot;You cannot use checkpointing with a full store.&quot;);</span><br><span class="line"></span><br><span class="line">        time -= 86400 * 7;</span><br><span class="line"></span><br><span class="line">        checkArgument(time &gt; 0);</span><br><span class="line">        log.info(&quot;Attempting to initialize a new block store with a checkpoint for time &#123;&#125; (&#123;&#125;)&quot;, time, Utils.dateTimeFormat(time * 1000));</span><br><span class="line"></span><br><span class="line">        BufferedInputStream stream = new BufferedInputStream(checkpoints);</span><br><span class="line">        CheckpointManager manager = new CheckpointManager(params, stream);</span><br><span class="line">        StoredBlock checkpoint = manager.getCheckpointBefore(time);</span><br><span class="line">        store.put(checkpoint);</span><br><span class="line">        store.setChainHead(checkpoint);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/数字的压缩存储/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/算法/数字的压缩存储/" itemprop="url">数字的压缩存储</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T21:25:52+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在学习比特币的知识，突然发现一个compact合适，然后又想起了以太坊的RLP编码的问题，想着想着，就想着数据是如何压缩存储的。于是上网搜索一下，发现了thift序列化的压缩实现。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不管怎么说技术的本质就是数字，再复杂的东西也只是数字累积起来的。在计算机中数据的存储采用补码的方式，当然也有反码的概念，这里就不多说了。我们下面所说的算法就是指zigzag算法。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>一般来说数据的存储如果遇到1这样的数据还用4个字节的存储是不是很浪费空间，<code>00000000 00000000 00000001</code>有那么多的0是多余的，那么我们可以选择不存储。最后放在一个字节中去存储就会变成<code>00000001</code>,这样就省了不少的空间。</p>
-<h2 id="负数"><a href="#负数" class="headerlink" title="负数"></a>负数</h2><p>可是遇到-1会怎么样呢？(-1)<sub>10</sub> = (11111111 11111111 11111111 11111111)<sub>补</sub>，前面全是1，那怎么处理呢？</p>
-<p>zigzag给出了一个很巧的方法：我们之前讲补码讲过，补码的第一位是符号位，他阻碍了我们对于前导0的压缩，那么，我们就把这个符号位放到补码的最后，其他位整体前移一位：</p>
-<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub></p>
-<p>但是即使这样，也是很难压缩的，因为数字绝对值越小，他所含的前导1越多。于是，这个算法就把负数的所有数据位按位求反，符号位保持不变，得到了这样的整数：</p>
-<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000000<font color="red">1</font>)<sub>zigzag</sub></p>
-<p>这样就出现了很多的0，但是如果都是1的话好像也没啥问题，对负数就去1呗。这里还是以去0为主。</p>
-<h2 id="再看整数"><a href="#再看整数" class="headerlink" title="再看整数"></a>再看整数</h2><p>(1)<sub>10</sub> = (<font color="red">0</font>0000000 00000000 00000000 00000001)<sub>补</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>zigzag</sub></p>
-<h2 id="整型值与zigzag值转化"><a href="#整型值与zigzag值转化" class="headerlink" title="整型值与zigzag值转化"></a>整型值与zigzag值转化</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int int_to_zigzag(int n) &#123;</span><br><span class="line">    return (n &lt;&lt;1) ^ (n &gt;&gt;31);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int zigzag_to_int(int n) &#123;</span><br><span class="line">    return (((unsignedint)n) &gt;&gt;1) ^ -(n &amp; 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int write_to_buffer(int zz, byte* buf, int size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    for (int i =0; i &lt; size; i++) &#123;</span><br><span class="line">        if ((zz &amp; (~0x7f)) ==0) &#123;</span><br><span class="line">            buf[i] = (byte)zz;</span><br><span class="line">            ret = i + 1;</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // 第八位补一个1</span><br><span class="line">            buf[i] = (byte)((zz &amp;0x7f) |0x80);</span><br><span class="line">            // 换下一个七位，继续进行测试。</span><br><span class="line">            zz = ((unsignedint)zz)&gt;&gt;7;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里 (~0x7f)<sub>16</sub> = (11111111 11111111 11111111 10000000)<sub>补</sub>. 他的作用就是看除开最后七位后，还有没有信息。这个看起来不是很直观，还是举一个例子吧：</p>
-<p>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub></p>
-<p>这个数的转换经过下面几个步骤：</p>
-<ol>
-<li>与(~0x7f)做与操作的结果，高位还有信息，所以，我们把低7位取出来，并在倒数第八位上补一个1(0x80)：<b style="color:red">1</b>1001111</li>
-<li>将这个数右移七位：(00000000 00000000 00000000 00001111)<sub>zigzag</sub></li>
-<li>重复1，但是检测出高位都是0，设置数据为：00001111</li>
-</ol>
-<p>这个时候我们可以最终得出如下的结果：<br>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub> = [<b style="color:red">1</b>1001111, 00001111]<sub>压缩后</sub></p>
-<p><b style="color:red">注意：这里每个字节的第一位都是有意义的，如果我们读一个数，只要发现每个字节的第八位是0，就代表这个数字读取就结束了；但是如果是1的话，就只能向下读。这里要注意一旦数据比较大，32位的数据可能就变成40位了，但是这样的数据特别大的时候才会出现。</b></p>
-<h2 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int read_from_buffer(byte* buf,intmax_size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    int offset =0;</span><br><span class="line"></span><br><span class="line">    for (int i =0; i &lt; max_size; i++, offset +=7) &#123;</span><br><span class="line">        byte n = buf[i];</span><br><span class="line"></span><br><span class="line">        if ((n &amp;0x80) !=0x80) &#123;</span><br><span class="line">            ret |= (n &lt;&lt;offset);</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            ret |= ((n &amp;0x7f) &lt;&lt; offset);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个就是上面操作的逆过程而已。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个设计的比较巧妙，利用高位来标记，的确可以省不少的空间。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://mp.weixin.qq.com/s?__biz=MzA3MDExNzcyNA==&amp;mid=2650392086&amp;idx=1&amp;sn=6a2ecfe2548f121a4726d03bf23f4478&amp;scene=0#wechat_redirect" target="_blank" rel="noopener">小而巧的数字压缩算法：zigzag</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3003,7 +2456,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">64</span>
+                    <span class="site-state-item-count">69</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3048,7 +2501,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -3211,7 +2666,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">75</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
