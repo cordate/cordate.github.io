@@ -111,10 +111,12 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="Base58二进制到文本编码被称为Base58Check，用于编码比特币地址。 更一般地说，Base58Check编码用于将比特币中的字节数组编码为人类可分类的字符串。 背景最初的比特币客户端源代码解释了base58编码背后的原因： base58.h：123456// 为什么base-58而不是标准的base-64编码？//  - 不希望0OIl字符在某些字体和字体中看起来相同//可以用来创建视觉">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-28T12:47:50.000Z">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9D%9E%E5%8E%8B%E7%BC%A9%E5%85%AC%E9%92%A5%E7%94%9F%E6%88%90%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BF%87%E7%A8%8B.png?raw=true">
+<meta property="og:updated_time" content="2018-03-28T13:58:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bitcoin中Base58Check编码">
 <meta name="twitter:description" content="Base58二进制到文本编码被称为Base58Check，用于编码比特币地址。 更一般地说，Base58Check编码用于将比特币中的字节数组编码为人类可分类的字符串。 背景最初的比特币客户端源代码解释了base58编码背后的原因： base58.h：123456// 为什么base-58而不是标准的base-64编码？//  - 不希望0OIl字符在某些字体和字体中看起来相同//可以用来创建视觉">
+<meta name="twitter:image" content="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9D%9E%E5%8E%8B%E7%BC%A9%E5%85%AC%E9%92%A5%E7%94%9F%E6%88%90%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BF%87%E7%A8%8B.png?raw=true">
 
 
 
@@ -614,6 +616,9 @@
 <h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Base58Check_encoding" target="_blank" rel="noopener">Base58Check encoding</a></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关于比特币地址知识，在精通比特币中有详细地介绍，这里我们不做更多的介绍，这篇文章是我翻译的结果。</p>
 <p>在之前我们分析过椭圆曲线的知识，对于确定性钱包的知识我们也做了相关地介绍，还有就是分层确定性钱包的知识。</p>
+<p><b style="color:red">另外Base58Check还有一个极大的好处就是可以校验地址是不是正确的，因为Base58生成的时候是加入了校验码</b>。我觉得比特币团队做的真的是很棒不是吗？详情可以参考：<a href="http://8btc.com/thread-31201-1-1.html" target="_blank" rel="noopener">为什么以太坊地址中没有校验值？</a></p>
+<p><b style="color:red">对于比特币地址也要特别注意一下，地址类型也就是version/appication字段其实是自己加入的，和ecdsa本身并没有任何关系。校验码也是自己加上去的而已。我们可以看一下下面的图片.</b></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9D%9E%E5%8E%8B%E7%BC%A9%E5%85%AC%E9%92%A5%E7%94%9F%E6%88%90%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BF%87%E7%A8%8B.png?raw=true" alt=""></p>
 <p>有一段时间我在分析java的ECKey的代码发现java底层的椭圆曲线算法的实现，这里我就不做更多的说明了。<b style="color:red">关键是我们如何实现分层确定性钱包，这个很简单也很复杂，其实就是找私钥G，至于这个G怎么找，我们可以查看精通比特币里面的说明，这里面只是提到了HMAC-SHA512。看来这里面隐藏了很多的细节因素，我们有时间需要研究一下，HMAC-SHA512的知识了。</b></p>
 
       
