@@ -276,6 +276,301 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/29/blockchain/BIP-141-隔离见证/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/29/blockchain/BIP-141-隔离见证/" itemprop="url">BIP-141 隔离见证</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-29T20:16:24+08:00">2018-03-29</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h2><p><b style="color:red">这个BIP定义了一个称为“见证”的新结构，它承诺与交易处理树分开的块</b>。该结构包含检查交易有效性所需的数据，但不需要确定交易影响。特别是，脚本和签名被移到这个新的结构中。</p>
+<p><b style="color:red">目击者是通过coinbase交易嵌入到块的现有merkle根目录中的树，以使BIP软叉兼容</b>。未来的硬分叉可以将这棵树放在它自己的分支中。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>整个交易的效果由输出消费（花费）和新输出创造决定。<b style="color:red">其他交易数据，特别是签名仅用于验证区块链状态，而不是确定区块链状态。</b></p>
+<p>通过从交易结构中删除这些数据，这些数据被提交给交易处理树，几个问题得到解决：</p>
+<ul>
+<li><b>无意的延展性变得不可能。</b>由于签名数据不再是交易散列的一部分，因此交易签名方式的变化不再与交易标识相关。<b style="color:blue">作为交易可延展性的解决方案，这比典型签名方法（BIP62）要优越：</b><ul>
+<li>它可以防止任何类型脚本的非自愿交易可塑性，只要所有输入都被签名（至少使用一次CHECKSIG或CHECKMULTISIG操作）</li>
+<li>如果是m-n CHECKMULTISIG脚本，只有经过m个私钥持有者的同意才能进行交易（相对于只有1个拥有BIP62的私钥持有者）（<b style="color:red">注：隔离见证是需要比特币协议的支持的</b>）</li>
+<li>它防止由于未知的ECDSA签名延展性而导致的非自愿交易延展性(<b style="color:red">我觉得应该是指scriptSig不签名而导致的问题</b>)</li>
+<li><b style="color:red"> 它允许创建未经证实的交易依赖链而没有交易对手风险，这是离线协议的重要特征，如Lightning Network.</b></li>
+</ul>
+</li>
+<li><b>签名数据的传输变为可选</b>。仅当对等方试图验证事务而不是仅仅检查其存在时才需要它。这样可以减少SPV证明的大小，并有可能提高SPV客户端的隐私，因为他们可以使用相同的带宽下载更多的事务。</li>
+<li>通过将一部分交易数据移动到当前协议未知的结构中，可以通过软分支绕过某些约束，例如：<ul>
+<li>在计算块大小时，见证的大小可以忽略/打折，在一定程度上有效地增加块大小</li>
+<li>可以重新评估或删除硬编码常量，例如最大数据推送大小（520字节）或信号限制</li>
+<li>可以引入新的脚本系统，而不受现有脚本语义的任何限制。例如，在BIP143中描述了用于交易签名验证的新的交易摘要算法</li>
+</ul>
+</li>
+</ul>
+<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><h3 id="交易ID"><a href="#交易ID" class="headerlink" title="交易ID"></a>交易ID</h3><p><b style="color:red">一个新的数据结构witness被定义。每笔交易将有2个ID。</b></p>
+<p>定义txid保持不变：传统序列化格式的双SHA256：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[nVersion] [txins] [txouts] [nLockTime]</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">wtxid定义了一个新的：具有目击者数据的新序列化的双SHA256：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[nVersion] [marker] [flag] [txins] [txouts] [witness] [nLockTime]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>nVersion，txins，txouts和nLockTime的格式是像传统的序列化。</li>
+<li>marker必须是一个1字节的零值：0x00。</li>
+<li>flag必须是1个字节的非零值。目前，必须使用0x01。</li>
+<li><b style="color:red">witness是交易的所有见证数据的序列化。每个txin都与witness字段相关联。witness字段以var_int开始，以指示txin的堆栈项目的数目。随后是堆栈项目，每个项目以var_int开头以指示长度。见证数据不是脚本。</b></li>
+</ul>
+<p>非见证人程序（定义于下文）txin必须与空的见证字段相关联，使用0x00表示。如果所有的txins都不是witness程序，交易wtxid就等于它的交易txid。</p>
+<h3 id="承诺结构"><a href="#承诺结构" class="headerlink" title="承诺结构"></a>承诺结构</h3><p>添加了一个新的区块规则，它需要对wtxid做出承诺（翻译是这样意思不太懂，也许是指要有wtxid字段吧）。coinbase交易的wtxid被认为是0x0000….0000。</p>
+<p><b style="color:red">witness根hash</b>的计算方法与所有wtxid叶子一样，以类似于hashMerkleRoot块头中的方式计算。（其实就是与交易的默克尔树是一样的。）</p>
+<p><b style="color:red">该承诺记录在coinbase交易的scriptPubKey中。它必须至少有38个字节，其中前6个字节0x6a24aa21a9ed是：</b></p>
+<ul>
+<li>1个字节 -  OP_RETURN（0x6a）</li>
+<li>1字节 - 推送以下36个字节（0x24）</li>
+<li>4字节 - 承诺（Commitment）头（0xaa21a9ed）</li>
+<li>32字节 - 承诺哈希：Double-SHA256（见证根哈希|见证保留值）</li>
+<li><b style="color:blue">第39个字节向前：可选数据，没有共识意义</b></li>
+</ul>
+<p>并且coinbase的输入见证必须由一个32字节的数组组成<code>witness reserved value</code>。</p>
+<p><b style="color:red">如果有多个scriptPubKey匹配的模式，那么具有最高输出的索引的scriptPubKey被假定为承诺（commitment）。</b></p>
+<p><b style="color:blue">如果块中的所有交易都没有见证数据，则该承诺（commitment）是可选的。</b></p>
+<h3 id="见证程序（就是脚本啦）"><a href="#见证程序（就是脚本啦）" class="headerlink" title="见证程序（就是脚本啦）"></a>见证程序（就是脚本啦）</h3><p>由1字节推送(push)操作码（0至16）组成的scriptPubKey（或redeemScript如BIP16/P2SH中定义的），然后是2至40字节之间的数据推送，具有新的特殊含义。第一次推送的值被称为“版本字节”。下面推送的字节向量称为“见证程序”。（这个意思就是指NVersion + Script序列化后的数据吧！）</p>
+<p><b style="color:red">witness验证逻辑被触发有两种情况。每种情况都决定了witness版本字节和程序的位置，以及scriptSig的形式：</b></p>
+<ol>
+<li>触发scriptPubKey一个版本字节，再加上一个witness程序。scriptSig必须完全为空或验证失败。（“本地witness程序”）</li>
+<li><b style="color:blue">当scriptPubKey是P2SH脚本时被触发，并且redeemScript推入的BIP16 scriptSig恰好是推送版本字节加推送见证程序</b>。在scriptSig必须是完全的BIP-16的redeemScript或验证失败。（“P2SH witness程序”）</li>
+</ol>
+<p><b style="color:blue">如果版本字节是0，见证程序是20字节：</b></p>
+<ul>
+<li>它被解释为<code>pay-to-witness-public-key-hash</code>（P2WPKH）程序。</li>
+<li><b style="color:red">witness必须包含2个项目（每个≤520个字节）。第一个是签名，第二个是公钥。</b></li>
+<li>公钥的HASH160必须与20字节的见证程序相匹配。(不知这条的作用是啥，但是感觉很有用的样子)</li>
+<li>在正常的脚本评估之后，使用CHECKSIG操作对照公钥验证签名。验证必须在堆栈上导致一个TRUE。</li>
+</ul>
+<p><b style="color:blue">如果版本字节为0（版本为0代表什么意思呢），见证程序为32字节：</b></p>
+<ul>
+<li>它被解释为pay-to-witness-script-hash（P2WSH）程序。</li>
+<li>witness必须包含一个输入堆栈以供给脚本，然后是序列化脚本（witnessScript）。</li>
+<li>witnessScript（≤10,000字节）从初始witness堆栈弹出。witnessScript的SHA256加密必须与32字节的见证程序相匹配。</li>
+<li>witnessScript是反序列化的，并且在对其余见证堆栈（对于每个堆栈项≤520字节）的正常脚本评估之后执行。</li>
+<li>该脚本不能失败，并且在堆栈中导致完全一个TRUE。</li>
+</ul>
+<p><b style="color:Red">如果版本字节为0，但见证程序既不是20也不是32字节，则脚本必须失败。</b><br><b style="color:Red">如果版本字节为1到16，则不会再有对witness程序或witness堆栈的进一步解释，并且证人堆栈没有大小限制。这些版本保留给未来的扩展.</b></p>
+<h3 id="其他共识关键限制"><a href="#其他共识关键限制" class="headerlink" title="其他共识关键限制"></a>其他共识关键限制</h3><h4 id="块大小"><a href="#块大小" class="headerlink" title="块大小"></a>块大小</h4><p>目前块的总大小限制为1,000,000字节（1MB）。我们改变这个限制如下：</p>
+<p>块重量定义为基本大小 * 3 + 总尺寸。</p>
+<p>基本大小是原始交易序列化时的块大小（以字节为单位），没有任何见证相关数据，如未升级的节点所示。</p>
+<p>总大小是按BIP144所述序列化交易的块大小（以字节为单位），包括基本数据和见证数据。</p>
+<p>新规则是块重 ≤4,000,000。</p>
+<h4 id="SIGOPS"><a href="#SIGOPS" class="headerlink" title="SIGOPS"></a>SIGOPS</h4><p>每块的信息量目前仅限于20,000个。我们改变这个限制如下：</p>
+<p>当前pubkey脚本，签名脚本和P2SH检查脚本中的Sigops的计数是其先前值的4倍。sigop限制同样翻两番，达到80,000。</p>
+<p>每个P2WPKH输入都被计为1 sigop。另外，P2WSH内的操作码witnessScript与先前在P2SH内的操作码相同redeemScript。也就是说，CHECKSIG被认为只有1个sigop，根据参数CHECKMULTISIG被计为1到20个sigops。该规则适用于本地证人计划和P2SH证人计划。</p>
+<h3 id="附加定义"><a href="#附加定义" class="headerlink" title="附加定义"></a>附加定义</h3><p>以下定义不用于达成共识限制，但建议提供符合上述术语的语言。</p>
+<h4 id="事务大小计算"><a href="#事务大小计算" class="headerlink" title="事务大小计算"></a>事务大小计算</h4><p>交易权重定义为基本交易规模 * 3 + 总交易规模（即与从基本规模和总规模计算分块权重相同的方法）。</p>
+<p>虚拟交易大小定义为交易权重/4（四舍五入到下一个整数）。</p>
+<p>基本交易大小是剥离见证数据的序列化交易的大小。</p>
+<p>总交易大小是按BIP144中所述序列化的交易大小（以字节为单位），包括基本数据和见证数据。</p>
+<h4 id="新的脚本语义"><a href="#新的脚本语义" class="headerlink" title="新的脚本语义"></a>新的脚本语义</h4><p>尽管P2WPKH和P2WSH的脚本语言看起来与预先隔离的witness脚本非常相似，但有几处显着的差异。用户不得假定在预先隔离的witness系统中花费的脚本也可以用作P2WPKH或P2WSH脚本。在生产网络中进行大规模部署之前，开发人员应该在testnet上测试脚本，并启用默认的中继策略，并在主网络上激活BIP141之后用少量资金进行测试。</p>
+<p>在BIP143中描述了共识级别的一个主要区别，即作为0版见证程序中用于签名验证的新的交易摘要算法。</p>
+<p>在参考实施版本0.13.1的第​​一版隔离见证中还包括三项接力和采矿政策。基于这些政策的软分叉很可能会在不久的将来提出。为了避免无限期延迟交易确认和永久性资金损失，用户必须仔细观察新的语义：</p>
+<ul>
+<li>在P2WPKH和P2WSH中只接受压缩的公钥（见<a href="https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki" target="_blank" rel="noopener">BIP143</a>）</li>
+<li>P2WSH中OP_IF/NOTIF的参数必须最小</li>
+<li>如果OP_CHECKSIG或OP_CHECKMULTISIG失败（对于预先隔离的证人脚本和P2WSH，则签名必须为空矢量（参见<a href="https://github.com/bitcoin/bips/blob/master/bip-0146.mediawiki" target="_blank" rel="noopener">BIP146</a>）</li>
+</ul>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="P2WPKH"><a href="#P2WPKH" class="headerlink" title="P2WPKH"></a>P2WPKH</h3><p>以下示例是版本0的pay-to-witness-public-key-hash（P2WPKH）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">witness:      &lt;signature&gt; &lt;pubkey&gt;</span><br><span class="line">scriptSig:    (empty)</span><br><span class="line">scriptPubKey: 0 &lt;20-byte-key-hash&gt;</span><br><span class="line">                (0x0014&#123;20-byte-key-hash&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>scriptPubKey中的’0’表示以下推送是版本0见证程序。见证计划的长度表明它是一种P2WPKH类型。证人必须包含2件物品。witness中公钥的HASH160必须与witness程序相匹配。</p>
+<p>签名被验证为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;signature&gt; &lt;pubkey&gt; CHECKSIG</span><br></pre></td></tr></table></figure></p>
+<p>&lt;b style=””color:red&gt;与传统P2PKH输出相比，P2WPKH等价物在scriptPubKey中占用3个字节，并将签名和公钥从ScriptSig移动到见证。(找到数据应该是通过wtxid)</p>
+<h3 id="P2WPKH嵌套在BIP16-P2SH中"><a href="#P2WPKH嵌套在BIP16-P2SH中" class="headerlink" title="P2WPKH嵌套在BIP16 P2SH中"></a>P2WPKH嵌套在BIP16 P2SH中</h3><p>以下示例与P2WPKH相同，但嵌套在BIP16 P2SH输出中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">witness:      &lt;signature&gt; &lt;pubkey&gt;</span><br><span class="line">scriptSig:    &lt;0 &lt;20-byte-key-hash&gt;&gt;</span><br><span class="line">                (0x160014&#123;20-byte-key-hash&#125;)</span><br><span class="line">scriptPubKey: HASH160 &lt;20-byte-script-hash&gt; EQUAL</span><br><span class="line">                (0xA914&#123;20-byte-script-hash&#125;87)</span><br></pre></td></tr></table></figure></p>
+<p>scriptSig中的唯一项目与HASH160进行哈希处理，与scriptPubKey中的20字节脚本哈希进行比较，并解释为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;20-byte-key-hash&gt;</span><br></pre></td></tr></table></figure></p>
+<p>然后按照前面例子中的描述验证公钥和签名。</p>
+<p>与前面的例子相比，scriptPubKey大1个字节，scriptSig大23个字节。尽管嵌套见证程序的效率较低，但对于自0.6.0版本以来的所有比特币参考客户端，其支付地址都是完全透明且向后兼容的。</p>
+<h3 id="P2WSH"><a href="#P2WSH" class="headerlink" title="P2WSH"></a>P2WSH</h3><p>以下示例是1-of-2多重签名版本0付钱证人脚本哈希（P2WSH）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">witness:      0 &lt;signature1&gt; &lt;1 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIG&gt;</span><br><span class="line">scriptSig:    (empty)</span><br><span class="line">scriptPubKey: 0 &lt;32-byte-hash&gt;</span><br><span class="line">                (0x0020&#123;32-byte-hash&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>scriptPubKey中的’0’表示以下推送是版本0见证程序。见证程序的长度表明它是一个P2WSH类型。证人中的最后一项（“witnessScript”）被弹出，用SHA256散列，与scriptPubKey中的32字节散列相比较，并反序列化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>该脚本使用来自witness的其余数据执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;signature1&gt; 1 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>P2WSH允许10,000字节的最大脚本大小，因为520字节的推动限制被绕过。</p>
+<p>scriptPubKey占用34个字节，而不是23个字节的BIP16 P2SH。大小的增加提高了可能发生的碰撞攻击的安全性，因为2<sup>80</sup>工作不再可行（截至2015年底，自比特币创建以来，已有2<sup>84</sup>次哈希计算在比特币挖矿中）。<b style="color:red">支出脚本与等效的BIP16 P2SH输出相同，但被移至见证。</b></p>
+<h3 id="P2WSH嵌套在BIP16-P2SH中"><a href="#P2WSH嵌套在BIP16-P2SH中" class="headerlink" title="P2WSH嵌套在BIP16 P2SH中"></a>P2WSH嵌套在BIP16 P2SH中</h3><p>以下示例是相同的1对2多重签名P2WSH脚本，但嵌套在BIP16 P2SH输出中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">witness:      0 &lt;signature1&gt; &lt;1 &lt;pubkey1&gt; &lt;pubkey2&gt; 2 CHECKMULTISIG&gt;</span><br><span class="line">scriptSig:    &lt;0 &lt;32-byte-hash&gt;&gt;</span><br><span class="line">                (0x220020&#123;32-byte-hash&#125;)</span><br><span class="line">scriptPubKey: HASH160 &lt;20-byte-hash&gt; EQUAL</span><br><span class="line">                (0xA914&#123;20-byte-hash&#125;87)</span><br></pre></td></tr></table></figure></p>
+<p>scriptSig中的唯一项目与HASH160进行哈希处理，与scriptPubKey中的20字节哈希进行比较，并解释为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;32-byte-hash&gt;</span><br></pre></td></tr></table></figure></p>
+<p>P2WSH witnessScript然后按照前面例子中的描述执行。</p>
+<p>与前面的例子相比，scriptPubKey小11个字节（安全性降低），而证人是相同的。但是，它也需要scriptSig中的35个字节。</p>
+<h3 id="可扩展的承诺结构"><a href="#可扩展的承诺结构" class="headerlink" title="可扩展的承诺结构"></a>可扩展的承诺结构</h3><p>在coinbase交易的新承诺是witness root hash和witness reserved value的hash。在witness reserved value目前还没有达成共识的意义，但是将来会为未来的softforks允许新的承诺值。例如，如果未来需要一项新的共识批评（consensus-critical）承诺，则基础承诺将变为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Double-SHA256(Witness root hash|Hash(new commitment|witness reserved value))</span><br></pre></td></tr></table></figure></p>
+<p>为了向后兼容，Hash(new commitment|witness reserved value)将会转到coinbase见证，并且witness reserved value将被记录在将来的softfork指定的另一个位置。可以通过这种方式添加任何数量的新承诺。</p>
+<p>对比特币没有共识至关重要性的任何承诺，例如合并挖掘，都不得使用该功能witness reserved value来保留升级比特币共识协议的能力。</p>
+<p>承诺之后的可选数据空间也为将来软叉的元数据留有余地，并且不得用于其他目的。</p>
+<h3 id="无信任的未确认交易依赖链"><a href="#无信任的未确认交易依赖链" class="headerlink" title="无信任的未确认交易依赖链"></a>无信任的未确认交易依赖链</h3><p>隔离见证从根本上解决了交易延展性问题，从而以无信任的方式构建未经证实的交易依赖链。</p>
+<p>Alice和Bob两方可能会同意将一定比特币发送到2比2的多重输出（“资金交易”）。如果没有签署资金交易，他们可能会创建另一个交易，在未来时间锁定，将2比2的多重输出投入到第三个账户（“支出交易”）。Alice和Bob将签署消费交易并交换签名。在审查签名后，他们将签署资金交易并将其交易给区块链。如果没有采取进一步行动，支出交易将在锁定时间后确认，并根据原始合同发放资金。<b style="color:red">它还保留了在锁定时间之前撤销原始合同的灵活性，通过锁定时间更短的另一笔支出交易，但只有在双方达成共识的情况下。</b></p>
+<p>BIP62不可能将此类设置作为延展性修复，因为如果双方首次签署资金交易，则无法创建支出交易。如果Alice在Bob之前披露资金交易签名，Bob可以无限期锁定资金，而无需签署支出交易。</p>
+<p>未经证实的交易依赖链是更复杂的支付网络的基本组成部分，比如双工微支付渠道和闪电网络，它们有可能极大地提高比特币系统的可扩展性和效率。</p>
+<h2 id="未来的扩展"><a href="#未来的扩展" class="headerlink" title="未来的扩展"></a>未来的扩展</h2><h3 id="适用于SPV节点的紧凑型欺诈证明"><a href="#适用于SPV节点的紧凑型欺诈证明" class="headerlink" title="适用于SPV节点的紧凑型欺诈证明"></a>适用于SPV节点的紧凑型欺诈证明</h3><p>比特币现在只有两种真正的安全模式。用户或者运行一个全节点来验证系统中所有规则的每个块，或者一个SPV（简单支付验证）客户端，它只验证头部作为一些交易发布的证明。比特币白皮书建议，当SPV节点检测到无效块时，可以接受来自完整节点的警报，提示SPV节点下​​载有问题的块和交易进行验证。但是，这种方法可能会成为DoS攻击媒介，因为几乎不会产生虚警。警报必须具有紧凑但确定性的欺诈证据。</p>
+<p>在目前的比特币协议中，除了少数几个规则外，几乎所有规则都可以生成紧凑的欺诈证据：</p>
+<ol>
+<li>无法证明矿工在coinbase交易输出中引入了太多比特币，而没有显示整个块本身和所有输入交易。</li>
+<li>不可能证明违反任何块特定的约束条件，例如大小和sigop限制，而不显示整个块（以及在sigop限制情况下的所有输入交易）</li>
+<li>如果没有从区块链上回溯到创世区块的所有交易ID，则无法证明花费了一些不存在的输入。</li>
+</ol>
+<p>可以提交额外的见证数据，以允许SPV节点可以快速验证的块无效的简短证明：</p>
+<ol>
+<li>交易费的总和树可以用来构建简短的证明，证明矿工不会为coinbase交易增加额外的费用。类似于块大小和sigop计数限制。</li>
+<li>可以提供交易输入所花费输出的反向链接。这些反向链接包含块散列和瘦客户端可轻松查询和检查以验证输出是否存在的偏移量。</li>
+</ol>
+<p>这些承诺可以通过软分叉包含在可扩展的承诺结构中，并且对不了解这些新规则的节点是透明的。</p>
+<h3 id="新的脚本系统"><a href="#新的脚本系统" class="headerlink" title="新的脚本系统"></a>新的脚本系统</h3><p><b style="color:red">由于version字节在witness程序之前被推送，并且版本未知的程序总是被视为任何人可以花费的脚本，所以可以通过软分叉来引入任何新的脚本系统。作为结构的见证不受任何现有脚本语义和约束的限制，特别是520字节的推送限制，因此允许任意大的脚本和签名。</b></p>
+<p>新的脚本系统的例子包括Schnorr签名，可以显着减少多重交易处理的大小，Lamport签名是量子计算阻力，Merklized抽象语法树允许非常复杂的条件脚本的非常紧凑的见证。</p>
+<h3 id="每个输入锁定时间（Per-input-lock-time）和相对锁定时间（relative-lock-time）"><a href="#每个输入锁定时间（Per-input-lock-time）和相对锁定时间（relative-lock-time）" class="headerlink" title="每个输入锁定时间（Per-input lock-time）和相对锁定时间（relative-lock-time）"></a>每个输入锁定时间（Per-input lock-time）和相对锁定时间（relative-lock-time）</h3><p>目前交易中只有一个nLockTime字段，并且所有输入必须共享相同的值。BIP68使用nSequence字段启用每个输入的相对锁定时间，但锁定时间段和分辨率有限。</p>
+<p><b style="color:red">通过软分叉，可以引入单独的见证结构以允许每个输入的锁定时间和相对锁定时间，以及可以签署和操作新数据的新脚本系统（如BIP65和BIP112）。</b></p>
+<h2 id="向后兼容"><a href="#向后兼容" class="headerlink" title="向后兼容"></a>向后兼容</h2><p><b style="color:red">作为一个软分叉，较旧的软件将继续无需修改即可运行</b>。但是，未升级的节点将不会看到也不会验证证人数据，并将所有见证程序视为任何人可以花费的脚本（除了几个证据程序等于0的边缘情况，脚本必须失败）。钱包应该时刻警惕任何人可以花钱的脚本，并怀疑地对待它们。强烈建议未升级的节点升级以利用新功能。</p>
+<h3 id="未升级的钱包可以做什么"><a href="#未升级的钱包可以做什么" class="headerlink" title="未升级的钱包可以做什么"></a>未升级的钱包可以做什么</h3><ol>
+<li>从未升级和升级的钱包接收比特币</li>
+<li>使用传统P2PKH地址将比特币发送给未升级和升级的钱包（没有任何隔离见证的好处）</li>
+<li>使用P2SH地址将比特币发送到升级的钱包</li>
+<li>通过<a href="https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki" target="_blank" rel="noopener">BIP70</a>支付协议使用本地见证程序将比特币发送至升级的钱包</li>
+</ol>
+<h3 id="非升级的钱包不能做什么"><a href="#非升级的钱包不能做什么" class="headerlink" title="非升级的钱包不能做什么"></a>非升级的钱包不能做什么</h3><ul>
+<li>验证隔离的证人交易。它假定这样的交易总是有效的</li>
+</ul>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>该BIP将通过名称为“segwit”的“版本位”BIP9并使用位1进行部署。</p>
+<p>对于比特币主网络，BIP9启动时间将为2016年11月15日午夜UTC（时代邮戳时间戳1479168000），并且BIP9超时时间将为2017年11月15日午夜UTC（时代邮戳时间戳1510704000）。</p>
+<p>对于比特币测试网，BIP9开始时间将为UTC时间2016年5月1日午夜（时间戳1462060800）和BIP9超时时间为UTC时间2017年5月1日（时间戳1493596800）。</p>
+<h2 id="积分"><a href="#积分" class="headerlink" title="积分"></a>积分</h2><p>特别感谢Gregory Maxwell在本BIP和Luke-Jr中提出了许多想法，以便弄清楚如何将其作为软分叉来部署。</p>
+<h2 id="脚注"><a href="#脚注" class="headerlink" title="脚注"></a>脚注</h2><p>^ 例如，带OP_0的scriptPubKey后跟40字节的非零数据推送将由于程序大小不正确而失败。但是，带OP_0后跟41字节非零数据推送的scriptPubKey将会通过，因为它不被视为见证程序<br>^ 为了向后兼容，对于从0到16的任何版本字节，如果证明程序的CastToBool值为零，则脚本必须失败。然而，像这样的哈希是一个成功的对哈希函数的原像攻击，风险可以忽略不计。<br>^ 使用单个复合约束的原理，而不是两个单独的限制，例如1MB基础数据和3MB见证数据：使用两个单独的限制将使挖掘和费用估计几乎不可能。矿工们需要解决一个复杂的非线性优化问题，以找到在给定两个约束条件的情况下使费用最大化的一组交易，并且钱包将不能知道该支付什么，因为它取决于两个条件中的哪一个最受到实时的矿工们试图用他们的交易来生产积木。这种方法的另一个问题是闲聊。一旦一组事务处理达到基本数据1MB约束条件，通过最低限度地增加费用就可以向证人添加高达3MB的额外数据。在这种情况下，额外见证空间的边际成本实际上变为零。<br>^ <a href="https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2016-August/013014.html" target="_blank" rel="noopener">https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2016-August/013014.html</a></p>
+<h2 id="参考实现"><a href="#参考实现" class="headerlink" title="参考实现"></a>参考实现</h2><p><a href="https://github.com/bitcoin/bitcoin/pull/8149" target="_blank" rel="noopener">https://github.com/bitcoin/bitcoin/pull/8149</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki" target="_blank" rel="noopener">BIP16支付脚本散列</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki" target="_blank" rel="noopener">BIP143版本0witness程序的交易签名验证</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0144.mediawiki" target="_blank" rel="noopener">BIP144隔离见证（同伴节点服务）</a></p>
+<h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>该文件置于公共领域。</p>
+<h2 id="阅读资料"><a href="#阅读资料" class="headerlink" title="阅读资料"></a>阅读资料</h2><p><a href="https://zhuanlan.zhihu.com/p/27512347" target="_blank" rel="noopener">bitcoin 源码解析 - 交易 Transaction(三) - Script</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki" target="_blank" rel="noopener">bips/bip-0141.mediawiki</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/什么是Secp256k1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2121,225 +2416,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/算法/关于椭圆曲线的理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/26/算法/关于椭圆曲线的理解/" itemprop="url">关于椭圆曲线的理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-26T11:30:55+08:00">2018-03-26</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>一直觉得加密算法比较神奇，但是比特币中使用的椭圆双曲线算法一直让我感觉很神奇，之前看的时候没有看懂，这次认真看了两篇文档之后，终于理解了这种算法的奇妙之处，看来数学这个东西其实没有大家想像的那么难，也许就是很简单的东西堆砌成一个庞然大物，以至于你不再看得清楚了。</p>
-<p>椭圆曲线的形状,并不是椭圆.是因为椭圆曲线的描述方程,类似于计算一个椭圆的周长的方程得名。</p>
-<h2 id="从阿贝尔群开始"><a href="#从阿贝尔群开始" class="headerlink" title="从阿贝尔群开始"></a>从阿贝尔群开始</h2><p>群的定义是定义了二元操作“运算”并且用符号+表示的一个集合。假定我们要操作的群用 𝔾表示，那么我们在这个群上面要定义的“运算”必须符合以下几个属性：</p>
-<ul>
-<li>闭包。如果a和b都是𝔾的成员，那么a+b也是𝔾的成员。</li>
-<li>组合性。(a+b)+c=a+(b+c)</li>
-<li>单位元。存在确切的一个值，称之为单位元，0可以保证该等式成立 a+0=0+a=a</li>
-<li>逆元。每个成员都有一个相反数：对于任意值a必定存在b使得a+b=0</li>
-</ul>
-<p>如果加上第五条这要求：</p>
-<ul>
-<li>交换性a+b=b+a</li>
-</ul>
-<p><b style="color:red">这样的群我们称之为 阿贝尔群。</b></p>
-<h2 id="椭圆曲线"><a href="#椭圆曲线" class="headerlink" title="椭圆曲线"></a>椭圆曲线</h2><p>椭圆曲线是一个对数函数，<b style="color:red">曲线上的每个点都必须是非奇异的，所谓的”非奇异”或”光滑”的,在数学中是指曲线上任意一点都存在切线。</b>椭圆曲线对于X轴是对称的，记住这点很重要。关于这个函数的更多说明，还是参照引用的文章吧，里面提到的比我说的详细多了。</p>
-<h2 id="椭圆曲线的阿贝尔群"><a href="#椭圆曲线的阿贝尔群" class="headerlink" title="椭圆曲线的阿贝尔群"></a>椭圆曲线的阿贝尔群</h2><p><b style="color:red">其实关于阿贝尔群，大家一定认为加法就是指数学中的那个加法，而对于椭圆曲线，这个加法还不一定非要是数学数字中的加法，这里的加法是指线相交，而加法中的元素也不是数字，而是一个点。举例来说，P+Q=R是指P与Q的连线与曲线相较于点Q，那么对于这个公式P-R=-Q又该如何解释呢？其实减号意味着点对于X轴对称的另一个点，另外公式变换一个P+(-R)=-Q，你再想想对称性，这个公式是不是成立的？这就是这个曲线的妙处所在。至于结合律就更好理解了，3点一线，不管你取那两个点，第三个点都能算出来不是么？至于0就是无穷远处的点就是0，这个适用于，直线平行于X轴或者y轴的时候使用。</b></p>
-<h2 id="关于乘法"><a href="#关于乘法" class="headerlink" title="关于乘法"></a>关于乘法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mP = P + P + ...... + P = Q</span><br></pre></td></tr></table></figure>
-<p>注意这里的乘法就是，一次一次加法算出来的，如果m越大，那么计算的量也就越大。<b style="color:blue">我们学的椭圆曲线密码体制就是利用以上的这个困难问题来设计的。</b></p>
-<h2 id="素数域Fp"><a href="#素数域Fp" class="headerlink" title="素数域Fp"></a>素数域Fp</h2><p><b style="color:blue">如果椭圆曲线上一点P，存在最小的正整数n，使得数乘 nP=0∞，则将n称为P的阶，若n 不存在，我们说P是无限阶的。</b></p>
-<p><b style="color:red">事实上，在有限域上定义的椭圆曲线上所有的点的阶n都是存在的。</b></p>
-<h2 id="加解密过程"><a href="#加解密过程" class="headerlink" title="加解密过程"></a>加解密过程</h2><p><b style="color:red">终于到了学习，这个算法是如何进行加解密的过程的原理了，其实就是利用了上面提到的乘法和素数域的知识，另外也有了几个参数，这几个参数对应我们之前在bitcoin中使用的各种参数调节的问题，这里就应该是调节的本质了吧.</b>。好了下面我们来分析》》》</p>
-<p>描述一条Fp上的椭圆曲线，常用到六个参量：T=(p,a,b,n,x,y)。</p>
-<ul>
-<li>（p 、a 、b） 用来确定一条椭圆曲线，p为素数域内点的个数，a和b是其内的两个大数；（这个p就是最后y mod p 的那个值，应该说p的取值决定了n的个数）</li>
-<li>x,y为G基点的坐标，也是两个大数；</li>
-<li>n为点G基点的阶；</li>
-</ul>
-<p>以上六个量就可以描述一条椭圆曲线，有时候我们还会用到h(椭圆曲线上所有点的个数p与n相除的整数部分)。</p>
-<p><b style="color:red">现在我们描述一个利用椭圆曲线进行加密通信的过程</b>：</p>
-<ol>
-<li>A机器选定一条椭圆曲线 Ep(a,b) 并取椭圆曲线上一点，作为基点G。</li>
-<li>A机器选择一个私有密钥k，并生成公开密钥 K=kG。</li>
-<li>A机器将 Ep(a,b) 和点K，G传给用户B。</li>
-<li>B机器接到信息后 ，将待传输的明文编码到Ep(a,b)上一点M（编码方法很多，这里不作讨论），并产生一个随机整数r。</li>
-<li>B机器计算。<code>C1 = M + rK; C2=rG.</code></li>
-<li>B机器将点C1、C2传给A机器。</li>
-<li>A接到信息后，计算C1-kC2，结果就是点M。因为<code>C1-kC2=M+rK-k(rG)=M+rk-r(kG)=M</code>, 再对点M进行解码就可以得到明文。这样值就通过0运算神奇地还原了，注意这里的计算一是设计椭圆计算，椭圆计算是基于数学计算的过程的。</li>
-</ol>
-<p>在这个加密通信中，如果有一个偷窥者H ，他只能看到Ep(a,b)、K、G、C1、C2，而通过K、G 求k 或通过C2、G求r 都是相对困难的，因此，H无法得到A、B间传送的明文信息。</p>
-<h2 id="ECDH"><a href="#ECDH" class="headerlink" title="ECDH"></a>ECDH</h2><p>是基于ECC（Elliptic Curve Cryptosystems，椭圆曲线密码体制，参看ECC）的DH（ Diffie-Hellman）密钥交换算法。其实就是双方互相传送公钥，然后通过双方的公钥计算出双方都知道的加密密钥S（注意这里面没有随机数传送，所以整个过程是安全的。）。</p>
-<p>该算法可以用来解决如下问题：两端（Alice 和 Bob）想要安全的交换信息并且第三方不能获取到该信息。当然这是TLS协议中的目的之一，我们给出一个例子。<br>（其实下面的描述其实是ECDHE,而不是ECDH）</p>
-<ol>
-<li>Alice 和 Bob 生成他们自己的私钥和公钥，即Alice 有 da、Ha = da<em>G；Bob有db、Hb = db </em>G </li>
-<li>Alice把Ha发给Bob，Bob把Hb发给Alice。这样Alice 有da,Ha,Hb，Bob有db,Ha,Hb。 </li>
-<li>Alice计算S = da<em>Hb（即自己的私钥乘上Bob的公钥），同样的，Bob计算S = db</em>Ga（自己的私钥乘上Alice的公钥）。两边计算的S是相同的。</li>
-</ol>
-<h2 id="ECDSA签名算法"><a href="#ECDSA签名算法" class="headerlink" title="ECDSA签名算法"></a>ECDSA签名算法</h2><p><b style="color:red">现在有一个场景：Alice想要用私钥签名一个数据，Bob想要使用Alice的公钥验证这个签名；只有Alice能够进行计算签名然后得到签名，每个人都能验证签名值。</b></p>
-<p>首先Alice和Bob拥有相同的椭圆曲线参数，算法被签名称之为ECDSA，是DSA算法的一个变体。</p>
-<p><b style="color:red">ECDSA签名算法的输入 是 数据的哈希值</b>，而不是数据的本身，至于哈希算法选用哪一个就取决于自己了。为了使得ECDSA的输入值的比特数和子群的阶n的比特数一样，哈希值可能会被截断。我们把ECDSA输入称之为Z。<br>算法工作流程如下： </p>
-<ol>
-<li>取一个范围在[1, n - 1]的随机数k </li>
-<li>计算点P=kG (就是计算出公钥)</li>
-<li>计算r = x<sub>P</sub> mod n （算出r的值，n是基点的阶）</li>
-<li>如果 r == 0，执行第一步 </li>
-<li>计算s = k<sup>-1</sup> (z + r*d<sub>A</sub>) mod n （d<sub>A</sub>是Alice的公钥，k<sup>-1</sup> 是 k 对n的逆元, k是上面的随机数） </li>
-<li>如果s==0，执行第一步 </li>
-<li>二元组(r, s)就是签名值 </li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%AE%97%E6%B3%95/ecdsa%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B.png" alt=""></p>
-<p>上图中，Alice使用私钥da对z进行签名，生成二元组(r, s)。<br>Bob使用Alice的公钥对(r, s)和Z进行验证。</p>
-<p>现在我们来看看Bob如何验证的： </p>
-<ol>
-<li>计算u<sub>1</sub> = s<sup>-1</sup> * z mod n </li>
-<li>计算u<sub>2</sub> = s<sup>-1</sup> * r mod n </li>
-<li>计算P = u<sub>1</sub>*G + u<sub>2</sub>*H<sub>A</sub></li>
-<li>如果r == x<sub>P</sub> mod n，则验证正确</li>
-</ol>
-<p>过程证明请查看相应的引用。</p>
-<h2 id="椭圆算法总结"><a href="#椭圆算法总结" class="headerlink" title="椭圆算法总结"></a>椭圆算法总结</h2><p>通过最后的示例我们可以看出，椭圆算法的公私钥其实是一样的，其实说白了就双方都不需要知晓别人给定的那个k和r的值，因为kr相乘之后，大家的值都是一致的，但是不能在网上随便传输k和r的值吧，这样还有什么安全性，这里很巧妙地利用了归的技术，隐藏了这种特性的原始值。这种特性就是椭圆曲线的对称性而衍生的阿贝尔群的特性。</p>
-<p>鉴于np=0，所以一个私钥理论上是可以对应多个公钥的，一个公钥也可以对应多个私钥。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.jianshu.com/p/2e6031ac3d50" target="_blank" rel="noopener">椭圆曲线算法：入门（1）</a><br><a href="https://4hou.win/wordpress/?p=12084" target="_blank" rel="noopener">椭圆曲线算法（ECC）学习（一)</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">钱包和地址</a><br><a href="http://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/" target="_blank" rel="noopener">Elliptic Curve Cryptography: a gentle introduction</a><br><a href="http://andrea.corbellini.name/2015/05/23/elliptic-curve-cryptography-finite-fields-and-discrete-logarithms/" target="_blank" rel="noopener">Elliptic Curve Cryptography: finite fields and discrete logarithms</a><br><a href="https://blog.csdn.net/mrpre/article/details/72850598" target="_blank" rel="noopener">有限域和离散对数问题(ECC椭圆曲线算法2)</a><br><a href="https://blog.csdn.net/mrpre/article/details/72850644" target="_blank" rel="noopener">ECDH and ECDSA(ECC椭圆曲线算法3)</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2391,7 +2467,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">69</span>
+                    <span class="site-state-item-count">70</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2436,9 +2512,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
