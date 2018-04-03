@@ -276,6 +276,164 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/Linux下如何使用比特币命令/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/blockchain/Linux下如何使用比特币命令/" itemprop="url">Linux下如何使用比特币命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T18:44:51+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>今天由于要去对接usdt，发现usdt其实是颜色币或者称为比特币上的代币。这种币原来是基于omni协议做的。omni基于比特币的客户端做了一个和比特币客户端兼容的代币客户端，负责解析各种货币。具体的知识就不深入探究了。我本来是看到代币输出中出现了“Unable to decode output address ”，重点是这种输出上居然有钱，可以查看这笔代币的调用<a href="https://blockchain.info/tx/48013644ceee5b5605cc589ecee35ab03e7900aac3837cbf04cbb3355caad0c5" target="_blank" rel="noopener">https://blockchain.info/tx/48013644ceee5b5605cc589ecee35ab03e7900aac3837cbf04cbb3355caad0c5</a> 。网上也查了一下，其实就是OP_RETURN脚本导致的，其实就是为了附加信息而已。后来想看看原本的脚本输出，突然忘记命令怎么打了，悲剧了，所以还是记录一下吧！</p>
+<p><a href="https://omniexplorer.info/" target="_blank" rel="noopener">omni浏览器</a><br><a href="https://blockchain.info/" target="_blank" rel="noopener">比特币浏览器</a><br><a href="http://www.omnilayer.org" target="_blank" rel="noopener">omni官网</a></p>
+<h2 id="bitcoin如何安装"><a href="#bitcoin如何安装" class="headerlink" title="bitcoin如何安装"></a>bitcoin如何安装</h2><p>不用安装，官网有二进制的压缩包，所以安装的人很少。鄙人不信这个邪偏要源码编译安装，各种坑（其实我是为了运维能够顺利部署，提前采坑而已）。我发现很少有人在CentOS上安装，于是安装的时候经常出问题，为了安装花了一周时间，哎，大家还是下载二进制版本吧！我搞以太坊的时候也搞了一周，主要是geth节点同步区块慢，而且p2p节点老丢，换成parity节点好一些，但是还是出问题。后来以太坊官网更新了geth节点，立马重新安装问题才解决。为了破节点，前前后后浪费了大半个月。</p>
+<h2 id="bitcoin命令介绍"><a href="#bitcoin命令介绍" class="headerlink" title="bitcoin命令介绍"></a>bitcoin命令介绍</h2><p>不管是bitcoin还是bitcash都有两个节点一个服务端和一个客户端，其实服务端也可以直接执行命令返回。</p>
+<p>首先先运行服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bitcoind</span><br></pre></td></tr></table></figure></p>
+<p>这个命令在哪我就不说了，最好做一下ln链接，这样你就可以直接使用这个命令了；当然如果想做一些配置的话，就写一个服务吧。要想知道服务启动的运行参数可以运行<code>bitcoind --help</code>命令，这样更加有利于你写服务脚本。</p>
+<p>然后利用客户端执行一条命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bitcoin-cli getinfo</span><br></pre></td></tr></table></figure></p>
+<p>结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# bitcoin-cli getinfo</span><br><span class="line">&#123;</span><br><span class="line">    &quot;version&quot; : 90500,</span><br><span class="line">    &quot;protocolversion&quot; : 70002,</span><br><span class="line">    &quot;walletversion&quot; : 60000,</span><br><span class="line">    &quot;balance&quot; : 0.00000000,</span><br><span class="line">    &quot;blocks&quot; : 356480,</span><br><span class="line">    &quot;timeoffset&quot; : 0,</span><br><span class="line">    &quot;connections&quot; : 3,</span><br><span class="line">    &quot;proxy&quot; : &quot;&quot;,</span><br><span class="line">    &quot;difficulty&quot; : 47643398017.80344391,</span><br><span class="line">    &quot;testnet&quot; : false,</span><br><span class="line">    &quot;keypoololdest&quot; : 1514465769,</span><br><span class="line">    &quot;keypoolsize&quot; : 101,</span><br><span class="line">    &quot;paytxfee&quot; : 0.00000000,</span><br><span class="line">    &quot;relayfee&quot; : 0.00001000,</span><br><span class="line">    &quot;errors&quot; : &quot;URGENT: Alert key compromised, upgrade required&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以前我敲命令挺溜的，现在都忘记了，我们来看一下帮助文档吧！也可以使用<code>bitcoind</code>;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# bitcoin-cli help</span><br><span class="line">addmultisigaddress nrequired [&quot;key&quot;,...] ( &quot;account&quot; )</span><br><span class="line">addnode &quot;node&quot; &quot;add|remove|onetry&quot;</span><br><span class="line">backupwallet &quot;destination&quot;</span><br><span class="line">createmultisig nrequired [&quot;key&quot;,...]</span><br><span class="line">createrawtransaction [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n&#125;,...] &#123;&quot;address&quot;:amount,...&#125;</span><br><span class="line">decoderawtransaction &quot;hexstring&quot;</span><br><span class="line">decodescript &quot;hex&quot;</span><br><span class="line">dumpprivkey &quot;bitcoinaddress&quot;</span><br><span class="line">dumpwallet &quot;filename&quot;</span><br><span class="line">encryptwallet &quot;passphrase&quot;</span><br><span class="line">getaccount &quot;bitcoinaddress&quot;</span><br><span class="line">getaccountaddress &quot;account&quot;</span><br><span class="line">getaddednodeinfo dns ( &quot;node&quot; )</span><br><span class="line">getaddressesbyaccount &quot;account&quot;</span><br><span class="line">getbalance ( &quot;account&quot; minconf )</span><br><span class="line">getbestblockhash</span><br><span class="line">getblock &quot;hash&quot; ( verbose )</span><br><span class="line">getblockchaininfo</span><br><span class="line">getblockcount</span><br><span class="line">getblockhash index</span><br><span class="line">getblocktemplate ( &quot;jsonrequestobject&quot; )</span><br><span class="line">getconnectioncount</span><br><span class="line">getdifficulty</span><br><span class="line">getgenerate</span><br><span class="line">gethashespersec</span><br><span class="line">getinfo</span><br><span class="line">getmininginfo</span><br><span class="line">getnettotals</span><br><span class="line">getnetworkhashps ( blocks height )</span><br><span class="line">getnetworkinfo</span><br><span class="line">getnewaddress ( &quot;account&quot; )</span><br><span class="line">getpeerinfo</span><br><span class="line">getrawchangeaddress</span><br><span class="line">getrawmempool ( verbose )</span><br><span class="line">getrawtransaction &quot;txid&quot; ( verbose )</span><br><span class="line">getreceivedbyaccount &quot;account&quot; ( minconf )</span><br><span class="line">getreceivedbyaddress &quot;bitcoinaddress&quot; ( minconf )</span><br><span class="line">gettransaction &quot;txid&quot;</span><br><span class="line">gettxout &quot;txid&quot; n ( includemempool )</span><br><span class="line">gettxoutsetinfo</span><br><span class="line">getunconfirmedbalance</span><br><span class="line">getwalletinfo</span><br><span class="line">getwork ( &quot;data&quot; )</span><br><span class="line">help ( &quot;command&quot; )</span><br><span class="line">importprivkey &quot;bitcoinprivkey&quot; ( &quot;label&quot; rescan )</span><br><span class="line">importwallet &quot;filename&quot;</span><br><span class="line">keypoolrefill ( newsize )</span><br><span class="line">listaccounts ( minconf )</span><br><span class="line">listaddressgroupings</span><br><span class="line">listlockunspent</span><br><span class="line">listreceivedbyaccount ( minconf includeempty )</span><br><span class="line">listreceivedbyaddress ( minconf includeempty )</span><br><span class="line">listsinceblock ( &quot;blockhash&quot; target-confirmations )</span><br><span class="line">listtransactions ( &quot;account&quot; count from )</span><br><span class="line">listunspent ( minconf maxconf  [&quot;address&quot;,...] )</span><br><span class="line">lockunspent unlock [&#123;&quot;txid&quot;:&quot;txid&quot;,&quot;vout&quot;:n&#125;,...]</span><br><span class="line">move &quot;fromaccount&quot; &quot;toaccount&quot; amount ( minconf &quot;comment&quot; )</span><br><span class="line">ping</span><br><span class="line">sendfrom &quot;fromaccount&quot; &quot;tobitcoinaddress&quot; amount ( minconf &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">sendmany &quot;fromaccount&quot; &#123;&quot;address&quot;:amount,...&#125; ( minconf &quot;comment&quot; )</span><br><span class="line">sendrawtransaction &quot;hexstring&quot; ( allowhighfees )</span><br><span class="line">sendtoaddress &quot;bitcoinaddress&quot; amount ( &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">setaccount &quot;bitcoinaddress&quot; &quot;account&quot;</span><br><span class="line">setgenerate generate ( genproclimit )</span><br><span class="line">settxfee amount</span><br><span class="line">signmessage &quot;bitcoinaddress&quot; &quot;message&quot;</span><br><span class="line">signrawtransaction &quot;hexstring&quot; ( [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n,&quot;scriptPubKey&quot;:&quot;hex&quot;,&quot;redeemScript&quot;:&quot;hex&quot;&#125;,...] [&quot;privatekey1&quot;,...] sighashtype )</span><br><span class="line">stop</span><br><span class="line">submitblock &quot;hexdata&quot; ( &quot;jsonparametersobject&quot; )</span><br><span class="line">validateaddress &quot;bitcoinaddress&quot;</span><br><span class="line">verifychain ( checklevel numblocks )</span><br><span class="line">verifymessage &quot;bitcoinaddress&quot; &quot;signature&quot; &quot;message&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="以太坊节点"><a href="#以太坊节点" class="headerlink" title="以太坊节点"></a>以太坊节点</h2><p>这里就不做更多的介绍了。因为以太坊的命令使用相对简单。只要使用<code>geth help</code>命令查看一下即可。下面是我写的以太坊启动脚本。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"># source function library</span><br><span class="line">. /etc/rc.d/init.d/functions</span><br><span class="line"></span><br><span class="line">USER=root</span><br><span class="line">ENV=&quot;sudo -u $USER -H &quot;</span><br><span class="line">PROG=geth</span><br><span class="line">GETH_CMD=/data/block/go-ethereum/build/bin/geth</span><br><span class="line">GETH_DIR=/data/chain/eth</span><br><span class="line">LOG_PATH=$GETH_DIR/geth.log</span><br><span class="line">NODE_105=&quot;enode://f630e5e22c12a81ae14b7b7779c215b31790da44c87d5f8d781bb59d33aa572c4c13ff33dbdbf2512cdd914b82e9239fc4a6004a26405bd9aed40457f31ade97@192.168.3.105:30303&quot;</span><br><span class="line"># NODE_LIST=&quot;--nodiscover --light --bootnodes $NODE_105&quot;</span><br><span class="line">NODE_LIST=&quot;--nodiscover --syncmode light --bootnodes $NODE_105&quot;</span><br><span class="line"># MINER=&quot;--mine --minerthreads 1&quot;</span><br><span class="line">MINER=&quot;--verbosity 5&quot;</span><br><span class="line">API_OPTS=&quot;--rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --rpccorsdomain \&quot;*\&quot; --ws --vmdebug --debug&quot;</span><br><span class="line">RUN_TAGS=&quot;$API_OPTS $MINER --datadir $GETH_DIR $NODE_LIST&quot;</span><br><span class="line"></span><br><span class="line">LOCK_FILE=/var/lock/subsys/$PROG</span><br><span class="line">PID_FILE=/var/run/$&#123;PROG&#125;.pid</span><br><span class="line">GETH_CON=`ps -ef | grep geth |grep datadir |wc -l`</span><br><span class="line"></span><br><span class="line">start() &#123;</span><br><span class="line">      [ `id -u` -ne 0  ] &amp;&amp; echo &quot;The user permission denied the service...&quot;  &amp;&amp; exit 0</span><br><span class="line">      [ -x $started ] || exit 5</span><br><span class="line">      # echo -n $&quot;Starting $prog:&quot;</span><br><span class="line">      echo $&quot;Starting $prog:&quot;</span><br><span class="line">      echo &quot;command: $ENV $GETH_CMD $RUN_TAGS&quot;</span><br><span class="line">      $ENV $GETH_CMD $RUN_TAGS &gt;&gt;$LOG_PATH 2&gt;&amp;1 &amp;</span><br><span class="line">      shift</span><br><span class="line">      echo $! &gt; $PID_FILE</span><br><span class="line">      success ||  failure</span><br><span class="line">      retval=$?</span><br><span class="line">      echo</span><br><span class="line">      if [ $retval -eq 0 ]; then</span><br><span class="line">            touch $LOCK_FILE || retval=4</span><br><span class="line">      fi</span><br><span class="line">      return $retval</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop() &#123;</span><br><span class="line">     [ `id -u` -ne 0  ] &amp;&amp; echo &quot;The user permission denied the service...&quot;  &amp;&amp; exit 0</span><br><span class="line">     if [ $GETH_CON -gt 0 ]; then</span><br><span class="line">          #cat $PID_FILE | xargs kill -kill</span><br><span class="line">          kill `cat $PID_FILE`</span><br><span class="line">          GETH_PID=`ps -aux |grep geth |grep datadir |awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">          while [ -n &quot;$GETH_PID&quot; ]; do</span><br><span class="line">              kill -kill $GETH_PID</span><br><span class="line">              GETH_PID=`ps -aux |grep geth |grep datadir |awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">          done</span><br><span class="line">          echo -n $&quot;Stopping $prog: &quot;</span><br><span class="line">          success ||  failure</span><br><span class="line">          retval=$?</span><br><span class="line">          echo</span><br><span class="line">          [ $retval -eq 0 ] &amp;&amp;  rm  -rf $LOCK_FILE &amp;&amp; rm -rf $PID_FILE</span><br><span class="line">          return $retval</span><br><span class="line">     else</span><br><span class="line">          echo -e &quot;The apps server is not running... &quot;  &gt;&gt;/dev/null 2&gt;&amp;1</span><br><span class="line">     fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">restart() &#123;</span><br><span class="line">    stop</span><br><span class="line">    start</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reload() &#123;</span><br><span class="line">    restart</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rh_status() &#123;</span><br><span class="line">    status -p $&#123;PID_FILE&#125; $PROG</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rh_status_q() &#123;</span><br><span class="line">    rh_status &gt;/dev/null 2&gt;&amp;1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">start)</span><br><span class="line">     rh_status_q &amp;&amp; exit 0</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">stop)</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">restart)</span><br><span class="line">     $1</span><br><span class="line">     ;;</span><br><span class="line">status)</span><br><span class="line">     rh_status</span><br><span class="line">     ;;</span><br><span class="line">*)</span><br><span class="line"></span><br><span class="line">echo $&quot;Usage: $0 &#123;start|stop|status|restart|status&#125;&quot;</span><br><span class="line">     exit 2</span><br><span class="line">esac</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/用户中心再思考/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1897,158 +2055,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/债权打包资金选取策略/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/算法/债权打包资金选取策略/" itemprop="url">债权打包资金选取策略</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:57:20+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我现在有个需求就是，在一些定额的债权订单中，进行打包，需要从这些不同额的债权中打出比如100w、1000w等各种金额不等的债权。其实一开始想这个问题的时候我也没啥思路，网上也没有看到比较好的解决思路，最后明白有这个时间，不如自己写代码来进行实现。</p>
-<h2 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h2><p>债权的选取具有一定的规律性，越老的订单需要先打包。所以在一些特殊情况下，一些策略的实现也是要做必要的调整。</p>
-<p>如果无法配平，我的策略就是打包超过，然后人工剔除，也可以人工选择加入一笔债权。这当然是弥补措施不是我们解决问题之道。</p>
-<h2 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h2><p>我实现的那一版的思路是一定有一个调整额，而之前也有考虑过配平，这就类似于之前写的关于散标匹配的算法。因为在我看来金额固定的情况下，可以选取一个调整额，然后每笔债权留单，最后利用留下来的单子进行配平即可。</p>
-<p>最后我选取了一个阈值，然后按照这种思路实现了我们的打包策略，由于债权分布良好，所以我一直在想，如果金额不定的话，我们如何进行适配。</p>
-<p>这个当然就是后面的思考了。我后来想到的思路是阈值通过金额的最小公倍数进行计算，然后到了调整的阈值时，进行配平。留单的策略就是最小公倍数除以金额，得到的就是要留该金额多少单。这种方式最大的问题就是如果金额非常散，那么可能一开始就没有单子被选中，一直处于留单状态，这对我们的系统没有好处，可以设置最大的阈值，但是这样就解决不了我们的问题。如果说留单成功了，那么下面就是类似求24点的问题了。</p>
-<p>之前我们提到了散标匹配的算法，所以你应该明白这里也可以使用递归的方式进行债券的选取，但是可能不太适合老的优先原则。我觉得还是使用留单的技术，先用老的单子填补阈值开外的空间。等达到阈值的时候，再利用递归的方式，填补阈值进行配平。</p>
-<h2 id="递归的方式"><a href="#递归的方式" class="headerlink" title="递归的方式"></a>递归的方式</h2><p>如果需要进行配平，基本上就是在最后的时候进行简单配平，或者使用递归的思想进行实现，比如果100w的包，先按照规则将可能即将失效的先放进去90w或者多一些，然后统计剩余的债权量，通过递归回溯的方式去配平最后的10w左右的量。因为债权基本都是500-2000，以500递增的倍数，所以可以进行计数统计，配平的时候再去取债权。因为我们关注的是数字本身而不是债权。关心债权的原因是，要不最旧的先打进去。</p>
-<p><b style="color:red">这种递归我称为计数式的递归使用。</b></p>
-<h2 id="债权预热"><a href="#债权预热" class="headerlink" title="债权预热"></a>债权预热</h2><p>基本上对方要债权包都是整数的，所以可以在债权进入的时候，按1w先打个小包，之后打包的时候，直接按时间选择一定的数量就可以了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>具体实现代码就不写了，这涉及到公司的机密，还有就是代码太长，一大堆异常情况的判断不太适合在这里贴出来。总之思想就是这样的，结合具体的业务场景进行细节的拆分，你总能得到你想要的那个解决方案。这就是我们不得不处理的事情，发现并解决问题。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2100,7 +2106,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">72</span>
+                    <span class="site-state-item-count">73</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
