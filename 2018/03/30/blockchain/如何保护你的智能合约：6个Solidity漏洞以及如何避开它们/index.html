@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="智能合约是“不可变的”。一旦部署，它们的代码是不能更改的，导致无法修复任何发现的bug。 在潜在的未来里，整个组织都由智能合约代码管控，对于适当的安全性需求巨大。过去的黑客如TheDAO或去年的Parity黑客（7月、11月）提高了开发者们的警惕，可我们还有很长的路要走。 范围溢出的问题 代币中记录用户的代币数量，一旦上溢，就会出现用户代币数归零的现象。 同样，减号会出现下溢的问题。 如果溢出出现">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-30T06:07:33.000Z">
+<meta property="og:updated_time" content="2018-03-30T07:55:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何保护你的智能合约：6个Solidity漏洞以及如何避开它们">
 <meta name="twitter:description" content="智能合约是“不可变的”。一旦部署，它们的代码是不能更改的，导致无法修复任何发现的bug。 在潜在的未来里，整个组织都由智能合约代码管控，对于适当的安全性需求巨大。过去的黑客如TheDAO或去年的Parity黑客（7月、11月）提高了开发者们的警惕，可我们还有很长的路要走。 范围溢出的问题 代币中记录用户的代币数量，一旦上溢，就会出现用户代币数归零的现象。 同样，减号会出现下溢的问题。 如果溢出出现">
@@ -375,7 +375,7 @@
 <li>同样，减号会出现下溢的问题。</li>
 <li>如果溢出出现在循环语句中，那么可能就会出现不进入循环、过早结束循环和无限循环的问题。</li>
 </ol>
-<p>缓解措施：现在使用OpenZeppelin的SafeMath库已经成为了一个标准。</p>
+<p>缓解措施：现在使用OpenZeppelin的<a href="https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol" target="_blank" rel="noopener">SafeMath</a>库已经成为了一个标准。</p>
 <h2 id="可视性-Visibility-和Delegatecall"><a href="#可视性-Visibility-和Delegatecall" class="headerlink" title="可视性(Visibility)和Delegatecall"></a>可视性(Visibility)和Delegatecall</h2><p>对去年7月发生的事有印象的人来说，这个bug就很眼熟，毕竟Parity钱包被黑导致用户损失了3千万美金。</p>
 <p><b style="color:red">Solidity的可视性修改功能和它们的区别:</b></p>
 <ul>
@@ -396,6 +396,7 @@
 <p>正如这里所详细描述的，修复方案就是先减少发送人的余额再进行价值转移。对于使用并行编程的人来说，另外一个解决方法就是用互斥锁，从而一起缓解各种竞争条件。</p>
 <p>目前来说，使用require(msg.sender.transfer(_value))是处理这些情况的最好的方法。</p>
 <p>详细的信息也可以查看<a href="http://vessenes.com/more-ethereum-attacks-race-to-empty-is-the-real-deal/" target="_blank" rel="noopener">More Ethereum Attacks: Race-To-Empty is the Real Deal</a></p>
+<p>也可以查看：<a href="http://www.bikeji.com/discussions/4027" target="_blank" rel="noopener">DAO攻击简单解释</a></p>
 <h2 id="强行将以太币置入合约"><a href="#强行将以太币置入合约" class="headerlink" title="强行将以太币置入合约"></a>强行将以太币置入合约</h2><p>Solidity的selfdestruct做两件事。(其实就是指删除合约地址)</p>
 <ol>
 <li>它使合约变为不可用，有效地删除该地址的bytecode。</li>
@@ -492,6 +493,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/04/03/blockchain/solidity数据类型说明/" rel="prev" title="solidity数据类型说明">
+                solidity数据类型说明 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -568,7 +573,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-count">72</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
