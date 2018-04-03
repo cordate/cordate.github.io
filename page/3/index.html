@@ -276,6 +276,206 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/" itemprop="url">BIP125：可选的交易费用替换信号【翻译】</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
+<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
+<ul>
+<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
+<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
+</ul>
+<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
+<ul>
+<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
+<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
+</ul>
+<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
+<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
+<ul>
+<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
+<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
+<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
+<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
+<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
+</ul>
+<p>最初的实现可以在<a href="https://github.com/bitcoin/bitcoin/pull/6871" target="_blank" rel="noopener">比特核心PR＃6871</a>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
+<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
+<ul>
+<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
+<li>在确认之前忽略选择性（opt-in）交易。</li>
+</ul>
+<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
+<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
+<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin的Wiki页面</a>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
+<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<a href="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434" target="_blank" rel="noopener">允许</a> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
+<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<a href="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522" target="_blank" rel="noopener">删除了替代品</a>，仅留下评论“暂时禁用替换功能”。</p>
+<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
+<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
+<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
+<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
+<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
+<p>在满足两个条件之前，实际更换可能不可靠：</p>
+<ul>
+<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
+<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
+</ul>
+<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
+<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
+<li><a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin Wiki上的交易可替换性</a>旨在帮助钱包作者使用RBF</li>
+<li>用于创建选择性全RBF交易的工具：<a href="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools" target="_blank" rel="noopener">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools</a></li>
+<li>Reddit：<a href="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/" target="_blank" rel="noopener">关于选择性RBF的问题</a>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
+</ol>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener">Opt-in Full Replace-by-Fee Signaling</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/比特币粉尘和空块/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2752,179 +2952,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/比特币的compact格式说明/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/blockchain/比特币的compact格式说明/" itemprop="url">比特币的compact格式说明</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T21:02:23+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在分析bitcoinj源码的时候，发现Utils有一些方法时关于compact格式的解析说明。但是代码没怎么看明白，所以记录大概解释一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static BigInteger decodeCompactBits(long compact) &#123;</span><br><span class="line">    // 32位中取得高八位</span><br><span class="line">    int size = ((int) (compact &gt;&gt; 24)) &amp; 0xFF;</span><br><span class="line">    // 设置字节数组大小，大小+4</span><br><span class="line">    byte[] bytes = new byte[4 + size];</span><br><span class="line">    // 将第四个字节设置为size</span><br><span class="line">    bytes[3] = (byte) size;</span><br><span class="line">    if (size &gt;= 1) bytes[4] = (byte) ((compact &gt;&gt; 16) &amp; 0xFF);</span><br><span class="line">    if (size &gt;= 2) bytes[5] = (byte) ((compact &gt;&gt; 8) &amp; 0xFF);</span><br><span class="line">    if (size &gt;= 3) bytes[6] = (byte) (compact &amp; 0xFF);</span><br><span class="line">    return decodeMPI(bytes, true);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="为啥有Compact格式"><a href="#为啥有Compact格式" class="headerlink" title="为啥有Compact格式"></a>为啥有Compact格式</h2><p>因为生活中总有大数的概念。有时不好表示，所以需要进行编码，就有点像以太坊的RLP编码。</p>
-<h2 id="Compact格式"><a href="#Compact格式" class="headerlink" title="Compact格式"></a>Compact格式</h2><ul>
-<li>“Compact”格式是一个256位数字的一种表示形式</li>
-<li>数字N使用类似于无符号32位数浮点格式</li>
-<li>最高有效8位是基数为256的无符号指数。</li>
-<li><b style="color:red">该指数可以被认为是“N的有效字节数”.比如0x11的有效位数为8位，即有效字节数为1,则compact形式的最高八位应该是0x01,对应的compact形式为0x01000011</b></li>
-<li>较低的23位是尾数。</li>
-<li>位数24（0x800000）表示N的符号。</li>
-<li>N =（-1 ^ sign）尾数 256 ^（指数-3）</li>
-<li>Satoshi的原始实现使用BN_bn2mpi（）和BN_mpi2bn（）。</li>
-<li>MPI使用第一个字节的最高有效位作为符号。</li>
-<li>因此0x1234560000的紧凑型式为（0x05123456）其中0x05123456,最高8位05表示整个数有效位数为5个字节,40位.</li>
-<li>0xc0de000000是紧凑的（0x0600c0de）注意紧凑形式的（0x05c0de00）将为-0x40de000000,24位表示符号</li>
-<li>CBigNum bnProofOfWorkLimit(~uint256(0) &gt;&gt; 32);如果认为有效位为256-32=224=28(0x1c个字节)*8,则取最高24位为尾数即ffffff(24位为符号位,不方便表示符号),如果认为有效位为256-24=232=29(0x1d个字节)*8,则取最高24位为尾数即00ffff,则compact形式为0x1d00ffff(比特币基因块的目标难度位)</li>
-</ul>
-<h3 id="2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数"><a href="#2-1-0x20-0x1d-紧凑形式最高8位-8-2-尾数高位0字节个数-4-32-右移尾数-计算出来hash值0的个最少个数" class="headerlink" title="2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)"></a>2.1. [0x20-0x1d(紧凑形式最高8位)]*8+2(尾数高位0字节个数)*4=32(右移尾数,计算出来hash值0的个最少个数)</h3><p>比特币只使用这种“Compact”格式来编码难度目标，无符号256位数量。 所以，所有的符号位的复杂度和使用256的大概可能是一个实施意外。</p>
-<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p><b style="color:red">就是32位整数用来表示256位的数字，最高的8位是指后面有多少字节的数据，低位在前面，高位在后面，这样如果高位为0的话，那么就不用去考虑了。但这里并不是这样，这里最多是3个字节。第24位到代表正负，较低的23位是尾数。注意低位的0是可以被忽略的，因为有长度的说明。</b></p>
-<p><b style="color:blue">这其实就是有精度限制的，也就是说数字不大的话，精度是可以的，否则就会损失精度。一旦字节长过3（不包括）个字节，那么就会损失精度。大概的意思就是这样。也许浮点数的计算也是这样的吧！这个有利于你理解float、double等一些数据范围比较大的数据的实现。</b></p>
-<p><b style="color:red">当然，如果这个东西是用来序列化整数，那自然是有精度的问题。可是如果就是用来存储数据，类型不是整数，比如说区块信息，那这个东西就很有用了，其实这个东西就是主要用来存放区块信息，比如说返回一个区块头列表，一个区块中所有的交易数据等等。这时候可能就不是compact格式了。其实这里讲的就是如何使用32位数表示256进制的数字</b></p>
-<p><b style="color:red">还有一个注意点：就是一旦发现高位的符号是1，那么如果直接表示的话，可能数字就会变成负数，所以这个时候通常是在数字前面加一个字节0，这样变成Compact格式后也不会出现数字符号改变，唯一的缺点就是损失了一个字节的精度。</b></p>
-<h2 id="关于数字恢复"><a href="#关于数字恢复" class="headerlink" title="关于数字恢复"></a>关于数字恢复</h2><p>我们看到上面的公式为：<code>N =（-1 ^ sign）尾数 256 ^（指数-3）</code>，其实这个公式比较笼统，可能乍看起来是有问题的。其实我觉得应该是<code>N=符号*23位尾数*（256 ^([8位指数-3],这个值不能小于0)）</code>.</p>
-<p>这样的话，这个才是完整的compact解析。</p>
-<p><b style="color:red">对于这个难度值，值越小，前面的0越多，那么挖矿的难度就越大！至于损失精度是没有关系的，因为这个数字只在意解析后的数字前面有多少个0而已，其他无需考虑。</b></p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/followtheart/bitcoin-notes/blob/master/bignum.h.adoc" target="_blank" rel="noopener">比特币源码分析之大数类CBigNum</a><br><a href="https://yushuangqi.com/blog/2017/understand-bitcoin-difficulty.html" target="_blank" rel="noopener">理解与计算比特币难度值Difficulty</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2976,7 +3003,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">73</span>
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
