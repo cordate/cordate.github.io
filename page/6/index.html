@@ -276,6 +276,172 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/09/linux/Linux网络配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/09/linux/Linux网络配置/" itemprop="url">Linux网络配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-09T13:28:50+08:00">2018-03-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>今天it给我配了一台工作站，然后他告诉我，我需要配置一下网络才能使用。我很奇怪网络不是很容易配的吗？而且使用dhcp就好了。突然我发现自己错了，也许他的意思是让我配成静态的地址。后来进去之后发现确实无法联网，经过一般查看，最后发现是em1的网卡（这台工作站的网卡名叫em1）的配置中<code>ONBOOT=no</code>, 改成yes，重启网卡服务之后，获取到了ip地址，并能成功上网。</p>
+<p>之前自己也是最小化安装Centos，网卡一般都要自己配置一下才能上网，我知道配置的方式，但是呢，怎么配一般记不住。之前不管解决什么问题总是不记录，现在发现记忆力下降了，有点记不住东西，所以开博是必要的。今天就来总结一下网络的配置问题，同时也回想一下之前用Fuel5.6 搭建OpenStack的实战，当时为了搭建OpenStack，我花了很长时间重试了很多次，最后终于完成了。安装过程为了安装能继续，我不得不在路由表被改变的情况下去修改路由表，有时DNS也被改了，又不得不立马去修改DNS，每台机器（当然是虚拟机）的ping一直开着监控，一旦发现ping不通，立马解决问题，修改网络配置。好了，我们开始吧！</p>
+<h2 id="查看机器的网卡"><a href="#查看机器的网卡" class="headerlink" title="查看机器的网卡"></a>查看机器的网卡</h2><h3 id="ifconfig"><a href="#ifconfig" class="headerlink" title="ifconfig"></a>ifconfig</h3><p>这里最简单的方法就是ifconfig命令。<b style="color:red">以前学习网络知识的时候已经知道网络中几乎所有的命令都是简化ip命令的功能，比如ifconfig、route等等。所以IP命令非常复杂，反正我是记不住的，遇到具体网络命令的需求，知道一些基础命令，确实需要ip命令支持才会查文档。</b>下面是工作站ifconfig命令的输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">em1: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 192.168.6.68  netmask 255.255.255.0  broadcast 192.168.6.255</span><br><span class="line">        inet6 fe80::c170:563c:9ce1:51dd  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether f8:b1:56:dd:f3:2d  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 7254  bytes 862196 (841.9 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 411  bytes 80714 (78.8 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line">        device interrupt 20  memory 0xf7c00000-f7c20000  </span><br><span class="line"></span><br><span class="line">lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;</span><br><span class="line">        loop  txqueuelen 1  (Local Loopback)</span><br><span class="line">        RX packets 112  bytes 10688 (10.4 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 112  bytes 10688 (10.4 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">virbr0: flags=4098&lt;BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether 52:54:00:f1:8a:c9  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">virbr0-nic: flags=4098&lt;BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether 52:54:00:f1:8a:c9  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure></p>
+<p>其实我的工作站只有一块物理网卡，后面的两块应该是虚拟网卡。虚拟网卡是有类型的，具体可以参考VMware中对虚拟网卡的描述，以前我写过一篇博客记录，但是后来免费云回收了我的空间，我以前写得的文章全部被删除了。我也使用云盘，后来我用的那个盘不维护了，我丢失了大量的植物学资料，挺生气的。所以现在不敢使用免费的云了。关于虚拟网卡的类型如下：</p>
+<ul>
+<li>bridged(桥接模式): 就像和宿主机一样是当前网络中的以太机器，这个网卡类型的好处就是可以上网，外部网络可以主动访问这块网卡。重点是与宿主机在同一个网段。注意子网掩码的配置。</li>
+<li>host-only(主机模式)：就相当于虚拟机网络是一个独立的网络，宿主机呢有两个网卡，一个接外网，一个连到了这个独立的网络中，但是宿主机没有nat功能。也就是说外网无法访问这个网络，这个机器也无法访问外网。</li>
+<li>NAT(网络地址转换模式)：这个就像宿主机连了一台交换机，然后内网的机器组网。宿主机提供nat功能，这样虚机可以访问外网，但是外网无法访问内网。我曾经在宿主机配置过路由表，希望宿主机所在网络的机器能够通过宿主机访问虚拟机，最后没有成功。</li>
+</ul>
+<p>OK下面解释一下输出的字段意思吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第一行：连接类型：Ethernet（以太网）HWaddr（硬件mac地址）</span><br><span class="line">第二行：网卡的mac地址、IP地址、子网、掩码</span><br><span class="line">第三行：UP（代表网卡开启状态）RUNNING（代表网卡的网线被接上）MULTICAST（支持组播）MTU:1500（最大传输单元）：1500字节</span><br><span class="line">第四、五行：接收、发送数据包情况统计</span><br><span class="line">第七行：接收、发送数据字节数统计信息。</span><br></pre></td></tr></table></figure></p>
+<h3 id="network"><a href="#network" class="headerlink" title="network"></a>network</h3><p>也可以通过这个服务来看：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># service network status</span><br><span class="line">Configured devices:</span><br><span class="line">lo em1 virbr0</span><br><span class="line">Currently active devices:</span><br><span class="line">lo em1</span><br></pre></td></tr></table></figure></p>
+<h3 id="ip"><a href="#ip" class="headerlink" title="ip"></a>ip</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: em1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP qlen 1000</span><br><span class="line">    link/ether f8:b1:56:dd:f3:2d brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.6.68/24 brd 192.168.6.255 scope global dynamic em1</span><br><span class="line">       valid_lft 7025sec preferred_lft 7025sec</span><br><span class="line">    inet6 fe80::c170:563c:9ce1:51dd/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">3: virbr0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noqueue state DOWN qlen 1000</span><br><span class="line">    link/ether 52:54:00:f1:8a:c9 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">4: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN qlen 1000</span><br><span class="line">    link/ether 52:54:00:f1:8a:c9 brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+<h3 id="查看网卡设备信息"><a href="#查看网卡设备信息" class="headerlink" title="查看网卡设备信息"></a>查看网卡设备信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ lspci | grep -i net</span><br><span class="line">03:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168B PCI Express Gigabit Ethernet controller (rev 01)</span><br><span class="line">04:00.0 Network controller: Atheros Communications Inc. AR9285 Wireless Network Adapter (PCI-Express) (rev 01)</span><br></pre></td></tr></table></figure>
+<h2 id="修改网卡接口名"><a href="#修改网卡接口名" class="headerlink" title="修改网卡接口名"></a>修改网卡接口名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo nano /etc/udev/rules.d/70-persistent-net.rules</span><br></pre></td></tr></table></figure>
+<p>修改下列字段便成。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NAME=&quot;eth0&quot;和 NAME=&quot;wlan0&quot;</span><br></pre></td></tr></table></figure></p>
+<p>随后重启Ubuntu。</p>
+<h2 id="修改网卡的配置"><a href="#修改网卡的配置" class="headerlink" title="修改网卡的配置"></a>修改网卡的配置</h2><p>我们先来看一下我的网卡信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=dhcp</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=em1</span><br><span class="line">UUID=6eda348b-2aeb-4736-b4e2-f939d14b6844</span><br><span class="line">DEVICE=em1</span><br><span class="line">ONBOOT=yes</span><br></pre></td></tr></table></figure></p>
+<p>简单看一下说明吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=eth0 #描述网卡对应的设备别名，例如ifcfg-eth0的文件中它为eth0</span><br><span class="line">BOOTPROTO=static #设置网卡获得ip地址的方式，可能的选项为static，dhcp或bootp，分别对应静态指定的 ip地址，通过dhcp协议获得的ip地址，通过bootp协议获得的ip地址</span><br><span class="line">BROADCAST=192.168.0.255 #对应的子网广播地址</span><br><span class="line">HWADDR=00:07:E9:05:E8:B4 #对应的网卡物理地址</span><br><span class="line">IPADDR=12.168.1.2 #如果设置网卡获得 ip地址的方式为静态指定，此字段就指定了网卡对应的ip地址</span><br><span class="line">IPV6INIT=no # 是否支持IPv6</span><br><span class="line">IPV6_AUTOCONF=no</span><br><span class="line">NETMASK=255.255.255.0 #网卡对应的网络掩码</span><br><span class="line">NETWORK=192.168.1.0 #网卡对应的网络地址</span><br><span class="line">ONBOOT=yes #系统启动时是否设置此网络接口，设置为yes时，系统启动时激活此设备</span><br><span class="line">GATEWAY：192.168.0.1 # 网关地址</span><br><span class="line">HWADDR/MACADDR：MAC地址。只需设置其中一个，同时设置时不能相互冲突。</span><br><span class="line">PEERDNS：是否指定DNS。如果使用DHCP协议，默认为yes。yes：如果DNS设置，修改/etc/resolv.conf中的DNS; no：不修改/etc/resolv.conf中的DNS</span><br><span class="line">DNS&#123;1, 2&#125;：DNS地址。当PEERDNS为yes时会被写入/etc/resolv.conf中。</span><br><span class="line">NM_CONTROLLED：是否由Network Manager控制该网络接口。修改保存后立即生效，无需重启。被其坑过几次，建议一般设为no。</span><br></pre></td></tr></table></figure></p>
+<h2 id="修改网关"><a href="#修改网关" class="headerlink" title="修改网关"></a>修改网关</h2><p><code>vi /etc/sysconfig/network</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NETWORKING=yes</span><br><span class="line">HOSTNAME=Aaron</span><br><span class="line">GATEWAY=192.168.1.1</span><br></pre></td></tr></table></figure></p>
+<h2 id="修改DNS"><a href="#修改DNS" class="headerlink" title="修改DNS"></a>修改DNS</h2><p>修改对应网卡的DNS的配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># vi /etc/resolv.conf</span><br></pre></td></tr></table></figure></p>
+<p>修改以下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nameserver 8.8.8.8 </span><br><span class="line">nameserver 8.8.4.4</span><br></pre></td></tr></table></figure></p>
+<h2 id="修改路由表"><a href="#修改路由表" class="headerlink" title="修改路由表"></a>修改路由表</h2><p>先看一下系统的路由表吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# route </span><br><span class="line">Kernel IP routing table</span><br><span class="line">Destination     Gateway         Genmask         Flags Metric Ref    Use Iface</span><br><span class="line">default         gateway         0.0.0.0         UG    100    0        0 em1</span><br><span class="line">192.168.6.0     0.0.0.0         255.255.255.0   U     100    0        0 em1</span><br></pre></td></tr></table></figure></p>
+<p>修改路由表的命令如下，可以是删除或者是添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add/del default gw 192.168.1.1</span><br></pre></td></tr></table></figure></p>
+<p>default值得是0.0.0.0，就是不管是什么地址，全部向这个网关发送即可。当然指定ip的话会优先匹配。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.cnblogs.com/peida/archive/2013/02/27/2934525.html" target="_blank" rel="noopener">每天一个linux命令（52）：ifconfig命令</a><br><a href="https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Virtualization/3.5/html/Technical_Guide/Virtual_Network_Interface_Controller_VNIC.html" target="_blank" rel="noopener">3.7. 虚拟网络接口卡（虚拟网卡）</a><br><a href="https://wizardforcel.gitbooks.io/network-basic/content/12.html" target="_blank" rel="noopener">网络基本功（十三）：细说Linux网络配置（下）</a><br><a href="http://www.cnblogs.com/shuaixf/archive/2011/11/29/2267863.html" target="_blank" rel="noopener">Linux修改网络配置</a><br><a href="https://www.centos.org/docs/4/html/rhel-rg-en-4/s1-networkscripts-interfaces.html" target="_blank" rel="noopener">Red Hat Enterprise Linux 4: Reference Guide</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/08/java/Java中BlockingQueue学习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2063,157 +2229,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/JVM系统底层运行参数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/05/java/JVM系统底层运行参数/" itemprop="url">JVM系统底层运行参数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T18:58:31+08:00">2018-03-05</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天在网上看到一个很有趣的例子，貌似大家一点也不关注，今天来学习一下，不过这个例子激起了我对JVM底层运行原理的兴趣，如果日后有兴趣，倒是可以花心思研究一下。</p>
-<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123; </span><br><span class="line">    String a = sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String b = sun.misc.VM.getSavedProperty(&quot;high&quot;); </span><br><span class="line">    String c = System.getProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String d = System.getProperty(&quot;high&quot;); </span><br><span class="line"></span><br><span class="line">    System.err.println(a); </span><br><span class="line">    System.err.println(b); </span><br><span class="line">    System.err.println(c); </span><br><span class="line">    System.err.println(d); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>加入java命令执行时设置的值是这样的：<code>-Djava.lang.Integer.IntegerCache.high=250 -Dhigh=250</code>,输出的结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">250 </span><br><span class="line">250 </span><br><span class="line">null </span><br><span class="line">250</span><br></pre></td></tr></table></figure></p>
-<p>那么问题来了，为何System.getProperty(“java.lang.Integer.IntegerCache.high”); 是null呢？</p>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>其实上面的<code>java.lang.Integer.IntegerCache.high</code>是用来设置HotSpot VM上Integer的autobox（自动装箱缓存大小配置）范围的。详细参考：<a href="http://rednaxelafx.iteye.com/blog/680746" target="_blank" rel="noopener">http://rednaxelafx.iteye.com/blog/680746</a></p>
-<p>使用<code>sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);</code>来获取这个参数值，而不是通过<code>System.getProperty()</code>.</p>
-<p>通常，HotSpot VM所接收的特定的VM参数都是通过-XX:前缀的命令行参数指定的，而传给Java层的system property则是通过-D前缀的参数来指定。</p>
-<p>在系统初始化的时候，JVM调用<code>java.lang.System.initializeSystemClass()</code>来初始化System类，而它进一步调用的<br><code>java.lang.System.initProperties()</code>会调用到JVM的<code>JVM_InitProperties()</code>函数，来从JVM那边把-D参数都拿到System.properties里。</p>
-<p>紧接着，<code>initializeSystemClass()</code>又调用<code>sun.misc.VM.saveAndRemoveProperties()</code>来保存一份“干净”的system properties备份以便JDK内部使用，避免JDK的内部行为受到运行时用户代码对<code>System.properties</code>的修改所干扰。同时<code>saveAndRemoveProperties()</code>也会从System.properties移除一些只供JDK内部使用、用户代码不应该看到的系统属性，例如设置NIO direct memory大小限制的sun.nio.MaxDirectMemorySize属性。这些被移除的系统属性在sun.misc.VM.savedProps里都留有备份。</p>
-<p>所以上面使用System.getProperty去获取系统预留的配置时，就获取不到任何信息。关于VM会从系统属性中删除哪些信息可以查看 <code>sun.misc.VM</code> 这个VM类中的saveAndRemoveProperties方法。这个调用过程，可以查看System类里面的initializeSystemClass方法。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2265,7 +2280,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">75</span>
+                    <span class="site-state-item-count">76</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
