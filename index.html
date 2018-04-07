@@ -276,6 +276,432 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/06/blockchain/solidity杂项/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/06/blockchain/solidity杂项/" itemprop="url">solidity杂项</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-06T00:39:19+08:00">2018-04-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><b style="color:red">本文是基于solidity官方文档v0.4.21.</b></p>
+<h2 id="Storage中状态变量的布局"><a href="#Storage中状态变量的布局" class="headerlink" title="Storage中状态变量的布局"></a>Storage中状态变量的布局</h2><p>静态大小的变量（除映射和动态大小的数组类型之外的所有变量）都是从位置<code>0</code>开始连续地放置在存储中。如果可能的话，需要少于32个字节的多个项目按照以下规则打包到一个存储槽中：</p>
+<ul>
+<li>存储槽中的第一项存储在低阶对齐中。</li>
+<li>基本类型只使用存储它们所需的那么多字节。</li>
+<li>如果基本类型不适合存储槽的其余部分，则将其移动到下一个存储槽。</li>
+<li>结构和数组数据总是会启动一个新的槽并占据整个槽（但是根据这些规则，结构或数组内的项会紧紧地压缩）。</li>
+</ul>
+<p><b style="color:#6ab0de">警告：使用小于32字节的元素时，您合约的gas使用量可能会更高。这是因为EVM一次运行32个字节。因此，如果元素小于此值，则EVM必须使用更多操作才能将元素的大小从32个字节减小到所需的大小。</b></p>
+<p><b style="color:red">如果您正在处理存储值，那么只使用减小尺寸的参数是有益的，因为编译器会将多个元素打包到一个存储槽中，从而将多个读取或写入组合到一个操作中。处理函数参数或内存值时，没有固有的好处，因为编译器不会打包这些值。</b></p>
+<p><b style="color:red">最后，为了让EVM为此进行优化，请确保您尝试对存储变量和<code>struct</code>成员进行排序，以便它们可以紧密打包。例如，声明你的<code>uint128, uint128, uint256</code>存储变量的顺序，而不是<code>uint128, uint256, uint128</code> ，因为前者将只占用存储的两个槽，而后者将占用三个。</b></p>
+<p>结构和数组的元素会相互存储，就像明确地给出的顺序一样。</p>
+<p>由于其大小不可预知，映射和动态大小的数组类型使用Keccak-256散列计算来查找值或数组数据的起始位置。这些起始位置总是全堆栈槽。</p>
+<p>映射或动态数组本身根据上述规则（或通过将此规则映射到映射或数组阵列）递归地占用存储在某个位置<code>p</code>的（未填充）槽。对于动态数组，此槽存储数组中元素的数量（字节数组和字符串在这里是一个例外，见下文）。对于映射，该槽未被使用（但是这是需要的，使得两个相同的映射在彼此之后将使用不同的散列分布）。数组数据位于<code>keccak256(p)</code>, 对应于映射键<code>k</code>的值位<code>keccak256(k . p)</code>于其中<code>.</code>是级联。如果该值又是非基本类型，则通过添加<code>keccak256(k . p)</code>的偏移量来找到位置。keccak256(k . p).keccak256(k . p)</p>
+<p><code>bytes</code>和<code>string</code>存储在相同的槽中，槽中也存储长度。特别地：如果数据长度至多为<code>31</code>字节，则它存储在高位字节（左对齐）中，而最低位字节存储<code>length * 2</code>。如果更长，主要的槽存储<code>length * 2 + 1</code>和数据按常规存储在<code>keccak256(slot)</code>。</p>
+<p>因此，对于以下合同片段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">  struct s &#123; uint a; uint b; &#125;</span><br><span class="line">  uint x;</span><br><span class="line">  mapping(uint =&gt; mapping(uint =&gt; s)) data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>data[4][9].b</code>的位置是在<code>keccak256(uint256(9) . keccak256(uint256(4) . uint256(1))) + 1</code>。</p>
+<h2 id="内存中的布局"><a href="#内存中的布局" class="headerlink" title="内存中的布局"></a>内存中的布局</h2><p>Solidity保留三个256位槽：</p>
+<ul>
+<li>0 - 64：散列方法的暂存空间</li>
+<li>64 - 96：当前分配的内存大小（即可用内存指针）</li>
+</ul>
+<p>语句之间可以使用临时空间（包括在内联程序在内）。</p>
+<p>Solidity始终将新对象放置在空闲内存指针上，内存永远不会释放（这可能会在未来发生变化）。</p>
+<p><b style="color:#6ab0de">警告：Solidity中有一些操作需要大于64字节的临时内存区域，因此临时内存空间不会不匹配。它们将被放置在空闲内存指针指向的位置，但给予其较短的生命周期，指针不会更新。内存可能会或可能不会被清零。正因为如此，人们不应该期望自由内存被清零。</b></p>
+<h2 id="调用方法数据的布局"><a href="#调用方法数据的布局" class="headerlink" title="调用方法数据的布局"></a>调用方法数据的布局</h2><p>当部署Solidity合同并从账户调用时，假定输入数据采用<a href="https://solidity.readthedocs.io/en/v0.4.21/abi-spec.html#abi" target="_blank" rel="noopener">ABI规范</a>中的格式。ABI规范要求将参数填充为32个字节的倍数。内部函数调用使用不同的约定。</p>
+<h2 id="内部-清理变量"><a href="#内部-清理变量" class="headerlink" title="内部 - 清理变量"></a>内部 - 清理变量</h2><p>当某个值小于256位时，在某些情况下必须清除其余的位。Solidity编译器的设计就是在任何可能受其余位中潜在垃圾影响的操作之前清除这些剩余位。例如，在将值写入内存之前，需要清除其余位，因为内存内容可用于计算散列值或作为消息调用的数据发送。类似地，在将值存储在storage中之前，需要清除其余位，否则就会观察到乱码值。</p>
+<p>另一方面，如果紧接着的操作不受影响，我们不清除这些位。例如，由于任何非零值被<code>JUMPI</code>指令认为是<code>true</code>，在值作为<code>JUMPI</code>指令条件之前，我们不会清除布尔值。</p>
+<p>除了上面的设计原理外，Solidity编译器还会在输入数据加载到堆栈时清除输入数据。<b style="color:yellow">难道是使用懒清除方式？</b></p>
+<p>不同类型的清理无效值的规则有所不同：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>有效值</th>
+<th>无效值的意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n个成员的枚举</td>
+<td>0直到n-1</td>
+<td>exception</td>
+</tr>
+<tr>
+<td>bool</td>
+<td>0或1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>有符号整数</td>
+<td>符号扩展的字</td>
+<td>目前默默地包裹; 将来会有异常情况发生</td>
+</tr>
+<tr>
+<td>无符号整数</td>
+<td>更高位清零</td>
+<td>目前默默地包裹; 将来会有异常情况发生</td>
+</tr>
+</tbody>
+</table>
+<h2 id="内部-优化器"><a href="#内部-优化器" class="headerlink" title="内部 - 优化器"></a>内部 - 优化器</h2><p>Solidity优化器在汇编上操作，所以它可以或者已经被其他语言使用。它在<code>JUMPs</code>和<code>JUMPDESTs</code>指令处分裂指令的序列使成为基本语句块。在这些语句块内部，分析指令，对堆栈、对内存、对storage的每个修改，都被记录为表达式，该表达式包括指令和基本上指向其他表达式的参数列表。现在主要想法是找到始终相等的表达式（在每个输入上）并将它们组合到一个表达式类中。优化器首先尝试在已知表达式的列表中查找每个新表达式。如果这不起作用，则表达式按照规则进行简化，规则像<code>constant + constant = sum_of_constants</code>或者<code>X * 1 = X</code>。由于这是递归完成的，所以如果第二个因子是一个更复杂的表达式，我们知道它总是会评估为1，那么我们也可以应用后一个规则。对存储和内存位置的修改必须删除有关存储和内存位置的认知（knowledge，我怎么翻译），这些认知并不是已知的不同：如果我们先写入位置x，然后写入位置y; 并且<code>x</code>和<code>y</code>都是输入变量，则第二个可能会覆盖第一个，所以我们实际上在我们写y值之后不知道在x处存储了什么。另一方面，如果表达式<code>x - y</code>的简化计算为非零常数，那么我们知道我们可以保存关于x中存储的内容的认知。</p>
+<p>在这个过程结束时，我们知道最后哪些表达式必须在堆栈上，并且有一个内存和存储的修改的列表。这些信息与基本语句块一起存储并用于链接（link）它们。此外，关于堆栈，存储和内存配置的知识被转发到下一个语句块。如果我们知道所有<code>JUMP</code>和<code>JUMPI</code>指令的目标，我们可以构建一个完整的程序流程图。如果只有一个我们不知道的目标（原则上这可能发生，跳跃目标可以从输入中计算），我们必须消除关于语句块输入状态的所有认知，因为它可能是未知<code>JUMP</code>指令的目标。如果任何<code>JUMPI</code>指令被发现评估为常数的条件，则将其转换为无条件跳转。</p>
+<p>作为最后一步，每个语句块中的代码都会完全重新生成。从语句块的结尾处的表达式创建依赖关系图，并且不是该图的一部分的每个操作都基本上被丢弃。现在生成的代码会按照原始代码中的顺序将修改应用于内存和存储（删除已发现不需要的修改），最后在堆栈中正确的位置生成需要的所有值。</p>
+<p>这些步骤适用于每个基本语句块，如果较小，则新生成的代码将用作替换。如果分析过程中在<code>JUMPI</code>指令处分割了一个基本语句块并且条件评估为常量，根据常量的值替换<code>JUMPI</code>指令，因此代码类似于<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var x = 7;</span><br><span class="line">data[7] = 9;</span><br><span class="line">if (data[x] != x + 2)</span><br><span class="line">  return 2;</span><br><span class="line">else</span><br><span class="line">  return 1;</span><br></pre></td></tr></table></figure></p>
+<p>被简化为也可以编译的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[7] = 9;</span><br><span class="line">return 1;</span><br></pre></td></tr></table></figure></p>
+<p>即使指令在开始时包含<code>jump</code>指令。</p>
+<h2 id="源映射（就是源码hash）"><a href="#源映射（就是源码hash）" class="headerlink" title="源映射（就是源码hash）"></a>源映射（就是源码hash）</h2><p>作为AST输出的一部分，编译器提供AST中相应节点所代表的源代码范围。这可以用于各种用途，包括基于AST报告错误的静态分析工具和突出显示局部变量及其用途的调试工具。</p>
+<p>此外，编译器还可以生成从字节码到生成该指令的源代码范围的映射。对于在字节码级别上运行的静态分析工具以及对于在调试器中显示源代码当前位置或者对于断点处理，这一点同样重要。</p>
+<p>这两种源映射都使用整数标识符（其实就是句柄）来引用源文件。这些是通常称为<code>&quot;sourceList&quot;</code>的源文件列表中的常规数组索引，它是组合json(combined-json)和json / npm编译器输出的一部分。</p>
+<p><b style="color:#6ab0de">注意: 对于与任何特定源文件没有关联的指令的情况，源映射分配一个整数标识符-1。这可能发生在编译器生成的内联汇编语句的字节代码段中。</b></p>
+<p>AST内的源映射使用以下表示法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s:l:f</span><br></pre></td></tr></table></figure></p>
+<p>其中s是对于源文件的开始位置的字节偏移， l是在字节源范围的长度和f为上述的源索引。</p>
+<p>字节码的源映射中的编码更复杂：它是一个由<code>s:l:f:j</code>组成以<code>;</code>分隔的列表。每个元素都对应一条指令，即不能使用字节偏移量，但必须使用指令偏移量（推送指令长于单个字节）。的字段<code>s</code>，<code>l</code>和<code>f</code>如上文，<code>j</code>可以是<code>i</code>，<code>o</code>或<code>-</code>标志着一个跳转指令是否进入函数，从函数返回或是一个例如一个循环一部分的常规跳转。</p>
+<p>为了压缩这些源映射，尤其是字节码，使用以下规则：</p>
+<ul>
+<li>如果一个字段为空，则使用前一个元素的值。</li>
+<li>如果缺少<code>:</code>，则以下所有字段均视为空。</li>
+</ul>
+<p>这意味着以下源映射表示相同的信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1:2:1;1:9:1;2:1:2;2:1:2;2:1:2</span><br><span class="line">1:2:1;:9;2:1:2;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="技巧和窍门"><a href="#技巧和窍门" class="headerlink" title="技巧和窍门"></a>技巧和窍门</h2><ul>
+<li>在数组上用<code>delete</code>以删除其所有元素。</li>
+<li>对结构元素使用较短的类型并对它们进行排序，以便将短类型组合在一起。这可以降低gas成本，因为多种<code>SSTORE</code>操作可能合并为一种（<code>SSTORE</code>成本5000或20000，因此这是您想要优化的）。使用天gas价格估算器（启用优化器）来检查！</li>
+<li>让你的状态变量公开 - 编译器会自动为你创建<a href="https://solidity.readthedocs.io/en/v0.4.21/contracts.html#visibility-and-getters" target="_blank" rel="noopener">getters</a>。</li>
+<li>如果总是在函数开始的地方检查输入条件或状态，请尝试使用<a href="https://solidity.readthedocs.io/en/v0.4.21/contracts.html#modifiers" target="_blank" rel="noopener">函数修饰符</a>。</li>
+<li>如果你的合约有一个调用<code>send</code>的函数，但你想使用内置的send函数，请使用<code>address(contractVariable).send(amount)</code>。</li>
+<li>用一个赋值语句初始化storage结构： <code>x = MyStruct({a: 1, b: 2});</code></li>
+</ul>
+<p>注意：如果存储结构具有压缩打包的属性，请使用单独的赋值对其进行初始化：<code>x.a = 1; x.b = 2;</code>。通过这种方式，优化器可以一次更新存储，从而使赋值更便宜。</p>
+<h2 id="备忘单"><a href="#备忘单" class="headerlink" title="备忘单"></a>备忘单</h2><h3 id="操作符的优先顺序"><a href="#操作符的优先顺序" class="headerlink" title="操作符的优先顺序"></a>操作符的优先顺序</h3><p>以下是按评估顺序列出的操作符的优先顺序。</p>
+<table>
+<thead>
+<tr>
+<th>优先权</th>
+<th>描述</th>
+<th>操作者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>后缀增量和减量</td>
+<td><code>++</code>，<code>--</code></td>
+</tr>
+<tr>
+<td></td>
+<td>new的表达</td>
+<td><code>new &lt;typename&gt;</code></td>
+</tr>
+<tr>
+<td></td>
+<td>数组下标</td>
+<td><code>&lt;array&gt;[&lt;index&gt;]</code></td>
+</tr>
+<tr>
+<td></td>
+<td>成员访问</td>
+<td><code>&lt;object&gt;.&lt;member&gt;</code></td>
+</tr>
+<tr>
+<td></td>
+<td>函数样式的调用</td>
+<td><code>&lt;func&gt;(&lt;args...&gt;)</code></td>
+</tr>
+<tr>
+<td></td>
+<td>括号</td>
+<td><code>(&lt;statement&gt;)</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>前缀增量和减量</td>
+<td><code>++</code>，<code>--</code></td>
+</tr>
+<tr>
+<td></td>
+<td>一元正负号</td>
+<td><code>+</code>，<code>-</code></td>
+</tr>
+<tr>
+<td></td>
+<td>一元操作</td>
+<td><code>delete</code></td>
+</tr>
+<tr>
+<td></td>
+<td>逻辑NOT</td>
+<td><code>!</code></td>
+</tr>
+<tr>
+<td></td>
+<td>按位取反</td>
+<td><code>~</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>幂</td>
+<td><code>**</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>乘法，除法和模</td>
+<td><code>*</code>，<code>/</code>，<code>%</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>加减</td>
+<td><code>+</code>，<code>-</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>按位移位运算符</td>
+<td><code>&lt;&lt;</code>，<code>&gt;&gt;</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>按位与</td>
+<td><code>&amp;</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>按位XOR</td>
+<td><code>^</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>按位或</td>
+<td>&#124;</td>
+</tr>
+<tr>
+<td>10</td>
+<td>不等式操作符</td>
+<td><code>&lt;</code>，<code>&gt;</code>，<code>&lt;=</code>，<code>&gt;=</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>等于操作符</td>
+<td><code>==</code>，<code>!=</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>逻辑AND</td>
+<td><code>&amp;&amp;</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>逻辑或</td>
+<td>&#124;&#124;</td>
+</tr>
+<tr>
+<td>14</td>
+<td>三元操作符</td>
+<td><code>&lt;conditional&gt; ? &lt;if-true&gt; : &lt;if-false&gt;</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td>赋值运算符</td>
+<td><code>=</code>，&#124;=，<code>^=</code>，<code>&amp;=</code>，<code>&lt;&lt;=</code>， <code>&gt;&gt;=</code>，<code>+=</code>，<code>-=</code>，<code>*=</code>，<code>/=</code>， <code>%=</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td>逗号运算符</td>
+<td><code>,</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h3><ul>
+<li><code>block.blockhash(uint blockNumber) returns (bytes32)</code>：给定区块的散列 - 仅适用于256个最新块</li>
+<li><code>block.coinbase(address)</code>：当前块矿工的地址</li>
+<li><code>block.difficulty(uint)</code>：当前区块的困难度</li>
+<li><code>block.gaslimit(uint)</code>：当前区块的gaslimit</li>
+<li><code>block.number(uint)</code>：当前区块的块高</li>
+<li><code>block.timestamp(uint)</code>：当前区块的时间戳</li>
+<li><code>gasleft() returns (uint256)</code>：剩余的gas</li>
+<li><code>msg.data(bytes)</code>：完成calldata</li>
+<li><code>msg.gas(uint)</code>：剩余gas - 在版本0.4.21中弃用并将被替换为<code>gasleft()</code></li>
+<li><code>msg.sender(address)</code>：消息的发起者（当前调用者）</li>
+<li><code>msg.value(uint)</code>：与消息一起发送的以太币数量（单位：wei）</li>
+<li><code>now(uint)</code>：当前块时间戳（别名为<code>block.timestamp</code>）</li>
+<li><code>tx.gasprice(uint)</code>：交易的gas价格</li>
+<li><code>tx.origin(address)</code>：交易的发起者（完整的调用链）</li>
+<li><code>assert(bool condition)</code>：如果条件是<code>false</code>,中止执行并恢复状态更改（用于内部错误）</li>
+<li><code>require(bool condition)</code>：如果条件是<code>false</code>中止执行并恢复状态更改（用于格式错误的输入或外部组件中的错误）</li>
+<li><code>revert()</code>：中止执行并恢复状态更改</li>
+<li><code>keccak256(...) returns (bytes32)</code>：计算（紧密排列）参数的Ethereum-SHA-3（Keccak-256）散列</li>
+<li><code>sha3(...) returns (bytes32)</code>：<code>keccak256</code>的别名 </li>
+<li><code>sha256(...) returns (bytes32)</code>：计算（紧密排列）参数的SHA-256哈希值</li>
+<li><code>ripemd160(...) returns (bytes20)</code>：计算（紧密排列）参数的RIPEMD-160哈希值</li>
+<li><code>ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)</code>：从椭圆曲线签名中恢复与公钥相关的地址，错误时返回零</li>
+<li><code>addmod(uint x, uint y, uint k) returns (uint)</code>：计算<code>(x + y) % k</code>以任意精度执行加法的位置，并且不会在<code>2**256</code>环绕。断言<code>k != 0</code>从0.5.0版开始。</li>
+<li><code>mulmod(uint x, uint y, uint k) returns (uint)</code>：计算<code>(x * y) % k</code>以任意精度执行乘法的位置，并且不会在<code>2**256</code>绕回。断言<code>k != 0</code>从0.5.0版开始。</li>
+<li><code>this</code>(当前合同的类型)：当前合约，明确转换为address</li>
+<li><code>super</code>：继承层次结构高一级的合约</li>
+<li><code>selfdestruct(address recipient)</code>：销毁当前的合约，将资金发送到给定的地址</li>
+<li><code>suicide(address recipient)</code>：<code>selfdestruct</code>的别名 </li>
+<li><code>&lt;address&gt;.balance(uint256)</code>：地址的余额（单位：wei）</li>
+<li><code>&lt;address&gt;.send(uint256 amount) returns (bool)</code>：发送指定地址相应数量的以太币，失败时返回false</li>
+<li><code>&lt;address&gt;.transfer(uint256 amount)</code>：发送给地址指定数量的以太币，失败抛出异常</li>
+</ul>
+<h3 id="函数可见性说明符"><a href="#函数可见性说明符" class="headerlink" title="函数可见性说明符"></a>函数可见性说明符</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function myFunction() &lt;visibility specifier&gt; returns (bool) &#123;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>public</code>：在外部和内部可见（为存储/状态变量创建一个<a href="https://solidity.readthedocs.io/en/v0.4.21/contracts.html#getter-functions" target="_blank" rel="noopener">getter函数</a>）</li>
+<li><code>private</code>：只在当前合约中可见</li>
+<li><code>external</code>：仅在外部可见（仅用于函数） - 即只能通过消息调用（通过<code>this.func</code>）</li>
+<li><code>internal</code>：只在内部可见</li>
+</ul>
+<h3 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h3><ul>
+<li><code>pure</code> 对于函数：禁止修改或访问状态 - 这还没有强制执行。</li>
+<li><code>view</code> 函数：不允许修改状态 - 这还没有强制执行。</li>
+<li><code>payable</code> 函数：允许他们在收到调用的同时接收Ether。</li>
+<li><code>constant</code> 对于状态变量：禁止分配（初始化除外），不占用存储槽。</li>
+<li><code>constant</code> 用于函数：与<code>view</code>相同。</li>
+<li><code>anonymous</code> 事件：不将事件签名存储为主题。</li>
+<li><code>indexed</code> 用于事件参数：将参数存储为主题。</li>
+</ul>
+<h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><p>这些关键字保留在Solidity中。它们可能成为未来语法的一部分：</p>
+<p><code>abstract</code>，<code>after</code>，<code>case</code>，<code>catch</code>，<code>default</code>，<code>final</code>，<code>in</code>，<code>inline</code>，<code>let</code>，<code>match</code>，<code>null</code>， <code>of</code>，<code>relocatable</code>，<code>static</code>，<code>switch</code>，<code>try</code>，<code>type</code>，<code>typeof</code>。</p>
+<h3 id="语言语法"><a href="#语言语法" class="headerlink" title="语言语法"></a>语言语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br></pre></td><td class="code"><pre><span class="line">SourceUnit = (PragmaDirective | ImportDirective | ContractDefinition)*</span><br><span class="line"></span><br><span class="line">// Pragma actually parses anything up to the trailing &apos;;&apos; to be fully forward-compatible.</span><br><span class="line">PragmaDirective = &apos;pragma&apos; Identifier ([^;]+) &apos;;&apos;</span><br><span class="line"></span><br><span class="line">ImportDirective = &apos;import&apos; StringLiteral (&apos;as&apos; Identifier)? &apos;;&apos;</span><br><span class="line">        | &apos;import&apos; (&apos;*&apos; | Identifier) (&apos;as&apos; Identifier)? &apos;from&apos; StringLiteral &apos;;&apos;</span><br><span class="line">        | &apos;import&apos; &apos;&#123;&apos; Identifier (&apos;as&apos; Identifier)? ( &apos;,&apos; Identifier (&apos;as&apos; Identifier)? )* &apos;&#125;&apos; &apos;from&apos; StringLiteral &apos;;&apos;</span><br><span class="line"></span><br><span class="line">ContractDefinition = ( &apos;contract&apos; | &apos;library&apos; | &apos;interface&apos; ) Identifier</span><br><span class="line">                     ( &apos;is&apos; InheritanceSpecifier (&apos;,&apos; InheritanceSpecifier )* )?</span><br><span class="line">                     &apos;&#123;&apos; ContractPart* &apos;&#125;&apos;</span><br><span class="line"></span><br><span class="line">ContractPart = StateVariableDeclaration | UsingForDeclaration</span><br><span class="line">             | StructDefinition | ModifierDefinition | FunctionDefinition | EventDefinition | EnumDefinition</span><br><span class="line"></span><br><span class="line">InheritanceSpecifier = UserDefinedTypeName ( &apos;(&apos; Expression ( &apos;,&apos; Expression )* &apos;)&apos; )?</span><br><span class="line"></span><br><span class="line">StateVariableDeclaration = TypeName ( &apos;public&apos; | &apos;internal&apos; | &apos;private&apos; | &apos;constant&apos; )? Identifier (&apos;=&apos; Expression)? &apos;;&apos;</span><br><span class="line">UsingForDeclaration = &apos;using&apos; Identifier &apos;for&apos; (&apos;*&apos; | TypeName) &apos;;&apos;</span><br><span class="line">StructDefinition = &apos;struct&apos; Identifier &apos;&#123;&apos;</span><br><span class="line">                     ( VariableDeclaration &apos;;&apos; (VariableDeclaration &apos;;&apos;)* )? &apos;&#125;&apos;</span><br><span class="line"></span><br><span class="line">ModifierDefinition = &apos;modifier&apos; Identifier ParameterList? Block</span><br><span class="line">ModifierInvocation = Identifier ( &apos;(&apos; ExpressionList? &apos;)&apos; )?</span><br><span class="line"></span><br><span class="line">FunctionDefinition = &apos;function&apos; Identifier? ParameterList</span><br><span class="line">                     ( ModifierInvocation | StateMutability | &apos;external&apos; | &apos;public&apos; | &apos;internal&apos; | &apos;private&apos; )*</span><br><span class="line">                     ( &apos;returns&apos; ParameterList )? ( &apos;;&apos; | Block )</span><br><span class="line">EventDefinition = &apos;event&apos; Identifier EventParameterList &apos;anonymous&apos;? &apos;;&apos;</span><br><span class="line"></span><br><span class="line">EnumValue = Identifier</span><br><span class="line">EnumDefinition = &apos;enum&apos; Identifier &apos;&#123;&apos; EnumValue? (&apos;,&apos; EnumValue)* &apos;&#125;&apos;</span><br><span class="line"></span><br><span class="line">ParameterList = &apos;(&apos; ( Parameter (&apos;,&apos; Parameter)* )? &apos;)&apos;</span><br><span class="line">Parameter = TypeName StorageLocation? Identifier?</span><br><span class="line"></span><br><span class="line">EventParameterList = &apos;(&apos; ( EventParameter (&apos;,&apos; EventParameter )* )? &apos;)&apos;</span><br><span class="line">EventParameter = TypeName &apos;indexed&apos;? Identifier?</span><br><span class="line"></span><br><span class="line">FunctionTypeParameterList = &apos;(&apos; ( FunctionTypeParameter (&apos;,&apos; FunctionTypeParameter )* )? &apos;)&apos;</span><br><span class="line">FunctionTypeParameter = TypeName StorageLocation?</span><br><span class="line"></span><br><span class="line">// semantic restriction: mappings and structs (recursively) containing mappings</span><br><span class="line">// are not allowed in argument lists</span><br><span class="line">VariableDeclaration = TypeName StorageLocation? Identifier</span><br><span class="line"></span><br><span class="line">TypeName = ElementaryTypeName</span><br><span class="line">         | UserDefinedTypeName</span><br><span class="line">         | Mapping</span><br><span class="line">         | ArrayTypeName</span><br><span class="line">         | FunctionTypeName</span><br><span class="line"></span><br><span class="line">UserDefinedTypeName = Identifier ( &apos;.&apos; Identifier )*</span><br><span class="line"></span><br><span class="line">Mapping = &apos;mapping&apos; &apos;(&apos; ElementaryTypeName &apos;=&gt;&apos; TypeName &apos;)&apos;</span><br><span class="line">ArrayTypeName = TypeName &apos;[&apos; Expression? &apos;]&apos;</span><br><span class="line">FunctionTypeName = &apos;function&apos; FunctionTypeParameterList ( &apos;internal&apos; | &apos;external&apos; | StateMutability )*</span><br><span class="line">                   ( &apos;returns&apos; FunctionTypeParameterList )?</span><br><span class="line">StorageLocation = &apos;memory&apos; | &apos;storage&apos;</span><br><span class="line">StateMutability = &apos;pure&apos; | &apos;constant&apos; | &apos;view&apos; | &apos;payable&apos;</span><br><span class="line"></span><br><span class="line">Block = &apos;&#123;&apos; Statement* &apos;&#125;&apos;</span><br><span class="line">Statement = IfStatement | WhileStatement | ForStatement | Block | InlineAssemblyStatement |</span><br><span class="line">            ( DoWhileStatement | PlaceholderStatement | Continue | Break | Return |</span><br><span class="line">              Throw | EmitStatement | SimpleStatement ) &apos;;&apos;</span><br><span class="line"></span><br><span class="line">ExpressionStatement = Expression</span><br><span class="line">IfStatement = &apos;if&apos; &apos;(&apos; Expression &apos;)&apos; Statement ( &apos;else&apos; Statement )?</span><br><span class="line">WhileStatement = &apos;while&apos; &apos;(&apos; Expression &apos;)&apos; Statement</span><br><span class="line">PlaceholderStatement = &apos;_&apos;</span><br><span class="line">SimpleStatement = VariableDefinition | ExpressionStatement</span><br><span class="line">ForStatement = &apos;for&apos; &apos;(&apos; (SimpleStatement)? &apos;;&apos; (Expression)? &apos;;&apos; (ExpressionStatement)? &apos;)&apos; Statement</span><br><span class="line">InlineAssemblyStatement = &apos;assembly&apos; StringLiteral? InlineAssemblyBlock</span><br><span class="line">DoWhileStatement = &apos;do&apos; Statement &apos;while&apos; &apos;(&apos; Expression &apos;)&apos;</span><br><span class="line">Continue = &apos;continue&apos;</span><br><span class="line">Break = &apos;break&apos;</span><br><span class="line">Return = &apos;return&apos; Expression?</span><br><span class="line">Throw = &apos;throw&apos;</span><br><span class="line">EmitStatement = &apos;emit&apos; FunctionCall</span><br><span class="line">VariableDefinition = (&apos;var&apos; IdentifierList | VariableDeclaration) ( &apos;=&apos; Expression )?</span><br><span class="line">IdentifierList = &apos;(&apos; ( Identifier? &apos;,&apos; )* Identifier? &apos;)&apos;</span><br><span class="line"></span><br><span class="line">// Precedence by order (see github.com/ethereum/solidity/pull/732)</span><br><span class="line">Expression</span><br><span class="line">  = Expression (&apos;++&apos; | &apos;--&apos;)</span><br><span class="line">  | NewExpression</span><br><span class="line">  | IndexAccess</span><br><span class="line">  | MemberAccess</span><br><span class="line">  | FunctionCall</span><br><span class="line">  | &apos;(&apos; Expression &apos;)&apos;</span><br><span class="line">  | (&apos;!&apos; | &apos;~&apos; | &apos;delete&apos; | &apos;++&apos; | &apos;--&apos; | &apos;+&apos; | &apos;-&apos;) Expression</span><br><span class="line">  | Expression &apos;**&apos; Expression</span><br><span class="line">  | Expression (&apos;*&apos; | &apos;/&apos; | &apos;%&apos;) Expression</span><br><span class="line">  | Expression (&apos;+&apos; | &apos;-&apos;) Expression</span><br><span class="line">  | Expression (&apos;&lt;&lt;&apos; | &apos;&gt;&gt;&apos;) Expression</span><br><span class="line">  | Expression &apos;&amp;&apos; Expression</span><br><span class="line">  | Expression &apos;^&apos; Expression</span><br><span class="line">  | Expression &apos;|&apos; Expression</span><br><span class="line">  | Expression (&apos;&lt;&apos; | &apos;&gt;&apos; | &apos;&lt;=&apos; | &apos;&gt;=&apos;) Expression</span><br><span class="line">  | Expression (&apos;==&apos; | &apos;!=&apos;) Expression</span><br><span class="line">  | Expression &apos;&amp;&amp;&apos; Expression</span><br><span class="line">  | Expression &apos;||&apos; Expression</span><br><span class="line">  | Expression &apos;?&apos; Expression &apos;:&apos; Expression</span><br><span class="line">  | Expression (&apos;=&apos; | &apos;|=&apos; | &apos;^=&apos; | &apos;&amp;=&apos; | &apos;&lt;&lt;=&apos; | &apos;&gt;&gt;=&apos; | &apos;+=&apos; | &apos;-=&apos; | &apos;*=&apos; | &apos;/=&apos; | &apos;%=&apos;) Expression</span><br><span class="line">  | PrimaryExpression</span><br><span class="line"></span><br><span class="line">PrimaryExpression = BooleanLiteral</span><br><span class="line">                  | NumberLiteral</span><br><span class="line">                  | HexLiteral</span><br><span class="line">                  | StringLiteral</span><br><span class="line">                  | TupleExpression</span><br><span class="line">                  | Identifier</span><br><span class="line">                  | ElementaryTypeNameExpression</span><br><span class="line"></span><br><span class="line">ExpressionList = Expression ( &apos;,&apos; Expression )*</span><br><span class="line">NameValueList = Identifier &apos;:&apos; Expression ( &apos;,&apos; Identifier &apos;:&apos; Expression )*</span><br><span class="line"></span><br><span class="line">FunctionCall = Expression &apos;(&apos; FunctionCallArguments &apos;)&apos;</span><br><span class="line">FunctionCallArguments = &apos;&#123;&apos; NameValueList? &apos;&#125;&apos;</span><br><span class="line">                      | ExpressionList?</span><br><span class="line"></span><br><span class="line">NewExpression = &apos;new&apos; TypeName</span><br><span class="line">MemberAccess = Expression &apos;.&apos; Identifier</span><br><span class="line">IndexAccess = Expression &apos;[&apos; Expression? &apos;]&apos;</span><br><span class="line"></span><br><span class="line">BooleanLiteral = &apos;true&apos; | &apos;false&apos;</span><br><span class="line">NumberLiteral = ( HexNumber | DecimalNumber ) (&apos; &apos; NumberUnit)?</span><br><span class="line">NumberUnit = &apos;wei&apos; | &apos;szabo&apos; | &apos;finney&apos; | &apos;ether&apos;</span><br><span class="line">           | &apos;seconds&apos; | &apos;minutes&apos; | &apos;hours&apos; | &apos;days&apos; | &apos;weeks&apos; | &apos;years&apos;</span><br><span class="line">HexLiteral = &apos;hex&apos; (&apos;&quot;&apos; ([0-9a-fA-F]&#123;2&#125;)* &apos;&quot;&apos; | &apos;\&apos;&apos; ([0-9a-fA-F]&#123;2&#125;)* &apos;\&apos;&apos;)</span><br><span class="line">StringLiteral = &apos;&quot;&apos; ([^&quot;\r\n\\] | &apos;\\&apos; .)* &apos;&quot;&apos;</span><br><span class="line">Identifier = [a-zA-Z_$] [a-zA-Z_$0-9]*</span><br><span class="line"></span><br><span class="line">HexNumber = &apos;0x&apos; [0-9a-fA-F]+</span><br><span class="line">DecimalNumber = [0-9]+ ( &apos;.&apos; [0-9]* )? ( [eE] [0-9]+ )?</span><br><span class="line"></span><br><span class="line">TupleExpression = &apos;(&apos; ( Expression? ( &apos;,&apos; Expression? )*  )? &apos;)&apos;</span><br><span class="line">                | &apos;[&apos; ( Expression  ( &apos;,&apos; Expression  )*  )? &apos;]&apos;</span><br><span class="line"></span><br><span class="line">ElementaryTypeNameExpression = ElementaryTypeName</span><br><span class="line"></span><br><span class="line">ElementaryTypeName = &apos;address&apos; | &apos;bool&apos; | &apos;string&apos; | &apos;var&apos;</span><br><span class="line">                   | Int | Uint | Byte | Fixed | Ufixed</span><br><span class="line"></span><br><span class="line">Int = &apos;int&apos; | &apos;int8&apos; | &apos;int16&apos; | &apos;int24&apos; | &apos;int32&apos; | &apos;int40&apos; | &apos;int48&apos; | &apos;int56&apos; | &apos;int64&apos; | &apos;int72&apos; | &apos;int80&apos; | &apos;int88&apos; | &apos;int96&apos; | &apos;int104&apos; | &apos;int112&apos; | &apos;int120&apos; | &apos;int128&apos; | &apos;int136&apos; | &apos;int144&apos; | &apos;int152&apos; | &apos;int160&apos; | &apos;int168&apos; | &apos;int176&apos; | &apos;int184&apos; | &apos;int192&apos; | &apos;int200&apos; | &apos;int208&apos; | &apos;int216&apos; | &apos;int224&apos; | &apos;int232&apos; | &apos;int240&apos; | &apos;int248&apos; | &apos;int256&apos;</span><br><span class="line"></span><br><span class="line">Uint = &apos;uint&apos; | &apos;uint8&apos; | &apos;uint16&apos; | &apos;uint24&apos; | &apos;uint32&apos; | &apos;uint40&apos; | &apos;uint48&apos; | &apos;uint56&apos; | &apos;uint64&apos; | &apos;uint72&apos; | &apos;uint80&apos; | &apos;uint88&apos; | &apos;uint96&apos; | &apos;uint104&apos; | &apos;uint112&apos; | &apos;uint120&apos; | &apos;uint128&apos; | &apos;uint136&apos; | &apos;uint144&apos; | &apos;uint152&apos; | &apos;uint160&apos; | &apos;uint168&apos; | &apos;uint176&apos; | &apos;uint184&apos; | &apos;uint192&apos; | &apos;uint200&apos; | &apos;uint208&apos; | &apos;uint216&apos; | &apos;uint224&apos; | &apos;uint232&apos; | &apos;uint240&apos; | &apos;uint248&apos; | &apos;uint256&apos;</span><br><span class="line"></span><br><span class="line">Byte = &apos;byte&apos; | &apos;bytes&apos; | &apos;bytes1&apos; | &apos;bytes2&apos; | &apos;bytes3&apos; | &apos;bytes4&apos; | &apos;bytes5&apos; | &apos;bytes6&apos; | &apos;bytes7&apos; | &apos;bytes8&apos; | &apos;bytes9&apos; | &apos;bytes10&apos; | &apos;bytes11&apos; | &apos;bytes12&apos; | &apos;bytes13&apos; | &apos;bytes14&apos; | &apos;bytes15&apos; | &apos;bytes16&apos; | &apos;bytes17&apos; | &apos;bytes18&apos; | &apos;bytes19&apos; | &apos;bytes20&apos; | &apos;bytes21&apos; | &apos;bytes22&apos; | &apos;bytes23&apos; | &apos;bytes24&apos; | &apos;bytes25&apos; | &apos;bytes26&apos; | &apos;bytes27&apos; | &apos;bytes28&apos; | &apos;bytes29&apos; | &apos;bytes30&apos; | &apos;bytes31&apos; | &apos;bytes32&apos;</span><br><span class="line"></span><br><span class="line">Fixed = &apos;fixed&apos; | ( &apos;fixed&apos; [0-9]+ &apos;x&apos; [0-9]+ )</span><br><span class="line"></span><br><span class="line">Ufixed = &apos;ufixed&apos; | ( &apos;ufixed&apos; [0-9]+ &apos;x&apos; [0-9]+ )</span><br><span class="line"></span><br><span class="line">InlineAssemblyBlock = &apos;&#123;&apos; AssemblyItem* &apos;&#125;&apos;</span><br><span class="line"></span><br><span class="line">AssemblyItem = Identifier | FunctionalAssemblyExpression | InlineAssemblyBlock | AssemblyLocalBinding | AssemblyAssignment | AssemblyLabel | NumberLiteral | StringLiteral | HexLiteral</span><br><span class="line">AssemblyLocalBinding = &apos;let&apos; Identifier &apos;:=&apos; FunctionalAssemblyExpression</span><br><span class="line">AssemblyAssignment = ( Identifier &apos;:=&apos; FunctionalAssemblyExpression ) | ( &apos;=:&apos; Identifier )</span><br><span class="line">AssemblyLabel = Identifier &apos;:&apos;</span><br><span class="line">FunctionalAssemblyExpression = Identifier &apos;(&apos; AssemblyItem? ( &apos;,&apos; AssemblyItem )* &apos;)&apos;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/04/blockchain/solidity汇编/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -371,7 +797,8 @@
       
         
           
-            <p>Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。</p>
+            <p><b style="color:red">本文是基于solidity官方文档v0.4.21.</b></p>
+<p>Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。</p>
 <h2 id="内联汇编"><a href="#内联汇编" class="headerlink" title="内联汇编"></a>内联汇编</h2><p>为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由于EVM是堆栈机，因此通常很难解决正确的堆栈插槽问题，并为堆栈上正确的操作码提供参数。Solidity的内联汇编试图通过以下功能来促进编写手动汇编时出现的问题和其他问题：</p>
 <ul>
 <li>方法样式的操作码：<code>mul(1, add(2, 3))</code>替换<code>push1 3 push1 2 add push1 1 mul</code>.</li>
@@ -3081,160 +3508,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/java/Spring循环依赖检查/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/28/java/Spring循环依赖检查/" itemprop="url">Spring循环依赖检查</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T15:34:46+08:00">2018-03-28</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>对于循环依赖检查，一般地数据结构就是DAG（有向无环图图）。所以在Spring中也是这样去实现的。</p>
-<p>在Spring中检查依赖是和注入的方式有很大关系的。</p>
-<h2 id="构造器循环依赖"><a href="#构造器循环依赖" class="headerlink" title="构造器循环依赖"></a>构造器循环依赖</h2><p>Spring容器将每一个正在创建的Bean 标识符放在一个“<b style="color:red">当前创建Bean池</b>”中，Bean标识符在创建过程中将一直保持在这个池中，因此如果在创建Bean过程中发现自己已经在“当前创建Bean池”里时将抛出BeanCurrentlyInCreationException异常表示循环依赖；<b style="color:red">而对于创建完毕的Bean将从“当前创建Bean池”中清除掉</b>。</p>
-<h2 id="setter循环依赖"><a href="#setter循环依赖" class="headerlink" title="setter循环依赖"></a>setter循环依赖</h2><p>对于setter注入造成的依赖是通过Spring容器提前暴露刚完成构造器注入但未完成其他步骤（如setter注入）的Bean来完成的，而且<b style="color:red">只能解决单例作用域的Bean循环依赖</b>。我唯一有印象的就是这里的代码，之后如果再读Spring源码，我们再来进行详细地分析。</p>
-<p>通过提前暴露一个<b style="color:red">单例工厂方法ObjectFactory</b>，从而使其他Bean能引用到该Bean。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>解决问题的方式是多种多样的，以后一定要想如何去解决一个问题，而不是关注问题本身的解决。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3286,7 +3559,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-count">77</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

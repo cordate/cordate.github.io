@@ -276,6 +276,167 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/java/Java中ThreadLocal学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/22/java/Java中ThreadLocal学习/" itemprop="url">Java中ThreadLocal学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T17:09:55+08:00">2018-03-22</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在java中，并发的操作包中有copyOnWrite，但是这个类不是用来处理数据隔离的，也就是不能达到保持线程上下文的问题，但是ThreadLocal类可以。这里我们简单介绍一下，就不做更多阐述了。以下代码是Java8的实现。</p>
+<h2 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h2><p>这个类就是ThreadLocal里面存放数据使用的数据结构了。<b style="color:red">不用我说大家都知道这个类是单例模式的，key呢就是ThreadLocal，也就是说ThreadLocal本身是多例程序，是的就是这样，因为Thread是通过TheadLocal获取的ThreadLocalMap里面的值。</b></p>
+<p>这个Map没有继承Map，而且是利用数组进行的实现，比较简单。<b style="color:red">特别需要说明的就是hash冲突的问题，一旦发生hash冲突就会从当前位置一步一步向下找空余的地方放置新值，找的时候如果没找到就从hash位置开始一个一个向下找。</b>以前在学习数据结构时候就比较好奇这种解决hash键冲突的方式，当时还是觉得这种方式比较不靠谱（主要当前基本都是使用C和C++，特别喜欢使用链表），今天看到这个应用觉得也还是不错的解决之道。</p>
+<p>关于Hash计算就是ThreadLocal中的threadLocalHashCode &amp; （length-1）计算出来。</p>
+<p><b style="color:red">关于初始化和扩容：默认创建16个元素，满三分之二后进行扩容。</b></p>
+<p><b style="color:red">每次数据遍历访问都会进行key的判断，如果元素已经失效就会进行删除，但是这不能完全解决ThreadLocal的内存泄露问题。</b></p>
+<h2 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h2><p>在Thread里面有两个属性，系统退出时会设置为null，用于释放资源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 包内访问的元素。</span><br><span class="line">ThreadLocal.ThreadLocalMap threadLocals = null;</span><br><span class="line">ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;</span><br></pre></td></tr></table></figure></p>
+<p>看一下exit方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">private void exit() &#123;</span><br><span class="line">    if (group != null) &#123;</span><br><span class="line">        group.threadTerminated(this);</span><br><span class="line">        group = null;</span><br><span class="line">    &#125;</span><br><span class="line">    /* Aggressively null out all reference fields: see bug 4006245 */</span><br><span class="line">    target = null;</span><br><span class="line">    /* Speed the release of some of these resources */</span><br><span class="line">    threadLocals = null;</span><br><span class="line">    inheritableThreadLocals = null;</span><br><span class="line">    inheritedAccessControlContext = null;</span><br><span class="line">    blocker = null;</span><br><span class="line">    uncaughtExceptionHandler = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="关于ThreadLocal"><a href="#关于ThreadLocal" class="headerlink" title="关于ThreadLocal"></a>关于ThreadLocal</h2><p>其实这个类只是起着链接ThreadLocalMap和Thread的链接访问而已。具体可以查看代码实现。这里就不做更多的说明了。</p>
+<h2 id="SuppliedThreadLocal"><a href="#SuppliedThreadLocal" class="headerlink" title="SuppliedThreadLocal"></a>SuppliedThreadLocal</h2><p>java8新的类，这里就是将ThreadLocal对象封装在supplier里面，防止为null而已，实现也比较简单。</p>
+<h2 id="关于内存泄露的问题"><a href="#关于内存泄露的问题" class="headerlink" title="关于内存泄露的问题"></a>关于内存泄露的问题</h2><p>我们来看一下ThreadLocalMap中Entry的数据结构，发现是一个弱引用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    /** The value associated with this ThreadLocal. */</span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    // key为ThreadLocal（这个需要深入学习一下）</span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        super(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用来引用它，那么系统 GC 的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value永远无法回收，造成内存泄漏。</b></p>
+<p>其实，ThreadLocalMap的设计中已经考虑到这种情况，也加上了一些防护措施：在ThreadLocal的get(),set(),remove()的时候都会清除线程ThreadLocalMap里所有key为null的value。</p>
+<p>但是这些被动的预防措施并不能保证不会内存泄漏：</p>
+<p>使用static的ThreadLocal，延长了ThreadLocal的生命周期，可能导致的内存泄漏（参考ThreadLocal 内存泄露的实例分析）。<br>分配使用了ThreadLocal又不再调用get(),set(),remove()方法，那么就会导致内存泄漏。</p>
+<h2 id="为什么使用弱引用"><a href="#为什么使用弱引用" class="headerlink" title="为什么使用弱引用"></a>为什么使用弱引用</h2><p>为了应对非常大和长时间的用途，哈希表使用弱引用的 key。</p>
+<p>ThreadLocal内存泄漏的根源是：由于ThreadLocalMap的生命周期跟Thread一样长，如果没有手动删除对应key就会导致内存泄漏，而不是因为弱引用。</p>
+<p>那么如何解决这个问题呢？</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>向Entry中注册ReferenceQueue，利用一个线程定期清除这个Queue里面的被垃圾回收的数据就可以了。但是多付出了一个线程的开销。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.importnew.com/22039.html" target="_blank" rel="noopener">深入分析 ThreadLocal 内存泄漏问题</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/算法/Paxos协议详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2849,165 +3010,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/bitcoin协议中数字的压缩存储/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/16/blockchain/bitcoin协议中数字的压缩存储/" itemprop="url">bitcoin协议中数字的压缩存储</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-16T11:31:24+08:00">2018-03-16</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>之前提过比特币的compact格式的问题，可那是针对比特币的挖矿难度的计算的。我们在Message类中，经常会见到VarInt这个类，其实这个类是为了协议二进制流中与应用数据中的数字进行的转化约定的实现。这里也涉及到数字压缩的问题，但是这里偏向可变的数字存储，并不是我们之前讲过的压缩存储。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public VarInt(byte[] buf, int offset) &#123;</span><br><span class="line">    // 取得低8位操作。</span><br><span class="line">    int first = 0xFF &amp; buf[offset];</span><br><span class="line">    if (first &lt; 253) &#123;</span><br><span class="line">        value = first;</span><br><span class="line">        originallyEncodedSize = 1; // 1 data byte (8 bits)</span><br><span class="line">    &#125; else if (first == 253) &#123;</span><br><span class="line">        value = (0xFF &amp; buf[offset + 1]) | ((0xFF &amp; buf[offset + 2]) &lt;&lt; 8);</span><br><span class="line">        originallyEncodedSize = 3; // 1 marker + 2 data bytes (16 bits)</span><br><span class="line">    &#125; else if (first == 254) &#123;</span><br><span class="line">        value = Utils.readUint32(buf, offset + 1);</span><br><span class="line">        originallyEncodedSize = 5; // 1 marker + 4 data bytes (32 bits)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        value = Utils.readInt64(buf, offset + 1);</span><br><span class="line">        originallyEncodedSize = 9; // 1 marker + 8 data bytes (64 bits)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由于这里比较简单，我就不做更多的说明。在这段代码中我们可以得出如下的结论：</p>
-<ol>
-<li>这里针对的都是无符号的整数</li>
-<li>小于253的数字，直接用一个字节来进行存储。</li>
-<li>大于253小于2^16的数字，使用3个字节存储，其中第一个字节为253，作为标记，后面两位是存储的值，总计需要3字节</li>
-<li>大于2^16小于2^32的数字，使用3个字节存储，其中第一个字节为254，作为标记，后面两位是存储的值，总计需要5字节</li>
-<li>大于2^32小于2^64的数字，使用5个字节存储，其中第一个字节为255，作为标记，后面两位是存储的值，总计需要9字节</li>
-</ol>
-<p>有了这个规则之后，我们看一下编码的函数就更好理解了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public byte[] encode() &#123;</span><br><span class="line">    byte[] bytes;</span><br><span class="line">    switch (sizeOf(value)) &#123;</span><br><span class="line">        case 1:</span><br><span class="line">            return new byte[]&#123;(byte) value&#125;;</span><br><span class="line">        case 3:</span><br><span class="line">            return new byte[]&#123;(byte) 253, (byte) (value), (byte) (value &gt;&gt; 8)&#125;;</span><br><span class="line">        case 5:</span><br><span class="line">            bytes = new byte[5];</span><br><span class="line">            bytes[0] = (byte) 254;</span><br><span class="line">            Utils.uint32ToByteArrayLE(value, bytes, 1);</span><br><span class="line">            return bytes;</span><br><span class="line">        default:</span><br><span class="line">            bytes = new byte[9];</span><br><span class="line">            bytes[0] = (byte) 255;</span><br><span class="line">            Utils.uint64ToByteArrayLE(value, bytes, 1);</span><br><span class="line">            return bytes;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3059,7 +3061,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-count">77</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

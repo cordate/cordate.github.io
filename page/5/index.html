@@ -276,6 +276,211 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/分布式定时器的设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/系统设计/分布式定时器的设计/" itemprop="url">分布式定时器的设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:34:50+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一、总体概述"><a href="#一、总体概述" class="headerlink" title="一、总体概述"></a>一、总体概述</h3><p>一是分布式定时器的实现需要解决几个问题，一是如何保证任务被触发，而且只能是一台机器去触发，不能不触发或者多台机器的触发，这些都是不可取的。</p>
+<p>二是触发过程的通知，通知的机制选择也是一个很讨厌的过程，一般会考虑以下几个因素：</p>
+<ul>
+<li>及时性</li>
+<li>容错处理（对应重试的策略）</li>
+<li>负载均衡</li>
+<li>并发处理（防止并发的问题）</li>
+<li>推送重试策略</li>
+<li>推送相应的参数</li>
+<li>推送唯一性约束</li>
+<li>推送消息产生时间</li>
+<li>是否需要反馈执行的状态</li>
+<li>是否引入执行状态的检查（主动查询）</li>
+<li>消息堆积的问题</li>
+<li>消息两次间隔时间短，或者重试策略导致的两个连续的消息一起触发的问题（消息产生时如何去重的问题）</li>
+</ul>
+<p>选择不同的推送方式，可能具有以上不同的特性支持，有的推送方式太过于依赖第三方的支持，而第三方可能只有上面的部分特性不能保证所有特性的支持。还是就是第三方的东西我们一般不好改动，必须寻找其他策略进行解决，所以一般不是很推荐第三方的推送机制。</p>
+<p>三是客户系统定时任务的设计，主要涉及以下几个方面。</p>
+<ul>
+<li>幂等性（同样的消息可能多次接收）</li>
+<li>参数化设计（接口的设计最好设计出一些定制参数，同时需要检查参数的正确性）</li>
+<li>如何通知执行状态，这里可能对消息的及时性要求不高，我们可以使用一些消息中间件。</li>
+</ul>
+<h3 id="定时任务分配"><a href="#定时任务分配" class="headerlink" title="定时任务分配"></a>定时任务分配</h3><p>主要需要思考消息去重的问题。</p>
+<h4 id="加锁机制"><a href="#加锁机制" class="headerlink" title="加锁机制"></a>加锁机制</h4><p>这种加锁机制是可以解决我们的问题，而且我们也不需要将任务进行分散到多台机器去执行，所以采用多台机器的加锁机制确实可以解决我们的问题，但是我们不得不考虑以下几个问题：</p>
+<ul>
+<li>多台机器时间不同步的问题，会导致每台机器触发的时间是不一样的，所以必须有同步一下的机制，要么同步时间，要么有消息通知过来，大家一起行动。最好的做法就是锁上加时间，只要我们知道下一次触发是什么时候，我们就可以不放锁，让时间来帮我们放锁，但是还是会有一点小时间差的错误，但是基本上能解决我们的问题。</li>
+<li>因为各种原因，锁抢占可能并不是那么公平，总会有人先获得锁，而且它获得锁的概率很大。</li>
+<li>如果是配置成interval的方式启动定时器，那么会出现每台定时器启动的时机不同导致，原本5分钟执行一次的任务，变成了2，3，2，3这样的时间序列进行，这对我们来说绝不是什么好现象。</li>
+</ul>
+<p>这个最后我们选用的是这种方式实现的，但是我们使用的事quartz集群的方式进行的实现。这个需要看一下quartz集群内部的实现方式了，这里就不提了，后面我们再说吧！但我想一定是通过数据库进行了同步操作，毕竟quartz的源码需要研究一下，还有就是他们建立了10张左右的数据表来进行同步，所以这个需要深入研究的。</p>
+<h4 id="任务分片的方式进行"><a href="#任务分片的方式进行" class="headerlink" title="任务分片的方式进行"></a>任务分片的方式进行</h4><p>任务分片的方式是不进行相应的处理的，基本上是集群中有一台主节点，这台leader进行任务的分配。所以它必须知道集群中有几台机器可达，然后将任务发送到每一台机器，每台机器处理哪些任务等等，这样的话我们就可以实现相应的处理机制。</p>
+<p>这里面有两个点，一是leader的选取和重新选取策略，二是如何知道有几台机器存活。其实就是利用Zookeeper或者其他的同步组件就能实现这些功能。</p>
+<p>如果leader挂了，我们可以使用zk的leader选举机制找到新的leader由它进行新任务的重新分配，如果leader发现有新加入的机器，也要进行任务的重新分配，如果发现有机器减少也需要进行任务的重新分配。机器的在活量，Zookeeper是可以提供给我们的。</p>
+<p>这种方式可以解决我们的问题，其实也可以通过每次竞争，每次都获取分片分配任务，就是每次要做任务的时候，每个人都踊跃当组长，但是权利就是这一次，下次要重新抢组长的位置。再由组长取得任务并进行任务的分配，这种方式就是每次都要重新分配任务，上面的那种方式，除非有改动leader才会重新进行任务的分配。</p>
+<h4 id="消息去重"><a href="#消息去重" class="headerlink" title="消息去重"></a>消息去重</h4><p>两次相同任务的触发因为某些原因一起发送的问题，这个消息如何进行去重，也是一个非常值得研究的问题。</p>
+<p>主要还是看上一个消息的投递状态，这样我们可以记录任务的最后一个消息的id，然后本次触发可能需要记录上次触发的id，并进行相应的判断处理，执行去重策略。</p>
+<h3 id="推送方式"><a href="#推送方式" class="headerlink" title="推送方式"></a>推送方式</h3><h4 id="http方式推送"><a href="#http方式推送" class="headerlink" title="http方式推送"></a>http方式推送</h4><p>这种推送方式需要考虑推送的状态和最终的推送结果。中间需要考虑重试机制；重试机制有一个问题就是重试花了很长时间，导致下次触发事件发生了需要连续推两次，这样就有一个问题是两次都要推还是只推送一次，还是就是如何防止消息的堆积。</p>
+<p>另外重试几次大概要花多少时间，这个是无法估计的，因为这里包括超时的时间，这个时间是不固定的。如果不希望两次推送一起，就需要实现出重的策略。如果任务不紧急可以实现只推送一次或者几次，失败后就等待下一次的触发。这个可以在加定时任务的时候作为一个配置参数。总之这个东西是需要统筹考虑的。</p>
+<p>总之重试策略不是无限循环的，需要最终的失败情况，如果失败，用户可以选择重新推送。这个后面会讲到。</p>
+<h4 id="订阅发布模式"><a href="#订阅发布模式" class="headerlink" title="订阅发布模式"></a>订阅发布模式</h4><p>在一定程度上缓解了http推送的问题。这里注意你使用的那种订阅发布模式的实现可能存在未知的问题，比如下面的说明：<a href="http://blog.csdn.net/u011499747/article/details/51232981" target="_blank" rel="noopener">redis之发布与订阅(publish/subscribe模式)</a>. 另外还要注意订阅的模式，负载均衡，及时性、消息堆积、消息去重、推送可靠性（是否保证送达）、消费者重连是否会重推等功能。</p>
+<p>以上的这些问题，如果是在http中我们是可以自己定制的，但是在这边很多我们无从改变，我们解决问题也只能采用巧妙的方式进行处理。</p>
+<h4 id="MQ消息队列"><a href="#MQ消息队列" class="headerlink" title="MQ消息队列"></a>MQ消息队列</h4><p>其实MQ的方式也有很多的问题，首先就是消息的堆积处理，因为我们无从判断上一个消息是否被消费，如果没有被消费我们才有下一步的措施，也可以使用回调，判断上一个任务是否被消费，如果被消费才进行，这样一来一回的延时还是挺高的。</p>
+<p>还有MQ是否实现相应的负载均衡策略，每个系统的订阅模式是否支持，是否应该为每个系统定制单独的tag，我觉得这个是必然的。否则这个定时器只是为了单个系统使用的。注意消费的模式一定是点到点的方式。另外就是注意MQ要能实现多Consumer的模式。还是可能还是具体到MQ是如何实现负载均衡的。</p>
+<p>如果有两个相同的消息推过来MQ会作何处理也是一个待解决的问题，因为RocketMQ中是通过多Broker的方式实现的，也就是说一个Broker处理多个队列，一个消息放到一个队列时是顺序发送的，但是同样的消息存到了不同的队列中，那可能存在并发发送的可能性。这样的话，对系统是不利的。</p>
+<p>消费者可能多次接受到推送的消息，所以必须保证消费者的幂等性问题。这也是MQ所不能解决的问题。必须保证幂等性。</p>
+<p>可能还有很多其他需要考虑的问题，这里就写这么多吧，以后想到了，可以再进行相应的补充说明。</p>
+<h4 id="Socket方式"><a href="#Socket方式" class="headerlink" title="Socket方式"></a>Socket方式</h4><p>这种方式和http方式比较类似，但是偏底层，这样的设计可能会影响系统的设计。因为需要自己进行socket编程或者使用netty进行连接。考虑到的问题和http方式是类似的。</p>
+<p>另外Socket可以进行长连接，但是短线了可能需要相应的重连机制。还有就是谁作为Client，谁作为Server这也是必须要解决的问题；可以使服务做为Server，定时器作为Client。</p>
+<p>其实两种方式还是有不少的区别的。</p>
+<h3 id="客户端的设计"><a href="#客户端的设计" class="headerlink" title="客户端的设计"></a>客户端的设计</h3><p>因为是分布式的，所以不能保证推送只推一次，即使是MQ也不能保证，所以我们必须考虑幂等性的设计，还有就是参数化设计和执行反馈。</p>
+<h4 id="幂等性"><a href="#幂等性" class="headerlink" title="幂等性"></a>幂等性</h4><p>幂等性的设计主要关注，如何实现。一个就是统一的id设置，这种方式可能导致每次都要查询数据库的问题，当然你可以设计为保证几天内的数据是幂等性的。我觉得可以使用拦截器统一过滤，但是这不是绝对的，有的调度消息可能就是不需要幂等性的。</p>
+<p>还有一些可能根据时间来设置，比如说当天是否执行过，如执行过就不执行了。</p>
+<p>还有可能就是设置序列号，记录当前执行过的序列id，发来的序列号小于等于执行过的最大序列号，那么就不执行，否则就进行执行，这样的话客户端需要实现相应的代码，但是这种方式比较靠谱。这个id，我想可以通过时间来实现。这样的话是比较解耦的。因为时间是自然序列，所以用它处理id问题最合适不过的，如果有其他自然序列当然最好了。这符合解决问题的最好方式就是恰好不解决它的思路。</p>
+<p>总之实现幂等性的方式应该还有很多，总能找到很好的解决思路。</p>
+<h4 id="参数化设计"><a href="#参数化设计" class="headerlink" title="参数化设计"></a>参数化设计</h4><p>有的时候定时调用会失败，所以我们不得不进行重试策略，但是重试策略有一个问题，就是时间时效性，或者说客户端这时候接受到消息压根就不知这是历史数据，可能所做的处理和之前推过来是有差异的。</p>
+<p>那么就需要就定时任务接口进行参数化的设计，比如统一当天的数据，不要从系统时间获取，而是可以通过时间参数传过来，统计传过来那天的数据。这样我们点击重试的时候就能够解决我们要重试的可能是那天的数据。这个其实就是本来在你系统获取的数据放到定时器系统中去获取，然后推送过来，这样我们可以进行重试策略。但其实这样就比较依赖定时系统，但一般定时系统的时间是正确的，所以一般不会出问题，这是客户端需要判别消息产生的时间和需要统计的时间是不是同一天的数据，如果不是的话，就判别有错，如果是相差一天的，就判断是否是相差一天的数据。其实这样做也是没有必要的。</p>
+<p>但是有的时候参数数据可能并不是系统提供的，由程序根据相应的状况进行提供，那这样其实就不好办了，我们需要判别这种定时器是否需要考虑隔天重试带来的影响，有的可能是周期任务，当前任务失败，完全可以等待下次任务来处理，所以不需要进行重试的。有的可能需要，而且需要进行相应地重试，但是这种策略可能需要具体业务场景才可能明白解决问题的思路是什么。总之参数化的设计是必然的，这样可以解决很多分布式定时器的问题。</p>
+<p>但是为了方便我觉得，任务的序列号需要传送，任务的产生时间需要传送，如果需要传送任务的数据库id的话，也可以进行传送。这些信息可以让客户端有相应的策略来解决自己定制化的需求问题。</p>
+<p>有关参数化的设计就提到这里，如果有新的想法，我会进行相应的更新。</p>
+<h4 id="执行反馈"><a href="#执行反馈" class="headerlink" title="执行反馈"></a>执行反馈</h4><p>客户端执行完成后，可以回调定时器中心，指明id或者code，让定时器中心去处理。这样的话，定时器中心某个任务下次触发时可以判断上一个任务状态，根据上一个任务的状态判断，当前这个任务是去触发，还是去丢弃。</p>
+<p>我们也可以通过执行状态判断一下，是否有问题，但是其实我们还是有一些信息需要处理。</p>
+<p>这个反馈的问题是，需要客户端的重试策略，盲目利用这个信息做触发判断可能有问题。其实更多的时候大家并不care这个反馈的时效和最终结果是否通知过来，所以这个可能并不是一个很好的做法，而只是为了看看而已。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在分布式系统中其实去重策略的确是一个比较烦人的事情，里面涉及的点其实比较多，我们要解决的问题其实也很多，大家在解决这些问题的时候，需要留心，可能一不小心，你的系统可能就进入了一个不太好解决的泥坑之中。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/高可用用户中心设计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1806,175 +2011,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/12/blockchain/以太坊智能合约部署调用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/12/blockchain/以太坊智能合约部署调用/" itemprop="url">以太坊智能合约部署调用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T20:43:17+08:00">2018-03-12</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>之前一直在学习以太坊的知识，后来停了两周，于是让下面两个人帮忙学习一下。之前我在学习的时候，成功地发布了智能合约，但是在调用的时候出现了问题，没有调用成功。下面来总结一下智能合约的知识，加上一些自我的理解，只是理解，因为这种新技术，还是需要研究完源码之后才能最终确定。之前看过精通比特币，叹为观止，也在研究bitcoinj的源码，但是有些吃力，有时间还是要继续。</p>
-<h2 id="什么是智能合约"><a href="#什么是智能合约" class="headerlink" title="什么是智能合约"></a>什么是智能合约</h2><p>这个就不做更多的解释了，人类社会一切皆以信用为准。传统方式解决信用问题一般都是法律合同、进行公证、背书、押金等等手段，但是这些问题解决了吗？还是没有，社会的信用问题还是存在，老赖也是比比皆是。于是就有了用代码来代替合同，来重构信用的问题。因为代码是死的，没有情感，也没有人情，就是一个冰冷、严肃的法官。任何在这里只会得到公正的判决，没有同情分，没有金权交易。</p>
-<p>也许是自欺欺人，这种东西被金融参与后，就不再那么单纯，从而成了一种金融噱头，开始在市场中疯狂割韭菜。这就是我们说的代币，以及基于代币衍生出的各种情怀。</p>
-<p>OK，这就是智能合约。良好的愿景，只是还在天上飘！</p>
-<h2 id="solidity"><a href="#solidity" class="headerlink" title="solidity"></a>solidity</h2><p>这是以太坊的智能合约语言，你要说它最像语言中的哪种，我觉得它跟Go走得近。这也难怪，搞了一个ABI格式，这个ABI格式就是合约的解析结果，主要是方法相关的数据。我用node.js编译了一个合约，我们来看一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">[ &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;vote&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;proposals&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;chairperson&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;delegate&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;winningProposal&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;giveRightToVote&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;voters&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;winnerName&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; inputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;constructor&apos; &#125; ] &#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个由于是node的输出，所以会出现Object的对象，以太坊系统在启动的时候会attach一个js console。所以我们node使用web3连上去，会有和节点类似的js console。至于怎么做的，我想大家都明白，我也没研究这么深，这里面的知识太多了，还是需要去研究源码才行，目前我只研究到启动中如何加载账户的地方。</p>
-<p>那么如何理解这个ABI呢？网络中的协议，只要符合这个ABI规范，那么你可以使用说有的语言去调用智能合约，你调用的就是这个ABI里面定义的一个方法。这就是我对ABI最直观的认识。</p>
-<h2 id="如何发布智能合约"><a href="#如何发布智能合约" class="headerlink" title="如何发布智能合约"></a>如何发布智能合约</h2><p>我是利用官方的web3进行调用的，当然官方提供了很多其他语言的实现，但是有些操作麻烦。但是web3的调用方式是最直接的，因为，你可以使用node，随心所欲地进行变量的输出，有交互式shell。有时直接node运行一个命令，有时进入node shell，import一个模块，做一些基础的工作，然后自己直接shell操作，可方便了。这样我可以自己进行web3命令的进一步封装。超赞。</p>
-<p>我是使用solc这个npm库，进行编译的，所以需要首先<code>npm install -g solc</code>进行安装。然后写了一个file模块遍历指定目录下的所有<code>*.solc</code>结尾的文件，读取内容（不要担心文件太大，内存放不下，怎么可能？智能合约没多大，大了就是程序员有问题）。为了使用配置，所以又引入yml文件解析模块，进行配置参数的读取。build模块负责链接节点进行web3链接和合约的编译。deploy模块负责解锁地址，发布合约，提供发布回调记录合约地址、交易hash。</p>
-<h3 id="合约编译"><a href="#合约编译" class="headerlink" title="合约编译"></a>合约编译</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// find solidity文件，并读取内容进行编译</span><br><span class="line">var input = &#123;&#125;;</span><br><span class="line">new fileUtils(conf.build.dir, (filePath, data) =&gt; &#123;</span><br><span class="line">    input[filePath] = data;</span><br><span class="line">&#125;).listAllSync();</span><br><span class="line"></span><br><span class="line">// compile all contracts</span><br><span class="line">let compiledContract = solc.compile(&#123; sources: input &#125;, 1);</span><br><span class="line">// 取得合约的ABI</span><br><span class="line">let abi = compiledContract.contracts[conf.build.contract].interface;</span><br><span class="line">// 合约的二进制代码</span><br><span class="line">let bytecode = compiledContract.contracts[conf.build.contract].bytecode;</span><br><span class="line">// hex start with 0x</span><br><span class="line">bytecode = bytecode.startsWith(&apos;0x&apos;) ? bytecode : &apos;0x&apos;.concat(bytecode);</span><br><span class="line">// 取得合约类型（其实就是compiledContract.contracts[conf.build.contract]）</span><br><span class="line">let MyContract = web3.eth.contract(JSON.parse(abi));</span><br></pre></td></tr></table></figure>
-<p>这就是build的大致内容，这个合约其实就是ABI的抽象。下面看一下deploy的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">deploy() &#123;</span><br><span class="line">    this.unlockAccount();</span><br><span class="line"></span><br><span class="line">    this.demoContract = this.MyContract.new(67,&quot;gavin&quot;, &quot;wybert&quot;, &quot;jacket&quot;, &#123;</span><br><span class="line">        data: this.bytecode,</span><br><span class="line">        from: this.sendAddress,</span><br><span class="line">        gas: 4692000</span><br><span class="line">    &#125;, (err, myContract) =&gt; &#123;</span><br><span class="line">        if (!err) &#123;</span><br><span class="line">            console.log(&quot;合约发布成功！&quot;);</span><br><span class="line">            if (!myContract.address) &#123;</span><br><span class="line">                console.log(&quot;合约发布交易hash：&quot;, myContract.transactionHash);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                console.log(&quot;合约发布成功后地址：&quot;, myContract.address);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            console.log(&quot;合约发布失败：&quot;, err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    console.log(&quot;发布的智能合约：&quot;, this.demoContract);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">unlockAccount() &#123;</span><br><span class="line">    return web3.personal.unlockAccount(this.sendAddress, this.password);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意这里是先解锁节点中第一个地址，然后使用第一个地址去调用发布合约。注意这个地址是我搭建一个以太坊私有集群，所以这段代码这样写是没有问题。但是一般为了安全，节点中没有账户的，所以这段代码或许不是那么实用。如果是这种情况，我们该如何处理呢？由于实践起来比较麻烦，这里我就不写代码，进行试验了。</p>
-<p>在web3中有sendRawTransaction的方法，还有一个sign方法，一个是用于发送原始的交易信息，一个是用于对数据进行签名。有了这两个方法之后，我们就再也不用去理会节点了，节点就是一个广播器而已，不需要存放账户。需要的时候我们自己会进行签名。</p>
-<h3 id="合约调用"><a href="#合约调用" class="headerlink" title="合约调用"></a>合约调用</h3><p>协议写好了，那么如何进行智能合约的调用呢？这里还是用到ABI。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 通过ABI找到Contract类</span><br><span class="line">let MyContract = web3.eth.contract(JSON.parse(abi));</span><br><span class="line">// 利用地址进行实例化</span><br><span class="line">let myContract = MyContract.at(&quot;0x26f3476d4e84d44d1c8c159cbe06fed55c3cfbe8&quot;);</span><br><span class="line">// 解锁账户</span><br><span class="line">web3.personal.unlockAccount(web3.eth.accounts[0], this.password);</span><br><span class="line">// 发起调用，方法为proposals， 参数为0</span><br><span class="line">myContract.proposals.sendTransaction(0 ,&#123;from: web3.eth.accounts[0]&#125;)</span><br></pre></td></tr></table></figure></p>
-<p>注意所有的调用我都是在node console下进行的。上面只是简化的代码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; s.proposals.sendTransaction(900000, &#123;from: build.web3.eth.accounts[0]&#125;)</span><br><span class="line">&apos;0x68aaa4ee619f3940a31080fc17d5fa47bde4d5851dd4846f0d6d7bc0b79d3519&apos;</span><br></pre></td></tr></table></figure></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在学习这种分布式的系统的时候，其实你可以认为这就是分布式的系统。唯一的区别就是，这些系统是一样的，也许你会说怎么可能一样，我说一样的意思它们遵守着相同的协议，这些协议才是区块链的精髓，学习什么其他的东西其实是舍近求远，但是区块链协议的介绍，官网文档却没怎么见到，所以很奇怪。难道是怕被超越？这就不清楚了。</p>
-<p><b style="color:red">不管是node客户端，ruby客户端还是python、java等，都是协议的提现。现在感觉他们只是调用节点的客户端，但其实里面包含了大量的以太坊官方协议，所以要想学好区块链，直接去看这些协议，然后加上p2p网络，区块处理，分叉处理等等，这就是一个小型的区块链节点了。但是有一点，缺少服务的协议，因为每个节点即是客户节点也是服务节点。</b></p>
-<p><b style="color:red">而智能合约，语言层面的接口就是ABI，调用协议就是以太坊的底层协议而已。</b></p>
-<p><b style="color:red">关于java客户端的实现，其实以太坊提供了，合约到java代码的转换，其实你可以认为，生成的java代码就是智能合约接口的代理实现类而已。</b>以下是命令的简单示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./solc/solc.exe contract/library/MintableToken.sol --bin --abi --optimize -o ./contract/library/</span><br><span class="line">./web3j/bin/web3j solidity generate ./contract/library/MintableToken.bin ./contract/library/MintableToken.abi -o ../java/ -p com.mo9.smartcontract.d_library</span><br></pre></td></tr></table></figure>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://bitshuo.com/topic/594a8c228e822fcb444317ec" target="_blank" rel="noopener">【连载】以太坊源码分析（3）深入解析ABI</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2026,7 +2062,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-count">77</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

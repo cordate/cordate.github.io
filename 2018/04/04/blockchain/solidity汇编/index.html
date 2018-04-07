@@ -103,18 +103,18 @@
   <meta name="keywords" content="solidity," />
 
 
-<meta name="description" content="Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由于EVM是堆栈机，因此通常很难解决正确的堆栈插槽问题">
+<meta name="description" content="本文是基于solidity官方文档v0.4.21. Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由">
 <meta name="keywords" content="solidity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="solidity汇编">
 <meta property="og:url" content="http://cordate.github.io/2018/04/04/blockchain/solidity汇编/index.html">
 <meta property="og:site_name" content="柳絮纷飞">
-<meta property="og:description" content="Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由于EVM是堆栈机，因此通常很难解决正确的堆栈插槽问题">
+<meta property="og:description" content="本文是基于solidity官方文档v0.4.21. Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-04-05T16:27:02.000Z">
+<meta property="og:updated_time" content="2018-04-05T16:36:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="solidity汇编">
-<meta name="twitter:description" content="Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由于EVM是堆栈机，因此通常很难解决正确的堆栈插槽问题">
+<meta name="twitter:description" content="本文是基于solidity官方文档v0.4.21. Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。 内联汇编为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由">
 
 
 
@@ -368,7 +368,8 @@
       
 
       
-        <p>Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。</p>
+        <p><b style="color:red">本文是基于solidity官方文档v0.4.21.</b></p>
+<p>Solidity定义了一种汇编语言，也可以在没有Solidity的情况下使用。此汇编语言也可以用作Solidity源代码中的“内联汇编”。我们从描述如何使用内联汇编开始，以及它如何与独立汇编不同，然后指定汇编本身。</p>
 <h2 id="内联汇编"><a href="#内联汇编" class="headerlink" title="内联汇编"></a>内联汇编</h2><p>为了更细粒度的控制，尤其是为了通过编写库来增强语言，可以使用接近虚拟机的语言将内联汇编与的Solidity语句交织在一起。由于EVM是堆栈机，因此通常很难解决正确的堆栈插槽问题，并为堆栈上正确的操作码提供参数。Solidity的内联汇编试图通过以下功能来促进编写手动汇编时出现的问题和其他问题：</p>
 <ul>
 <li>方法样式的操作码：<code>mul(1, add(2, 3))</code>替换<code>push1 3 push1 2 add push1 1 mul</code>.</li>
@@ -993,6 +994,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/04/06/blockchain/solidity杂项/" rel="prev" title="solidity杂项">
+                solidity杂项 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -1069,7 +1074,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-count">77</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
