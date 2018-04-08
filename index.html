@@ -276,6 +276,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity安全考虑/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/08/blockchain/solidity安全考虑/" itemprop="url">solidity安全考虑</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-08T00:32:17+08:00">2018-04-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>虽然构建可按预期工作的软件通常非常容易，但要检查没有人能够以没有预料到的方式使用它，要困难得多。</p>
+<p>在Solidity中，这更加重要，因为您可以使用智能合约来处理代币或可能更有价值的东西。此外，智能合约的每一次执行都在公开场合进行，除此之外，源代码通常是公开的。</p>
+<p>当然，你总是需要考虑有多大的风险：你可以将智能合约与对公众开放的Web服务（以及对恶意行为者）以及甚至开放源代码进行比较。如果您只将该购物清单存储在该Web服务上，则可能不必太在意，但如果您使用该Web服务管理您的银行账户，则应该更加小心。</p>
+<p>本节将列出一些陷阱和一般安全建议，但当然可能永远不会完整。另外，请记住，即使您的智能合约代码没有缺陷，编译器或平台本身也可能有错误。可以在已知错误列表中找到编译器的一些公开<a href="https://solidity.readthedocs.io/en/v0.4.21/bugs.html#known-bugs" target="_blank" rel="noopener">已知安全相关bug列表</a>，这些bug也是机器可读的。请注意，有一个错误赏金程序涵盖了Solidity编译器的代码生成器。</p>
+<p>与往常一样，使用文档开源，请帮助我们扩展本节（特别是，一些不会产生伤害的示例）！</p>
+<h2 id="陷阱"><a href="#陷阱" class="headerlink" title="陷阱"></a>陷阱</h2><h3 id="私人信息和随机性"><a href="#私人信息和随机性" class="headerlink" title="私人信息和随机性"></a>私人信息和随机性</h3><p>您在智能合同使用的一切是公开可见的，甚至是局部变量和标记<code>private</code>的状态变量。</p>
+<p>如果你不希望矿工能够作弊，在智能合同中使用随机数字是相当棘手的。</p>
+<h3 id="重入"><a href="#重入" class="headerlink" title="重入"></a>重入</h3><p>合同（A）与另一合同（B）的任何互动以及以太币的任何转让均将控制移交给该合同（B）。这使得在这个交互完成之前B可以回调A. 举一个例子，下面的代码包含一个错误（它只是一个片段而不是一个完整的合约）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">// THIS CONTRACT CONTAINS A BUG - DO NOT USE</span><br><span class="line">contract Fund &#123;</span><br><span class="line">    /// Mapping of ether shares of the contract.</span><br><span class="line">    mapping(address =&gt; uint) shares;</span><br><span class="line">    /// Withdraw your share.</span><br><span class="line">    function withdraw() public &#123;</span><br><span class="line">        if (msg.sender.send(shares[msg.sender]))</span><br><span class="line">            shares[msg.sender] = 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里的问题不是太严重，因为有限的gas是<code>send</code>其中的一部分，但它仍然暴露出一个弱点：以太币转移总是可以包含代码执行，因此<code>withdraw</code>接收方可以是一个重新回调的合约。这将让它得到多个退款，并基本上检索合同中的所有以太币。特别是，下面的合约将允许攻击者在使用<code>call</code>默认情况下多次退还所有剩余gas：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">// THIS CONTRACT CONTAINS A BUG - DO NOT USE</span><br><span class="line">contract Fund &#123;</span><br><span class="line">    /// Mapping of ether shares of the contract.</span><br><span class="line">    mapping(address =&gt; uint) shares;</span><br><span class="line">    /// Withdraw your share.</span><br><span class="line">    function withdraw() public &#123;</span><br><span class="line">        if (msg.sender.call.value(shares[msg.sender])())</span><br><span class="line">            shares[msg.sender] = 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为了避免重新入侵，您可以使用Checks-Effects-Interactions模式，详情如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.11;</span><br><span class="line"></span><br><span class="line">contract Fund &#123;</span><br><span class="line">    /// Mapping of ether shares of the contract.</span><br><span class="line">    mapping(address =&gt; uint) shares;</span><br><span class="line">    /// Withdraw your share.</span><br><span class="line">    function withdraw() public &#123;</span><br><span class="line">        var share = shares[msg.sender];</span><br><span class="line">        shares[msg.sender] = 0;</span><br><span class="line">        msg.sender.transfer(share);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>请注意，重入不仅是以太币转移的影响，而且是任何其他合约的函数调用的影响。此外，您还必须考虑多合约情况。被调用合约可以修改您依赖的另一份合约的状态。</p>
+<h3 id="gas限制和循环"><a href="#gas限制和循环" class="headerlink" title="gas限制和循环"></a>gas限制和循环</h3><p>没有固定迭代次数的循环（例如取决于存储值的循环）必须小心使用：由于区块gas限制，交易只能消耗一定量的gas。无论是明确的还是仅仅由于正常的操作，循环中的迭代次数可能会超出区块gas限制，这会导致整个合约在某个点停滞。这可能不适用于<code>constant</code>仅用于从区块链中读取数据的函数。尽管如此，这些函数可能会被其他合约作为链上操作的一部分进行调用，并将其拖延。请在合约文件中明确说明这些情况。</p>
+<h3 id="发送和接收以太币"><a href="#发送和接收以太币" class="headerlink" title="发送和接收以太币"></a>发送和接收以太币</h3><ul>
+<li>合约和“外部账户”都不能阻止有人送他们以太币。合约可以作出反应并拒绝定期的转移，但有些方法可以在不创建消息调用的情况下移动以太币。一种方法是简单地“mine to”合约地址和第二种方式是使用<code>selfdestruct(x)</code>。</li>
+<li>如果合约收到Ether（没有调用函数），则执行fallback函数。如果它没有fallback函数，Ether将被拒绝（通过抛出异常）。在执行fallback函数时，合约只能依靠当时可用的“gas津贴”（2300 gas）。这笔津贴不足以以任何方式访问存储。为确保您的合约能够以此方式接收Ether，请检查fallback函数的gas要求（例如，在Remix的“详细信息”部分中）。</li>
+<li>有一种方法可以使用<code>addr.call.value(x)()</code>给予接收的合约更多的gas。这基本上与<code>addr.transfer(x)</code>相同，只是它转发所有剩余的gas并打开接收方执行更昂贵的操作的能力（并且它仅仅返回失败代码并且不会自动传播错误,即抛异常）。这可能包括回调发起者合约或您可能没有想到的其他状态更改。因此它为诚实用户提供了极大的灵活性，同时也为恶意行为者提供了很大的灵活性</li>
+<li>如果你想通过<code>address.transfer</code>发送以太币，有一些细节需要注意：<ol>
+<li>如果接收者是合约，它将导致其执行fallback函数，从而可以回调发起者合约。</li>
+<li>发送以太币可能会因调用深度超过1024而失败。由于调用者完全控制调用深度，因此可能让转币强制失败; 考虑这种可能性或使用<code>send</code>并确保始终检查其返回值。更好的是，用接受者可以对以太币提现的模式编写你的合约。</li>
+<li>发送以太币也可能会失败，因为接收者合约的执行需要比gas的分配金额（显式地使用<code>require</code>， <code>assert</code>，<code>revert</code>，<code>throw</code>或因为操作太昂贵） -它“runs out of gas”（OOG）。如果您使用<code>transfer</code>或<code>send</code>带有返回值检查，这可能为接收者提供阻止发送合约进度的手段。同样，这里的最佳做法是<a href="https://solidity.readthedocs.io/en/v0.4.21/common-patterns.html#withdrawal-pattern" target="_blank" rel="noopener">使用<code>”withdraw“</code>模式而不是<code>“send”</code>模式</a>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="栈调用深度"><a href="#栈调用深度" class="headerlink" title="栈调用深度"></a>栈调用深度</h3><p>外部函数调用可能会随时失败，因为它们超出了1024的最大调用堆栈。在这种情况下，Solidity会引发异常。恶意行为者在与你的合约进行交互之前可能会强制调用堆栈的价值很高。</p>
+<p>请注意，如果调用堆栈已耗尽，但这种情况<code>.send()</code>返回<code>false</code>，不会抛出异常false。低层次的函数<code>.call()</code>，<code>.callcode()</code>和<code>.delegatecall()</code>以相同的方式表现。</p>
+<h3 id="tx-origin"><a href="#tx-origin" class="headerlink" title="tx.origin"></a><b style="color:red">tx.origin</b></h3><p>切勿使用tx.origin进行授权。假设你有这样的钱包合约：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.11;</span><br><span class="line"></span><br><span class="line">// THIS CONTRACT CONTAINS A BUG - DO NOT USE</span><br><span class="line">contract TxUserWallet &#123;</span><br><span class="line">    address owner;</span><br><span class="line"></span><br><span class="line">    function TxUserWallet() public &#123;</span><br><span class="line">        owner = msg.sender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function transferTo(address dest, uint amount) public &#123;</span><br><span class="line">        require(tx.origin == owner);</span><br><span class="line">        dest.transfer(amount);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在有人欺骗你将以太币发送到这个攻击钱包的地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.11;</span><br><span class="line"></span><br><span class="line">interface TxUserWallet &#123;</span><br><span class="line">    function transferTo(address dest, uint amount) public;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract TxAttackWallet &#123;</span><br><span class="line">    address owner;</span><br><span class="line"></span><br><span class="line">    function TxAttackWallet() public &#123;</span><br><span class="line">        owner = msg.sender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function() public &#123;</span><br><span class="line">        TxUserWallet(msg.sender).transferTo(owner, msg.sender.balance);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">如果你的钱包已经检查<code>msg.sender</code>的授权，它将得到攻击钱包的地址，而不是所有者地址。但通过检查<code>tx.origin</code>，它会得到启动交易的原始地址，该交易仍是所有者地址。攻击钱包立即消耗您的所有资金。</b></p>
+<h3 id="细节"><a href="#细节" class="headerlink" title="细节"></a>细节</h3><ul>
+<li>在<code>for (var i = 0; i &lt; arrayName.length; i++) { ... }</code>中，<code>i</code>的类型将是<code>uint8</code>，因为这是保存该值所需的最小类型。如果数组有超过255个元素，则循环不会终止。</li>
+<li>函数的<code>constant</code>关键字编译器目前不强制执行。此外，它不是由EVM强制执行的，所以声明为<code>constant</code>的函数可能还是会导致状态的变更。</li>
+<li><b style="color:red">不占用完整32字节的类型可能包含“脏高位”。如果您访问<code>msg.data</code>，这一点尤其重要 - 它带来了可扩展性风险：您可以创建调用函数<code>f(uint8 x)</code>的交易，函数有带有<code>0xff000001</code>和<code>0x00000001</code>的raw字节参数。两者都被纳入合同，考虑<code>x</code>的值，两者看起来都像数字<code>1</code>一样，但会有所不同，所以如果您使用<code>keccak256(msg.data)</code>，您将得到不同的结果。</b></li>
+</ul>
+<h2 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h2><h3 id="限制以太币的数量"><a href="#限制以太币的数量" class="headerlink" title="限制以太币的数量"></a>限制以太币的数量</h3><p>限制可以存储在智能合约中的以太币（或其他令牌）数量。如果您的源代码，编译器或平台有错误，这些资金可能会丢失。如果你想限制你的损失，限制以太币的数量。</p>
+<h3 id="保持小型化和模块化"><a href="#保持小型化和模块化" class="headerlink" title="保持小型化和模块化"></a>保持小型化和模块化</h3><p>保持合同规模小，易于理解。在其他合约或库中找出无关的功能。关于源代码质量的一般建议：限制局部变量的数量，函数的长度等等。函数需要写文档注释，以便其他人可以理解你的意图是什么，以及它是否与代码不同。</p>
+<h3 id="使用检查-效果-互动（Checks-Effects-Interactions）模式"><a href="#使用检查-效果-互动（Checks-Effects-Interactions）模式" class="headerlink" title="使用检查-效果-互动（Checks-Effects-Interactions）模式"></a>使用检查-效果-互动（Checks-Effects-Interactions）模式</h3><p>大多数函数将首先执行一些检查（谁调用函数，参数是否在范围内，他们是否发送了足够多的Ether，人员是否有令牌等）。这些检查应该先完成。</p>
+<p>作为第二步，如果所有检查都通过了，则应该对当前合约的状态变量产生影响。与其他合约的交互应该是任何函数的最后一步。</p>
+<p>早期合约延迟了一些效果，并等待外部函数调用以非错误状态返回。由于上面提到的重入问题，这通常是一个严重的错误。</p>
+<p>请注意，对已知合约的调用也可能导致对未知合约的调用，所以最好始终应用此模式。</p>
+<h3 id="包含安全失败（Fail-Safe）模式"><a href="#包含安全失败（Fail-Safe）模式" class="headerlink" title="包含安全失败（Fail-Safe）模式"></a>包含安全失败（Fail-Safe）模式</h3><p>在使系统完全去中心化的同时将删除任何中介，这可能是一个好主意，特别是对于新代码，可能包含某种故障安全机制：</p>
+<p>您可以在智能合约中添加一个函数，该函数执行一些自我检查，例如“有任何以太坊泄露？”，“代币的总和等于合约余额吗？”或类似的事情。请记住，你不能使用太多的gas，所以可能需要脱链计算的帮助。</p>
+<p>如果自检失败，合同会自动切换到某种“Fail-Safe”模式，例如，禁用大部分函数，将控制权移交给固定和受信任的第三方，或者仅将合同转换为简单的“把我的钱还给我“的合约。</p>
+<h2 id="正式验证"><a href="#正式验证" class="headerlink" title="正式验证"></a>正式验证</h2><p>使用形式验证，可以执行自动化的数学证明，证明源代码符合特定的正式规范。规范仍然是正式的（就像源代码一样），但通常要简单得多。</p>
+<p>请注意，形式验证本身只能帮助你理解你所做的事情（规范）和你如何做（实际实现）之间的差异。您仍然需要检查规格是否是您想要的，并且您没有错过任何意想不到的效果。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/06/blockchain/solidity杂项/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3110,404 +3302,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/Bitcoin中Base58Check/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/28/blockchain/Bitcoin中Base58Check/" itemprop="url">Bitcoin中Base58Check编码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T16:58:57+08:00">2018-03-28</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Base58二进制到文本编码被称为Base58Check，用于编码比特币地址。</p>
-<p>更一般地说，Base58Check编码用于将比特币中的字节数组编码为人类可分类的字符串。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最初的比特币客户端源代码解释了base58编码背后的原因：</p>
-<p>base58.h：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 为什么base-58而不是标准的base-64编码？</span><br><span class="line">//  - 不希望0OIl字符在某些字体和字体中看起来相同</span><br><span class="line">//可以用来创建视觉上相同的账号。</span><br><span class="line">//  - 具有非字母数字字符的字符串并不像帐号那么容易被接受。</span><br><span class="line">//  - 如果没有标点符号，电子邮件通常不会换行。</span><br><span class="line">//  - 如果全部是字母数字，Doubleclicking会将整个数字选为一个单词。</span><br></pre></td></tr></table></figure></p>
-<h2 id="Base58Check的功能"><a href="#Base58Check的功能" class="headerlink" title="Base58Check的功能"></a>Base58Check的功能</h2><p>Base58Check具有以下功能：</p>
-<ul>
-<li>一个任意大小的payload（<b style="color:red">这个payload其实就是公钥的HASH160的双次hash值</b>）。</li>
-<li>由容易区分的大写和小写字母组成的一组58个字母数字符号（0OIl不使用）(<b style="color:red">主要的原因还是因为可能会产生歧义</b>)</li>
-<li>一个字节的version/application信息。对于这个字节比特币地址使用0x00（未来的可能使用0x05）。</li>
-<li>四个字节（32位）基于SHA256的错误校验码。此校验码可用于自动检测并可能更正印刷错误。</li>
-<li>保留数据中前导零的额外步骤。（这里应该更深入地进行分析才是，但是现在真不太明白这里面的意思。）</li>
-</ul>
-<h2 id="创建一个Base58Check字符串"><a href="#创建一个Base58Check字符串" class="headerlink" title="创建一个Base58Check字符串"></a>创建一个Base58Check字符串</h2><p>Base58Check字符串是从version/application字节和payload创建的，如下所示。</p>
-<ol>
-<li>获取version字节和payload字节，并将它们连接在一起（按字节）。</li>
-<li>取SHA256的前四个字节（SHA256（步骤1的结果））（<b style="color:red">也应该是前面提到的那四个字节的事情</b>）</li>
-<li>将步骤1的结果和步骤2的结果连在一起（按字节顺序）。</li>
-<li>处理步骤3的结果 - 一系列字节 - <b style="color:red">作为单个大端序号</b>，使用正常的数学步骤（bignumber division）和下面描述的base-58字母表转换为base-58。结果应该被标准化为没有任何前导的base-58零（字符’1’）。(<b style="color:red">这里注意前导0对应的Base58Check是1</b>)</li>
-<li>在base58中值为零的前导字符’1’被保留用于表示整个前导零字节，就像它处于前导位置时一样，没有值作为base-58符号。必要时可以有一个或多个前导’1’来表示一个或多个前导零字节。计算第3步结果的前导零字节数（对于旧的比特币地址，至少有一个用于版本/应用程序字节;对于新地址，将永远不会有）。每个前导零字节在最终结果中应由其自己的字符’1’表示。</li>
-<li>将步骤5中的1与步骤4 的结果连接起来。这是Base58Check的结果。</li>
-</ol>
-<p>在描述比特币地址<a href="https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses#How_to_create_Bitcoin_Address" target="_blank" rel="noopener">技术背景</a>的页面上提供了一个更详细的例子。</p>
-<h2 id="编码比特币地址"><a href="#编码比特币地址" class="headerlink" title="编码比特币地址"></a>编码比特币地址</h2><p>比特币地址是使用以下任一项的散列的Base58Check编码实现的：</p>
-<ul>
-<li>Pay-to-script-hash（p2sh）：有效载荷是：其中redeemScript是钱包知道如何消费的脚本; 版本（这些地址以数字’3’开头）RIPEMD160(SHA256(redeemScript))0x05</li>
-<li>支付到PUBKEY散列（p2pkh）：有效载荷是其中ECDSA_publicKey是钱包知道的私有密钥的公共密钥; 版本（这些地址以数字’1’开头）RIPEMD160(SHA256(ECDSA_publicKey))0x00</li>
-</ul>
-<p>在这两种情况下得到的散列总是恰好为20个字节。这些是大端（最重要的字节在前）。（注意那些限制前导0x00字节的数字编码实现，或者预先增加额外的0x00字节来表示符号 - 你的代码必须正确处理这些情况，否则你可能会生成可以发送到但看不到的有效地址 -导致硬币的永久损失。）</p>
-<h2 id="编码一个私钥"><a href="#编码一个私钥" class="headerlink" title="编码一个私钥"></a>编码一个私钥</h2><p><b style="color:red">Base58Check编码也用于编码钱包导入格式中的<a href="https://en.bitcoin.it/wiki/Private_key" target="_blank" rel="noopener">ECDSA私钥</a></b>。除了0x80用于version/application字节，并且有效载荷是32字节而不是20（比特币中的私钥是单个32字节无符号的大端整数）之外，它与比特币地址完全相同。对于与未压缩的公钥相关的私钥，这种编码总是会产生一个以’5’开头的51个字符的字符串，或者更具体地说’5H’，’5J’或’5K’。</p>
-<h2 id="Base58符号图表"><a href="#Base58符号图表" class="headerlink" title="Base58符号图表"></a>Base58符号图表</h2><p>比特币中使用的Base58符号图特定于比特币项目，并不打算与比特币之外使用的任何其他Base58实现（排除的字符为：0，O，I和l）相同。</p>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>字符</th>
-<th>值</th>
-<th>字符</th>
-<th>值</th>
-<th>字符</th>
-<th>值</th>
-<th>字符</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>2</td>
-<td>3</td>
-<td>3</td>
-<td>4</td>
-</tr>
-<tr>
-<td>4</td>
-<td>5</td>
-<td>5</td>
-<td>6</td>
-<td>6</td>
-<td>7</td>
-<td>7</td>
-<td>8</td>
-</tr>
-<tr>
-<td>8</td>
-<td>9</td>
-<td>9</td>
-<td>A</td>
-<td>10</td>
-<td>B</td>
-<td>11</td>
-<td>C</td>
-</tr>
-<tr>
-<td>12</td>
-<td>D</td>
-<td>13</td>
-<td>E</td>
-<td>14</td>
-<td>F</td>
-<td>15</td>
-<td>G</td>
-</tr>
-<tr>
-<td>16</td>
-<td>H</td>
-<td>17</td>
-<td>J</td>
-<td>18</td>
-<td>K</td>
-<td>19</td>
-<td>L</td>
-</tr>
-<tr>
-<td>20</td>
-<td>M</td>
-<td>21</td>
-<td>N</td>
-<td>22</td>
-<td>P</td>
-<td>23</td>
-<td>Q</td>
-</tr>
-<tr>
-<td>24</td>
-<td>R</td>
-<td>25</td>
-<td>S</td>
-<td>26</td>
-<td>T</td>
-<td>27</td>
-<td>U</td>
-</tr>
-<tr>
-<td>28</td>
-<td>V</td>
-<td>29</td>
-<td>W</td>
-<td>30</td>
-<td>X</td>
-<td>31</td>
-<td>Y</td>
-</tr>
-<tr>
-<td>32</td>
-<td>Z</td>
-<td>33</td>
-<td>a</td>
-<td>34</td>
-<td>b</td>
-<td>35</td>
-<td>c</td>
-</tr>
-<tr>
-<td>36</td>
-<td>d</td>
-<td>37</td>
-<td>e</td>
-<td>38</td>
-<td>f</td>
-<td>39</td>
-<td>g</td>
-</tr>
-<tr>
-<td>40</td>
-<td>h</td>
-<td>41</td>
-<td>i</td>
-<td>42</td>
-<td>j</td>
-<td>43</td>
-<td>k</td>
-</tr>
-<tr>
-<td>44</td>
-<td>m</td>
-<td>45</td>
-<td>n</td>
-<td>46</td>
-<td>o</td>
-<td>47</td>
-<td>p</td>
-</tr>
-<tr>
-<td>48</td>
-<td>q</td>
-<td>49</td>
-<td>r</td>
-<td>50</td>
-<td>s</td>
-<td>51</td>
-<td>t</td>
-</tr>
-<tr>
-<td>52</td>
-<td>u</td>
-<td>53</td>
-<td>v</td>
-<td>54</td>
-<td>w</td>
-<td>55</td>
-<td>x</td>
-</tr>
-<tr>
-<td>56</td>
-<td>y</td>
-<td>57</td>
-<td>z</td>
-</tr>
-</tbody>
-</table>
-<p>编码address_byte_string的算法（由1-byte_version + hash_or_other_data + 4-byte_check_code组成）是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">code_string = &quot;123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz&quot;</span><br><span class="line">x = convert_bytes_to_big_integer(hash_result)</span><br><span class="line"></span><br><span class="line">output_string = &quot;&quot;</span><br><span class="line"></span><br><span class="line">while(x &gt; 0) </span><br><span class="line">    &#123;</span><br><span class="line">        (x, remainder) = divide(x, 58)</span><br><span class="line">        output_string.append(code_string[remainder])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">repeat(number_of_leading_zero_bytes_in_hash)</span><br><span class="line">    &#123;</span><br><span class="line">    output_string.append(code_string[0]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">output_string.reverse();</span><br></pre></td></tr></table></figure></p>
-<h2 id="版本字节"><a href="#版本字节" class="headerlink" title="版本字节"></a>版本字节</h2><p>以下是一些常见的版本字节：</p>
-<table>
-<thead>
-<tr>
-<th>小数版本</th>
-<th>领导的象征</th>
-<th>使用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>Bitcoin pubkey hash</td>
-</tr>
-<tr>
-<td>5</td>
-<td>3</td>
-<td>Bitcoin script hash</td>
-</tr>
-<tr>
-<td>21</td>
-<td>4</td>
-<td>Bitcoin (compact) public key (proposed)</td>
-</tr>
-<tr>
-<td>52</td>
-<td>M or N</td>
-<td>Namecoin pubkey hash</td>
-</tr>
-<tr>
-<td>128</td>
-<td>5</td>
-<td>Private key</td>
-</tr>
-<tr>
-<td>111</td>
-<td>m or n</td>
-<td>Bitcoin testnet pubkey hash</td>
-</tr>
-<tr>
-<td>196</td>
-<td>2</td>
-<td>Bitcoin testnet script hash</td>
-</tr>
-</tbody>
-</table>
-<p><a href="https://en.bitcoin.it/wiki/List_of_address_prefixes" target="_blank" rel="noopener">地址前缀列表</a>是一个完整的列表。</p>
-<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><p><a href="http://lenschulwitz.com/base58" target="_blank" rel="noopener">在线Base58解码器，编码器和验证器</a></p>
-<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><p><a href="https://github.com/bitcoin/bitcoin/blob/master/src/base58.cpp" target="_blank" rel="noopener">“Satoshi”C ++ codebase（解码和编码，不需要外部库）</a><br><a href="https://github.com/luke-jr/libbase58" target="_blank" rel="noopener">libbase58 C代码（解码和编码，不需要外部库）</a><br><a href="http://lenschulwitz.com/b58/base58perl.txt" target="_blank" rel="noopener">Base58在Perl中解码，编码和验证</a></p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Base58Check_encoding" target="_blank" rel="noopener">Base58Check encoding</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关于比特币地址知识，在精通比特币中有详细地介绍，这里我们不做更多的介绍，这篇文章是我翻译的结果。</p>
-<p>在之前我们分析过椭圆曲线的知识，对于确定性钱包的知识我们也做了相关地介绍，还有就是分层确定性钱包的知识。</p>
-<p><b style="color:red">另外Base58Check还有一个极大的好处就是可以校验地址是不是正确的，因为Base58生成的时候是加入了校验码</b>。我觉得比特币团队做的真的是很棒不是吗？详情可以参考：<a href="http://8btc.com/thread-31201-1-1.html" target="_blank" rel="noopener">为什么以太坊地址中没有校验值？</a></p>
-<p><b style="color:red">对于比特币地址也要特别注意一下，地址类型也就是version/appication字段其实是自己加入的，和ecdsa本身并没有任何关系。校验码也是自己加上去的而已。我们可以看一下下面的图片.</b></p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9D%9E%E5%8E%8B%E7%BC%A9%E5%85%AC%E9%92%A5%E7%94%9F%E6%88%90%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BF%87%E7%A8%8B.png?raw=true" alt=""></p>
-<p>有一段时间我在分析java的ECKey的代码发现java底层的椭圆曲线算法的实现，这里我就不做更多的说明了。<b style="color:red">关键是我们如何实现分层确定性钱包，这个很简单也很复杂，其实就是找私钥G，至于这个G怎么找，我们可以查看精通比特币里面的说明，这里面只是提到了HMAC-SHA512。看来这里面隐藏了很多的细节因素，我们有时间需要研究一下，HMAC-SHA512的知识了。</b></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3559,7 +3353,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">77</span>
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

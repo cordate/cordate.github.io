@@ -276,6 +276,404 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/Bitcoin中Base58Check/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/28/blockchain/Bitcoin中Base58Check/" itemprop="url">Bitcoin中Base58Check编码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T16:58:57+08:00">2018-03-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Base58二进制到文本编码被称为Base58Check，用于编码比特币地址。</p>
+<p>更一般地说，Base58Check编码用于将比特币中的字节数组编码为人类可分类的字符串。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最初的比特币客户端源代码解释了base58编码背后的原因：</p>
+<p>base58.h：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 为什么base-58而不是标准的base-64编码？</span><br><span class="line">//  - 不希望0OIl字符在某些字体和字体中看起来相同</span><br><span class="line">//可以用来创建视觉上相同的账号。</span><br><span class="line">//  - 具有非字母数字字符的字符串并不像帐号那么容易被接受。</span><br><span class="line">//  - 如果没有标点符号，电子邮件通常不会换行。</span><br><span class="line">//  - 如果全部是字母数字，Doubleclicking会将整个数字选为一个单词。</span><br></pre></td></tr></table></figure></p>
+<h2 id="Base58Check的功能"><a href="#Base58Check的功能" class="headerlink" title="Base58Check的功能"></a>Base58Check的功能</h2><p>Base58Check具有以下功能：</p>
+<ul>
+<li>一个任意大小的payload（<b style="color:red">这个payload其实就是公钥的HASH160的双次hash值</b>）。</li>
+<li>由容易区分的大写和小写字母组成的一组58个字母数字符号（0OIl不使用）(<b style="color:red">主要的原因还是因为可能会产生歧义</b>)</li>
+<li>一个字节的version/application信息。对于这个字节比特币地址使用0x00（未来的可能使用0x05）。</li>
+<li>四个字节（32位）基于SHA256的错误校验码。此校验码可用于自动检测并可能更正印刷错误。</li>
+<li>保留数据中前导零的额外步骤。（这里应该更深入地进行分析才是，但是现在真不太明白这里面的意思。）</li>
+</ul>
+<h2 id="创建一个Base58Check字符串"><a href="#创建一个Base58Check字符串" class="headerlink" title="创建一个Base58Check字符串"></a>创建一个Base58Check字符串</h2><p>Base58Check字符串是从version/application字节和payload创建的，如下所示。</p>
+<ol>
+<li>获取version字节和payload字节，并将它们连接在一起（按字节）。</li>
+<li>取SHA256的前四个字节（SHA256（步骤1的结果））（<b style="color:red">也应该是前面提到的那四个字节的事情</b>）</li>
+<li>将步骤1的结果和步骤2的结果连在一起（按字节顺序）。</li>
+<li>处理步骤3的结果 - 一系列字节 - <b style="color:red">作为单个大端序号</b>，使用正常的数学步骤（bignumber division）和下面描述的base-58字母表转换为base-58。结果应该被标准化为没有任何前导的base-58零（字符’1’）。(<b style="color:red">这里注意前导0对应的Base58Check是1</b>)</li>
+<li>在base58中值为零的前导字符’1’被保留用于表示整个前导零字节，就像它处于前导位置时一样，没有值作为base-58符号。必要时可以有一个或多个前导’1’来表示一个或多个前导零字节。计算第3步结果的前导零字节数（对于旧的比特币地址，至少有一个用于版本/应用程序字节;对于新地址，将永远不会有）。每个前导零字节在最终结果中应由其自己的字符’1’表示。</li>
+<li>将步骤5中的1与步骤4 的结果连接起来。这是Base58Check的结果。</li>
+</ol>
+<p>在描述比特币地址<a href="https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses#How_to_create_Bitcoin_Address" target="_blank" rel="noopener">技术背景</a>的页面上提供了一个更详细的例子。</p>
+<h2 id="编码比特币地址"><a href="#编码比特币地址" class="headerlink" title="编码比特币地址"></a>编码比特币地址</h2><p>比特币地址是使用以下任一项的散列的Base58Check编码实现的：</p>
+<ul>
+<li>Pay-to-script-hash（p2sh）：有效载荷是：其中redeemScript是钱包知道如何消费的脚本; 版本（这些地址以数字’3’开头）RIPEMD160(SHA256(redeemScript))0x05</li>
+<li>支付到PUBKEY散列（p2pkh）：有效载荷是其中ECDSA_publicKey是钱包知道的私有密钥的公共密钥; 版本（这些地址以数字’1’开头）RIPEMD160(SHA256(ECDSA_publicKey))0x00</li>
+</ul>
+<p>在这两种情况下得到的散列总是恰好为20个字节。这些是大端（最重要的字节在前）。（注意那些限制前导0x00字节的数字编码实现，或者预先增加额外的0x00字节来表示符号 - 你的代码必须正确处理这些情况，否则你可能会生成可以发送到但看不到的有效地址 -导致硬币的永久损失。）</p>
+<h2 id="编码一个私钥"><a href="#编码一个私钥" class="headerlink" title="编码一个私钥"></a>编码一个私钥</h2><p><b style="color:red">Base58Check编码也用于编码钱包导入格式中的<a href="https://en.bitcoin.it/wiki/Private_key" target="_blank" rel="noopener">ECDSA私钥</a></b>。除了0x80用于version/application字节，并且有效载荷是32字节而不是20（比特币中的私钥是单个32字节无符号的大端整数）之外，它与比特币地址完全相同。对于与未压缩的公钥相关的私钥，这种编码总是会产生一个以’5’开头的51个字符的字符串，或者更具体地说’5H’，’5J’或’5K’。</p>
+<h2 id="Base58符号图表"><a href="#Base58符号图表" class="headerlink" title="Base58符号图表"></a>Base58符号图表</h2><p>比特币中使用的Base58符号图特定于比特币项目，并不打算与比特币之外使用的任何其他Base58实现（排除的字符为：0，O，I和l）相同。</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>字符</th>
+<th>值</th>
+<th>字符</th>
+<th>值</th>
+<th>字符</th>
+<th>值</th>
+<th>字符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+<td>5</td>
+<td>6</td>
+<td>6</td>
+<td>7</td>
+<td>7</td>
+<td>8</td>
+</tr>
+<tr>
+<td>8</td>
+<td>9</td>
+<td>9</td>
+<td>A</td>
+<td>10</td>
+<td>B</td>
+<td>11</td>
+<td>C</td>
+</tr>
+<tr>
+<td>12</td>
+<td>D</td>
+<td>13</td>
+<td>E</td>
+<td>14</td>
+<td>F</td>
+<td>15</td>
+<td>G</td>
+</tr>
+<tr>
+<td>16</td>
+<td>H</td>
+<td>17</td>
+<td>J</td>
+<td>18</td>
+<td>K</td>
+<td>19</td>
+<td>L</td>
+</tr>
+<tr>
+<td>20</td>
+<td>M</td>
+<td>21</td>
+<td>N</td>
+<td>22</td>
+<td>P</td>
+<td>23</td>
+<td>Q</td>
+</tr>
+<tr>
+<td>24</td>
+<td>R</td>
+<td>25</td>
+<td>S</td>
+<td>26</td>
+<td>T</td>
+<td>27</td>
+<td>U</td>
+</tr>
+<tr>
+<td>28</td>
+<td>V</td>
+<td>29</td>
+<td>W</td>
+<td>30</td>
+<td>X</td>
+<td>31</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Z</td>
+<td>33</td>
+<td>a</td>
+<td>34</td>
+<td>b</td>
+<td>35</td>
+<td>c</td>
+</tr>
+<tr>
+<td>36</td>
+<td>d</td>
+<td>37</td>
+<td>e</td>
+<td>38</td>
+<td>f</td>
+<td>39</td>
+<td>g</td>
+</tr>
+<tr>
+<td>40</td>
+<td>h</td>
+<td>41</td>
+<td>i</td>
+<td>42</td>
+<td>j</td>
+<td>43</td>
+<td>k</td>
+</tr>
+<tr>
+<td>44</td>
+<td>m</td>
+<td>45</td>
+<td>n</td>
+<td>46</td>
+<td>o</td>
+<td>47</td>
+<td>p</td>
+</tr>
+<tr>
+<td>48</td>
+<td>q</td>
+<td>49</td>
+<td>r</td>
+<td>50</td>
+<td>s</td>
+<td>51</td>
+<td>t</td>
+</tr>
+<tr>
+<td>52</td>
+<td>u</td>
+<td>53</td>
+<td>v</td>
+<td>54</td>
+<td>w</td>
+<td>55</td>
+<td>x</td>
+</tr>
+<tr>
+<td>56</td>
+<td>y</td>
+<td>57</td>
+<td>z</td>
+</tr>
+</tbody>
+</table>
+<p>编码address_byte_string的算法（由1-byte_version + hash_or_other_data + 4-byte_check_code组成）是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">code_string = &quot;123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz&quot;</span><br><span class="line">x = convert_bytes_to_big_integer(hash_result)</span><br><span class="line"></span><br><span class="line">output_string = &quot;&quot;</span><br><span class="line"></span><br><span class="line">while(x &gt; 0) </span><br><span class="line">    &#123;</span><br><span class="line">        (x, remainder) = divide(x, 58)</span><br><span class="line">        output_string.append(code_string[remainder])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">repeat(number_of_leading_zero_bytes_in_hash)</span><br><span class="line">    &#123;</span><br><span class="line">    output_string.append(code_string[0]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">output_string.reverse();</span><br></pre></td></tr></table></figure></p>
+<h2 id="版本字节"><a href="#版本字节" class="headerlink" title="版本字节"></a>版本字节</h2><p>以下是一些常见的版本字节：</p>
+<table>
+<thead>
+<tr>
+<th>小数版本</th>
+<th>领导的象征</th>
+<th>使用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>Bitcoin pubkey hash</td>
+</tr>
+<tr>
+<td>5</td>
+<td>3</td>
+<td>Bitcoin script hash</td>
+</tr>
+<tr>
+<td>21</td>
+<td>4</td>
+<td>Bitcoin (compact) public key (proposed)</td>
+</tr>
+<tr>
+<td>52</td>
+<td>M or N</td>
+<td>Namecoin pubkey hash</td>
+</tr>
+<tr>
+<td>128</td>
+<td>5</td>
+<td>Private key</td>
+</tr>
+<tr>
+<td>111</td>
+<td>m or n</td>
+<td>Bitcoin testnet pubkey hash</td>
+</tr>
+<tr>
+<td>196</td>
+<td>2</td>
+<td>Bitcoin testnet script hash</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://en.bitcoin.it/wiki/List_of_address_prefixes" target="_blank" rel="noopener">地址前缀列表</a>是一个完整的列表。</p>
+<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><p><a href="http://lenschulwitz.com/base58" target="_blank" rel="noopener">在线Base58解码器，编码器和验证器</a></p>
+<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><p><a href="https://github.com/bitcoin/bitcoin/blob/master/src/base58.cpp" target="_blank" rel="noopener">“Satoshi”C ++ codebase（解码和编码，不需要外部库）</a><br><a href="https://github.com/luke-jr/libbase58" target="_blank" rel="noopener">libbase58 C代码（解码和编码，不需要外部库）</a><br><a href="http://lenschulwitz.com/b58/base58perl.txt" target="_blank" rel="noopener">Base58在Perl中解码，编码和验证</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://en.bitcoin.it/wiki/Base58Check_encoding" target="_blank" rel="noopener">Base58Check encoding</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>关于比特币地址知识，在精通比特币中有详细地介绍，这里我们不做更多的介绍，这篇文章是我翻译的结果。</p>
+<p>在之前我们分析过椭圆曲线的知识，对于确定性钱包的知识我们也做了相关地介绍，还有就是分层确定性钱包的知识。</p>
+<p><b style="color:red">另外Base58Check还有一个极大的好处就是可以校验地址是不是正确的，因为Base58生成的时候是加入了校验码</b>。我觉得比特币团队做的真的是很棒不是吗？详情可以参考：<a href="http://8btc.com/thread-31201-1-1.html" target="_blank" rel="noopener">为什么以太坊地址中没有校验值？</a></p>
+<p><b style="color:red">对于比特币地址也要特别注意一下，地址类型也就是version/appication字段其实是自己加入的，和ecdsa本身并没有任何关系。校验码也是自己加上去的而已。我们可以看一下下面的图片.</b></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9D%9E%E5%8E%8B%E7%BC%A9%E5%85%AC%E9%92%A5%E7%94%9F%E6%88%90%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BF%87%E7%A8%8B.png?raw=true" alt=""></p>
+<p>有一段时间我在分析java的ECKey的代码发现java底层的椭圆曲线算法的实现，这里我就不做更多的说明了。<b style="color:red">关键是我们如何实现分层确定性钱包，这个很简单也很复杂，其实就是找私钥G，至于这个G怎么找，我们可以查看精通比特币里面的说明，这里面只是提到了HMAC-SHA512。看来这里面隐藏了很多的细节因素，我们有时间需要研究一下，HMAC-SHA512的知识了。</b></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/java/Spring循环依赖检查/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1954,431 +2352,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/算法/Raft算法简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/23/算法/Raft算法简介/" itemprop="url">Raft算法简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T11:24:29+08:00">2018-03-23</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>分布式一致性算法中大家最熟悉还是Paxos，但是这个算法理解起来比较难，实现这个算法的难度也很高，最后都会对协议本身进行修改实现。</p>
-<p>为了提高理解性，Raft 将一致性算法分为了几个部分，例如领导选取（leader selection），日志复制（log replication）和安全性（safety），同时它使用了更强的一致性来减少了必须需要考虑的状态。</p>
-<h2 id="几个特性"><a href="#几个特性" class="headerlink" title="几个特性"></a>几个特性</h2><ul>
-<li>强领导者（Strong Leader）：Raft 使用一种比其他算法更强的领导形式。例如，日志条目只从领导者发送向其他服务器。这样就简化了对日志复制的管理，使得 Raft 更易于理解。</li>
-<li>领导选取（Leader Selection）：Raft 使用随机定时器来选取领导者。这种方式仅仅是在所有算法都需要实现的心跳机制上增加了一点变化，它使得在解决冲突时更简单和快速。</li>
-<li>成员变化（Membership Change）：Raft 为了调整集群中成员关系使用了新的联合一致性（joint consensus）的方法，这种方法中大多数不同配置的机器在转换关系的时候会交迭（overlap）。这使得在配置改变的时候，集群能够继续操作。</li>
-</ul>
-<h2 id="复制状态机"><a href="#复制状态机" class="headerlink" title="复制状态机"></a>复制状态机</h2><p>分布式一致性的解决方案就是<b style="color:red">复制状态机</b>, 在一组服务器的状态机产生同样的状态的副本因此即使有一些服务器崩溃了这组服务器也还能继续执行。<b style="color:red">但是集群中有一个Leader节点，Leader选举是使用一个单独的复制状态机,并存储配置信息，防止leader崩溃。</b></p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/%E5%A4%8D%E5%88%B6%E7%8A%B6%E6%80%81%E6%9C%BA.jpg?raw=true" alt=""></p>
-<p>从图上我们可以发现共识模块是处理分布式一致性的，Log模块记录操作的记录（这个操作很重要），最后是每台机器的状态机。<b style="color:red">复制状态机是通过复制日志实现的，每台服务器都保存一份日志，日志中包含一系列的命令，状态机会按照顺序执行这些命令。</b></p>
-<p>应用于实际系统的一致性算法一般有以下特性：</p>
-<ul>
-<li>确保安全性（从来不会返回一个错误的结果），即使在所有的非拜占庭（Non-Byzantine）情况下，包括网络延迟、分区、丢包、冗余和乱序的情况下。</li>
-<li>高可用性，只要集群中的大部分机器都能运行，可以互相通信并且可以和客户端通信，这个集群就可用。</li>
-<li>不依赖时序保证一致性，时钟错误和极端情况下的消息延迟在最坏的情况下才会引起可用性问题。</li>
-<li>通常情况下，一条命令能够尽可能快的在大多数节点对一轮远程调用作出相应时完成，一少部分慢的机器不会影响系统的整体性能。</li>
-</ul>
-<h2 id="易于理解的设计"><a href="#易于理解的设计" class="headerlink" title="易于理解的设计"></a>易于理解的设计</h2><p>设计 Raft 的目标有如下几个（我想任何算法都应该是这样的）：</p>
-<ul>
-<li>能提供一个完整的、实际的基础来进行系统构建，减少开发者的工作</li>
-<li>在任何情况下都能保证安全可用。</li>
-<li>对于常规的操作，必须是高效的。</li>
-<li>易于理解（这样才能便于应用）</li>
-<li>它必须能让开发者有一个直观的认识，这样才能使系统构建者们去对它进行扩展。（其实我觉得这点有点啰嗦）</li>
-</ul>
-<p>Raft使用了两种方式来简化算法的复杂度。</p>
-<p><b style="color:blue">一是问题分解</b>：尽可能将问题分解成为若干个可解决的、可被理解的小问题。例如，在 Raft 中，我们把问题分解成为了<b style="color:blue">领导选取（leader election）</b>、<b style="color:blue">日志复制（log replication）</b>、<b style="color:blue">安全（safety）</b>和<b style="color:blue">成员变化（membership changes）</b>。</p>
-<p><b style="color:blue">第二个方法是通过减少需要考虑的状态的数量将状态空间简化，这能够使得整个系统更加一致并且尽可能消除不确定性。</b>特别地，日志之间不允许出现空洞，并且 Raft 限制了限制了日志不一致的可能性。尽管在大多数情况下，我们都都在试图消除不确定性，但是有时候有些情况下，不确定性使得算法更易理解。尤其是，随机化方法使得不确定性增加，但是它减少了状态空间。我们使用随机化来简化了 Raft 中的领导选取算法。</p>
-<h2 id="Raft-一致性算法"><a href="#Raft-一致性算法" class="headerlink" title="Raft 一致性算法"></a>Raft 一致性算法</h2><h3 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h3><p>在所有服务器上持久存在的：（在响应远程过程调用 RPC 之前稳定存储的）</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>currentTerm</td>
-<td>服务器最后知道的任期号（从0开始递增）</td>
-</tr>
-<tr>
-<td>votedFor</td>
-<td>在当前任期内收到选票的候选人 id（如果没有就为 null）</td>
-</tr>
-<tr>
-<td>log[]</td>
-<td>日志条目；每个条目包含状态机的要执行命令和从领导人处收到时的任期号</td>
-</tr>
-</tbody>
-</table>
-<p>在所有服务器上不稳定存在的：</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>commitIndex</td>
-<td>已知的被提交的最大日志条目的索引值（从0开始递增）</td>
-</tr>
-<tr>
-<td>lastApplied</td>
-<td>被状态机执行的最大日志条目的索引值（从0开始递增）</td>
-</tr>
-</tbody>
-</table>
-<p>在领导人服务器上不稳定存在的：（在选举之后初始化的）</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>nextIndex[]</td>
-<td>对于每一个服务器，记录需要发给它的下一个日志条目的索引（初始化为领导人上一条日志的索引值+1）</td>
-</tr>
-<tr>
-<td>matchIndex[]</td>
-<td>对于每一个服务器，记录已经复制到该服务器的日志的最高索引值（从0开始递增）</td>
-</tr>
-</tbody>
-</table>
-<p><b style="color:red">这个是每台机器内部的状态量，根据这些信息我们可以查看相应的节点状态，每个节点也可以通过这些状态来检查网络中各节点的状态，最终需要leader节点进行同步。</b></p>
-<h3 id="附加日志远程过程调用-（AppendEntries-RPC）"><a href="#附加日志远程过程调用-（AppendEntries-RPC）" class="headerlink" title="附加日志远程过程调用 （AppendEntries RPC）"></a>附加日志远程过程调用 （AppendEntries RPC）</h3><p>由领导人来调用复制日志（5.3节）；也会用作heartbeat</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>term</td>
-<td>领导人的任期号</td>
-</tr>
-<tr>
-<td>leaderId</td>
-<td>领导人的 id，为了其他服务器能重定向到客户端</td>
-</tr>
-<tr>
-<td>prevLogIndex</td>
-<td>最新日志之前的日志的索引值</td>
-</tr>
-<tr>
-<td>prevLogTerm</td>
-<td>最新日志之前的日志的领导人任期号</td>
-</tr>
-<tr>
-<td>entries[]</td>
-<td>将要存储的日志条目（表示 heartbeat 时为空，有时会为了效率发送超过一条）</td>
-</tr>
-<tr>
-<td>leaderCommit</td>
-<td>领导人提交的日志条目索引值</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>返回值</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>term</td>
-<td>当前的任期号，用于领导人更新自己的任期号</td>
-</tr>
-<tr>
-<td>success</td>
-<td>如果其它服务器包含能够匹配上 prevLogIndex 和 prevLogTerm 的日志时为真</td>
-</tr>
-</tbody>
-</table>
-<p>接受者需要实现：</p>
-<ol>
-<li>如果 term &lt; currentTerm返回 false（5.1节）(这个应该是发现了最新的leader)</li>
-<li>如果在prevLogIndex处的日志的任期号与prevLogTerm不匹配时，返回 false（5.3节）（发现问题，3解决）</li>
-<li>如果一条已经存在的日志与新的冲突（index 相同但是任期号 term 不同），则删除已经存在的日志和它之后所有的日志（5.3节）（解决2中存在的问题，回滚）</li>
-<li>添加任何在已有的日志中不存在的条目（恢复数据）</li>
-<li>如果leaderCommit &gt; commitIndex，将commitIndex设置为leaderCommit和最新日志条目索引号中较小的一个（获取新日志后更新）</li>
-</ol>
-<p><b style="color:red">这个心跳检测和同步日志消息其实就是检测当前节点与Leader节点异同，如果发现数据异常，根据Leader节点的数据进行回滚，拉取最新的日志，根据日志恢复状态机。如果发现漏了很多日志就同步日志恢复状态机。</b></p>
-<h3 id="投票请求RPC（RequestVote-RPC）"><a href="#投票请求RPC（RequestVote-RPC）" class="headerlink" title="投票请求RPC（RequestVote RPC）"></a>投票请求RPC（RequestVote RPC）</h3><p>由候选人发起收集选票（5.2节）</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>term</td>
-<td>候选人的任期号</td>
-</tr>
-<tr>
-<td>candidateId</td>
-<td>请求投票的候选人 id</td>
-</tr>
-<tr>
-<td>lastLogIndex</td>
-<td>候选人最新日志条目的索引值</td>
-</tr>
-<tr>
-<td>lastLogTerm</td>
-<td>候选人最新日志条目对应的任期号</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>返回值</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>term</td>
-<td>目前的任期号，用于候选人更新自己</td>
-</tr>
-<tr>
-<td>voteGranted</td>
-<td>如果候选人收到选票为 true</td>
-</tr>
-</tbody>
-</table>
-<p>接受者需要实现：</p>
-<ol>
-<li>如果term &lt; currentTerm返回 false（5.1节）(可能是旧的Leader，但现在有新的了，忽略)</li>
-<li>如果votedFor为空或者与candidateId相同，并且候选人的日志和自己的日志一样新，则给该候选人投票（5.2节 和 5.4节）</li>
-</ol>
-<p><b style="color:blue">服务器需要遵守的规则：</b></p>
-<p>所有服务器：</p>
-<ul>
-<li>如果commitIndex &gt; lastApplied，lastApplied自增，将log[lastApplied]应用到状态机（5.3节）</li>
-<li>如果 RPC 的请求或者响应中包含一个 term T 大于 currentTerm，则currentTerm赋值为 T，并切换状态为追随者（Follower）（5.1节）</li>
-</ul>
-<p>追随者（followers）: 5.2节</p>
-<ul>
-<li>响应来自候选人和领导人的 RPC</li>
-<li><b style="color:red">如果在超过选取领导人时间之前没有收到来自当前领导人的AppendEntries RPC或者没有收到候选人的投票请求，则自己转换状态为候选人</b></li>
-</ul>
-<p>候选人：5.2节</p>
-<ul>
-<li>转变为选举人之后开始选举：<ul>
-<li>currentTerm自增</li>
-<li>给自己投票</li>
-<li>重置选举计时器</li>
-<li>向其他服务器发送RequestVote RPC</li>
-</ul>
-</li>
-<li>如果收到了来自大多数服务器的投票：成为领导人</li>
-<li><b style="color:red">如果收到了来自新领导人的AppendEntries RPC（heartbeat）：转换状态为追随者</b></li>
-<li>如果选举超时：开始新一轮的选举</li>
-</ul>
-<p>领导人：</p>
-<ul>
-<li>一旦成为领导人：向其他所有服务器发送空的AppendEntries RPC（heartbeat）;在空闲时间重复发送以防止选举超时（5.2节）</li>
-<li>如果收到来自客户端的请求：向本地日志增加条目，在该条目应用到状态机后响应客户端（5.3节）</li>
-<li>对于一个追随者来说，如果上一次收到的日志索引大于将要收到的日志索引（nextIndex）：通过AppendEntries RPC将 nextIndex 之后的所有日志条目发送出去</li>
-<li>如果发送成功：将该追随者的 nextIndex和matchIndex更新</li>
-<li>如果由于日志不一致导致AppendEntries RPC失败：nextIndex递减并且重新发送（5.3节）</li>
-<li>如果存在一个满足N &gt; commitIndex和matchIndex[i] &gt;= N并且log[N].term == currentTerm的 N，则将commitIndex赋值为 N</li>
-</ul>
-<h3 id="Raft-一致性算法的特性"><a href="#Raft-一致性算法的特性" class="headerlink" title="Raft 一致性算法的特性"></a>Raft 一致性算法的特性</h3><p>Raft 算法保证这些特性任何时刻都成立</p>
-<table>
-<thead>
-<tr>
-<th>性质</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>选举安全原则（Election Safety）</td>
-<td>一个任期（term）内最多允许有一个领导人被选上（5.2节）</td>
-</tr>
-<tr>
-<td>领导人只增加原则（Leader Append-Only）</td>
-<td>领导人永远不会覆盖或者删除自己的日志，它只会增加条目</td>
-</tr>
-<tr>
-<td>日志匹配原则（Log Matching）</td>
-<td>如果两个日志在相同的索引位置上的日志条目的任期号相同，那么我们就认为这个日志从头到这个索引位置之间的条目完全相同（5.3 节）</td>
-</tr>
-<tr>
-<td>领导人完全原则（Leader Completeness)</td>
-<td>如果一个日志条目在一个给定任期内被提交，那么这个条目一定会出现在所有任期号更大的领导人中</td>
-</tr>
-<tr>
-<td>状态机安全原则（State Machine Safety）</td>
-<td>如果一个服务器已经将给定索引位置的日志条目应用到状态机中，则所有其他服务器不会在该索引位置应用不同的条目（5.4.3节）</td>
-</tr>
-</tbody>
-</table>
-<p><b style="color:red">Raft 通过首先选出一个领导人来实现一致性，然后给予领导人完全管理复制日志（replicated log）的责任。领导人接收来自客户端的日志条目，并把它们复制到其他的服务器上，领带人还要告诉服务器们什么时候将日志条目应用到它们的状态机是安全的。通过选出领导人能够简化复制日志的管理工作。例如，领导人能够决定将新的日志条目放到哪，而并不需要和其他的服务器商议，数据流被简化成从领导人流向其他服务器。如果领导人宕机或者和其他服务器失去连接，就可以选取下一个领导人。</b></p>
-<p>通过选出领导人，Raft 将一致性问题分解成为三个相对独立的子问题：</p>
-<ul>
-<li>领导人选取（Leader election）： 在一个领导人宕机之后必须要选取一个新的领导人（5.2节）</li>
-<li>日志复制（Log replication）： 领导人必须从客户端接收日志然后复制到集群中的其他服务器，并且强制要求其他服务器的日志保持和自己相同</li>
-<li>安全性（Safety）： Raft 的关键的安全特性是 表-3 中提到的状态机安全原则（State Machine Safety）:如果一个服务器已经将给定索引位置的日志条目应用到状态机中，则所有其他服务器不会在该索引位置应用不同的条目。5.4节阐述了 Raft 是如何保证这条原则的，解决方案涉及到一个对于选举机制另外的限制，这一部分会在 5.2节 中说明。</li>
-</ul>
-<p>在说明了一致性算法之后，本章会讨论有关可用性（availability）的问题和系统中时序（timing）的问题。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>raft的Leader选举机制和策略总觉得和redis的集群模式很像，后来查看资料，果然redis内部使用的就是raft协议。也就大概明白raft协议的意思了。这里就不再过多地去说明了。</p>
-<p>但是论文的后面还有大量的实现说明，我在讨论了，可以查看论文原文，里面提到了很多细节问题，都是我们不得不考虑的事情。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.infoq.com/cn/articles/raft-paper#" target="_blank" rel="noopener">Raft 一致性算法论文译文</a><br><a href="http://blog.csdn.net/gBbQRglVIr3dYi82/article/details/79386536" target="_blank" rel="noopener">图解分布式协议-RAFT</a><br><a href="https://blog.csdn.net/sanwenyublog/article/details/53385616" target="_blank" rel="noopener">redis集群实现(五) sentinel的架构与raft协议</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2430,7 +2403,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">77</span>
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
