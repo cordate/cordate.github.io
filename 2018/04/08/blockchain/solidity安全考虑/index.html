@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="虽然构建可按预期工作的软件通常非常容易，但要检查没有人能够以没有预料到的方式使用它，要困难得多。 在Solidity中，这更加重要，因为您可以使用智能合约来处理代币或可能更有价值的东西。此外，智能合约的每一次执行都在公开场合进行，除此之外，源代码通常是公开的。 当然，你总是需要考虑有多大的风险：你可以将智能合约与对公众开放的Web服务（以及对恶意行为者）以及甚至开放源代码进行比较。如果您只将该购物">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-04-08T03:22:41.000Z">
+<meta property="og:updated_time" content="2018-04-08T03:30:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="solidity安全考虑">
 <meta name="twitter:description" content="虽然构建可按预期工作的软件通常非常容易，但要检查没有人能够以没有预料到的方式使用它，要困难得多。 在Solidity中，这更加重要，因为您可以使用智能合约来处理代币或可能更有价值的东西。此外，智能合约的每一次执行都在公开场合进行，除此之外，源代码通常是公开的。 当然，你总是需要考虑有多大的风险：你可以将智能合约与对公众开放的Web服务（以及对恶意行为者）以及甚至开放源代码进行比较。如果您只将该购物">
@@ -338,6 +338,13 @@
 
                 
                 
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
               
             </span>
           
@@ -410,7 +417,7 @@
 <h3 id="包含安全失败（Fail-Safe）模式"><a href="#包含安全失败（Fail-Safe）模式" class="headerlink" title="包含安全失败（Fail-Safe）模式"></a>包含安全失败（Fail-Safe）模式</h3><p>在使系统完全去中心化的同时将删除任何中介，这可能是一个好主意，特别是对于新代码，可能包含某种故障安全机制：</p>
 <p>您可以在智能合约中添加一个函数，该函数执行一些自我检查，例如“有任何以太坊泄露？”，“代币的总和等于合约余额吗？”或类似的事情。请记住，你不能使用太多的gas，所以可能需要脱链计算的帮助。</p>
 <p>如果自检失败，合同会自动切换到某种“Fail-Safe”模式，例如，禁用大部分函数，将控制权移交给固定和受信任的第三方，或者仅将合同转换为简单的“把我的钱还给我“的合约。</p>
-<h2 id="正式验证"><a href="#正式验证" class="headerlink" title="正式验证"></a>正式验证</h2><p>使用形式验证，可以执行自动化的数学证明，证明源代码符合特定的正式规范。规范仍然是正式的（就像源代码一样），但通常要简单得多。</p>
+<h2 id="形式化验证"><a href="#形式化验证" class="headerlink" title="形式化验证"></a>形式化验证</h2><p>使用形式验证，可以执行自动化的数学证明，证明源代码符合特定的正式规范。规范仍然是正式的（就像源代码一样），但通常要简单得多。</p>
 <p>请注意，形式验证本身只能帮助你理解你所做的事情（规范）和你如何做（实际实现）之间的差异。您仍然需要检查规格是否是您想要的，并且您没有错过任何意想不到的效果。</p>
 
       
@@ -576,7 +583,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -789,7 +798,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#陷阱"><span class="nav-number">1.</span> <span class="nav-text">陷阱</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#私人信息和随机性"><span class="nav-number">1.1.</span> <span class="nav-text">私人信息和随机性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重入"><span class="nav-number">1.2.</span> <span class="nav-text">重入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gas限制和循环"><span class="nav-number">1.3.</span> <span class="nav-text">gas限制和循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发送和接收以太币"><span class="nav-number">1.4.</span> <span class="nav-text">发送和接收以太币</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#栈调用深度"><span class="nav-number">1.5.</span> <span class="nav-text">栈调用深度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tx-origin"><span class="nav-number">1.6.</span> <span class="nav-text">tx.origin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#细节"><span class="nav-number">1.7.</span> <span class="nav-text">细节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建议"><span class="nav-number">2.</span> <span class="nav-text">建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#限制以太币的数量"><span class="nav-number">2.1.</span> <span class="nav-text">限制以太币的数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保持小型化和模块化"><span class="nav-number">2.2.</span> <span class="nav-text">保持小型化和模块化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用检查-效果-互动（Checks-Effects-Interactions）模式"><span class="nav-number">2.3.</span> <span class="nav-text">使用检查-效果-互动（Checks-Effects-Interactions）模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#包含安全失败（Fail-Safe）模式"><span class="nav-number">2.4.</span> <span class="nav-text">包含安全失败（Fail-Safe）模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正式验证"><span class="nav-number">3.</span> <span class="nav-text">正式验证</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#陷阱"><span class="nav-number">1.</span> <span class="nav-text">陷阱</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#私人信息和随机性"><span class="nav-number">1.1.</span> <span class="nav-text">私人信息和随机性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重入"><span class="nav-number">1.2.</span> <span class="nav-text">重入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gas限制和循环"><span class="nav-number">1.3.</span> <span class="nav-text">gas限制和循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发送和接收以太币"><span class="nav-number">1.4.</span> <span class="nav-text">发送和接收以太币</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#栈调用深度"><span class="nav-number">1.5.</span> <span class="nav-text">栈调用深度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tx-origin"><span class="nav-number">1.6.</span> <span class="nav-text">tx.origin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#细节"><span class="nav-number">1.7.</span> <span class="nav-text">细节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建议"><span class="nav-number">2.</span> <span class="nav-text">建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#限制以太币的数量"><span class="nav-number">2.1.</span> <span class="nav-text">限制以太币的数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保持小型化和模块化"><span class="nav-number">2.2.</span> <span class="nav-text">保持小型化和模块化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用检查-效果-互动（Checks-Effects-Interactions）模式"><span class="nav-number">2.3.</span> <span class="nav-text">使用检查-效果-互动（Checks-Effects-Interactions）模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#包含安全失败（Fail-Safe）模式"><span class="nav-number">2.4.</span> <span class="nav-text">包含安全失败（Fail-Safe）模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#形式化验证"><span class="nav-number">3.</span> <span class="nav-text">形式化验证</span></a></li></ol></div>
             
 
           </div>
