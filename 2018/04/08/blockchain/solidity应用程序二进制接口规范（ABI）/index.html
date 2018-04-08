@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="solidity," />
+
+
+<meta name="description" content="基本设计应用程序二进制接口（ABI）是与区块链以外的以太坊生态系统中的合约进行交互的标准方式，也是合约到合约交互的标准方式。数据根据其类型进行编码，如本规范中所述。编码不是自描述的，因此需要一个模式才能解码。 我们假设合约的接口函数是强类型的，在编译时和静态时都是已知的。不会提供自检机制。我们假设所有合约都将具有编译时可用的任何合约的接口定义。 本规范不涉及其接口是动态的或仅在运行时才知道的合约。">
+<meta name="keywords" content="solidity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="solidity应用程序二进制接口规范（ABI）">
+<meta property="og:url" content="http://cordate.github.io/2018/04/08/blockchain/solidity应用程序二进制接口规范（ABI）/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="基本设计应用程序二进制接口（ABI）是与区块链以外的以太坊生态系统中的合约进行交互的标准方式，也是合约到合约交互的标准方式。数据根据其类型进行编码，如本规范中所述。编码不是自描述的，因此需要一个模式才能解码。 我们假设合约的接口函数是强类型的，在编译时和静态时都是已知的。不会提供自检机制。我们假设所有合约都将具有编译时可用的任何合约的接口定义。 本规范不涉及其接口是动态的或仅在运行时才知道的合约。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-08T12:19:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="solidity应用程序二进制接口规范（ABI）">
+<meta name="twitter:description" content="基本设计应用程序二进制接口（ABI）是与区块链以外的以太坊生态系统中的合约进行交互的标准方式，也是合约到合约交互的标准方式。数据根据其类型进行编码，如本规范中所述。编码不是自描述的，因此需要一个模式才能解码。 我们假设合约的接口函数是强类型的，在编译时和静态时都是已知的。不会提供自检机制。我们假设所有合约都将具有编译时可用的任何合约的接口定义。 本规范不涉及其接口是动态的或仅在运行时才知道的合约。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/08/blockchain/solidity应用程序二进制接口规范（ABI）/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>solidity应用程序二进制接口规范（ABI） | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity应用程序二进制接口规范（ABI）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">solidity应用程序二进制接口规范（ABI）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-08T14:17:18+08:00">2018-04-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基本设计"><a href="#基本设计" class="headerlink" title="基本设计"></a>基本设计</h2><p>应用程序二进制接口（ABI）是与区块链以外的以太坊生态系统中的合约进行交互的标准方式，也是合约到合约交互的标准方式。数据根据其类型进行编码，如本规范中所述。编码不是自描述的，因此需要一个模式才能解码。</p>
+<p>我们假设合约的接口函数是强类型的，在编译时和静态时都是已知的。不会提供自检机制。我们假设所有合约都将具有编译时可用的任何合约的接口定义。</p>
+<p>本规范不涉及其接口是动态的或仅在运行时才知道的合约。如果这些情况变得重要，那么它们可以作为以太坊生态系统内的设施进行充分处理。</p>
+<h2 id="函数选择器"><a href="#函数选择器" class="headerlink" title="函数选择器"></a>函数选择器</h2><p>函数调用的调用数据的前四个字节指定要调用的函数。它是函数签名的Keccak（SHA-3）哈希中的前面（左边，高位在大端）四个字节。签名被定义为基本原型的规范表达式，即带有括号括起来的参数类型列表的函数名称。参数类型由一个逗号分隔 - 不使用空格。</p>
+<p><b style="color:#6ab0de">注意：函数的返回类型不是此签名的一部分。在Solidity的函数中，不考虑<a href="https://solidity.readthedocs.io/en/v0.4.21/contracts.html#overload-function" target="_blank" rel="noopener">重载</a>类型。原因是保持函数调用的解析与上下文无关。然而，ABI的JSON描述包含输入和输出。请参阅（<a href="https://solidity.readthedocs.io/en/v0.4.21/abi-spec.html#abi-json" target="_blank" rel="noopener">JSON ABI</a>）</b></p>
+<h2 id="参数编码"><a href="#参数编码" class="headerlink" title="参数编码"></a>参数编码</h2><p>从第五个字节开始，是编码的参数。这种编码也用于其他地方，例如返回值和事件参数都以相同的方式编码，而不用四个字节指定函数。</p>
+<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>存在以下基本类型：</p>
+<ul>
+<li><code>uint&lt;M&gt;</code>：<code>M</code>位的无符号整数类型，<code>0 &lt; M &lt;= 256</code>, <code>M % 8 == 0</code>。例如<code>uint32</code>，<code>uint8</code>，<code>uint256</code>。</li>
+<li><code>int&lt;M&gt;</code>：<code>M</code>位的二进制补码有符号整数类型，<code>0 &lt; M &lt;= 256</code>, <code>M % 8 == 0</code>。</li>
+<li><code>address</code>：相当于<code>uint160</code>，除了假设的解释和语言类型。为了计算函数选择器，使用<code>address</code>。</li>
+<li><code>uint</code>，<code>int</code>：同义词<code>uint256</code>，<code>int256</code>分别。为了计算函数选择器，<code>uint256</code>和<code>int256</code>必须使用。</li>
+<li><code>bool</code>：等同于<code>uint8</code>限制为0和1的值。为了计算函数选择器，bool被使用。</li>
+<li><code>fixed&lt;M&gt;x&lt;N&gt;</code>：<code>M</code>位有符号的定点小数，<code>8 &lt;= M &lt;= 256</code>，<code>M % 8 ==0</code>和<code>0 &lt; N &lt;= 80</code>，其表示的值<code>v</code>作为<code>v / (10 ** N)</code>。</li>
+<li><code>fixed</code>，<code>ufixed</code>：同义词<code>fixed128x19</code>，<code>ufixed128x19</code>分别。用于计算函数选择器，<code>fixed128x19</code>和<code>ufixed128x19</code>必须使用。</li>
+<li><code>bytes&lt;M&gt;</code>：M位字节类型，<code>0 &lt; M &lt;= 32</code>。</li>
+<li><code>function</code>：由函数选择器（4字节）填充的地址（20字节）。编码与<code>bytes24</code>完全相同。</li>
+</ul>
+<p>存在以下（固定大小）数组类型：</p>
+<ul>
+<li><code>&lt;type&gt;[M]</code>：给定类型的固定长度为<code>M</code>个元素的数组。<code>M &gt; 0</code>.</li>
+</ul>
+<p>存在以下非固定大小类型：</p>
+<ul>
+<li><code>bytes</code>：动态大小的字节序列。</li>
+<li><code>string</code>：动态大小的unicode字符串，假定UTF-8编码。</li>
+<li><code>&lt;type&gt;[]</code>：给定类型的元素的可变长度数组。</li>
+</ul>
+<p>类型可以通过在圆括号内包含一个有限的非负数的数字来组合成一个元组，用逗号分隔：</p>
+<ul>
+<li><code>(T1,T2,...,Tn)</code>：由类型<code>T1，... Tn</code>，<code>n &gt;= 0</code>组成的元组</li>
+</ul>
+<p>可以形成元组的元组，元组数组等等。</p>
+<p><b style="color:#6ab0de">注意: 除了元组之外，Solidity支持上面提到的所有同名的类型。ABI元组类型用于编码Solidity<code>structs</code>。</b></p>
+<h2 id="编码的形式规范"><a href="#编码的形式规范" class="headerlink" title="编码的形式规范"></a>编码的形式规范</h2><p>我们现在将正式指定编码，以便它具有以下属性，如果某些参数是嵌套数组，则这些属性特别有用：</p>
+<p>属性：</p>
+<ol>
+<li>访问一个值所需的读取次数至多是参数数组结构中值的深度，即需要四次读取才能检索<code>a_i[k][l][r]</code>。在以前版本的ABI中，读数的数量与最坏情况下动态参数的总数成线性关系。</li>
+<li>变量或数组元素的数据不与其他数据交织，并且可重定位，即它只使用相对“地址”</li>
+</ol>
+<p>我们区分静态和动态类型。静态类型就地编码，动态类型在当前语句块之后的位置，单独分配的位置进行编码。</p>
+<p>定义：以下类型称为“动态类型”：</p>
+<ul>
+<li><code>bytes</code></li>
+<li><code>string</code></li>
+<li><code>T[]</code> 为任何类型 <code>T</code></li>
+<li><code>T[k]</code>任何动态<code>T</code>和任何<code>k &gt; 0</code></li>
+<li><code>(T1,...,Tk)</code>如果有的话<code>Ti</code>是动态的<code>1 &lt;= i &lt;= k</code>。</li>
+</ul>
+<p>所有其他类型被称为“静态的”。</p>
+<p>定义：len(a)是二进制字符串<code>a</code>中的字节数。len(a)假定的类型是uint256。</p>
+<p>我们将<code>enc</code>实际编码定义为ABI类型值与二进制字符串的映射关系，当且仅当<code>X</code>的类型是动态的，len(enc(X))取决于<code>X</code>的值。</p>
+<p>定义：对于任何ABI值<code>X</code>，我们递归定义<code>enc(X)</code>，根据<code>X</code>类型是</p>
+<ul>
+<li><b style="color:red"><code>(T1,...,Tk)</code></b>对于<code>k&gt;=0</code>并且任何类型，<code>T1</code>, …,<code>Tk</code><br><code>enc(X) = head(X(1)) ... head(X(k-1)) tail(X(0)) ... tail(X(k-1))</code><br><code>X(i)</code>是<code>ith</code>值的组成部分， <code>head</code>和<code>tail</code>是为<code>Ti</code>静态类型定义的，<code>head(X(i)) = enc(X(i))</code>和<code>tail(X(i)) = &quot;&quot;</code>（空字符串）。<br>并作为<code>head(X(i)) = enc(len(head(X(0)) ... head(X(k-1)) tail(X(0)) ... tail(X(i-1))))</code>和<code>tail(X(i)) = enc(X(i))</code><br>否则，即如果<code>Ti</code>是动态类型。<br>请注意，在动态情况下，<code>head(X(i))</code>由于头部长度仅取决于类型而非值，因此定义良好(well-defined)。它的值是<code>tail(X(i))</code>开始相对于<code>enc(X)</code>开始的偏移量。</li>
+<li><code>T[k]</code>对于任何<code>T</code>和<code>k</code>：<br><code>enc(X) = enc((X[0], ..., X[k-1]))</code><br>即它被编码为它是具有<code>k</code>相同类型元素的元组。</li>
+<li><code>T[]</code>其中<code>X</code>有<code>k</code>个元素（<code>k</code>假定是类型<code>uint256</code>）：<br><code>enc(X) = enc(k) enc([X[1], ..., X[k]])</code><br>即它被编码，就好像它是一个静态大小的数组k，以元素的数量为前缀。</li>
+<li><code>bytes</code>，长度<code>k</code>（假定为类型<code>uint256</code>）：<br><code>enc(X) = enc(k) pad_right(X)</code>，即bytes的数字被编码为<code>uint256</code>接着是<code>X</code>作为字节序列的实际值，接着是零字节的最小数目，例如<code>len(enc(X))</code>是32的倍数。</li>
+<li><code>string</code>：<code>enc(X) = enc(enc_utf8(X))</code>即<code>X</code>是utf-8编码，并且该值被解释为bytes类型并被进一步编码。请注意，此后续编码中使用的长度是utf-8编码字符串的字节数，而不是其字符数。</li>
+<li><code>uint&lt;M&gt;</code>：<code>enc(X)</code>是<code>X</code>的大端编码，用零字节填充在高阶（左侧），长度为32字节。</li>
+<li><code>address</code>：这和<code>uint160</code>一样</li>
+<li><code>int&lt;M&gt;</code>：<code>enc(X)</code>是<code>X</code>的大端的二进制补码编码，对于负数<code>X</code>在较高阶（左侧）填充<code>0xff</code>，对于正数<code>X</code>为使用零字节，<code>X</code>长度为32字节。</li>
+<li><code>bool</code>：如同在这种<code>uint8</code>下的情况，<code>1</code>用于<code>true</code>和<code>0</code>用于<code>false</code></li>
+<li><code>fixed&lt;M&gt;x&lt;N&gt;</code>：当<code>X * 10**N</code>被解读为<code>uint256</code>,<code>enc(X)</code>是<code>enc(X * 10**N)</code>。</li>
+<li><code>fixed</code>：就像<code>fixed128x19</code>这样</li>
+<li><code>ufixed&lt;M&gt;x&lt;N&gt;</code>：当<code>X * 10**N</code>被解读为<code>uint256</code>,<code>enc(X)</code>是<code>enc(X * 10**N)</code>。</li>
+<li><code>ufixed</code>：就像<code>ufixed128x19</code>这样</li>
+<li><code>bytes&lt;M&gt;</code>：<code>enc(X)</code>是<code>X</code>填充后的零字节长度为32个字节的字节序列。</li>
+</ul>
+<p>请注意，对于任何<code>X</code>，<code>len(enc(X))</code>是32的倍数。</p>
+<h2 id="函数选择器和参数编码"><a href="#函数选择器和参数编码" class="headerlink" title="函数选择器和参数编码"></a>函数选择器和参数编码</h2><p>总而言之，通过参数<code>a_1, ..., a_n</code>调用函数<code>f</code>被编码为<code>function_selector(f) enc((a_1, ..., a_n))</code>; <code>f</code>的返回值<code>v_1, ..., v_k</code>被编码为：<code>enc((v_1, ..., v_k))</code>；即这些值被组合成一个元组并被编码。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>给出下面的合同：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract Foo &#123;</span><br><span class="line">  function bar(bytes3[2]) public pure &#123;&#125;</span><br><span class="line">  function baz(uint32 x, bool y) public pure returns (bool r) &#123; r = x &gt; 32 || y; &#125;</span><br><span class="line">  function sam(bytes, bool, uint[]) public pure &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因此，对于我们的<code>Foo</code>例子，如果我们想调用<code>baz</code>,参数为<code>69</code>和<code>true</code>，我们将传递总计68个字节消息，可细分为：</p>
+<ul>
+<li><code>0xcdcd77c0</code>：函数ID。这是作为签名<code>baz(uint32,bool)</code>的ASCII形式的Keccak散列的前4个字节而得出的。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000045</code>：第一个参数，一个uint32值<code>69</code>填充的32个字节。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000001</code>：第二个参数 - 布尔值true，填充为32个字节</li>
+</ul>
+<p>总计：<code>0xcdcd77c000000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001</code><br>它返回一个单一的<code>bool</code>。例如，如果它要返回<code>false</code>，它的输出将是单个字节数组<code>0x0000000000000000000000000000000000000000000000000000000000000000</code>，单个布尔值。</p>
+<p>如果我们用参数<code>[&quot;abc&quot;, &quot;def&quot;]</code>来调用<code>bar</code>方法，我们将总共传递68个字节，分解为：</p>
+<ul>
+<li><code>0xfce353f6</code>：方法ID。这是从<code>bar(bytes3[2])</code>的签名派生。</li>
+<li><code>0x6162630000000000000000000000000000000000000000000000000000000000</code>：第一个参数的第一部分，一个bytes3值”abc”（左对齐）。</li>
+<li><code>0x6465660000000000000000000000000000000000000000000000000000000000</code>：第一个参数的第二部分，一个bytes3值”def”（左对齐）。</li>
+</ul>
+<p>总共：<code>0xfce353f661626300000000000000000000000000000000000000000000000000000000006465660000000000000000000000000000000000000000000000000000000000</code></p>
+<p>如果我们想用参数<code>&quot;dave&quot;</code>, <code>true</code>和<code>[1, 2, 3]</code>调用<code>sam</code>，我们将总共传递292个字节，分解为：</p>
+<ul>
+<li><code>0xa5643bf2</code>：方法ID。这是从<code>sam(bytes,bool,uint256[])</code>签名派生的。请注意，它将<code>uint</code>被其规范<code>uint256</code>表示所取代。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000060</code>：第一个参数（动态类型）的数据部分的位置，从参数块的开始字节开始测量。在这种情况下，<code>0x60</code>。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000001</code>：第二个参数：boolean true。</li>
+<li><code>0x00000000000000000000000000000000000000000000000000000000000000a0</code>：第三个参数（动态类型）的数据部分的位置，以字节为单位。在这种情况下，<code>0xa0</code>。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000004</code>：<b style="color:red">第一个参数的数据部分，它以元素中字节数组的长度开始，在本例中为4</b>。</li>
+<li><code>0x6461766500000000000000000000000000000000000000000000000000000000</code>：第一个参数的内容：UTF-8（在这种情况下等于ASCII）的编码”dave”，在右边填充到32个字节。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000003</code>：<b style="color:red">第三个参数的数据部分，它以元素中数组的长度开始，在本例中为3。</b></li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000001</code>：第三个参数的第一个条目。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000002</code>：第三个参数的第二个条目。</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000003</code>：第三个参数的第三个条目。</li>
+</ul>
+<p>总共：<br><code>0xa5643bf20000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000464617665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003</code></p>
+<h2 id="动态类型的使用"><a href="#动态类型的使用" class="headerlink" title="动态类型的使用"></a>动态类型的使用</h2><p>通过签名<code>f(uint,uint32[],bytes10,bytes)</code>连同参数<code>(0x123, [0x456, 0x789], &quot;1234567890&quot;, &quot;Hello, world!&quot;)</code>来调用一个函数，按以下方式进行编码：</p>
+<p>我们采取<code>sha3(&quot;f(uint256,uint32[],bytes10,bytes)&quot;)</code>前四个字节，即<code>0x8be65246</code>。然后我们对所有四个参数的头部分进行编码。对于静态类型<code>uint256</code>和<code>bytes10</code>，这些是直接我们想要传递的值，而对于动态类型<code>uint32[]</code>和<code>bytes</code>，我们使用在字节偏移到它们的数据区的开始，从值编码开始测量（即，不计数前四个字节包含函数签名的散列）。这些是：</p>
+<ul>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000123</code>（<code>0x123</code>填充到32个字节）</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000080</code> （偏移到第二个参数的数据部分的开始，4 * 32个字节，正好是头部的大小）</li>
+<li><code>0x3132333435363738393000000000000000000000000000000000000000000000</code>（”1234567890”填充到右侧的32个字节）</li>
+<li><code>0x00000000000000000000000000000000000000000000000000000000000000e0</code>（第四个参数的数据部分的起始偏移量=第一个动态参数的数据部分的起始偏移量+第一个动态参数的数据部分的大小= 4 <em> 32 + 3 </em> 32（见下文））</li>
+</ul>
+<p>在此之后，第一个动态参数的数据部分<code>[0x456, 0x789]</code>,如下所示：</p>
+<ul>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000002</code> （阵列元素的数量，2）</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000456</code> （第一元素）</li>
+<li><code>0x0000000000000000000000000000000000000000000000000000000000000789</code> （第二元素）</li>
+</ul>
+<p>最后，我们编码第二个动态参数的数据部分：<code>&quot;Hello, world!&quot;</code></p>
+<ul>
+<li><code>0x000000000000000000000000000000000000000000000000000000000000000d</code> （元素数量（在这种情况下是字节数）：13）</li>
+<li><code>0x48656c6c6f2c20776f726c642100000000000000000000000000000000000000</code>（填充到右侧的32个字节）”Hello, world!”</li>
+</ul>
+<p>总的来说，编码是（为了清晰起见,每32字节换行显示）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x8be65246</span><br><span class="line">  0000000000000000000000000000000000000000000000000000000000000123</span><br><span class="line">  0000000000000000000000000000000000000000000000000000000000000080</span><br><span class="line">  3132333435363738393000000000000000000000000000000000000000000000</span><br><span class="line">  00000000000000000000000000000000000000000000000000000000000000e0</span><br><span class="line">  0000000000000000000000000000000000000000000000000000000000000002</span><br><span class="line">  0000000000000000000000000000000000000000000000000000000000000456</span><br><span class="line">  0000000000000000000000000000000000000000000000000000000000000789</span><br><span class="line">  000000000000000000000000000000000000000000000000000000000000000d</span><br><span class="line">  48656c6c6f2c20776f726c642100000000000000000000000000000000000000</span><br></pre></td></tr></table></figure></p>
+<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><p>事件是以太坊日志/事件监听协议的抽象。日志条目提供合约的地址，一系列最多四个主题（其实就是索引）和一些任意长度的二进制数据。事件利用现有的ABI函数来解释这个（与一个接口规范一起）为一个正确类型的结构。</p>
+<p>给定一个事件名称和一系列事件参数，我们将它们分成两个子系列：索引的和不是索引的。<b style="color:red">那些被编入索引的，最多可达3个，与事件签名的Keccak散列一起使用，以形成日志条目的主题</b>。那些没有索引的事件形成事件的字节数组。</p>
+<p>实际上，使用这个ABI的日志条目被描述为：</p>
+<ul>
+<li><code>address</code>：合同地址（本质上由以太坊提供）;</li>
+<li><code>topics[0]</code>：<code>keccak(EVENT_NAME+&quot;(&quot;+EVENT_ARGS.map(canonical_type_of).join(&quot;,&quot;)+&quot;)&quot;)</code>（<code>canonical_type_of</code>就是简单地返回所述规范类型给定的参数的函数，例如对于<code>uint indexed foo</code>，它会返回<code>uint256</code>）。如果该事件被声明为<code>anonymous</code>，<code>topics[0]</code>不会生成;</li>
+<li><code>topics[n]</code>：<code>EVENT_INDEXED_ARGS[n - 1]</code>（<code>EVENT_INDEXED_ARGS</code>是<code>EVENT_ARGS</code>被索引的序列;</li>
+<li><code>data</code>：<code>abi_serialise(EVENT_NON_INDEXED_ARGS)</code>（<code>EVENT_NON_INDEXED_ARGS</code>是该系列的<code>EVENT_ARGS</code>未索引的部分，<code>abi_serialise</code>用于从函数返回的一系列类型的值的ABI序列化的功能，如上文所述）。</li>
+</ul>
+<p>对于所有固定长度的Solidity类型，<code>EVENT_INDEXED_ARGS</code>数组直接包含32字节的编码值。然而，对于动态长度的类型，包括<code>string</code>，<code>bytes</code>和数组，<code>EVENT_INDEXED_ARGS</code>将包含Keccak散列的编码值，而不是直接对值进行编码。这允许应用程序高效地查询动态长度类型的值（通过将编码值的散列设置为主题），但是应用程序无法解码他们没有查询的索引值。对于动态长度类型，应用程序开发人员需要在快速搜索预定值（如果参数为索引）和任意值的易读性（这要求参数不被索引）之间进行权衡。开发人员可以通过定义具有两个参数的事件（一个索引，一个不打算保持相同的值）来克服这种折衷并实现有效搜索和任意易读性。</p>
+<h2 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h2><p>合约接口的JSON格式由一组函数和/或事件描述给出。函数描述是一个带有如下字段的JSON对象：</p>
+<ul>
+<li><code>type</code>：<code>&quot;function&quot;</code>，<code>&quot;constructor&quot;</code>或<code>&quot;fallback&quot;</code>（未命名的“默认”函数）;</li>
+<li><code>name</code>：函数的名称;</li>
+<li><code>inputs</code>：一个对象数组，每个对象都包含：<ul>
+<li><code>name</code>：参数的名称;</li>
+<li><code>type</code>：参数的规范类型（下面更多）。</li>
+<li><code>components</code>：用于元组类型（下面会介绍）。</li>
+</ul>
+</li>
+<li><code>outputs</code>：类似于<code>inputs</code>对象的数组，如果函数不返回任何东西，则可以省略它;</li>
+<li><code>payable</code>：如果函数接受ether为<code>true</code>，则默认为false;</li>
+<li><code>stateMutability</code>：具有以下值之一的字符串：<code>pure</code>（指定为不读blockchain状态）， <code>view</code>（指定为不修改blockchain状态），<code>nonpayable</code>和<code>payable</code>（同上述<code>payable</code>）。</li>
+<li><code>constant</code>：如果函数是<code>pure</code>或者<code>view</code>, 则为true。</li>
+</ul>
+<p><code>type</code>可以省略，默认为<code>&quot;function&quot;</code>。</p>
+<p>构造函数和fallback函数从来没有<code>name</code>或<code>outputs</code>。fallback函数也没有<code>inputs</code>。</p>
+<p>发送非零以太币到没有<code>payable</code>的函数将抛出异常。不要这样做。</p>
+<p>事件描述是一个具有如下相似字段的JSON对象：</p>
+<ul>
+<li><code>type</code>：总是<code>&quot;event&quot;</code></li>
+<li><code>name</code>：事件的名称;</li>
+<li><code>inputs</code>：一个对象数组，每个对象都包含：<ul>
+<li><code>name</code>：参数的名称;</li>
+<li><code>type</code>：参数的规范类型（下面更多）。</li>
+<li><code>components</code>：用于元组类型（下面更多）。</li>
+</ul>
+</li>
+<li><code>indexed</code>：如果该字段是日志主题的一部分为true，false的话，那么它是日志数据段中的一个。</li>
+<li><code>anonymous</code>：如果事件被声明为<code>anonymous</code>为true。</li>
+</ul>
+<p>例如，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract Test &#123;</span><br><span class="line">  function Test() public &#123; b = 0x12345678901234567890123456789012; &#125;</span><br><span class="line">  event Event(uint indexed a, bytes32 b);</span><br><span class="line">  event Event2(uint indexed a, bytes32 b);</span><br><span class="line">  function foo(uint a) public &#123; Event(a, b); &#125;</span><br><span class="line">  bytes32 b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>会生成如下json结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[&#123;</span><br><span class="line">&quot;type&quot;:&quot;event&quot;,</span><br><span class="line">&quot;inputs&quot;: [&#123;&quot;name&quot;:&quot;a&quot;,&quot;type&quot;:&quot;uint256&quot;,&quot;indexed&quot;:true&#125;,&#123;&quot;name&quot;:&quot;b&quot;,&quot;type&quot;:&quot;bytes32&quot;,&quot;indexed&quot;:false&#125;],</span><br><span class="line">&quot;name&quot;:&quot;Event&quot;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">&quot;type&quot;:&quot;event&quot;,</span><br><span class="line">&quot;inputs&quot;: [&#123;&quot;name&quot;:&quot;a&quot;,&quot;type&quot;:&quot;uint256&quot;,&quot;indexed&quot;:true&#125;,&#123;&quot;name&quot;:&quot;b&quot;,&quot;type&quot;:&quot;bytes32&quot;,&quot;indexed&quot;:false&#125;],</span><br><span class="line">&quot;name&quot;:&quot;Event2&quot;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">&quot;type&quot;:&quot;function&quot;,</span><br><span class="line">&quot;inputs&quot;: [&#123;&quot;name&quot;:&quot;a&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;],</span><br><span class="line">&quot;name&quot;:&quot;foo&quot;,</span><br><span class="line">&quot;outputs&quot;: []</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure></p>
+<h3 id="处理元组类型"><a href="#处理元组类型" class="headerlink" title="处理元组类型"></a>处理元组类型</h3><p>尽管这些名称不是ABI编码的一部分，但它们确实在JSON中包含很多意义，以便将其显示给最终用户。该结构以如下方式嵌套：</p>
+<p>包含<code>name</code>,<code>type</code>和可能的<code>components</code>成员的对象描述类型化变量。规范类型被确定，直到达到一个元组类型和字符串描述到这一点被存储在<code>type</code>,以<code>tuple</code>为前缀，即，其将在<code>tuple</code>随后的序列<code>[]</code>和<code>[k]</code>连同整数<code>k</code>。然后将元组的元素存储在成员<code>components</code>中，该成员是数组类型的，并且具有与顶级对象相同的结构，除非在那里<code>indexed</code>不允许。</p>
+<p>示例代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.19;</span><br><span class="line">pragma experimental ABIEncoderV2;</span><br><span class="line"></span><br><span class="line">contract Test &#123;</span><br><span class="line">  struct S &#123; uint a; uint[] b; T[] c; &#125;</span><br><span class="line">  struct T &#123; uint x; uint y; &#125;</span><br><span class="line">  function f(S s, T t, uint a) public &#123; &#125;</span><br><span class="line">  function g() public returns (S s, T t, uint a) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>会生成如下的JSON：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;name&quot;: &quot;f&quot;,</span><br><span class="line">    &quot;type&quot;: &quot;function&quot;,</span><br><span class="line">    &quot;inputs&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;name&quot;: &quot;s&quot;,</span><br><span class="line">        &quot;type&quot;: &quot;tuple&quot;,</span><br><span class="line">        &quot;components&quot;: [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;name&quot;: &quot;a&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;name&quot;: &quot;b&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;uint256[]&quot;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;name&quot;: &quot;c&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;tuple[]&quot;,</span><br><span class="line">            &quot;components&quot;: [</span><br><span class="line">              &#123;</span><br><span class="line">                &quot;name&quot;: &quot;x&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                &quot;name&quot;: &quot;y&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">              &#125;</span><br><span class="line">            ]</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;name&quot;: &quot;t&quot;,</span><br><span class="line">        &quot;type&quot;: &quot;tuple&quot;,</span><br><span class="line">        &quot;components&quot;: [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;name&quot;: &quot;x&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;name&quot;: &quot;y&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;name&quot;: &quot;a&quot;,</span><br><span class="line">        &quot;type&quot;: &quot;uint256&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;outputs&quot;: []</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<h2 id="非标准打包模式"><a href="#非标准打包模式" class="headerlink" title="非标准打包模式"></a>非标准打包模式</h2><p>Solidity支持非标准打包模式，其中：</p>
+<ul>
+<li>没有<a href="https://solidity.readthedocs.io/en/v0.4.21/abi-spec.html#abi-function-selector" target="_blank" rel="noopener">函数选择器</a>被编码，</li>
+<li>短于32字节的类型既不填零也不签名扩展</li>
+<li>动态类型就地编码并且没有长度。</li>
+</ul>
+<p>使用值<code>-1, 0x42, 0x2424, &quot;Hello, world!&quot;</code>进行编码<code>int1, bytes1, uint16, string</code>的示例结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0xff42242448656c6c6f2c20776f726c6421</span><br><span class="line">  ^^                                 int1(-1)</span><br><span class="line">    ^^                               bytes1(0x42)</span><br><span class="line">      ^^^^                           uint16(0x2424)</span><br><span class="line">          ^^^^^^^^^^^^^^^^^^^^^^^^^^ string(&quot;Hello, world!&quot;) without a length field</span><br></pre></td></tr></table></figure></p>
+<p>更具体地说，每个静态大小的类型占用其范围所具有的字节数量，以及动态大小的类型<code>string</code>，<code>bytes</code>或者<code>uint[]</code>在不使用其长度字段的情况下进行编码。这意味着只要有两个动态大小的元素，编码就不明确。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/solidity/" rel="tag"># solidity</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/08/blockchain/solidity合约元数据/" rel="next" title="solidity合约元数据">
+                <i class="fa fa-chevron-left"></i> solidity合约元数据
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本设计"><span class="nav-number">1.</span> <span class="nav-text">基本设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数选择器"><span class="nav-number">2.</span> <span class="nav-text">函数选择器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数编码"><span class="nav-number">3.</span> <span class="nav-text">参数编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型"><span class="nav-number">4.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码的形式规范"><span class="nav-number">5.</span> <span class="nav-text">编码的形式规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数选择器和参数编码"><span class="nav-number">6.</span> <span class="nav-text">函数选择器和参数编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">7.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态类型的使用"><span class="nav-number">8.</span> <span class="nav-text">动态类型的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件"><span class="nav-number">9.</span> <span class="nav-text">事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON"><span class="nav-number">10.</span> <span class="nav-text">JSON</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#处理元组类型"><span class="nav-number">10.1.</span> <span class="nav-text">处理元组类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非标准打包模式"><span class="nav-number">11.</span> <span class="nav-text">非标准打包模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

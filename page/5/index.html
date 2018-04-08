@@ -276,6 +276,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/疑难杂症/数据表结构的迁移策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/疑难杂症/数据表结构的迁移策略/" itemprop="url">数据表结构的迁移策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:55:18+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/疑难杂症/" itemprop="url" rel="index"><span itemprop="name">疑难杂症</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本来打算进行数据表结构的更改，而更改的过程中必然遇到数据的迁移和有些字段值的恢复。后来因为公司不再关注这块的业务，所以最后，我们没有实施，还有另外一个原因，DBA比较难对付，拼命说合规，与他合作总是打折扣，否则依照我这个暴脾气，即使公司不在乎这个系统了，做完的功能也要上线。有时很多事情本身就是很无奈的。所以说下面的就是我为这次迁移准备的预案，现在看来是实施不了了。记录下来，至少说我努力了，结果就不考虑了，做了是经验，总结也是经验。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>系统在新搭建的时候，可能由于需求的变化，或者后期系统更改的时候发现以前的表结构的设计会是一个软肋，或者表结构设计的并不好，会影响后期的开发，这时候你面临一个选择，在现有的表结构上进行扩展，还是更改现有的表结构，进行一次迁移。</p>
+<p>总的来说这个是一个很难做决定的选项，这个要视具体情况而定了，你可能想使用新的表结构，但是你甩不掉历史的包袱，老结构的数据是一定要转成新的结构的，那么该如何转，一种是停机维护，出问题回滚，下次再来。另一种方式是平滑过渡，其实我比较推崇后一种方式来进行。因为第一种方式的破坏性极强。而且有的时候项目初建的时候的确会有很多没有考虑的地方，所以如果出现这样的问题，那么我们确实需要切换一下表结构，这也是没办法的事情，我们现在遇到的问题就是表结构由于前期需求方向不明，或者我们的策略想的有点简单，项目要求快点上线，导致我们现在的处理不是很好，所以必然要面对一次切换。</p>
+<h2 id="维护方式"><a href="#维护方式" class="headerlink" title="维护方式"></a>维护方式</h2><h3 id="停机维护"><a href="#停机维护" class="headerlink" title="停机维护"></a>停机维护</h3><p>这种方式就是大家要在晚上人特别少的时候进行，这样做的好处是</p>
+<ul>
+<li>没有人使用，不用考虑增量数据，一次性导入没有任何问题。</li>
+<li>出问题回滚，不会影响线上数据</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>一般要晚上加班搞</li>
+<li>用户体验差，时间就是金钱，一般没人想停服。</li>
+<li>如果数据量大，停服时间特长，需要评估切换成本。</li>
+</ul>
+<p>有的时候，我们是不得不采用这种方式进行停服维护，但是个人真的不是很推崇这种方式，万不得已也没办法。</p>
+<h3 id="平滑过渡"><a href="#平滑过渡" class="headerlink" title="平滑过渡"></a>平滑过渡</h3><p>其实这种方式就是我比较推崇的方式，这种方式的好处就是不同停服，切换方式比较复杂，需要运维支持。</p>
+<p>首先部署新的结构和新的项目，这个项目不开放，然后从老库导数据。然后将流量引入到新系统中。这里面的问题就是增量数据的问题，迁移过程可以是很长时间。对于增量数据，一种是新旧系统上线后互相推数据，新系统要做幂等性，dba在导数据时也需要实现幂等性，待所有老数据导完后，就可以切服务了。还是就是先切，再导增量数据，这样就是最近数据可能不可见，随后可见。增量数据也可以通过binlog分析得出，也可以通过触发器的方式进行数据的推送。总之方法有很多种。</p>
+<p>还是就是是否需要新旧共存，如果是需要相互导数据。</p>
+<p>优点：</p>
+<ul>
+<li>没有停服压力，切换过程时间一般没限制</li>
+<li>可以在晚上进行，也可白天进行，一般还是流量小的时候进行。</li>
+<li>用户体验好，业务还在跑</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要处理增量数据的问题，dba不能一次搞定。</li>
+<li>需要考虑数据重复的问题，操作流程比较复杂</li>
+<li>需要介入的人员很多。</li>
+<li>对开发和介入人员的要求很高。</li>
+</ul>
+<h2 id="事情准备"><a href="#事情准备" class="headerlink" title="事情准备"></a>事情准备</h2><p>其实不管以上哪种切换方式，我们都需要在事情开始前进行准备。否则这件事不太好处理，还要想好预案进行处理，出现突发情况又该如何处理等等。</p>
+<ul>
+<li>需要评估数据转换的时间，根据线上数据量和预生产环境中进行一次实验，预估线上数据的转换时间。</li>
+<li>运维需要准备机器，部署线上的环境</li>
+<li>开发人员需要更改旧系统和老系统，一起发布上线实现，增量数据的传输和转换。</li>
+<li>DBA需要在上线之后开始执行转换，但一定要做到幂等性的插入。</li>
+</ul>
+<p>想好应急方案，一般就是旧系统维护一段时间才能真正下线，所以数据最好是双推，这样容错性更好。</p>
+<h2 id="事后检测"><a href="#事后检测" class="headerlink" title="事后检测"></a>事后检测</h2><p>成功转换数据后不能下架老服务，需要检测新服务，没有问题才能下架老服务。在整个过程中我们都必须进行各种评估，出现问题要即时解决，决定是继续还是终止。终止重来也是很令人头疼的事。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总的来说大家或多或少都经历过迁移的事情，我以前的公司都是停服维护，现在我们会采用平滑过度的方案来解决我们的问题。</p>
+<p>但是有一点必须说明平滑过度一定要之前想好方案，否则很多问题是解决不了的。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/散标的设计之道/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1855,169 +2038,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/java/关于流的思考/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/java/关于流的思考/" itemprop="url">关于流的思考</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:44:33+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我们知道在JDK中定义了各种各样的流，java.io包下的流都是基本的流，这就是传统的BIO模式。</p>
-<p>我们看一下java.nio中也定义了一种新的流方式，其中涉及到Buffer、Channel和Selector。</p>
-<p>最近我们有一个签章的系统，需要调用第三方的服务，另外需要签名，我们是将合同的模块放在了本地的磁盘上，读取的时候进行加载，签好名然后传送第三方进行电子签，这里面涉及到大量的网络流处理，所以这些处理起来比较费劲。我们也在极力去想优化解决的方案。</p>
-<p>由于第三方都是提供jar给我们，然后我们按照他们的方式进行签署，这样对我们的优化的空间有所不利，还有如果第三方升级接口，我们看了老的代码进行自己实现的优化，可能就要跟着进行更改，这个对于我们是不利的。但是不使用第三方的jar才能进行大面积的优化，否则会面临很多的问题。</p>
-<p>优化的方案无非就是尽量使用内存和队列。还有就是使用NIO技术。</p>
-<h3 id="加载模板的优化"><a href="#加载模板的优化" class="headerlink" title="加载模板的优化"></a>加载模板的优化</h3><p>首先我们能想到的就是先优化模板的加载，一般我们都是从磁盘读流，然后将流给第三方的接口进行签署，这种有一个缺点就是还是在读磁盘，这可不是好现象，而且模板是固定的，没有必要每次都去读磁盘。我们的做法是将模板加载到内存中，然后使用这个内存的Byte数组形成一种内存流，然后将这个流放入第三方的调用函数中进行加载。</p>
-<p>这种方式就是不用频繁访问磁盘，而是一直在访问内存，可以帮助我们解决不少的问题。但是有一个缺点是一旦模板更改，系统一直在使用老模板，但是改模板的场景一般比较少。而且如果后台有管理模板的功能，那么我们就不得不解决这个问题了，还有就是模板数量可能也是动态的，那么我们要处理的事情就会很多。</p>
-<p>其实流就是加上读取的位置标识，这和我们在使用C的file文件的方式是一样的。</p>
-<h3 id="签署优化"><a href="#签署优化" class="headerlink" title="签署优化"></a>签署优化</h3><p>我们也想放内存，但是出现一个问题就是每次签署生成的合同文件是不同的，这和模板有很大的区别。但是同时签署的合同可能并不是很多，所以我们任然可以内存，而不是回写磁盘。</p>
-<p>但是这里会有几个问题需要解决：</p>
-<ul>
-<li>gc的回收任务加重，会带来不少的问题</li>
-<li>内存中的这个对象会很大，很可能被直接放入老年代，或者直接放到了方法区里面去了，这也不是好现象。</li>
-</ul>
-<p>所以这里的优化相对来说很难进行实现。</p>
-<h3 id="使用NIO进行优化"><a href="#使用NIO进行优化" class="headerlink" title="使用NIO进行优化"></a>使用NIO进行优化</h3><p>比如我们将签好的模板回写磁盘的时候，可以使用NIO方式。网络请求调用，分析第三方的jar包，进行改造使用NIO的方式来调优，但是这种方式复杂度比较高。</p>
-<h3 id="使用Java8的Stream"><a href="#使用Java8的Stream" class="headerlink" title="使用Java8的Stream"></a>使用Java8的Stream</h3><p>都说java8的Stream引入同时也带来并发能力，但是我没有更多使用过，所以目前对于效果也不是特别清楚。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2064,7 +2089,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">80</span>
+                    <span class="site-state-item-count">81</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
