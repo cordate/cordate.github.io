@@ -276,6 +276,208 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/BIP-65 OP-CHECKLOCKTIMEVERIFY/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/26/blockchain/BIP-65 OP-CHECKLOCKTIMEVERIFY/" itemprop="url">BIP-65 OP_CHECKLOCKTIMEVERIFY</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-26T20:55:20+08:00">2018-03-26</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h2><p>该BIP为比特币脚本系统描述了一个新的操作码（OP_CHECKLOCKTIMEVERIFY），该操作码允许交易输出在未来的某个点之前变得不可花费。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p><b style="color:blue">CHECKLOCKTIMEVERIFY重新定义了现有的NOP2操作码(其实就是OP_CHECKLOCKTIMEVERIFY命令替换了OP_NOP2命令)。执行时，如果以下任何一个条件成立，则脚本解释器将以错误终止：</b></p>
+<ul>
+<li>堆栈是空的; </li>
+<li>堆栈中的顶层项目小于0;</li>
+<li>顶层堆栈项的锁定时间类型（高度vs.时间戳）与nLockTime字段不同;</li>
+<li>顶部堆栈项大于事务的nLockTime字段;</li>
+<li>txin（交易输入）的nSequence字段是0xffffffff;</li>
+</ul>
+<p>否则，脚本执行将继续，如同NOP执行一样。</p>
+<p>交易中的nLockTime字段可防止事务被挖掘，直到达到某个块高度或块时间为止。通过将传给CHECKLOCKTIMEVERIFY的参数与nLockTime字段进行比较，我们间接验证是否已达到所需的块高度或块时间; 直到该块高度或块时间已经达到，交易输出仍然不可花费。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>交易中的nLockTime字段可用于证明 将来可以花费这笔交易输出，方法是构造一个有效的交易开销，并对nLockTime字段进行设置。</p>
+<p>然而，nLockTime字段不能证明在未来的某个时间内不可能花费交易输出，因为无法知道是否创建了支出该输出的其他交易的有效签名。</p>
+<h2 id="第三方托管"><a href="#第三方托管" class="headerlink" title="第三方托管"></a>第三方托管</h2><p><b style="color:red">如果Alice和Bob联合经营一家企业，他们可能希望确保所有资金都保存在需要双方合作支出的二分之二的多重（多签名的交易）交易输出中。但是，他们认识到，在特殊情况下，例如任何一方受到“巴士撞击”，他们都需要备份计划来检索资金。因此，他们任命他们的律师Lenny担任第三方。</b></p>
+<p>在任何时候，Lenny都可以与Alice或Bob合谋窃取资金，这是一个标准的2分之3 多签名。同样，Lenny可能宁愿不立即获得资金，以阻止居心不良的人试图暴力获取他的密钥。</p>
+<p>但是，使用CHECKLOCKTIMEVERIFY可以将资金存储在以下格式的scriptPubKeys中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">IF</span><br><span class="line">    &lt;now + 3 months&gt; CHECKLOCKTIMEVERIFY DROP</span><br><span class="line">    &lt;Lenny&apos;s pubkey&gt; CHECKSIGVERIFY</span><br><span class="line">    1</span><br><span class="line">ELSE</span><br><span class="line">    2</span><br><span class="line">ENDIF</span><br><span class="line">&lt;Alice&apos;s pubkey&gt; &lt;Bob&apos;s pubkey&gt; 2 CHECKMULTISIG</span><br></pre></td></tr></table></figure></p>
+<p>在任何时候，资金都可以用下面的脚本来支付：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;Alice&apos;s signature&gt; &lt;Bob&apos;s signature&gt; 0</span><br></pre></td></tr></table></figure></p>
+<p>Lenny经过3个月后，Alice或Bob中的一个可以用以下脚本支付资金：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;Alice/Bob&apos;s signature&gt; &lt;Lenny&apos;s signature&gt; 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="非交互式时间锁定退款"><a href="#非交互式时间锁定退款" class="headerlink" title="非交互式时间锁定退款"></a>非交互式时间锁定退款</h2><p>存在许多协议，其中创建交易输出，这需要双方的合作来花费输出。为确保一方的失败不会导致资金损失，退款交易使用nLockTime提前设置。这些退款交易需要交互式创建，此外，目前易受交易延展性影响。CHECKLOCKTIMEVERIFY可用于这些协议，用非交互式设置取代交互式设置，另外，使交易延展性不成问题。</p>
+<h3 id="双因素钱包"><a href="#双因素钱包" class="headerlink" title="双因素钱包"></a>双因素钱包</h3><p>诸如GreenAddress之类的服务将比特币存储为2比2的多签名脚本ScriptPubKey，使得一个密钥对由用户控制，另一个密钥对由服务控制。为了花费资金，用户使用本地安装的生成所需签名之一的钱包软件，然后使用第二因素身份验证方法来授权该服务创建第二个SIGHASH_NONE签名，该签名在将来的某个时间被锁定，并向用户发送该存储签名。如果用户需要花费资金并且服务不可用，他们会等到nLockTime过期。</p>
+<p>问题是，在许多情况下，用户将不会拥有一些或全部交易输出的有效签名。使用CHECKLOCKTIMEVERIFY而不是按需创建退款签名而是使用以下形式的scriptPubKeys：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">IF</span><br><span class="line">    &lt;service pubkey&gt; CHECKSIGVERIFY</span><br><span class="line">ELSE</span><br><span class="line">    &lt;expiry time&gt; CHECKLOCKTIMEVERIFY DROP</span><br><span class="line">ENDIF</span><br><span class="line">&lt;user pubkey&gt; CHECKSIG</span><br></pre></td></tr></table></figure></p>
+<p>现在，用户总是能够在没有服务合作的情况下花费他们的资金，等待到期时间的到来。</p>
+<h3 id="付款渠道"><a href="#付款渠道" class="headerlink" title="付款渠道"></a>付款渠道</h3><p>Jeremy Spilman风格的支付渠道首先设置一个存款，由2-of-2的多签名，tx1控制的存款，然后调整第二个交易tx2，将tx1的输出用于支付者和收款者。在发布tx1之前，创建一个退款交易tx3，以确保收款人是否可以清除付款人的存款。创建退款交易的过程目前易受交易延展性攻击的影响，此外还要求付款人存储退款。使用与双因子钱包示例中相同的scriptPubKey形式解决了这两个问题。</p>
+<h2 id="用于发布数据的无信任支付"><a href="#用于发布数据的无信任支付" class="headerlink" title="用于发布数据的无信任支付"></a>用于发布数据的无信任支付</h2><p>PayPub协议可以通过首先证明加密文件包含所需数据，然后制作用于付款的scriptPubKeys来支付以无信任方式付款的信息，以便花费它们显示数据的加密密钥。然而，现有的实现有一个重大缺陷：发布者可以无限期地推迟密钥的发布。</p>
+<p>这个问题可以用退款交易技术交互地解决; 使用CHECKLOCKTIMEVERIFY，可以使用以下形式的scriptPubKeys以非交互方式解决问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">IF</span><br><span class="line">    HASH160 &lt;Hash160(encryption key)&gt; EQUALVERIFY</span><br><span class="line">    &lt;publisher pubkey&gt; CHECKSIG</span><br><span class="line">ELSE</span><br><span class="line">    &lt;expiry time&gt; CHECKLOCKTIMEVERIFY DROP</span><br><span class="line">    &lt;buyer pubkey&gt; CHECKSIG</span><br><span class="line">ENDIF</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">数据的买家现在正在提供一个有效期限的安全报价。如果发行商在到期时间到期之前未能接受报价，买家可以通过消费输出来取消报价。</b></p>
+<h2 id="证明牺牲矿工的收费"><a href="#证明牺牲矿工的收费" class="headerlink" title="证明牺牲矿工的收费"></a>证明牺牲矿工的收费</h2><p>证明牺牲一些有限的资源是各种密码协议中的常见技术。已经提出将硬币的牺牲证明为采矿费，作为牺牲可以指向的普遍公共物品，而不是简单地摧毁硬币。然而，这样做并非微不足道，即使是最好的现有技术 - 宣布 - 承诺 - 也会鼓励矿业集中。CHECKLOCKTIMEVERIFY可用于创建任何人都可以花费的产出（因此，假设矿工的行为是理想的和理性的，那么开采费），但只有在未来足够远的时间，大型矿工才能以折扣销售牺牲品。</p>
+<h2 id="冻结资金"><a href="#冻结资金" class="headerlink" title="冻结资金"></a>冻结资金</h2><p>除了使用冷存储，硬件钱包和P2SH multisig输出来控制资金之外，现在资金可以直接在区块链中冻结在UTXO中。使用下面的scriptPubKey，在提供的失效时间之前，没有人能够使用安全输出。这种可靠地冻结资金的能力在需要减少胁迫或没收风险的情况下可能会有用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;expiry time&gt; CHECKLOCKTIMEVERIFY DROP DUP HASH160 &lt;pubKeyHash&gt; EQUALVERIFY CHECKSIG</span><br></pre></td></tr></table></figure></p>
+<h2 id="完全替换nLockTime字段"><a href="#完全替换nLockTime字段" class="headerlink" title="完全替换nLockTime字段"></a>完全替换nLockTime字段</h2><p>另外，请注意如果SignatureHash()算法可以选择覆盖脚本的一部分，那么签名可能会要求脚本Sig包含CHECKLOCKTIMEVERIFY操作码，并且还需要执行它们。（CODESEPARATOR操作码非常接近于在比特币的v0.1中实现这一点）。这种每签名功能可以完全取代每个交易的nLockTime字段，因为有效签名现在可以证明交易输出可以花费。</p>
+<h2 id="详细规则"><a href="#详细规则" class="headerlink" title="详细规则"></a>详细规则</h2><p>参考下面转载的参考实现，了解这些语义的精确语义和详细基本原理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">case OP_NOP2:</span><br><span class="line">&#123;</span><br><span class="line">    // CHECKLOCKTIMEVERIFY</span><br><span class="line">    //</span><br><span class="line">    // (nLockTime -- nLockTime )</span><br><span class="line"></span><br><span class="line">    if (!(flags &amp; SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY))</span><br><span class="line">        break; // not enabled; treat as a NOP</span><br><span class="line"></span><br><span class="line">    if (stack.size() &lt; 1)</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    // Note that elsewhere numeric opcodes are limited to</span><br><span class="line">    // operands in the range -2**31+1 to 2**31-1, however it is</span><br><span class="line">    // legal for opcodes to produce results exceeding that</span><br><span class="line">    // range. This limitation is implemented by CScriptNum&apos;s</span><br><span class="line">    // default 4-byte limit.</span><br><span class="line">    //</span><br><span class="line">    // If we kept to that limit we&apos;d have a year 2038 problem,</span><br><span class="line">    // even though the nLockTime field in transactions</span><br><span class="line">    // themselves is uint32 which only becomes meaningless</span><br><span class="line">    // after the year 2106.</span><br><span class="line">    //</span><br><span class="line">    // Thus as a special case we tell CScriptNum to accept up</span><br><span class="line">    // to 5-byte bignums, which are good until 2**32-1, the</span><br><span class="line">    // same limit as the nLockTime field itself.</span><br><span class="line">    const CScriptNum nLockTime(stacktop(-1), 5);</span><br><span class="line"></span><br><span class="line">    // In the rare event that the argument may be &lt; 0 due to</span><br><span class="line">    // some arithmetic being done first, you can always use</span><br><span class="line">    // 0 MAX CHECKLOCKTIMEVERIFY.</span><br><span class="line">    if (nLockTime &lt; 0)</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    // There are two types of nLockTime: lock-by-blockheight</span><br><span class="line">    // and lock-by-blocktime, distinguished by whether</span><br><span class="line">    // nLockTime &lt; LOCKTIME_THRESHOLD.</span><br><span class="line">    //</span><br><span class="line">    // We want to compare apples to apples, so fail the script</span><br><span class="line">    // unless the type of nLockTime being tested is the same as</span><br><span class="line">    // the nLockTime in the transaction.</span><br><span class="line">    if (!(</span><br><span class="line">            (txTo.nLockTime &lt;  LOCKTIME_THRESHOLD &amp;&amp; nLockTime &lt;  LOCKTIME_THRESHOLD) ||</span><br><span class="line">            (txTo.nLockTime &gt;= LOCKTIME_THRESHOLD &amp;&amp; nLockTime &gt;= LOCKTIME_THRESHOLD)</span><br><span class="line">            ))</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    // Now that we know we&apos;re comparing apples-to-apples, the</span><br><span class="line">    // comparison is a simple numeric one.</span><br><span class="line">    if (nLockTime &gt; (int64_t)txTo.nLockTime)</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    // Finally the nLockTime feature can be disabled and thus</span><br><span class="line">    // CHECKLOCKTIMEVERIFY bypassed if every txin has been</span><br><span class="line">    // finalized by setting nSequence to maxint. The</span><br><span class="line">    // transaction would be allowed into the blockchain, making</span><br><span class="line">    // the opcode ineffective.</span><br><span class="line">    //</span><br><span class="line">    // Testing if this vin is not final is sufficient to</span><br><span class="line">    // prevent this condition. Alternatively we could test all</span><br><span class="line">    // inputs, but testing just this input minimizes the data</span><br><span class="line">    // required to prove correct CHECKLOCKTIMEVERIFY execution.</span><br><span class="line">    if (txTo.vin[nIn].IsFinal())</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    break;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/petertodd/bitcoin/commit/ab0f54f38e08ee1e50ff72f801680ee84d0f1bf4" target="_blank" rel="noopener">https://github.com/petertodd/bitcoin/commit/ab0f54f38e08ee1e50ff72f801680ee84d0f1bf4</a></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>我们重用BIP66中使用的双阈值IsSuperMajority()切换机制，其阈值相同，但nVersion=4。新规则对于nVersion=4的每个块（高度为H）有效，并且至少有750之前的块（高度为H-1000..H-1）的nVersion&gt;=4。此外，当块之前的1000个块中的950个具有nVersion&gt;=4时，nVersion&lt;4块将变为无效，并且全部进一步的阻止执行新的规则。</p>
+<p>应该注意的是，BIP9涉及永久性地将高位设置为1，这导致nVersion&gt;=所有先前的IsSuperMajority()软分叉，因此nVersion中的位不会永久丢失。</p>
+<h2 id="SPV客户"><a href="#SPV客户" class="headerlink" title="SPV客户"></a>SPV客户</h2><p>尽管SPV客户端（目前）无法验证块，但相信矿工为他们进行验证，但他们能够验证块头并因此可以验证部署规则的子集。如果达到95％的阈值，如果1000个前面的块中的950个<code>nVersion&gt;=4</code>，则SPV客户端应拒绝<code>nVersion&lt;4</code>块，以防止未升级的矿工剩余的5％发生虚假确认。</p>
+<h2 id="积分"><a href="#积分" class="headerlink" title="积分"></a>积分</h2><p>感谢格雷戈里麦克斯韦提出将参数与每个交易的nLockTime进行比较，而不是当前块的高度和时间。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>PayPub</p>
+<ul>
+<li><a href="https://github.com/unsystem/paypub" target="_blank" rel="noopener">https://github.com/unsystem/paypub</a></li>
+</ul>
+<p>Jeremy Spilman付款渠道</p>
+<ul>
+<li><a href="https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2013-April/002433.html" target="_blank" rel="noopener">https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2013-April/002433.html</a></li>
+</ul>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>Python / python-bitcoinlib</p>
+<ul>
+<li><a href="https://github.com/petertodd/checklocktimeverify-demos" target="_blank" rel="noopener">https://github.com/petertodd/checklocktimeverify-demos</a></li>
+</ul>
+<p>JavaScript / Node.js / bitcore</p>
+<ul>
+<li><a href="https://github.com/mruddy/bip65-demos" target="_blank" rel="noopener">https://github.com/mruddy/bip65-demos</a></li>
+</ul>
+<h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>该文件置于公共领域。</p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.chidaolian.com/article-680-4" target="_blank" rel="noopener">BIP65：检查锁定时间验证</a><br><a href="https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki" target="_blank" rel="noopener">bips/bip-0065.mediawiki</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/BIP-68使用共识序列号记录相对锁定时间/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2168,224 +2370,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/19/blockchain/比特币地址和脚本/" itemprop="url">比特币地址和脚本</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T20:37:58+08:00">2018-03-19</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。</p>
-<h2 id="地址"><a href="#地址" class="headerlink" title="地址"></a>地址</h2><p>首先关于钱包地址大概有以下几种：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">类型</th>
-<th style="text-align:center">版本前缀（hex）</th>
-<th style="text-align:center">Base58结果的前缀</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">传统bitcoin地址</td>
-<td style="text-align:center">0x00</td>
-<td style="text-align:center">1</td>
-</tr>
-<tr>
-<td style="text-align:center">P2SH</td>
-<td style="text-align:center">0x05</td>
-<td style="text-align:center">3</td>
-</tr>
-<tr>
-<td style="text-align:center">比特币测试网络地址</td>
-<td style="text-align:center">0x6F</td>
-<td style="text-align:center">m或者n</td>
-</tr>
-<tr>
-<td style="text-align:center">私钥WIF</td>
-<td style="text-align:center">0x80</td>
-<td style="text-align:center">5、K、L</td>
-</tr>
-<tr>
-<td style="text-align:center">BIP-38编码私钥</td>
-<td style="text-align:center">0x0142</td>
-<td style="text-align:center">6P</td>
-</tr>
-<tr>
-<td style="text-align:center">BIP-32编码私钥</td>
-<td style="text-align:center">0x0488B21E</td>
-<td style="text-align:center">xpub</td>
-</tr>
-</tbody>
-</table>
-<p>其实地址的类型和交易的解锁也是有很大的相关关系的。<b style="color:blue">如果你创造了一种新的地址类型，并配置了相关的加密和解密脚本，那么这个地址是可以工作的，只是没有钱包支持，你需要提供能够利用这种地址类型，发送解密和加密脚本的客户端，这样你的地址就可以生效了，当然你也要兼容其他类型，如果发送的地址类型是其他的，那你的输出脚本要按照对应地址类型的要求来才行</b>。</p>
-<p>比特币地址的生成规则如下：</p>
-<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E4%BC%A0%E7%BB%9F%E6%AF%94%E7%89%B9%E5%B8%81%E5%9C%B0%E5%9D%80%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.png" alt=""></p>
-<h2 id="传统的比特币地址脚本P2PKH"><a href="#传统的比特币地址脚本P2PKH" class="headerlink" title="传统的比特币地址脚本P2PKH"></a>传统的比特币地址脚本P2PKH</h2><p>对于比特币脚本的语言介绍这里不提太多，比特币脚本其实就是一种基于堆栈的脚本语言，堆栈是一个非常简单的数据结构，可以被视为一叠卡片。栈允许两个操作：push和pop（推送和弹出）。</p>
-<p>对于解锁脚本大概是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_DUP OP_HASH160 &lt;Cafe Public Key Hash&gt; OP_EQUALVERIFY OP_CHECKSIG</span><br></pre></td></tr></table></figure></p>
-<p>前面输出的锁定脚本是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sig&gt; &lt;pubk&gt;</span><br></pre></td></tr></table></figure></p>
-<p>那么整体的脚本是这样的：<br><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/p2pkh%E8%84%9A%E6%9C%AC%E5%9B%BE%E7%A4%BA.png?raw=true" alt=""></p>
-<h2 id="P2SH"><a href="#P2SH" class="headerlink" title="P2SH"></a>P2SH</h2><p>Gavin Andresen在bip16提出一种P2SH(pay to Script Hash)方法，主要目的有两个，一是容许发送者构造丰富的交易类型，二是将字节从A-&gt;B的output转移到B-&gt;C的input(A-&gt;B的output script中将是固定长度)。</p>
-<p>对于解锁的脚本是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_HASH256 6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000 OP_EQUAL</span><br></pre></td></tr></table></figure></p>
-<p>我们可以理解成解数学中的难题，hash(x) = 6fe28c0ab6f1b372c1a6 我们只是提供一个x满足这个条件，就可以证明我可以花费这笔钱了。这里<code>6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000</code>不是简单的一个数字的hash，而是一段script的hash(简称redeemScript), <b style="color:red">我们可以理解成只要你提供了一段script，它的二进制hash和目标匹配，那么你就可以花费这笔钱了，注意这里是前端脚本执行的输出是x就行了。</b>.</p>
-<p><b style="color:red">请注意，虽然这样的交易很有趣，但它们并不安全，因为它们不包含任何签名，因此任何试图花费它们的交易都可以用将资金发送到其他地方，用不同的交易来替代</b>。</p>
-<h3 id="P2SH地址生成"><a href="#P2SH地址生成" class="headerlink" title="P2SH地址生成"></a>P2SH地址生成</h3><p>可以使用 go-bitcoin-multisig 生成，<a href="https://github.com/soroushjp/go-bitcoin-multisig" target="_blank" rel="noopener">Github地址</a>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig keys --count 3 --concise</span><br></pre></td></tr></table></figure></p>
-<p>生成结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">--------------</span><br><span class="line">KEY #1  </span><br><span class="line">Private key:  </span><br><span class="line">5JruagvxNLXTnkksyLMfgFgf3CagJ3Ekxu5oGxpTm5mPfTAPez3  </span><br><span class="line">Public key hex:  </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1JzVFZSN1kxGLTHG41EVvY5gHxLAX7q1Rh  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #2  </span><br><span class="line">Private key:  </span><br><span class="line">5JX3qAwDEEaapvLXRfbXRMSiyRgRSW9WjgxeyJQWwBugbudCwsk  </span><br><span class="line">Public key hex:  </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">14JfSvgEq8A8S7qcvxeaSCxhn1u1L71vo4  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #3  </span><br><span class="line">Private key:  </span><br><span class="line">5JjHVMwJdjPEPQhq34WMUhzLcEd4SD7HgZktEh8WHstWcCLRceV  </span><br><span class="line">Public key hex:  </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1Kyy7pxzSKG75L9HhahRZgYoer9FePZL4R  </span><br><span class="line">--------------</span><br></pre></td></tr></table></figure></p>
-<p>接着我们取出里面所有的Public key（hex格式）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Key A: </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd </span><br><span class="line">Key B: </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187 </span><br><span class="line">Key C: </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
-<p>然后就可以使用这三组Public key组合起来（A,B,C）进行多重签名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig address --m 2 --n 3 --public-keys 04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd,046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187,0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
-<p>接着就生成了P2SH地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">---------------------</span><br><span class="line">Your *P2SH ADDRESS* is:  </span><br><span class="line">347N1Thc213QqfYCz3PZkjoJpNv5b14kBd  </span><br><span class="line">Give this to sender funding multisig address with Bitcoin.  </span><br><span class="line">---------------------</span><br><span class="line">---------------------</span><br><span class="line">Your *REDEEM SCRIPT* is:  </span><br><span class="line">524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e8353ae  </span><br><span class="line">Keep private and provide this to redeem multisig balance later.  </span><br><span class="line">---------------------</span><br></pre></td></tr></table></figure></p>
-<h2 id="多重签名地址"><a href="#多重签名地址" class="headerlink" title="多重签名地址"></a>多重签名地址</h2><p>在bitcoin bips历史上先有M-of-N Transaction(bip-11),然后才有Pay To Script Hash(bip-16)(简称P2SH). 按照这个顺序，其实比特币中实现多重签名有两种方法：</p>
-<h3 id="原始的方法-bip-11"><a href="#原始的方法-bip-11" class="headerlink" title="原始的方法(bip-11)"></a>原始的方法(bip-11)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptPubKey : m &#123;pubkey&#125;...&#123;pubkey&#125; n OP_CHECKMULTISIG</span><br><span class="line">scriptSig : OP_0 ...signatures...</span><br></pre></td></tr></table></figure>
-<p>可以查看一下实例：<a href="https://blockchain.info/tx/09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790" target="_blank" rel="noopener">09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790</a></p>
-<h3 id="用P2SH来实现"><a href="#用P2SH来实现" class="headerlink" title="用P2SH来实现"></a>用P2SH来实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptSig: [signature] &#123;[pubkey] OP_CHECKSIG&#125;</span><br><span class="line">scriptPubKey: OP_HASH160 [20-byte-hash of &#123;[pubkey] OP_CHECKSIG&#125; ] OP_EQUAL</span><br></pre></td></tr></table></figure>
-<p>这里{[pubkey] OP_CHECKSIG}就是我们提到redeemScript代码. 实例：<a href="https://blockchain.info/tx/3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac" target="_blank" rel="noopener">3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
-<li>首先P2SH和MultiSig是完全不同两码事，很多文章将P2SH表述成MultiSig，这是不恰当的。只不过现在可以用P2SH来实现MultiSig。</li>
-<li>比特币的关键是认证，刚开始中本聪提供用私钥认证，后来人发明了用hash(redeemScript)认证.</li>
-<li>P2SH丰富了交易类型，简单易扩展</li>
-</ol>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://8btc.com/thread-23440-1-1.html" target="_blank" rel="noopener">http://8btc.com/thread-23440-1-1.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2437,7 +2421,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-count">82</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
