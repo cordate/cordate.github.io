@@ -276,6 +276,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/java/ServiceLocator模式学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/java/ServiceLocator模式学习/" itemprop="url">ServiceLocator模式学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T13:29:35+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于这个模式第一次见应该是Dubbo的服务加载器了，由于看Dubbo的源码已经很久远了，记不住了。只知道所有的服务都是通过ServiceLocator进行加载的。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>其实ServiceLocator的实现就像是策略模式之前加上了一层路由转发，也可以说有点像网络中的路由器，通过这个路由器找到对应的服务，所以我觉得起名字叫ServiceRouter也不是不可以呀！如果说看成交换机也行！当然路由规则也是多种多样的，一是直接在系统启动的时候，在ServiceLocator中放入服务即可。还有一种方式就是通过放置资源，用类加载器加载，然后利用反射进行初始化也可以。总之方式是多种多样的就看你的实现了。</p>
+<h2 id="SPI机制"><a href="#SPI机制" class="headerlink" title="SPI机制"></a>SPI机制</h2><p>我们先来说说这个SPI机制，感觉有点像ServiceLocator的泛型版，但是所有的实现都是基于反射实现，类的配置是META-INF里面。我觉得在某些方面我们可以认为，这个ServiceLoader就是ServiceLocator的实现方式之一。</p>
+<h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><p>利用java的命名服务，我们可以将所有的资源都给一个命名，然后我们通过名称找到相应的资源，这种实现方式还是和ServiceLocator的实现有些不一样的。我感觉这种更类似于，先登记在使用，而所有人的登记是放在一个登记的中心。而ServiceLocator并没有中心的这个概念在里面，所以我觉得这个也是比较明显的不同。但是如果广义上来说，这个也是一样的，实现方式不同而已，但是目的都达到了。</p>
+<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>工厂模式其实就是各种产品已经做好了，等着挑选，如果调好了产品就进行制作。工厂模式（包括抽象工厂）是两种抽象一是产品，二是工厂。有4个维度去解析，一个工厂可生产不同商品，不同工厂生产不同商品等等，总之这种模式比较固定，一般来说没有灵活的空间，不能进行后期的定制化操作。或者定制化操作是非常复杂的。但是也可认为是有ServiceLocator的模式在里面的。因为我们在使用策略模式的使用，也经常使用工厂模式去生成策略。我觉得工厂模式很像交换机，ServiceLocator是路由器，不信你自己再仔细想想他们的区别。</p>
+<h2 id="AOP-DI"><a href="#AOP-DI" class="headerlink" title="AOP/DI"></a>AOP/DI</h2><p>这里我就不介绍AOP和DI的基本概念了，我相信大家都是懂得。我们来讲如何实现AOP/DI，大家知道Spring实习AOP/DI的方式其实大体来说有两种，AOP是代理类的实现，至于DI则是通过扫描方式实现的。</p>
+<p>ServiceLocator和DependencyInjection是实现IoC的两种不同方式。第三种方式是FactoryPattern。ServiceLocator强调预先定义资源映射，隔离资源的具体实现，也就是在所实现类的外部某处RegisterService，例如在应用程序初始化时。DependencyInjection强调辅助创建和管理对象，在创建对象是可采用构造函数注入和属性Setter注入等方式。</p>
+<p>当然所有的功能我们可以在类中通过反射的方式来进行实现，没有反射类，其实我们什么也做不了，有了反射之后，一切都变得很强大。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我觉得分析问题一定是辩证统一，所有事物都是相通的，但是又有所区别的。问题还是要看透事情的本质，这样才能更好地理解问题。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/iefreer/article/details/9342519" target="_blank" rel="noopener">服务定位器模式（Service Locator Pattern）详解和代码示范</a><br><a href="http://www.cnblogs.com/gaochundong/archive/2013/04/12/service_locator_pattern.html" target="_blank" rel="noopener">Service Locator 模式</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/Bitcoinj中的上下文NetworkParameters/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1925,294 +2076,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/深入理解System类及系统启动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/06/java/深入理解System类及系统启动/" itemprop="url">深入理解System类及系统启动</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T21:06:35+08:00">2018-03-06</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Java中有很多的类我们不得不一探究竟，首先我们就来看看这个System类，同时也能了解系统启动时初始化的一些信息，如果还想去底层探究的，就不得不查看Hotspot的源码了，好了，我们开始。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>System类是一个JDK工具类，其实也是整个系统的代表。这个类是final类型的，不能继承，不能被实例化。具体的信息可以查看源码。System类包含几个有用的类属性和方法。其中的操作多数和系统相关。其功能主要如下：</p>
-<ul>
-<li>标准输入输出，如out、in、err，以及设置</li>
-<li>外部定义的属性和环境变量的访问，如getenv()/setenv()和getProperties()/setProperties()；</li>
-<li>加载文件和类库的方法，如load()和loadLibrary()。</li>
-<li>一个快速拷贝数组的方法：arraycopy()</li>
-<li>一些jvm操作，如gc()、runFinalization()、exit()，该部分并未在源码的java doc中提到，可能因为本身不建议主动调用吧。而且这几个方法都仅仅是Runtime.getRuntime()的调用，两者没有区别。</li>
-</ul>
-<p>下面是这些功能的一个简图。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/system%E5%8A%9F%E8%83%BD%E5%9B%BE.png?raw=true" alt=""></p>
-<h2 id="关于系统属性"><a href="#关于系统属性" class="headerlink" title="关于系统属性"></a>关于系统属性</h2><p>我们在System的类的注释上，可以看到有哪些系统属性，这里简单列一下：</p>
-<table>
-<thead>
-<tr>
-<th>项目</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>java.version</td>
-<td>Java Runtime Environment version</td>
-</tr>
-<tr>
-<td>java.vendor</td>
-<td>Java Runtime Environment vendor</td>
-</tr>
-<tr>
-<td>java.vendor.url</td>
-<td>Java vendor URL</td>
-</tr>
-<tr>
-<td>java.home</td>
-<td>Java installation directory</td>
-</tr>
-<tr>
-<td>java.vm.specification.version</td>
-<td>Java Virtual Machine specification version</td>
-</tr>
-<tr>
-<td>java.vm.specification.vendor</td>
-<td>Java Virtual Machine specification vendor</td>
-</tr>
-<tr>
-<td>java.vm.specification.name</td>
-<td>Java Virtual Machine specification name</td>
-</tr>
-<tr>
-<td>java.vm.version</td>
-<td>Java Virtual Machine implementation version</td>
-</tr>
-<tr>
-<td>java.vm.vendor</td>
-<td>Java Virtual Machine implementation vendor</td>
-</tr>
-<tr>
-<td>java.vm.name</td>
-<td>Java Virtual Machine implementation name</td>
-</tr>
-<tr>
-<td>java.specification.version</td>
-<td>Java Runtime Environment specification version</td>
-</tr>
-<tr>
-<td>java.specification.vendor</td>
-<td>Java Runtime Environment specification vendor</td>
-</tr>
-<tr>
-<td>java.specification.name</td>
-<td>Java Runtime Environment specification name</td>
-</tr>
-<tr>
-<td>java.class.version</td>
-<td>Java class format version number</td>
-</tr>
-<tr>
-<td>java.class.path</td>
-<td>Java class path</td>
-</tr>
-<tr>
-<td>java.library.path</td>
-<td>List of paths to search when loading libraries</td>
-</tr>
-<tr>
-<td>java.io.tmpdir</td>
-<td>Default temp file path</td>
-</tr>
-<tr>
-<td>java.compiler</td>
-<td>Name of JIT compiler to use</td>
-</tr>
-<tr>
-<td>java.ext.dirs</td>
-<td>Path of extension directory or directories</td>
-</tr>
-<tr>
-<td>os.name</td>
-<td>Operating system name</td>
-</tr>
-<tr>
-<td>os.arch</td>
-<td>Operating system architecture</td>
-</tr>
-<tr>
-<td>os.version</td>
-<td>Operating system version</td>
-</tr>
-<tr>
-<td>file.separator</td>
-<td>File separator (“/“ on UNIX)</td>
-</tr>
-<tr>
-<td>path.separator</td>
-<td>Path separator (“:” on UNIX)</td>
-</tr>
-<tr>
-<td>line.separator</td>
-<td>Line separator (“\n” on UNIX)</td>
-</tr>
-<tr>
-<td>user.name</td>
-<td>User’s account name</td>
-</tr>
-<tr>
-<td>user.home</td>
-<td>User’s home directory</td>
-</tr>
-<tr>
-<td>user.dir</td>
-<td>User’s current working directory</td>
-</tr>
-</tbody>
-</table>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>我们看到类的开头有这样的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private static native void registerNatives();</span><br><span class="line">static &#123;</span><br><span class="line">    registerNatives();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>类中的静态代码块调用了一个native方法registerNatives()，可以猜到该方法应该是一个入口方法，看一下注释：通过静态初始化注册native方法，该方法会令vm通过调用initializeSystemClass方法来完成初始化工作。果然如此，那么接下来我们看下initializeSystemClass方法吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">private static void initializeSystemClass() &#123;</span><br><span class="line">    // 初始化props</span><br><span class="line">    props = new Properties();</span><br><span class="line">    // 这是一个本地方法</span><br><span class="line">    initProperties(props);</span><br><span class="line">    // 保存并删除系统的一些配置，这里要查看VM的实现了</span><br><span class="line">    sun.misc.VM.saveAndRemoveProperties(props);</span><br><span class="line"></span><br><span class="line">    //获取系统相关的换行符</span><br><span class="line">    lineSeparator = props.getProperty(&quot;line.separator&quot;);</span><br><span class="line">    // 主要是系统参数的一些设置，版本号啥的</span><br><span class="line">    sun.misc.Version.init();</span><br><span class="line"></span><br><span class="line">    //分别创建in、out、err的实例对象，并通过setXX0()初始化，查看setXX0()方法可知，这是个native方法，将系统的标准流管理到类内的对象</span><br><span class="line">    FileInputStream fdIn = new FileInputStream(FileDescriptor.in);</span><br><span class="line">    FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);</span><br><span class="line">    FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);</span><br><span class="line">    setIn0(new BufferedInputStream(fdIn));</span><br><span class="line">    setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));</span><br><span class="line">    setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));</span><br><span class="line">    //加载zip包以获取java.util.zip.ZipFile这个类，以便之后加载利库使用</span><br><span class="line">    loadLibrary(&quot;zip&quot;);</span><br><span class="line"></span><br><span class="line">    // 设置平台相关的信号处理</span><br><span class="line">    Terminator.setup();</span><br><span class="line"></span><br><span class="line">    // 初始化sun.misc相关的环境变量</span><br><span class="line">    sun.misc.VM.initializeOSEnvironment();</span><br><span class="line"></span><br><span class="line">    // 主线程不会在同一个线程组中添加相同的线程，我们必须在这里自己实现。看代码就是主线程自己把自己加到了自己的线程组中......</span><br><span class="line">    Thread current = Thread.currentThread();</span><br><span class="line">    current.getThreadGroup().add(current);</span><br><span class="line"></span><br><span class="line">    // 该方法就是实例化一个JavaLangAccess</span><br><span class="line">    setJavaLangAccess();</span><br><span class="line"></span><br><span class="line">    // 子系统在初始化的时候可以调用sun.misc.VM.isBooted()，以保证在application类加载器启动前不做任何事。booted()其实就是改了个状态,使isBooted()变为true。</span><br><span class="line">    sun.misc.VM.booted();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="FileDescriptor"><a href="#FileDescriptor" class="headerlink" title="FileDescriptor"></a>FileDescriptor</h2><p>文件描述符类的实例用作底层机器特定结构的不透明句柄，表示打开的文件，打开的套接字或字节的另一个源或接收器。文件描述符的主要实际用途是创建一个FileInputStream或FileOutputStream来包含它。应用不应该自己的FileDescriptor类。</p>
-<h2 id="Terminator"><a href="#Terminator" class="headerlink" title="Terminator"></a>Terminator</h2><p>这个类是设置平台相关的信号处理，我们来看一下这个类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class Terminator &#123;</span><br><span class="line">    // SignalHandler是终止触发事件的管理</span><br><span class="line">    private static SignalHandler handler = null;</span><br><span class="line"></span><br><span class="line">    /* Invocations of setup and teardown are already synchronized</span><br><span class="line">     * on the shutdown lock, so no further synchronization is needed here</span><br><span class="line">     */</span><br><span class="line">    static void setup() &#123;</span><br><span class="line">        if (handler != null) return;</span><br><span class="line">        // 默认的接口实现</span><br><span class="line">        SignalHandler sh = new SignalHandler() &#123;</span><br><span class="line">            // 所以这个接口不需要实现，直接使用即可了</span><br><span class="line">            public void handle(Signal sig) &#123;</span><br><span class="line">                // 终止号</span><br><span class="line">                Shutdown.exit(sig.getNumber() + 0200);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        handler = sh;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 加入信号处理</span><br><span class="line">            Signal.handle(new Signal(&quot;INT&quot;), sh);</span><br><span class="line">            Signal.handle(new Signal(&quot;TERM&quot;), sh);</span><br><span class="line">        &#125; catch (IllegalArgumentException e) &#123;</span><br><span class="line">            // When -Xrs is specified the user is responsible for</span><br><span class="line">            // ensuring that shutdown hooks are run by calling</span><br><span class="line">            // System.exit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static void teardown() &#123;</span><br><span class="line">        /* The current sun.misc.Signal class does not support</span><br><span class="line">         * the cancellation of handlers</span><br><span class="line">         */</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里的SignalHandler是一个接口，这里使用的是匿名类的实现。我们看一下SignalHandler。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">public abstract interface SignalHandler &#123;</span><br><span class="line">    public static final SignalHandler SIG_DFL = new NativeSignalHandler(0L);</span><br><span class="line"></span><br><span class="line">    public static final SignalHandler SIG_IGN = new NativeSignalHandler(1L);</span><br><span class="line"></span><br><span class="line">    public abstract void handle(Signal paramSignal);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>我们看一下Signal类的处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">import java.util.Hashtable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 信号类</span><br><span class="line"> */</span><br><span class="line">public final class Signal &#123;</span><br><span class="line">    // 信号对应处理器</span><br><span class="line">    private static Hashtable handlers = new Hashtable(4);</span><br><span class="line">    // 信号编号对信号的映射</span><br><span class="line">    private static Hashtable signals = new Hashtable(4);</span><br><span class="line">    // 编号</span><br><span class="line">    private int number;</span><br><span class="line">    // 名称</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public int getNumber() &#123;</span><br><span class="line">        return this.number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean equals(Object paramObject) &#123;</span><br><span class="line">        if (this == paramObject) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if ((paramObject == null) || (!(paramObject instanceof Signal))) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        Signal localSignal = (Signal) paramObject;</span><br><span class="line">        return (this.name.equals(localSignal.name)) &amp;&amp; (this.number == localSignal.number);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return this.number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;SIG&quot; + this.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 通过name创建signal</span><br><span class="line">     * @param name</span><br><span class="line">     */</span><br><span class="line">    public Signal(String name) &#123;</span><br><span class="line">        this.number = findSignal(name);</span><br><span class="line">        this.name = name;</span><br><span class="line">        if (this.number &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException(&quot;Unknown signal: &quot; + name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     *</span><br><span class="line">     * @param paramSignal</span><br><span class="line">     * @param paramSignalHandler</span><br><span class="line">     * @return</span><br><span class="line">     * @throws IllegalArgumentException</span><br><span class="line">     */</span><br><span class="line">    public static synchronized SignalHandler handle(Signal paramSignal, SignalHandler paramSignalHandler)</span><br><span class="line">            throws IllegalArgumentException &#123;</span><br><span class="line">        // 取得信号编号</span><br><span class="line">        long l1 = (paramSignalHandler instanceof NativeSignalHandler) ? ((NativeSignalHandler) paramSignalHandler).getHandler() : 2L;</span><br><span class="line"></span><br><span class="line">        long l2 = handle0(paramSignal.number, l1);</span><br><span class="line">        if (l2 == -1L) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Signal already used by VM or OS: &quot; + paramSignal);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 信号编号到信号的映射</span><br><span class="line">        signals.put(new Integer(paramSignal.number), paramSignal);</span><br><span class="line">        synchronized (handlers) &#123;</span><br><span class="line">            SignalHandler localSignalHandler = (SignalHandler) handlers.get(paramSignal);</span><br><span class="line">            // 先移除信号，然后重新加入信号映射</span><br><span class="line">            handlers.remove(paramSignal);</span><br><span class="line">            if (l1 == 2L) &#123;</span><br><span class="line">                handlers.put(paramSignal, paramSignalHandler);</span><br><span class="line">            &#125;</span><br><span class="line">            if (l2 == 0L)</span><br><span class="line">                return SignalHandler.SIG_DFL;</span><br><span class="line">            if (l2 == 1L)</span><br><span class="line">                return SignalHandler.SIG_IGN;</span><br><span class="line">            if (l2 == 2L) &#123;</span><br><span class="line">                return localSignalHandler;</span><br><span class="line">            &#125;</span><br><span class="line">            return new NativeSignalHandler(l2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 抛出一个信号，进行处理</span><br><span class="line">     * @param paramSignal</span><br><span class="line">     * @throws IllegalArgumentException</span><br><span class="line">     */</span><br><span class="line">    public static void raise(Signal paramSignal)</span><br><span class="line">            throws IllegalArgumentException &#123;</span><br><span class="line">        if (handlers.get(paramSignal) == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Unhandled signal: &quot; + paramSignal);</span><br><span class="line">        &#125;</span><br><span class="line">        raise0(paramSignal.number);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void dispatch(int paramInt) &#123;</span><br><span class="line">        // 通过信号编号，找到信号</span><br><span class="line">        final Signal localSignal = (Signal) signals.get(new Integer(paramInt));</span><br><span class="line">        // 找到信号的处理handler</span><br><span class="line">        SignalHandler localSignalHandler = (SignalHandler) handlers.get(localSignal);</span><br><span class="line"></span><br><span class="line">        // 处理信号</span><br><span class="line">        Runnable local1 = new Runnable() &#123;</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                this.val$handler.handle(localSignal);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        // 启动处理线程</span><br><span class="line">        if (localSignalHandler != null)</span><br><span class="line">            new Thread(local1, localSignal + &quot; handler&quot;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 信号的查找是本地方法，没有解</span><br><span class="line">    private static native int findSignal(String paramString);</span><br><span class="line"></span><br><span class="line">    // 信号处理办法</span><br><span class="line">    private static native long handle0(int paramInt, long paramLong);</span><br><span class="line"></span><br><span class="line">    private static native void raise0(int paramInt);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个代码比较简单就不多讲了。</p>
-<h2 id="VM-initializeOSEnvironment-方法"><a href="#VM-initializeOSEnvironment-方法" class="headerlink" title="VM.initializeOSEnvironment()方法"></a>VM.initializeOSEnvironment()方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static void initializeOSEnvironment() &#123;</span><br><span class="line">    if (!booted)</span><br><span class="line">        OSEnvironment.initialize();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>看一下OSEnvironment的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package sun.misc;</span><br><span class="line"></span><br><span class="line">import sun.io.Win32ErrorMode;</span><br><span class="line"></span><br><span class="line">public class OSEnvironment &#123;</span><br><span class="line">    public static void initialize() &#123;</span><br><span class="line">        Win32ErrorMode.initialize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里面好像是win32的系统。具体还是看源码吧，本地方法实在没发看，或许要反编译jvm.dll文件。</p>
-<h2 id="setJavaLangAccess"><a href="#setJavaLangAccess" class="headerlink" title="setJavaLangAccess"></a>setJavaLangAccess</h2><p>来看一下这个方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static void setJavaLangAccess() &#123;</span><br><span class="line">    // Allow privileged classes outside of java.lang</span><br><span class="line">    sun.misc.SharedSecrets.setJavaLangAccess(new sun.misc.JavaLangAccess()&#123;</span><br><span class="line">        public sun.reflect.ConstantPool getConstantPool(Class klass) &#123;</span><br><span class="line">            return klass.getConstantPool();</span><br><span class="line">        &#125;</span><br><span class="line">        public void setAnnotationType(Class klass, AnnotationType type) &#123;</span><br><span class="line">            klass.setAnnotationType(type);</span><br><span class="line">        &#125;</span><br><span class="line">        public AnnotationType getAnnotationType(Class klass) &#123;</span><br><span class="line">            return klass.getAnnotationType();</span><br><span class="line">        &#125;</span><br><span class="line">        public &lt;E extends Enum&lt;E&gt;&gt;</span><br><span class="line">                E[] getEnumConstantsShared(Class&lt;E&gt; klass) &#123;</span><br><span class="line">            return klass.getEnumConstantsShared();</span><br><span class="line">        &#125;</span><br><span class="line">        public void blockedOn(Thread t, Interruptible b) &#123;</span><br><span class="line">            t.blockedOn(b);</span><br><span class="line">        &#125;</span><br><span class="line">        public void registerShutdownHook(int slot, boolean registerShutdownInProgress, Runnable hook) &#123;</span><br><span class="line">            Shutdown.add(slot, registerShutdownInProgress, hook);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStackTraceDepth(Throwable t) &#123;</span><br><span class="line">            return t.getStackTraceDepth();</span><br><span class="line">        &#125;</span><br><span class="line">        public StackTraceElement getStackTraceElement(Throwable t, int i) &#123;</span><br><span class="line">            return t.getStackTraceElement(i);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStringHash32(String string) &#123;</span><br><span class="line">            return string.hash32();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>关于这个类的使用，可以看一下我的另一篇博客：<a href="/2018/03/06/java/SharedSecrets深入理解/">SharedSecrets深入理解</a>, 可以看一下里面的JavaLangAccess的实例。</p>
-<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.cnblogs.com/skywang12345/p/io_09.html" target="_blank" rel="noopener">FileDescriptor总结</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2264,7 +2127,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">79</span>
+                    <span class="site-state-item-count">80</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
