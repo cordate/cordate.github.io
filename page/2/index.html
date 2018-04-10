@@ -276,6 +276,440 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/03/blockchain/solidity表达式和控制结构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/03/blockchain/solidity表达式和控制结构/" itemprop="url">solidity表达式和控制结构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T20:10:18+08:00">2018-04-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><b style="color:red">本文是基于solidity官方文档v0.4.21.</b></p>
+<h2 id="输入参数和输出参数"><a href="#输入参数和输出参数" class="headerlink" title="输入参数和输出参数"></a>输入参数和输出参数</h2><p>与Javascript一样，方法可能会将参数作为输入; 不像Javascript和C中，它们也可以返回任意数量的参数作为输出。</p>
+<h3 id="输入参数"><a href="#输入参数" class="headerlink" title="输入参数"></a>输入参数</h3><p>输入参数的声明方式与变量相同。作为例外，未使用的参数可以省略变量名称。例如，假设我们希望我们的合约接受一种具有两个整数的外部调用，我们会写如下所示的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract Simple &#123;</span><br><span class="line">    function taker(uint _a, uint _b) public pure &#123;</span><br><span class="line">        // do something with _a and _b.</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="输出参数"><a href="#输出参数" class="headerlink" title="输出参数"></a>输出参数</h3><p>输出参数可以在returns关键字后用相同的语法声明 。例如，假设我们希望返回两个结果：两个给定整数的和以及乘积，那么我们会写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract Simple &#123;</span><br><span class="line">    function arithmetics(uint _a, uint _b)</span><br><span class="line">        public</span><br><span class="line">        pure</span><br><span class="line">        returns (uint o_sum, uint o_product)</span><br><span class="line">    &#123;</span><br><span class="line">        o_sum = _a + _b;</span><br><span class="line">        o_product = _a * _b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出参数的名称可以省略。输出值也可以使用return语句指定。该return语句还能够返回多个值，请参阅<a href="https://solidity.readthedocs.io/en/v0.4.21/control-structures.html#multi-return" target="_blank" rel="noopener">返回多个值</a>。返回参数被初始化为零; 如果他们没有明确设定，他们将保持为零。</p>
+<p><b style="color:blue">输入参数和输出参数可以用作函数体中的表达式。在那里，它们也可以在赋值语句的左侧使用。</b></p>
+<h2 id="控制结构"><a href="#控制结构" class="headerlink" title="控制结构"></a>控制结构</h2><p>除了<code>switch</code>和<code>goto</code>之外，来自JavaScript的大部分控制结构都可以使用。所以有：<code>if</code>，<code>else</code>，<code>while</code>，<code>do</code>，<code>for</code>，<code>break</code>，<code>continue</code>，<code>return</code>，<code>?:</code>，这些与C或JavaScript已知的常规语义一样。</p>
+<p>条件语句不能省略括号，但可以在单个语句的主体周围省略花括号。</p>
+<p>请注意，solidity没有有从非布尔类型转换为Boolean类型的方式，因为<code>if (1) { ... }</code>在C和JavaScript中是可以转化，但是不是有效的solidity语句。</p>
+<h3 id="返回多个值"><a href="#返回多个值" class="headerlink" title="返回多个值"></a>返回多个值</h3><p>当函数有多个输出参数时，<code>return (v0, v1, ..., vn)</code>可以返回多个值。组件的数量必须与输出参数的数量相同。</p>
+<h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><h3 id="内部函数调用"><a href="#内部函数调用" class="headerlink" title="内部函数调用"></a>内部函数调用</h3><p>可以直接（“internally”）调用当前合约的方法，也可以递归地调用，如在这个无意义的示例中所见：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function g(uint a) public pure returns (uint ret) &#123; return f(); &#125;</span><br><span class="line">    function f() internal pure returns (uint ret) &#123; return g(7) + f(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">这些函数调用被转换为EVM内部的简单跳转。这样做的效果是当前内存不会被清除，即将内存引用传递给内部调用的函数非常有效。只有同一合约的方法可以在内部调用。</b></p>
+<h3 id="外部函数调用"><a href="#外部函数调用" class="headerlink" title="外部函数调用"></a>外部函数调用</h3><p>表达式<code>this.g(8);</code>和<code>c.g(2);</code>（其中<code>c</code>是合约实例）也是有效的函数调用，但是这次函数将通过消息调用而不是直接通过跳转被称为“externally”。<b style="color:red">请注意函数调用this不能在构造函数中使用，因为实际合约尚未创建。</b></p>
+<p><b style="color:red">其他合约的方法必须从外部调用。对于外部调用，所有方法参数都必须复制到内存中。</b></p>
+<p>当调用其他合约的方法，调用发送wei的数量和gas可以用特殊的选项来指定<code>.value()</code>和<code>.gas()</code>分别：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract InfoFeed &#123;</span><br><span class="line">    function info() public payable returns (uint ret) &#123; return 42; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract Consumer &#123;</span><br><span class="line">    InfoFeed feed;</span><br><span class="line">    function setFeed(address addr) public &#123; feed = InfoFeed(addr); &#125;</span><br><span class="line">    function callFeed() public &#123; feed.info.value(10).gas(800)(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>修饰符<code>payable</code>必须用于<code>info</code>，否则，<code>.value()</code> 选项将不可用。</p>
+<p>请注意，该表达式<code>InfoFeed(addr)</code>执行显式类型转换，指出“我们知道给定地址处的合约类型是InfoFeed”，并且这不会执行构造函数。<b style="color:red">显式类型转换必须谨慎处理。不要在不确定其类型的合同上调用函数。</b></p>
+<p>我们也可以直接使用<code>function setFeed(InfoFeed _feed) { feed = _feed; }</code>。要小心这样一个事实，即 <code>feed.info.value(10).gas(800)</code>只有（本地）设置函数调用发送的ether值和gas的数量，并且只有最后的括号才能执行实际的调用。</p>
+<p>如果被调用合约不存在（在账户不包含代码的意义上），或者被调用合约本身抛出异常或缺少gas，函数调用会导致异常。</p>
+<p><b style="color:#6ab0de">警告：与其他合约的任何交互都会产生潜在的危险，特别是如果合约的源代码未提前知晓。目前的合约将控制权移交给被调用合约，这可能会做任何事情。即使被调用合约继承自已知的父合约，继承合约也只需要具有正确的接口。然而，合约的执行可能是完全随意的，因此构成危险。另外，要做好准备，以防其在您的系统的在其他合约中调用，甚至在第一次调用返回之前回到被调用合约中。这意味着被调用合约可以通过其方法改变主动调用合约的状态变量。例如，以一种方式编写你的方法。</b></p>
+<h3 id="命名调用和匿名方法参数"><a href="#命名调用和匿名方法参数" class="headerlink" title="命名调用和匿名方法参数"></a>命名调用和匿名方法参数</h3><p><b style="color:blue">函数调用参数也可以按名称的顺序给出，如果它们被包含在<code>{}</code>内，就可以在下面的例子中看到。参数列表必须按名称与函数声明中的参数列表重合，但可以按任意顺序排列。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function f(uint key, uint value) public &#123;</span><br><span class="line">        // ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function g() public &#123;</span><br><span class="line">        // named arguments</span><br><span class="line">        f(&#123;value: 2, key: 3&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="省略方法参数名称"><a href="#省略方法参数名称" class="headerlink" title="省略方法参数名称"></a>省略方法参数名称</h3><p><b style="color:blue">未使用的参数名称（特别是返回参数）可以省略。这些参数仍然存在于堆栈中，但它们无法访问。</b><b style="color:red">注意：具名返回参数是可以通过名称直接访问的。这个也是solidity语言和其它语言的一个很大不同之处。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    // omitted name for parameter</span><br><span class="line">    function func(uint k, uint) public pure returns(uint) &#123;</span><br><span class="line">        return k;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="通过new创建合约"><a href="#通过new创建合约" class="headerlink" title="通过new创建合约"></a>通过new创建合约</h2><p>合约可以使用new关键字创建新合约。创建合约的完整代码必须事先知道，因此递归创建依赖关系是不可能的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract D &#123;</span><br><span class="line">    uint x;</span><br><span class="line">    function D(uint a) public payable &#123;</span><br><span class="line">        x = a;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    D d = new D(4); // will be executed as part of C&apos;s constructor</span><br><span class="line"></span><br><span class="line">    function createD(uint arg) public &#123;</span><br><span class="line">        D newD = new D(arg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function createAndEndowD(uint arg, uint amount) public payable &#123;</span><br><span class="line">        // Send ether along with the creation</span><br><span class="line">        D newD = (new D).value(amount)(arg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">如示例中所示，可以在创建<code>D</code>使用该<code>.value()</code>选项的实例时转发Ether ，但不可能限制gas的数量</b>。如果创建失败（由于堆栈外，没有足够的余额或其他问题），会引发异常。</p>
+<h2 id="表达式评估顺序"><a href="#表达式评估顺序" class="headerlink" title="表达式评估顺序"></a>表达式评估顺序</h2><p><b style="color:blue">表达式的评估顺序没有被指定（更正式地说，表达式树中一个节点的子节点的评估顺序没有被指定，但是它们当然是在节点本身之前被评估的）。只能保证语句按顺序执行，布尔表达式的短路完成。有关更多信息，请参阅<a href="https://solidity.readthedocs.io/en/v0.4.21/miscellaneous.html#order" target="_blank" rel="noopener">操作符的优先顺序</a>。</b></p>
+<h2 id="赋值"><a href="#赋值" class="headerlink" title="赋值"></a>赋值</h2><h3 id="解构赋值和返回多值"><a href="#解构赋值和返回多值" class="headerlink" title="解构赋值和返回多值"></a>解构赋值和返回多值</h3><p><b style="color:red">Solidity内部允许元组类型，即在编译时大小为常量的可能不同类型的对象列表。这些元组可以同时返回多个值，并同时将它们分配给多个变量（或一般的LValues）</b>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    uint[] data;</span><br><span class="line"></span><br><span class="line">    function f() public pure returns (uint, bool, uint) &#123;</span><br><span class="line">        return (7, true, 2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function g() public &#123;</span><br><span class="line">        // Declares and assigns the variables. Specifying the type explicitly is not possible.</span><br><span class="line">        var (x, b, y) = f();</span><br><span class="line">        // Assigns to a pre-existing variable.</span><br><span class="line">        (x, y) = (2, 7);</span><br><span class="line">        // Common trick to swap values -- does not work for non-value storage types.</span><br><span class="line">        (x, y) = (y, x);</span><br><span class="line">        // Components can be left out (also for variable declarations).</span><br><span class="line">        // If the tuple ends in an empty component,</span><br><span class="line">        // the rest of the values are discarded.</span><br><span class="line">        (data.length,) = f(); // Sets the length to 7</span><br><span class="line">        // The same can be done on the left side.</span><br><span class="line">        // If the tuple begins in an empty component, the beginning values are discarded.</span><br><span class="line">        (,data[3]) = f(); // Sets data[3] to 2</span><br><span class="line">        // Components can only be left out at the left-hand-side of assignments, with</span><br><span class="line">        // one exception:</span><br><span class="line">        (x,) = (1,);</span><br><span class="line">        // (1,) is the only way to specify a 1-component tuple, because (1) is</span><br><span class="line">        // equivalent to 1.</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Arrays和Structs的复杂度"><a href="#Arrays和Structs的复杂度" class="headerlink" title="Arrays和Structs的复杂度"></a>Arrays和Structs的复杂度</h3><p>赋值语义对于像数组和结构体这样的非值类型来说更复杂一些。<b style="color:red">赋值给状态变量总是创建一个独立的副本。另一方面，赋值给局部变量只为基本类型创建独立副本，即适合32个字节的静态类型。</b><b style="color:blue">如果结构或数组（包括bytes和string）从状态变量分配给局部变量，则局部变量保存对原始状态变量的引用。对局部变量的二次赋值不会修改状态，只会改变引用。</b><b style="color:red">赋值给局部变量的成员（或元素）会改变状态。(这个意思应该是指改变arrays和struct局部变量中的某一个属相，这个肯定是改变值的)</b></p>
+<h2 id="作用域和声明"><a href="#作用域和声明" class="headerlink" title="作用域和声明"></a>作用域和声明</h2><p>被声明的变量将具有初始缺省值，其字节表示全部为零。变量的“默认值”是任何类型的典型“零状态”。例如，bool is 的默认值false。uint或int类型的默认值是0。对于静态大小的数组和bytes1对bytes32，每个单独的元件将被初始化为对应于其类型的默认值。最后，对于动态大小的数组，bytes和string，默认值是一个空数组或字符串。</p>
+<p><b style="color:red">在方法中的任何位置声明的变量将在整个方法的范围内，而不管它在哪里声明（这将很快发生变化，请参见下文）</b>。发生这种情况是因为Solidity从JavaScript继承了它的范围规则。这与许多语言形成对比，在这些语言中变量只在声明块结束时才声明变量。因此，下面的代码是非法的并且会导致编译器抛出一个错误：<code>Identifier already declared</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">// 这个不会编译的</span><br><span class="line"></span><br><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">contract ScopingErrors &#123;</span><br><span class="line">    function scoping() public &#123;</span><br><span class="line">        uint i = 0;</span><br><span class="line"></span><br><span class="line">        while (i++ &lt; 1) &#123;</span><br><span class="line">            uint same1 = 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        while (i++ &lt; 2) &#123;</span><br><span class="line">            uint same1 = 0;// Illegal, second declaration of same1</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function minimalScoping() public &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            uint same2 = 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            uint same2 = 0;// Illegal, second declaration of same2</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function forLoopScoping() public &#123;</span><br><span class="line">        for (uint same3 = 0; same3 &lt; 1; same3++) &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        for (uint same3 = 0; same3 &lt; 1; same3++) &#123;// Illegal, second declaration of same3</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">除此之外，如果声明了一个变量，它将在函数的开头初始化为其默认值。因此，尽管写得不好，但下面的代码是合法的：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function foo() public pure returns (uint) &#123;</span><br><span class="line">        // baz is implicitly initialized as 0</span><br><span class="line">        uint bar = 5;</span><br><span class="line">        if (true) &#123;</span><br><span class="line">            bar += baz;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            uint baz = 10;// never executes</span><br><span class="line">        &#125;</span><br><span class="line">        return bar;// returns 5</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="0-5-0版开始的作用域"><a href="#0-5-0版开始的作用域" class="headerlink" title="0.5.0版开始的作用域"></a><b style="color:red">0.5.0版开始的作用域</b></h3><p>从版本0.5.0开始，Solidity将更改为更广泛的C99（以及许多其他语言）的范围规则：变量从声明后的正确位置直到块的结尾才可见。<b style="color:blue">作为这条规则的一个例外，在for循环的初始化部分声明的变量只有在for循环结束之前才可见。</b></p>
+<p><b style="color:blue">在代码块之外声明的变量和其他项目，例如函数，合约，用户定义的类型等，不会更改其作用域行为。这意味着您可以在声明它们之前使用状态变量并递归调用函数。</b></p>
+<p>这些规则现在已经作为实验性特性引入。</p>
+<p>因此，下面的示例将在没有警告的情况下编译，因为这两个变量具有相同的名称，但是不相交的范围。<b style="color:red">在非0.5.0模式下，它们具有相同的作用域（函数minimalScoping），因此它不会在那里编译。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line">pragma experimental &quot;v0.5.0&quot;;</span><br><span class="line">contract C &#123;</span><br><span class="line">    function minimalScoping() pure public &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            uint same2 = 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            uint same2 = 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>作为C99范围规则的一个特殊示例，请注意，在下面的第一个赋值中，<code>x</code>实际上将分配外部变量而不是内部变量。在任何情况下，您都会收到有关外部变量被覆盖的警告。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line">pragma experimental &quot;v0.5.0&quot;;</span><br><span class="line">contract C &#123;</span><br><span class="line">    function f() pure public returns (uint) &#123;</span><br><span class="line">        uint x = 1;</span><br><span class="line">        &#123;</span><br><span class="line">            x = 2; // this will assign to the outer variable</span><br><span class="line">            uint x;</span><br><span class="line">        &#125;</span><br><span class="line">        return x; // x has value 2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="错误处理：Assert-Require-Revert和Exceptions"><a href="#错误处理：Assert-Require-Revert和Exceptions" class="headerlink" title="错误处理：Assert, Require, Revert和Exceptions"></a>错误处理：Assert, Require, Revert和Exceptions</h2><p>Solidity使用状态恢复异常来处理错误。这种异常将撤消对当前调用（及其所有子调用）中的状态所做的所有更改，并且还向调用者标记错误。如果条件不满足，便利函数<code>assert</code>和<code>require</code>可以用来检查条件并抛出一个异常。<b style="color:red">该<code>assert</code>函数只能用于测试内部错误并检查不变量</b>。<b style="color:red">该require函数应用于确保有效条件（如输入或合同状态变量），或者验证从外部合约调用返回值</b>。如果使用得当，分析工具可以评估您的合约，以确定将失败的条件和方法调用，这个方法调用通过assert方法快速失败。正确运行的代码不应该达到失败的断言语句; 如果发生这种情况，您应该修复合同中的错误。</p>
+<p>还有两种其他方式可以触发异常：<b style="color:red">该<code>revert</code>方法可用于标记错误并恢复当前的调用。将来还可能在revert调用中包含有关错误的详细信息。该throw关键字也可以用<code>revert()</code>替代。</b></p>
+<p><b style="color:red">注意:从版本0.4.13开始，该throw关键字将被弃用，并将在未来逐步淘汰。</b></p>
+<p><b style="color:blue">当子调用中发生异常时，它们会自动“冒泡”（即重新排除异常）。这个规则的例外是send和低级函数call，delegatecall以及callcode - false在发生异常而不是“冒泡”的情况下返回。</b></p>
+<p><b style="color:#6ab0de">警告：作为EVM设计的一部分，如果被调用帐户不存在，低级别call，delegatecall和callcode调用将会返回成功。如果需要，必须在调用之前检查是否存在。</b></p>
+<p><b style="color:red">捕捉异常尚不可能。</b></p>
+<p>在以下示例中，您可以看到如何require轻松检查输入条件以及如何使用assert进行内部错误检查：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract Sharer &#123;</span><br><span class="line">    function sendHalf(address addr) public payable returns (uint balance) &#123;</span><br><span class="line">        require(msg.value % 2 == 0); // Only allow even numbers</span><br><span class="line">        uint balanceBeforeTransfer = this.balance;</span><br><span class="line">        addr.transfer(msg.value / 2);</span><br><span class="line">        // Since transfer throws an exception on failure and</span><br><span class="line">        // cannot call back here, there should be no way for us to</span><br><span class="line">        // still have half of the money.</span><br><span class="line">        assert(this.balance == balanceBeforeTransfer - msg.value / 2);</span><br><span class="line">        return this.balance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>一种<code>assert</code>风格的异常在下列情况下产生的：</p>
+<ol>
+<li>如果您访问数组的索引太大或是负数（即x[i] 当<code>i &gt;= x.length</code> 或<code>i &lt; 0</code>）。</li>
+<li>如果您访问固定长度的bytesN索引太大或负数。</li>
+<li>如果除以0或者对0取模。<code>5 / 0</code> 和<code>23 % 0</code></li>
+<li>如果你数字移位的位数是负值。</li>
+<li>如果你将一个太大或负值的值转换为一个枚举类型。</li>
+<li>如果您调用内部函数类型的零初始化变量。</li>
+<li>如果您assert使用评估为false的参数进行调用。</li>
+</ol>
+<p>require风格在以下情况下会生成异常：</p>
+<ol>
+<li>调用throw方法。</li>
+<li>require使用评估为的参数进行调用false。</li>
+<li>如果你调用通过消息调用方法，但它不能正常完成（即用完gas，没有匹配的方法，或抛出一个异常本身），当低层次的操作，除了call，send，delegatecall或callcode使用。低级操作不会抛出异常，但会通过返回false来指示失败。</li>
+<li>如果您使用new关键字创建合约，但合约创建没有正确完成（请参阅上面有关“未正确完成”的定义）。（比如Contract构造方法中使用this）</li>
+<li>如果您针对不包含代码的合约执行外部函数调用。</li>
+<li><b style="color:red">如果您的合约通过一个没有payable修饰符的公共函数（包括构造函数和后备函数）接收Ether 。</b></li>
+<li><b style="color:red">如果你的合同通过公共的getter函数接收Ether。</b></li>
+<li>如果<code>.transfer()</code>调用失败。</li>
+</ol>
+<p><b style="color:blue">在内部，Solidity对一个require-style异常执行恢复操作（指令<code>0xfd</code>），并执行一个无效操作（指令<code>0xfe</code>）来抛出一个assert-style异常。在这两种情况下，这都会导致EVM恢复对该状态所做的所有更改。恢复的原因是没有安全的方法来继续执行，因为预期的效果没有发生。因为我们想保留交易的原子性，所以最安全的做法是恢复所有更改并使整个交易（或至少是调用）无效</b>。<b style="color:red">请注意，assert样式异常会消耗所有可用于调用的gas，而require风格异常不会消耗Metropolis版本中的任何气体。</b></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/03/blockchain/Solidity单位和全局可用变量/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/03/blockchain/Solidity单位和全局可用变量/" itemprop="url">Solidity单位和全局可用变量</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T16:48:18+08:00">2018-04-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Ether单位"><a href="#Ether单位" class="headerlink" title="Ether单位"></a>Ether单位</h2><p>字面上的Ether数量可以采取的后缀<code>wei</code>，<code>finney</code>，<code>szabo</code>或<code>ether</code>，没有Ether后缀，货币数字subdenominations之间的转换单位假定是<code>wei</code>，如<code>2 ether == 2000 finney</code>, 这个值为true</p>
+<h2 id="时间单位"><a href="#时间单位" class="headerlink" title="时间单位"></a>时间单位</h2><p>像后缀<code>seconds</code>，<code>minutes</code>，<code>hours</code>，<code>days</code>，<code>weeks</code>和 <code>years</code>文字数字后可以用于时间单位，其中秒是基本单元和单位之间的转换如下：</p>
+<ul>
+<li>1 == 1 seconds</li>
+<li>1 minutes == 60 seconds</li>
+<li>1 hours == 60 minutes</li>
+<li>1 days == 24 hours</li>
+<li>1 weeks == 7 days</li>
+<li><code>1 years == 365 days</code></li>
+</ul>
+<p><b style="color:blue">请注意，如果您使用这些单位执行日历计算，因为不是每年都等于365天，甚至因为闰秒而不是每天都有24小时。由于闰秒无法预测，因此必须通过外部oracle更新确切的日历库。</b></p>
+<p>这些后缀不能应用于变量(<b style="color:red">因为这些是字面量，solidity引入的新的概念很重要</b>)。如果你想在例如几天内解释一些输入变量，你可以通过以下方式来完成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function f(uint start, uint daysAfter) &#123;</span><br><span class="line">    if (now &gt;= start + daysAfter * 1 days) &#123;</span><br><span class="line">      // ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="特殊变量和函数"><a href="#特殊变量和函数" class="headerlink" title="特殊变量和函数"></a>特殊变量和函数</h2><p><b style="color:red">全局命名空间中总是存在特殊的变量和方法，主要用于提供有关区块链的信息。</b></p>
+<h3 id="区块和交易属性"><a href="#区块和交易属性" class="headerlink" title="区块和交易属性"></a>区块和交易属性</h3><ul>
+<li><code>block.blockhash(uint blockNumber) returns (bytes32)</code>：给定区块的散列 - 仅适用于256个最新块，不包括当前块</li>
+<li><code>block.coinbase(address)</code>：当前区块矿工的地址</li>
+<li><code>block.difficulty(uint)</code>：当前区块困难</li>
+<li><code>block.gaslimit(uint)</code>：当前区块的gaslimit</li>
+<li><code>block.number(uint)</code>：当前区块的块高</li>
+<li><code>block.timestamp(uint)</code>：当前区块时间戳记，因为unix时期以来的秒数</li>
+<li><code>msg.data(bytes)</code>：完整的calldata</li>
+<li><code>msg.gas(uint)</code>：剩余gas</li>
+<li><code>msg.sender(address)</code>：消息的发送者（当前调用者）</li>
+<li><code>msg.sig(bytes4)</code>：calldata的前四个字节（即函数标识符）</li>
+<li><code>msg.value(uint)</code>：与消息一起发送的wei的数量</li>
+<li><code>now(uint)</code>：当前区块时间戳（别名为block.timestamp）</li>
+<li><code>tx.gasprice(uint)</code>：交易的gas价格</li>
+<li><code>tx.origin(address)</code>：交易的发送者（完整的调用链）</li>
+</ul>
+<p><b style="color:#6ab0de">每个外部函数调用都可以修改msg所有成员的值，包括msg.sender和 msg.value也都可以更改。这包括调用库函数。</b></p>
+<p><b style="color:#6ab0de">不要依赖<code>block.timestamp</code>，<code>now</code>和<code>block.blockhash</code>作为随机的来源，除非你知道自己在做什么。<br>在一定程度上，时间戳和区块哈希都会受到矿工的影响。例如，矿工社区中的不良者可以对选定的散列运行赌场支付功能，如果他们没有收到任何钱，只需重试一次不同的散列。<br>当前块时间戳必须严格大于最后一个块的时间戳，但唯一的保证是它将位于规范链中两个连续块的时间戳之间的某处。</b></p>
+<p><b style="color:#6ab0de">如果要使用库函数实现访问限制 msg.sender，则必须手动提供值 msg.sender作为参数。</b></p>
+<p><b style="color:#6ab0de">出于可伸缩性原因，块哈希不可用于所有块。您只能访问最近256个块的哈希，其他所有值都将为零。</b></p>
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><h3 id="assert-bool-condition-："><a href="#assert-bool-condition-：" class="headerlink" title="assert(bool condition)："></a><code>assert(bool condition)</code>：</h3><p>如果条件不满足则抛出 - 用于内部错误。</p>
+<h3 id="require-bool-condition-："><a href="#require-bool-condition-：" class="headerlink" title="require(bool condition)："></a><code>require(bool condition)</code>：</h3><p>如果条件未满足则抛出 - 用于输入或外部组件中的错误。</p>
+<h3 id="revert-："><a href="#revert-：" class="headerlink" title="revert()："></a><code>revert()</code>：</h3><p>中止执行并恢复状态更改</p>
+<h2 id="数学和加密函数"><a href="#数学和加密函数" class="headerlink" title="数学和加密函数"></a>数学和加密函数</h2><h3 id="addmod-uint-x-uint-y-uint-k-returns-uint-："><a href="#addmod-uint-x-uint-y-uint-k-returns-uint-：" class="headerlink" title="addmod(uint x, uint y, uint k) returns (uint)："></a><code>addmod(uint x, uint y, uint k) returns (uint)</code>：</h3><p>添加以任意精度执行的时候，计算<code>(x + y) % k</code>，并且不会环绕在<code>2**256</code>。断言<code>k!=0</code>从0.5.0版开始。</p>
+<h3 id="mulmod-uint-x-uint-y-uint-k-returns-uint-："><a href="#mulmod-uint-x-uint-y-uint-k-returns-uint-：" class="headerlink" title="mulmod(uint x, uint y, uint k) returns (uint)："></a><code>mulmod(uint x, uint y, uint k) returns (uint)</code>：</h3><p>在以任意精度执行乘法的时候，计算<code>(x * y) % k</code>，并且不会绕回<code>2**256</code>。断言<code>k!=0</code>从0.5.0版开始。</p>
+<h3 id="keccak256-returns-bytes32-："><a href="#keccak256-returns-bytes32-：" class="headerlink" title="keccak256(...) returns (bytes32)："></a><code>keccak256(...) returns (bytes32)</code>：</h3><p>计算（<a href="https://solidity.readthedocs.io/en/v0.4.21/abi-spec.html#abi-packed-mode" target="_blank" rel="noopener">紧密排列的</a>）参数的Ethereum-SHA-3（Keccak-256）散列</p>
+<h3 id="sha256-returns-bytes32-："><a href="#sha256-returns-bytes32-：" class="headerlink" title="sha256(...) returns (bytes32)："></a><code>sha256(...) returns (bytes32)</code>：</h3><p>计算（<a href="https://solidity.readthedocs.io/en/v0.4.21/abi-spec.html#abi-packed-mode" target="_blank" rel="noopener">紧密排列</a>）参数的SHA-256哈希值</p>
+<h3 id="sha3-…-returns-bytes32-："><a href="#sha3-…-returns-bytes32-：" class="headerlink" title="sha3(…) returns (bytes32)："></a>sha3(…) returns (bytes32)：</h3><p>别名 keccak256</p>
+<h3 id="ripemd160-returns-bytes20-："><a href="#ripemd160-returns-bytes20-：" class="headerlink" title="ripemd160(...) returns (bytes20)："></a><code>ripemd160(...) returns (bytes20)</code>：</h3><p>计算（紧密排列）参数的 RIPEMD-160哈希值</p>
+<h3 id="ecrecover-bytes32-hash-uint8-v-bytes32-r-bytes32-s-returns-address-："><a href="#ecrecover-bytes32-hash-uint8-v-bytes32-r-bytes32-s-returns-address-：" class="headerlink" title="ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)："></a><code>ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)</code>：</h3><p>从椭圆曲线签名中恢复与公钥相关的地址，或在错误时返回零（<a href="https://ethereum.stackexchange.com/questions/1777/workflow-on-signing-a-string-with-private-key-followed-by-signature-verificatio" target="_blank" rel="noopener">示例用法</a>）</p>
+<p><b style="color:red">在上面，“紧密排列”意味着这些参数是连续的而没有填充。这意味着以下几点完全相同：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keccak256(&quot;ab&quot;, &quot;c&quot;)</span><br><span class="line">keccak256(&quot;abc&quot;)</span><br><span class="line">keccak256(0x616263)</span><br><span class="line">keccak256(6382179)</span><br><span class="line">keccak256(97, 98, 99)</span><br></pre></td></tr></table></figure></p>
+<p>如果需要填充，可以使用显式类型转换：<code>keccak256(&quot;\x00\x12&quot;)</code>与<code>keccak256(uint16(0x12))</code>相同。</p>
+<p>请注意，常量将使用存储它们所需的最小字节数打包。这意味着，例如<code>keccak256(0x12345678) == keccak256(uint32(0x12345678))</code>和<code>keccak256(0) == keccak256(uint8(0))</code>。</p>
+<p><b style="color:red">这可能是因为您在私人区块链上调用sha256，ripemd160或者ecrecover时遇到了Out-of-Gas这种情况。这样做的原因是，这些被作为所谓的预编译的合约执行，这些合约他们收到的第一条消息后（尽管他们的合约代码是硬编码）才真正存在。发送给不存在的合约的消息更加昂贵，因此执行会出现Out-of-Gas错误。解决这个问题的一个解决方法是，先在您的实际合同中使用它们，然后将例如1Wei发送给每个合同。这不是官方或测试网上的问题。</b></p>
+<h2 id="地址相关"><a href="#地址相关" class="headerlink" title="地址相关"></a>地址相关</h2><h3 id="lt-address-gt-balance（uint256）："><a href="#lt-address-gt-balance（uint256）：" class="headerlink" title="&lt;address&gt;.balance（uint256）："></a><code>&lt;address&gt;.balance（uint256）</code>：</h3><p>以wei为单位的地址的余额</p>
+<h3 id="lt-address-gt-transfer-uint256-amount-："><a href="#lt-address-gt-transfer-uint256-amount-：" class="headerlink" title="&lt;address&gt;.transfer(uint256 amount)："></a><code>&lt;address&gt;.transfer(uint256 amount)</code>：</h3><p>给相应地址发送一定数量的以太币（单位wei），<b style="color:red">失败时抛异常，转发2300gas的量，不可调整</b></p>
+<h3 id="lt-address-gt-send-uint256-amount-returns-bool-："><a href="#lt-address-gt-send-uint256-amount-returns-bool-：" class="headerlink" title="&lt;address&gt;.send(uint256 amount) returns (bool)："></a><code>&lt;address&gt;.send(uint256 amount) returns (bool)</code>：</h3><p>给相应地址发送一定数量的以太币（单位wei），<b style="color:red">失败返回false，转发2300gas的量，不可调整</b></p>
+<h3 id="lt-address-gt-call-returns-bool-："><a href="#lt-address-gt-call-returns-bool-：" class="headerlink" title="&lt;address&gt;.call(...) returns (bool)："></a><code>&lt;address&gt;.call(...) returns (bool)</code>：</h3><p>发出低级别的CALL，<b style="color:red">失败返回false，转发所有可用的gas，可调节</b></p>
+<h3 id="lt-address-gt-callcode-returns-bool-："><a href="#lt-address-gt-callcode-returns-bool-：" class="headerlink" title="&lt;address&gt;.callcode(...) returns (bool)："></a><code>&lt;address&gt;.callcode(...) returns (bool)</code>：</h3><p>发出低级别的CALLCODE，失败返回false，转发所有可用的gas，可调节</p>
+<h3 id="lt-address-gt-delegatecall-returns-bool-："><a href="#lt-address-gt-delegatecall-returns-bool-：" class="headerlink" title="&lt;address&gt;.delegatecall(...) returns (bool)："></a><code>&lt;address&gt;.delegatecall(...) returns (bool)</code>：</h3><p>发出低级别的DELEGATECALL，失败返回false，转发所有可用的gas，可调节</p>
+<p>欲了解更多信息，请参阅<a href="https://solidity.readthedocs.io/en/v0.4.21/types.html#address" target="_blank" rel="noopener">地址</a>部分。</p>
+<p><b style="color:#6ab0de">使用中存在一些危险<code>send</code>：如果调用堆栈深度为1024（调用程序始终强制执行此操作），则传输将失败，如果发起人耗尽gas，则传输也会失败。因此，为了进行安全的ether传输，请务必检查<code>send</code>的返回值，使用<code>transfer</code>甚至更好：使用接收方提取资金的模式。</b></p>
+<p><b style="color:#6ab0de">callcode不鼓励使用，将来会被删除。</b></p>
+<h2 id="合同相关"><a href="#合同相关" class="headerlink" title="合同相关"></a>合同相关</h2><h3 id="this-（当前合同的类型）："><a href="#this-（当前合同的类型）：" class="headerlink" title="this （当前合同的类型）："></a>this （当前合同的类型）：</h3><p>目前的合同，明确转换为地址</p>
+<h3 id="selfdestruct-address-recipient-："><a href="#selfdestruct-address-recipient-：" class="headerlink" title="selfdestruct(address recipient)："></a>selfdestruct(address recipient)：</h3><p>销毁当前的合同，将资金发送到给定的地址</p>
+<h3 id="suicide-address-recipient-："><a href="#suicide-address-recipient-：" class="headerlink" title="suicide(address recipient)："></a>suicide(address recipient)：</h3><p>别名 selfdestruct</p>
+<p>此外，当前合约的所有功能都可以直接包含当前方法。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/03/blockchain/solidity数据类型说明/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2170,375 +2604,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/关于以太坊的签名/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/27/blockchain/关于以太坊的签名/" itemprop="url">关于以太坊的签名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T14:54:18+08:00">2018-03-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在之前的博文当中我们已经提到过关于区块链技术的基础密码学之<a href="/2018/03/26/算法/关于椭圆曲线的理解/">椭圆曲线</a>的知识.</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在正常的ecdsa算法中发现签名都是（r,s），但是以太坊中的签名返回好像还有一个v，而且在RFC6979中也没有提到这个v，我实在不知道这个v到底是一个什么的东西，今天特地来深入地研究一番。</p>
-<p>这个v其实是用于椭圆曲线点恢复使用的，在椭圆曲线中（ecdsa）点的y轴是经过mod p的，这样你获得的点可能是经过转换的，你可以查看<a href="https://bitcoin.stackexchange.com/questions/38351/ecdsa-v-r-s-what-is-v" target="_blank" rel="noopener">ECDSA: (v, r, s), what is v?</a>。另外比特币中是直接使用v=0|1，但是以太坊中v=27|28，这又是为啥呢？这主要是为了防止被攻击，可以查看<a href="https://ethereum.stackexchange.com/questions/15766/what-does-v-r-s-in-eth-gettransactionbyhash-mean" target="_blank" rel="noopener">What does v, r, s in eth_getTransactionByHash mean?</a>中的回答，主要的说明在<a href="https://github.com/ethereum/EIPs/issues/155" target="_blank" rel="noopener">EIP 155</a>当中。</p>
-<h2 id="签名"><a href="#签名" class="headerlink" title="签名"></a>签名</h2><p>实施签名需要两个部分：待签名的数据+实施签名的账户。签名过程可以使用web3.eth.sign()来实现，具体代码为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; let msg = web3.sha3(&apos;today is 20171026&apos;)</span><br><span class="line">&gt; let signature = web3.eth.sign(address, msg)</span><br><span class="line">0x125a275046b65a96f11fdb7cd1072054e67526a76f54b1622fde4e4592d6fe2d5bf664ace77da52c6f94f08a56077e5d7a80048f70c38a92169205df3c9c43ea1b</span><br></pre></td></tr></table></figure></p>
-<p>该返回值总共132字节（去掉前面的’0x’的话是130字节）。因为以太坊采用的ECDSA签名算法，根据ECDSA: (v, r, s), what is v?的介绍， 返回值可以分为三个部分：r, s, v。其中前0~66个字节为r， 66~130之间的字节为s， 130~132的字节为v。代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let r = signature.slice(0, 66)</span><br><span class="line">let s = &apos;0x&apos; + signature.slice(66, 130)</span><br><span class="line">let v = &apos;0x&apos; + signature.slice(130, 132)</span><br><span class="line">v = web3.toDecimal(v)</span><br></pre></td></tr></table></figure></p>
-<p>接下来我们可以将它打印出来，在接下来验证签名的部分会用到。</p>
-<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><b style="color:red">签名完成了，我们如何验证某些签名后的数据是哪个账户签名的呢？在web3.js 发布1.0版本以前，验证签名只能通过智能合约的ecrecover函数来实现</b>。新版的web3.js提供了web3.eth.accounts.recover函数用于验证签名。这里我们仍然使用传统的智能合约ecrecover方式。</p>
-<p>ecrecover接收数据的哈希值以及r/s/v等参数作为输入，返回实施该签名的账户地址。因此我们只需要通过合约拿到实施签名的地址，和我们真正的地址进行对比，如果地址一致，就说明验证通过了。</p>
-<p><b style="color:red">智能合约代码如下：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.15;</span><br><span class="line">// 专门写了一个用于验证签名的合约呀</span><br><span class="line">contract Auth &#123;      </span><br><span class="line">    function verify( bytes32 hash, uint8 v, bytes32 r, bytes32 s) constant returns(address retAddr) &#123;</span><br><span class="line">      bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;</span><br><span class="line">      bytes32 prefixedHash = sha3(prefix, hash);</span><br><span class="line">      // 验证过程(这里就可以看出，通过v返回address)</span><br><span class="line">      return ecrecover(prefixedHash, v, r, s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>接下来我们调用合约进行交互：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const contract=web3.eth.contract(abi).at(&apos;0x2e2A4cD2869862492C744307310847466c008257&apos;);</span><br><span class="line">console.log(contract.verify(msg, v, r, s));</span><br><span class="line">console.log(address)</span><br></pre></td></tr></table></figure></p>
-<p>本地执行结果为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ node sign.js</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br></pre></td></tr></table></figure></p>
-<p>可以看到实施签名的地址和验证后返回的地址一致，签名通过验证。在以太坊中完成对数据的签名和验证还是比较简单的。并且账户不仅可以对交易进行签名，还可以对任意数据进行签名并验证。</p>
-<p><b style="color:red">还有就是我们可以通过发合约来利用solidity帮我们处理一些自己写代码比较复杂的事情，比如说这里的验证签名，这个是一个很好的思路，记下了！</b></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><b style="color:blue">签名的算法比较奇特，这里我在网上搜索资料的时候发现了一篇<a href="http://www.5bite.com/post/862.html" target="_blank" rel="noopener">DFINITY区块链：密码学技术介绍</a>，我们先不理会这里面关于密码学深入的问题，里面的图其实和椭圆曲线大概是一致的，因为椭圆曲线中基点不停地加之后就是将所有的点联系起来，也就形成了这篇文章中的那些点线。感觉之前在看椭圆曲线的时候，还停留在代数基础上，其实去掉理论就会发现现在变成图了。然后思维就被打开了。</b></p>
-<p>关于验签是如何成功返回公钥的，这个可能是去找所有的公钥进行匹配，哪个公钥成功了就是这个人前的吧！不过确实合约中好像没有公钥，那么这个公钥是如何生成的呢？这个需要进一步地学习，我想生成是可以的因为有私钥，基点等数据，关键就是k这个值。因为<code>P=k*G</code>，只要从公式中导出这个就可以了。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zhuanlan.zhihu.com/p/30481292" target="_blank" rel="noopener">基于以太坊(Ethereum)完成对数据的签名及验证</a><br><a href="http://me.tryblockchain.org/web3js-sign-ecrecover-decode.html" target="_blank" rel="noopener">区块链语言Solidity校验椭圆曲线加密数字签名（附实例）</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/隔离见证、闪电网络理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/27/blockchain/隔离见证、闪电网络理解/" itemprop="url">隔离见证、闪电网络理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T14:07:26+08:00">2018-03-27</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我记得刚开始接触区块链的时候应该是2017年12月份左右，后来就投入到项目的开发中，但是对于区块链基础知识的学习，我想我还是差得很远，当时去理解隔离见证和雷电网络的时候有点捉襟见肘，大概的意思吧！现在也明白了这里面的意思，但是觉得还是需要写一篇博客记录一下，免得自己又忘记了，这可不是什么好现象。</p>
-<h2 id="隔离见证"><a href="#隔离见证" class="headerlink" title="隔离见证"></a>隔离见证</h2><p>隔离见证已经于2017年8月在比特币上激活了。最近比特币正在朝着下一个扩容方案努力，闪电网络 Lightning Network。闪电网络的启动必须基于更多的用户使用隔离见证地址。</p>
-<h3 id="源起"><a href="#源起" class="headerlink" title="源起"></a>源起</h3><p>现在的比特币网络交易量特别大，但是区块10分钟一个，一个区块限制1M大小，这就造成了比特币网络的拥堵。如果大家了解交易结构就一定知道加解密脚本，这些脚本都是放在区块里面的，于是大家就想如何能把脚本从区块中拿出来单独存储，这样一个区块不就可以容纳更多的交易了吗？于是下图的结构就出现了：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%9A%94%E7%A6%BB%E8%A7%81%E8%AF%81%E5%8C%BA%E5%9D%97%E5%9B%BE%E8%A7%A3.jpg?raw=true" alt=""></p>
-<p>隔离见证的其中一个好处是能缓解我们交易堵塞的问题。但是最重要的是为了闪电网络铺路。一种建立在比特币底层网络的智能合约。</p>
-<p>隔离验证确实不是很好的解决之道，因为脚本还是需要存储的，没有脚本的交易，那么这个交易是不是可以随便花费。另外对于钱包节点都是要去检查脚本的准确性，这个还是需要有脚本数据的，所以这个也不是简单的事情吧！</p>
-<h3 id="分叉"><a href="#分叉" class="headerlink" title="分叉"></a>分叉</h3><p>隔离见证可以应用软分叉或者硬分叉，当然最终实施的是软分叉。新的节点是可以兼容后者的，但是旧节点是不是兼容新版本的区块这个是需要考虑的，如果不兼容那么就肯定出现软分叉。但是官方的说明是旧版本的节点不用升级，这句话的话外之音就是旧节点也是支持新版的区块（包含隔离见证）。看来这项技术很好。至于BCH应该是人为的硬分叉了。这部分知识可参考<a href="http://8btc.com/thread-45833-1-1.html" target="_blank" rel="noopener">隔离见证比任何硬分叉都高级</a></p>
-<p>上篇的文章中提到了Core团队很多的问题，也许确实有问题，但是作为开发者，考虑前后版本兼容也是应该的，毕竟谁都不想出问题。另外还有一点就是一旦一个项目上线，可做的可能真的就不多了，一是改动复杂，程序员不想动，二是工作量比较大！对于这场战争我还是当个第三者吧，看惯了公司风风雨雨，拿刀开干的人还是很少的。一旦变革失败也不会有人同情，core团队可能有自己的考量。毕竟对于资本市场来说一切都是那么的浮躁。</p>
-<h2 id="闪电网络"><a href="#闪电网络" class="headerlink" title="闪电网络"></a>闪电网络</h2><p>闪电网络提供了一个可扩展的微支付通道网络。交易双方若在区块链上预先设有支付通道，就可以多次、高频、双向地通过轧差方式实现瞬间确认的微支付；双方若无直接的点对点支付通道，只要网络中存在一条连通双方的、由多个支付通道构成的支付路径，闪电网络也可以利用这条支付路径实现资金在双方之间的可靠转移。</p>
-<p>上面的这段话可能比较难于理解，总的来说就是通过多签名实现多重交易的划分，这里需要了解比<a href="/2018/03/16/blockchain/bitcoin智能合约的实现/">特币的智能合约</a>和<a href="/2018/03/17/blockchain/bitcoin脚本解析/">P2SH脚本</a>的相关知识。</p>
-<p><b style="color:red">闪电网络并不试图解决单次支付的银货对付问题，其假设是单次支付的金额足够小，即使一方违约另一方的损失也非常小，风险可以承受。因此使用时必须注意“微支付”这个前提。多少资金算“微”，显然应该根据业务而定。</b></p>
-<h3 id="技术本质"><a href="#技术本质" class="headerlink" title="技术本质"></a>技术本质</h3><p><b style="color:red">闪电网络的关键技术有三，后后依赖于前前，依次是：RSMC，HTLC和闪电网络。技术实现虽然复杂，但本质却很简单。</b></p>
-<p><b style="color:blue">RSMC解决了通道中币单向流动问题，HTLC解决了币跨节点传递的问题。这两个类型的交易组合构成了闪电网络。这里面还会用到我们之前提到的<a href="/2018/03/26/blockchain/BIP-65%20OP-CHECKLOCKTIMEVERIFY/">BIP-65 OP_CHECKLOCKTIMEVERIFY</a>和<a href="/2018/03/26/blockchain/BIP-68使用共识序列号记录相对锁定时间/">BIP-68使用共识序列号记录相对锁定时间</a>，这两篇文档提到了交易锁定的问题，也提到了分叉的问题。</b></p>
-<h3 id="RSMC"><a href="#RSMC" class="headerlink" title="RSMC"></a>RSMC</h3><p>我们先来创建一个序列到期可撤销合约（RSMC），Alice和Bob是合作方，经常有比特币往来，所以他们决定各拿出0.5BTC放入<b style="color:red">通道</b>中，便于业务往来。解释一下下方RSMC交易的结构（图X），左侧为Alice的视角，右侧为Bob的视角。中间Funding Tx为共同可见，C1a和RD1a为Alice持有，C1b和RD1b为Bob持有。交易图中带有尖括号的签名表示待填入。</p>
-<h4 id="创建交易"><a href="#创建交易" class="headerlink" title="创建交易"></a>创建交易</h4><p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/RSMC%E4%BA%A4%E6%98%93%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt=""></p>
-<p>来对上面的图进行一番解释：</p>
-<ol>
-<li>双方各拿出0.5BTC，构建Funding Tx，输出为Alice和Bob的2/2多重签名。此时，Funding Tx未签名，更不广播。</li>
-<li>Alice构造Commitment Tx：C1a和RD1a，并交给Bob签名。C1a的第一个输出为多重签名地址，Alice的另一把私钥Alice2和Bob的2/2多重签名，第二个输出为Bob 0.5BTC。</li>
-<li>RD1a为C1a第一个输出的花费交易，输出给Alice0.5BTC，但此类型交易带有sequence，作用是阻止当前交易进块，只有前向交易有sequence个确认时才能进块。</li>
-<li>Bob构造Commitment Tx：C1b和RD1b，并交给Alice签名。结构与C1a、RD1a是对称关系。</li>
-<li>Bob对C1a和RD1a进行签名，并将签名给Alice；同理，Alice对C1b和RD1b签名，完成后给Bob。此时，由于并未对Funding Tx进行签名，任何一方均无法作恶，任何一方也不会有任何损失。</li>
-<li>双方均完成对commitment Tx的签名并交换后，各自再对Funding Tx进行签名，并交换。此时，Funding Tx是完整的交易，广播之。</li>
-</ol>
-<p>上述过程以及结构图的描述，就是创建RSMC的全部过程。C1a, C1b两笔交易花费的是同一个输出，故他们两个交易只有一个能进块。若Alice广播C1a，则Bob立即拿到0.5BTC（C1a的第二个输出），而Alice需要等C1a得到1000个确认，才能通过RD1a的输出拿到0.5BTC。另一方，若Bob广播C1b，则Alice立即拿到0.5BTC，Bob等待C1b得到1000个确认，才能通过RD1b拿到0.5BTC。也就是说，单方广播交易终止合约的那一方会延迟拿到币，而另一放则立即拿币。</p>
-<h4 id="交易更新"><a href="#交易更新" class="headerlink" title="交易更新"></a>交易更新</h4><p>Alice和Bob各自0.5BTC的余额，此时Alice从Bob处购买了一件商品，价格为0.1BTC，那么余额应该变为Alice 0.4BTC，Bob 0.6BTC。于是创建新的Commitment Tx，对于Alice来说是C2a 和RD2a，对于Bob来说是C2b和RD2b，过程与上面类似。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%BA%A4%E6%98%93%E6%9B%B4%E6%96%B0.jpg?raw=true" alt=""></p>
-<p>此时两个状态均是有效的，那么最核心的问题来了，如何才能彻底废弃掉C1a和C1b呢？<br>RSMC采用了一个非常巧妙的方法，在C1a的第一个输出中，采用了Alice2和Bob的多重签名，Alice将Alice2的私钥交给Bob，即表示Alice放弃C1a，承认C2a。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%BA%A4%E6%98%93%E6%9B%B4%E6%96%B02.jpg?raw=true" alt=""></p>
-<p>Alice交出Alice2的私钥给Bob，那么Bob就可以修改RD1a的输出给他自己，形成新的交易BR1a。若Alice破坏合约存在C2a的情况下依然广播出C1a，那么Alice的惩罚就是失去她全部的币。Alice交出Alice2的私钥，或者对交易BR1a进行签名，两者是等同的，都是对C1a的放弃。反之亦然，Bob交出Bob2的私钥给Alice即意味放弃C1b，而仅能认可C2b。引入sequence的目的是，阻止后续交易进块（RD1a），给出一个实施惩罚窗口期，当发现对方破坏合约时，可以有1000个块确认的时间去实施惩罚交易，即广播BR1a代替RD1a。若错过1000个块时间窗口，则无法再实施惩罚了（RD1a进块了）。</p>
-<h4 id="交易关闭"><a href="#交易关闭" class="headerlink" title="交易关闭"></a>交易关闭</h4><p>关闭RSMC，直接按照最终的余额构造出一个Commitment TX即可，例如输出为Alice0.1BTC，Bob0.9BTC，无需再设置多重签名，构造惩罚交易等。</p>
-<h4 id="中转交易（真实的闪电网络，HTLC）"><a href="#中转交易（真实的闪电网络，HTLC）" class="headerlink" title="中转交易（真实的闪电网络，HTLC）"></a>中转交易（真实的闪电网络，HTLC）</h4><p>我们来看一下基本的流程图吧！<br><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/%E9%97%AA%E7%94%B5%E7%BD%91%E7%BB%9C%E4%B8%AD%E8%BD%AC%E4%BA%A4%E6%98%93%E5%9B%BE.png?raw=true" alt=""><br>这里面的R就是支付的口令，其实就是交易节点之间没有直连的通道，需要其他人待转，这些人会收手续费。这里面需要解决几个问题（我的思考）：</p>
-<ol>
-<li>如何建立初始的支付通道</li>
-<li>如果两个节点间无直接支付通道，如何找到最佳的支付通道。</li>
-<li>如何保证第三方不作弊，防止现金丢失（前面的讲的都是这个问题）</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="RSMC-1"><a href="#RSMC-1" class="headerlink" title="RSMC"></a>RSMC</h4><p>闪电网络的基础是交易双方之间的双向微支付通道，RSMC（Recoverable Sequence Maturity Contract）定义了该双向微支付通道的最基本工作方式。这是要求双方都拿出资金放到合约上，然后输出动态分配，最后确认输出后上链，这样的好处就是支付完全是在链下执行。</p>
-<p><b style="color:red">为了鼓励双方尽可能久地利用通道进行交易，RSMC对主动终止通道方给予了一定的惩罚：主动提出方其资金到账将比对方晚，因此谁发起谁吃亏。这个设计虽然增加了技术复杂度，但应该说是合理的。</b> 这样许多交易就会在区块链下面执行，不会产生交易（只产生预备交易），最后交易才会上链。还有就是交易的凭证怎么保证？所以这个方式或许也有很多技术和现实的缺陷所在。</p>
-<p><b style="color:red">通道余额分配方案的本质是结算准备金。在此安排下，因为要完全控制资金交收风险，每笔交易都不能突破当前结算准备金所施限制。</b></p>
-<h4 id="HTLC"><a href="#HTLC" class="headerlink" title="HTLC"></a>HTLC</h4><p>RSMC只支持最简单的无条件资金支付，HTLC（Hashed Timelock Contract）进一步实现了有条件的资金支付，通道余额的分配方式也因此变得更为复杂。</p>
-<p>通过HTLC，Alice和Bob可以达成这样一个协议：协议将锁定Alice的0.1 BTC，在时刻T到来之前（T以未来的某个区块链高度表述），如果Bob能够向Alice出示一个适当的R（称为秘密），使得R的哈希值等于事先约定的值H(R)，Bob就能获得这0.1 BTC；如果直到时刻T过去Bob仍然未能提供一个正确的R，这0.1 BTC将自动解冻并归还Alice。</p>
-<h2 id="雷电网络"><a href="#雷电网络" class="headerlink" title="雷电网络"></a>雷电网络</h2><p>基于闪电网络的思路，以太坊社区也提出了自己的链下微支付通道解决方案：雷电网络（Raiden Network）。<br>延续了以太坊的风格，把本来较简单的问题复杂智能化。大致与闪电网络相同，但细节有些地方更复杂。例如：第一层面的那个旧版本作废，其实只要加上时间戳看哪个时间新就可以了。但是其额外增加了一个单增的Sequence Number字段来标明哪个有效。还有记录分配余额即可，但雷电网络记录的是增减变动量。在第二个层面上，雷电网络引入了较HTLC更通用和复杂的“Smart Condition”。就是说HTLC中采用的成熟简单地求HASH函数，在雷电网络中替代成了用户可自己设置的任意函数，就是说向外扩展了，更加智能，但同时面临的风险可能就越大。</p>
-<h2 id="Corda"><a href="#Corda" class="headerlink" title="Corda"></a>Corda</h2><p>相近技术的低层思想是相通的，受到闪电网络思想的启发，知名的R3也宣布发布非区块链的分布式账本应用Corda，其本质思想应该是与闪电网络较相近似。<br>关于Corda的资料较少，如整个R3较闭源封闭一样，只是R3 CEV的首席技术官Richard Brown之前在博客中披露些Corda的主要特点：</p>
-<ol>
-<li>没有多余的全局数据共享：有合法需求的参与方才可按照协议获取数据；</li>
-<li>Corda编写和配置在企业间流转，无中心控制者；</li>
-<li>Corda在企业间单个交易水平达成共识，而不是在系统水平上；</li>
-<li>系统设计直接支持监管观察员节点；</li>
-<li>交易直接由交易双方验证，而不是由一大群不相干的验证者进行；</li>
-<li>支持多种共识机制；</li>
-<li>记录了智能合约代码和人类语言法律文件的清晰联系；</li>
-<li>用行业标准工具创建；</li>
-<li>没有原始加密货币。</li>
-</ol>
-<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>将交易和智能合约的执行放在链下快速地执行，仅在必要时才将其在链上公开结算执行，这就是闪电网络带给我们的绝佳思路。同时可增加对闪电结链上算时的手续费，减轻链上压力的同时有可能提升矿工收入，因理论上不可能所有交易都闪电。比特币主链上交易有其它任何形式链下交易或侧链交易所无法替代的优点。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zhuanlan.zhihu.com/p/32613487" target="_blank" rel="noopener">三分钟让你了解什么是Segwit隔离见证</a><br><a href="http://8btc.com/thread-45833-1-1.html" target="_blank" rel="noopener">隔离见证比任何硬分叉都高级</a><br><a href="http://www.8btc.com/bitcoin-expansion-problem" target="_blank" rel="noopener">比特币扩容为什么选择2MB？</a><br><a href="https://www.zhihu.com/question/46515457" target="_blank" rel="noopener">什么是比特币的闪电网络？</a><br><a href="https://www.zhihu.com/question/58567061" target="_blank" rel="noopener">什么是隔离见证？</a><br><a href="http://www.8btc.com/ln-rn-corda" target="_blank" rel="noopener">详解最近大热的闪电网络、雷电网络和CORDA</a><br><a href="https://mp.weixin.qq.com/s/lM0p3ikVBdw1zE50IWtMZA" target="_blank" rel="noopener">6.9Bite酱一闪电网络⚡大白话零门槛讲解</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2590,7 +2655,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">84</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

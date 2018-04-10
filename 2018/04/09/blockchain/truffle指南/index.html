@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="solidity," />
+
+
+<meta name="description" content="Truffle是一个世界级的开发环境，用于以太坊的测试框架和资产管道，旨在使以太坊开发人员的开发更轻松。truffle有以下的一些特性：  内置智能合约编译，链接，部署和二进制管理。 用于快速开发的合约自动测试。 可编写脚本的可扩展部署和迁移框架。 用于部署到任意数量的公共和专用网络的网络管理。 使用ERC190标准，使用EthPM和NPM进行包装管理。 交互式控制台，用于直接与合约交互。 可配置">
+<meta name="keywords" content="solidity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="truffle指南">
+<meta property="og:url" content="http://cordate.github.io/2018/04/09/blockchain/truffle指南/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="Truffle是一个世界级的开发环境，用于以太坊的测试框架和资产管道，旨在使以太坊开发人员的开发更轻松。truffle有以下的一些特性：  内置智能合约编译，链接，部署和二进制管理。 用于快速开发的合约自动测试。 可编写脚本的可扩展部署和迁移框架。 用于部署到任意数量的公共和专用网络的网络管理。 使用ERC190标准，使用EthPM和NPM进行包装管理。 交互式控制台，用于直接与合约交互。 可配置">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-10T03:14:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="truffle指南">
+<meta name="twitter:description" content="Truffle是一个世界级的开发环境，用于以太坊的测试框架和资产管道，旨在使以太坊开发人员的开发更轻松。truffle有以下的一些特性：  内置智能合约编译，链接，部署和二进制管理。 用于快速开发的合约自动测试。 可编写脚本的可扩展部署和迁移框架。 用于部署到任意数量的公共和专用网络的网络管理。 使用ERC190标准，使用EthPM和NPM进行包装管理。 交互式控制台，用于直接与合约交互。 可配置">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/09/blockchain/truffle指南/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>truffle指南 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/09/blockchain/truffle指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">truffle指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-09T14:27:50+08:00">2018-04-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Truffle是一个世界级的开发环境，用于以太坊的测试框架和资产管道，旨在使以太坊开发人员的开发更轻松。truffle有以下的一些特性：</p>
+<ul>
+<li>内置智能合约编译，链接，部署和二进制管理。</li>
+<li>用于快速开发的合约自动测试。</li>
+<li>可编写脚本的可扩展部署和迁移框架。</li>
+<li>用于部署到任意数量的公共和专用网络的网络管理。</li>
+<li>使用ERC190标准，使用EthPM和NPM进行包装管理。</li>
+<li>交互式控制台，用于直接与合约交互。</li>
+<li>可配置的构建流水线，支持紧密集成。</li>
+<li>外部脚本运行器，用于在Truffle环境中执行脚本。</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g truffle</span><br></pre></td></tr></table></figure>
+<p>最好使用node 5.0+，另外最好有一个打开json rpc api的以太坊节点。</p>
+<h2 id="创建一个项目"><a href="#创建一个项目" class="headerlink" title="创建一个项目"></a>创建一个项目</h2><p>对于那些刚刚开始使用的人，可通过<a href="http://truffleframework.com/boxes" target="_blank" rel="noopener">松露盒</a>获取许多样板和示例应用程序。</p>
+<p>你可以从我们的MetaCoin例子开始，在命令行上运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir MetaCoin</span><br><span class="line">cd MetaCoin</span><br><span class="line">truffle unbox metacoin</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:#c7254e">注意：MetaCoin松露项目过去是通过运行<code>truffle init</code>创建的。现在它作为松露盒存在。</b></p>
+<p>您可以使用该<code>truffle unbox &lt;box-name&gt;</code>命令下载任何其他应用程序。</p>
+<p>如果你想从头开始构建一个项目，可以使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir myproject</span><br><span class="line">cd myproject</span><br><span class="line">truffle init</span><br></pre></td></tr></table></figure></p>
+<p>一旦完成，您现在将拥有包含以下项目的项目结构：</p>
+<ul>
+<li><code>contracts/</code>：<a href="http://truffleframework.com/docs/getting_started/contracts" target="_blank" rel="noopener">Solidity合同</a>目录</li>
+<li><code>migrations/</code>：<a href="http://truffleframework.com/docs/getting_started/migrations#migration-files" target="_blank" rel="noopener">可编写脚本的部署文件的目录</a></li>
+<li><code>test/</code>：用于<a href="http://truffleframework.com/docs/getting_started/testing" target="_blank" rel="noopener">测试您的应用程序和合约的</a>测试文件目录</li>
+<li><code>truffle.js</code>：Truffle配置文件</li>
+</ul>
+<h2 id="选择以太坊客户端"><a href="#选择以太坊客户端" class="headerlink" title="选择以太坊客户端"></a>选择以太坊客户端</h2><p>有许多以太坊客户端可供选择。根据您是在开发还是部署，我们推荐不同的客户端。</p>
+<h3 id="开发时"><a href="#开发时" class="headerlink" title="开发时"></a>开发时</h3><h4 id="Ganache"><a href="#Ganache" class="headerlink" title="Ganache"></a>Ganache</h4><p>我们建议您在桌面上运行Ethereum开发的个人区块链<a href="http://truffleframework.com/ganache" target="_blank" rel="noopener">Ganache</a>。作为truffle套件的一部分，Ganache通过将合约和交易放在前面和中心处，简化了dapp的开发。使用Ganache，您可以快速看到应用程序如何影响区块链，并反馈到您的账户，余额，合约创建和gas成本等细节。您还可以对Ganache的高级采矿控制进行微调，以更好地满足您的需求。Ganache可用于Windows，Mac和Linux，您可以<a href="http://truffleframework.com/ganache" target="_blank" rel="noopener">在此下载</a>。</p>
+<p>Ganache在启动时运行在<code>http://127.0.0.1:7545</code>。它将显示前10个帐户和用于创建这些帐户的助记符。（<a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki" target="_blank" rel="noopener">阅读有关帐户助记符的更多信息</a>。）</p>
+<p>默认情况下，Ganache将使用以下助记符：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candy maple cake sugar pudding cream honey rich smooth crumble sweet treat</span><br></pre></td></tr></table></figure></p>
+<p>该助记符可以更改为随机生成，也可以输入自己的助记符。</p>
+<p><b style="color:#c7254e">警告：请勿在以太网主网络（mainnet）上使用此助记符。如果您将ETH发送到由此助记符生成的任何帐户，您将失去所有！</b></p>
+<h4 id="truffle开发"><a href="#truffle开发" class="headerlink" title="truffle开发"></a>truffle开发</h4><p>我们还建议使用Truffle Develop，一种直接构建在truffle中区块链。Truffle Develop可帮助您使用单个命令设置集成区块链环境，无需安装。通过在终端中键入以下命令即可开启：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">truffle develop</span><br></pre></td></tr></table></figure></p>
+<p>这将运行客户端<code>http://127.0.0.1:9545</code>。它将显示前10个帐户和用于创建这些帐户的助记符。Truffle Develop每次都使用相同的助记符来尽可能简化开发应用程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">candy maple cake sugar pudding cream honey rich smooth crumble sweet treat</span><br></pre></td></tr></table></figure></p>
+<p>一旦启动，Truffle Develop将为您提供一个控制台，您可以使用它来运行所有可用的truffle命令。这些命令是通过省略truffle前缀来输入的。</p>
+<p>要了解更多关于与控制台交互的信息，请参阅<a href="http://truffleframework.com/docs/getting_started/console" target="_blank" rel="noopener">使用控制台</a>部分。</p>
+<h4 id="GANACHE-CLI"><a href="#GANACHE-CLI" class="headerlink" title="GANACHE CLI"></a>GANACHE CLI</h4><p>Ganache还为那些在图形环境下工作的人提供了一个命令行界面。非常适合自动化测试和持续集成环境，Ganache CLI可以无人运行，可以配置为满足您的所有开发需求。Ganache CLI可以立即处理交易，而不是等待默认的区块时间，因此您可以快速测试您的代码是否可以工作。它还会在您的智能合约出现错误时立即告诉您，并直接与Truffle集成，以将测试运行时间与其他客户端相比降低90％。<a href="https://github.com/trufflesuite/ganache-cli/" target="_blank" rel="noopener">了解关于Ganache CLI的更多信息</a>。</p>
+<h3 id="正式环境部署"><a href="#正式环境部署" class="headerlink" title="正式环境部署"></a>正式环境部署</h3><p>有许多官方和非官方的以太坊客户可供您使用。以下是一个简短列表：</p>
+<ul>
+<li>geth：<a href="https://github.com/ethereum/go-ethereum" target="_blank" rel="noopener">https://github.com/ethereum/go-ethereum</a></li>
+<li>WebThree（cpp-ethereum）：<a href="https://github.com/ethereum/cpp-ethereum" target="_blank" rel="noopener">https://github.com/ethereum/cpp-ethereum</a></li>
+<li>Parity： <a href="https://github.com/paritytech/parity" target="_blank" rel="noopener">https://github.com/paritytech/parity</a></li>
+<li>More： <a href="https://www.ethereum.org/cli" target="_blank" rel="noopener">https://www.ethereum.org/cli</a></li>
+</ul>
+<h3 id="测试网络"><a href="#测试网络" class="headerlink" title="测试网络"></a>测试网络</h3><p><a href="https://zhuanlan.zhihu.com/p/29010231" target="_blank" rel="noopener">玩转以太坊(Ethereum)的测试网络</a></p>
+<h2 id="编译合约"><a href="#编译合约" class="headerlink" title="编译合约"></a>编译合约</h2><h3 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h3><p>所有的合同都位于您项目的contracts/目录中。<code>Migrations.sol</code>帮助部署合约。</p>
+<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">truffle compile</span><br></pre></td></tr></table></figure>
+<p>第一次运行时，所有合同都将被编译。后续运行时，松露只会编译自上次编译以来已更改的合同。如果您想覆盖此行为，请使用该<code>--all</code>选项运行上述命令。</p>
+<h3 id="构建结果"><a href="#构建结果" class="headerlink" title="构建结果"></a>构建结果</h3><p>您编译的结果将被放置在<code>build/contracts/</code>目录中. 这些文件是truffle内部使用，你不需要编辑。</p>
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>您可以使用Solidity的导入命令来声明合约依赖关系。truffle将按照正确的顺序编译合约，并确保将所有依赖关系发送给编译器。依赖性可以用两种方式指定：</p>
+<h4 id="通过文件名导入依赖关系"><a href="#通过文件名导入依赖关系" class="headerlink" title="通过文件名导入依赖关系"></a>通过文件名导入依赖关系</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &quot;./AnotherContract.sol&quot;;</span><br></pre></td></tr></table></figure>
+<p>这里<code>AnotherContract.sol</code>是相对于当前正在编写的合约的路径。</p>
+<h4 id="从外部包导入合约"><a href="#从外部包导入合约" class="headerlink" title="从外部包导入合约"></a>从外部包导入合约</h4><p>Truffle支持通过<a href="http://truffleframework.com/docs/getting_started/packages-ethpm" target="_blank" rel="noopener">EthPM</a>和<a href="http://truffleframework.com/docs/getting_started/packages-npm" target="_blank" rel="noopener">NPM</a>安装的依赖项。要从依赖项导入合约，请使用以下语法:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &quot;somepackage/SomeContract.sol&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>这里<code>somepackage</code>表示通过EthPM或NPM安装的软件包，<code>SomeContract.sol</code>表示该软件包提供的Solidity 源文件。</p>
+<h2 id="运行迁移"><a href="#运行迁移" class="headerlink" title="运行迁移"></a>运行迁移</h2><p>Migration是帮助您将合约部署到以太坊网络的JavaScript文件。这些文件负责暂存您的部署任务，并且这些文件是在您的部署需求随时间变化的前提下编写的。随着您的项目不断发展，您将创建新的迁移脚本以进一步推动区块链的发展。以前运行的迁移历史记录通过特定的Migrations合约记录在链上，详情如下。</p>
+<h3 id="命令-1"><a href="#命令-1" class="headerlink" title="命令"></a>命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ truffle migrate</span><br></pre></td></tr></table></figure>
+<p>这将运行位于项目<code>migrations</code>目录中的所有迁移。简而言之，迁移只是一组受管理的部署脚本。如果您的迁移先前已成功运行，<code>truffle migrate</code>则将从上次运行的迁移开始执行，仅运行新创建的迁移。如果不存在新的迁移，<code>truffle migrate</code>则根本不会执行任何操作。您可以使用该<code>--reset</code>选项从头开始运行所有迁移。对于本地测试，确保在执行<code>migrate</code>之前安装并运行测试区块链，例如<a href="http://truffleframework.com/ganache" target="_blank" rel="noopener">Ganache</a>.</p>
+<h3 id="迁移文件"><a href="#迁移文件" class="headerlink" title="迁移文件"></a>迁移文件</h3><p>一个简单的迁移文件如下所示：文件名：<code>4_example_migration.js</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var MyContract = artifacts.require(&quot;MyContract&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = function(deployer) &#123;</span><br><span class="line">  // deployment steps</span><br><span class="line">  deployer.deploy(MyContract);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>请注意，文件名以数字为前缀，后缀为说明。需要编号的前缀才能记录迁移是否成功运行。后缀纯粹是为了人类的可读性和理解。</p>
+<h4 id="ARTIFACTS-REQUIRE"><a href="#ARTIFACTS-REQUIRE" class="headerlink" title="ARTIFACTS.REQUIRE()"></a>ARTIFACTS.REQUIRE()</h4><p>在迁移开始时，我们告诉Truffle我们希望通过该<code>artifacts.require()</code>方法取得要进行交互的合约。此方法与Node的<code>require</code>类似，但在我们的情况，它特别返回了我们可以在我们的部署脚本的其余部分中使用的合约抽象。指定的名称应与该源文件中的合约定义的名称相匹配。不要传递源文件的名称，因为文件可以包含多个合同。</p>
+<h4 id="MODULE-EXPORTS"><a href="#MODULE-EXPORTS" class="headerlink" title="MODULE.EXPORTS"></a>MODULE.EXPORTS</h4><p>所有的迁移必须通过<code>module.exports</code>语法导出一个函数。每个迁移导出的函数应接受一个<code>deployer</code>对象作为其第一个参数。该对象通过为部署智能合约提供清晰的语法以及执行一些部署的更普通的职责（如保存部署的工件供以后使用）来帮助部署。该<code>deployer</code>对象是用于暂存部署任务的主接口，其页面底部介绍了其API。</p>
+<p>您的迁移函数也可以接受其他参数。看下面的例子。</p>
+<h3 id="初始化迁移"><a href="#初始化迁移" class="headerlink" title="初始化迁移"></a>初始化迁移</h3><p>truffle需要您拥有迁移合约才能使用迁移功能。此合约必须包含特定的接口，但您可以随意编辑此合约。对于大多数项目而言，此合约最初将作为第一次迁移进行部署，不会再进行更新。在创建新项目时，您通过<code>truffle init</code>还将默认收到此合约。</p>
+<p>文件名：<code>contracts/Migrations.sol</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.8;</span><br><span class="line"></span><br><span class="line">contract Migrations &#123;</span><br><span class="line">  address public owner;</span><br><span class="line"></span><br><span class="line">  // A function with the signature `last_completed_migration()`, returning a uint, is required.</span><br><span class="line">  uint public last_completed_migration;</span><br><span class="line"></span><br><span class="line">  modifier restricted() &#123;</span><br><span class="line">    if (msg.sender == owner) _;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function Migrations() &#123;</span><br><span class="line">    owner = msg.sender;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // A function with the signature `setCompleted(uint)` is required.</span><br><span class="line">  function setCompleted(uint completed) restricted &#123;</span><br><span class="line">    last_completed_migration = completed;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function upgrade(address new_address) restricted &#123;</span><br><span class="line">    Migrations upgraded = Migrations(new_address);</span><br><span class="line">    upgraded.setCompleted(last_completed_migration);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>您必须在第一次迁移中部署此合约才能利用迁移功能。为此，请创建以下迁移：<code>migrations/1_initial_migration.js</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var Migrations = artifacts.require(&quot;Migrations&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = function(deployer) &#123;</span><br><span class="line">  // Deploy the Migrations contract as our only task</span><br><span class="line">  deployer.deploy(Migrations);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>从这里，您可以使用增加的编号前缀创建新的迁移，以部署其他合约并执行进一步的部署步骤。</p>
+<h3 id="DEPLOYER"><a href="#DEPLOYER" class="headerlink" title="DEPLOYER"></a>DEPLOYER</h3><p>您的迁移文件将使用部署者来部署部署任务。因此，您可以同步编写部署任务，并按正确的顺序执行它们：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Stage deploying A before B</span><br><span class="line">deployer.deploy(A);</span><br><span class="line">deployer.deploy(B);</span><br></pre></td></tr></table></figure></p>
+<p>或者，可以将部署者上的每个功能用作Promise，以排队依赖于前一个任务执行的部署任务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Deploy A, then deploy B, passing in A&apos;s newly deployed address</span><br><span class="line">deployer.deploy(A).then(function() &#123;</span><br><span class="line">  return deployer.deploy(B, A.address);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="网络考虑"><a href="#网络考虑" class="headerlink" title="网络考虑"></a>网络考虑</h3><p>可以根据部署到的网络有条件地运行部署步骤。这是一项高级功能，因此请先参阅<a href="http://truffleframework.com/docs/advanced/networks" target="_blank" rel="noopener">网络</a>部分，然后再继续。</p>
+<p>要有条件有步骤地部署，请编写您的迁移，以便他们接受名为的第二个参数<code>network</code>。例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">module.exports = function(deployer, network) &#123;</span><br><span class="line">  if (network == &quot;live&quot;) &#123;</span><br><span class="line">    // Do something specific to the network named &quot;live&quot;.</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    // Perform a different step otherwise.</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="可用的账户"><a href="#可用的账户" class="headerlink" title="可用的账户"></a>可用的账户</h3><p>迁移还会通过您的以太坊客户端和web3提供商提供给您的帐户列表，供您在部署期间使用。这与<code>web3.eth.getAccounts()</code>从中返回的帐户完全相同。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">module.exports = function(deployer, network, accounts) &#123;</span><br><span class="line">  // Use the accounts within your migrations.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="DEPLOYER-API"><a href="#DEPLOYER-API" class="headerlink" title="DEPLOYER API"></a>DEPLOYER API</h3><p>Deployer包含许多可用于简化迁移的功能。</p>
+<h4 id="DEPLOYER-DEPLOY-CONTRACT-ARGS…-OPTIONS"><a href="#DEPLOYER-DEPLOY-CONTRACT-ARGS…-OPTIONS" class="headerlink" title="DEPLOYER.DEPLOY(CONTRACT, ARGS…, OPTIONS)"></a>DEPLOYER.DEPLOY(CONTRACT, ARGS…, OPTIONS)</h4><p>使用可选的构造函数参数部署合约对象指定的特定合约。这对于单个合约很有用，因此您的dapp只有一份此合约的实例。这将在部署之后设置合约的地址（即，<code>Contract.address</code>将等于新部署的地址），并且它将覆盖任何先前存储的地址。</p>
+<p>您可以选择传递一组合约或一组数组，以加速部署多个合约。此外，最后一个参数是一个可选对象，可以包含指定的键<code>overwrite</code>以及其他交易参数（如<code>gas</code>和<code>from</code>）。如果<code>overwrite</code>设置为<code>false</code>，则Deployer将不会部署此合约（如果已部署）。这对于某些合约地址由外部依赖项提供的情况很有用。</p>
+<p>请注意，在调用<code>deploy</code>之前，您需要首先部署和链接您的合约所依赖的任何库。有关link更多详细信息，请参阅以下功能.</p>
+<p>欲了解更多信息，请参阅<a href="https://github.com/trufflesuite/truffle-contract" target="_blank" rel="noopener">truffle-contract</a>文档。</p>
+<p>例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// Deploy a single contract without constructor arguments</span><br><span class="line">deployer.deploy(A);</span><br><span class="line"></span><br><span class="line">// Deploy a single contract with constructor arguments</span><br><span class="line">deployer.deploy(A, arg1, arg2, ...);</span><br><span class="line"></span><br><span class="line">// Don&apos;t deploy this contract if it has already been deployed</span><br><span class="line">deployer.deploy(A, &#123;overwrite: false&#125;);</span><br><span class="line"></span><br><span class="line">// Set a maximum amount of gas and `from` address for the deployment</span><br><span class="line">deployer.deploy(A, &#123;gas: 4612388, from: &quot;0x....&quot;&#125;);</span><br><span class="line"></span><br><span class="line">// Deploy multiple contracts, some with arguments and some without.</span><br><span class="line">// This is quicker than writing three `deployer.deploy()` statements as the deployer</span><br><span class="line">// can perform the deployment as a single batched request.</span><br><span class="line">deployer.deploy([</span><br><span class="line">  [A, arg1, arg2, ...],</span><br><span class="line">  B,</span><br><span class="line">  [C, arg1]</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line">// External dependency example:</span><br><span class="line">//</span><br><span class="line">// For this example, our dependency provides an address when we&apos;re deploying to the</span><br><span class="line">// live network, but not for any other networks like testing and development.</span><br><span class="line">// When we&apos;re deploying to the live network we want it to use that address, but in</span><br><span class="line">// testing and development we need to deploy a version of our own. Instead of writing</span><br><span class="line">// a bunch of conditionals, we can simply use the `overwrite` key.</span><br><span class="line">deployer.deploy(SomeDependency, &#123;overwrite: false&#125;);</span><br></pre></td></tr></table></figure></p>
+<h4 id="DEPLOYER-LINK-LIBRARY-DESTINATIONS"><a href="#DEPLOYER-LINK-LIBRARY-DESTINATIONS" class="headerlink" title="DEPLOYER.LINK(LIBRARY, DESTINATIONS)"></a>DEPLOYER.LINK(LIBRARY, DESTINATIONS)</h4><p>将已部署的库链接到合约或多个合约。<code>destinations</code>可以是单个合约或多个合约的数组。如果<code>destinations</code>的任何合约不依赖于链接的库，则合约将被忽略。</p>
+<p>例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// Deploy library LibA, then link LibA to contract B, then deploy B.</span><br><span class="line">deployer.deploy(LibA);</span><br><span class="line">deployer.link(LibA, B);</span><br><span class="line">deployer.deploy(B);</span><br><span class="line"></span><br><span class="line">// Link LibA to many contracts</span><br><span class="line">deployer.link(LibA, [B, C, D]);</span><br></pre></td></tr></table></figure></p>
+<h4 id="DEPLOYER-THEN-FUNCTION-…"><a href="#DEPLOYER-THEN-FUNCTION-…" class="headerlink" title="DEPLOYER.THEN(FUNCTION() {…})"></a>DEPLOYER.THEN(FUNCTION() {…})</h4><p>就像承诺一样，运行一个任意的部署步骤。在您的迁移过程中使用它来调用特定合同的函数来添加、编辑和重新组织合约数据。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var a, b;</span><br><span class="line">deployer.then(function() &#123;</span><br><span class="line">  // Create a new version of A</span><br><span class="line">  return A.new();</span><br><span class="line">&#125;).then(function(instance) &#123;</span><br><span class="line">  a = instance;</span><br><span class="line">  // Get the deployed instance of B</span><br><span class="line">  return B.deployed();</span><br><span class="line">&#125;).then(function(instance) &#123;</span><br><span class="line">  b = instance;</span><br><span class="line">  // Set the new instance of A&apos;s address on B via B&apos;s setA() function.</span><br><span class="line">  return b.setA(a.address);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="测试你的合约"><a href="#测试你的合约" class="headerlink" title="测试你的合约"></a>测试你的合约</h2><h3 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h3><p>truffle配置了自动化测试框架，可以轻松测试你的合约。这个框架可以让你用两种不同的方式编写简单且易于管理的测试：</p>
+<ul>
+<li>在<a href="http://truffleframework.com/docs/getting_started/javascript-tests" target="_blank" rel="noopener">JavaScript中</a>，用于运行来自外部世界的合约，就像您的应用程序一样。</li>
+<li>在<a href="http://truffleframework.com/docs/getting_started/solidity-tests" target="_blank" rel="noopener">Solidity</a>中，高级特性，在公开的场景中行使您的合约。</li>
+</ul>
+<p>两种类型的测试都有其优点和缺点。请参阅接下来的两节来讨论。</p>
+<h3 id="位置-1"><a href="#位置-1" class="headerlink" title="位置"></a>位置</h3><p>所有测试文件应位于<code>./test</code>目录中。truffle将只与下列扩展名的文件运行测试文件：<code>.js</code>，<code>.es</code>，<code>.es6</code>，<code>.jsx</code>和<code>.sol</code>。所有其他文件都被忽略。</p>
+<h3 id="命令-2"><a href="#命令-2" class="headerlink" title="命令"></a>命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ truffle test</span><br></pre></td></tr></table></figure>
+<p>或者，您可以运行指定路径的文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ truffle test ./path/to/test/file.js</span><br></pre></td></tr></table></figure></p>
+<h3 id="清空环境"><a href="#清空环境" class="headerlink" title="清空环境"></a>清空环境</h3><p>运行测试文件时，truffle提供了一个无尘室环境。在针对<a href="http://truffleframework.com/ganache" target="_blank" rel="noopener">Ganache</a>或Truffle Develop 运行测试时，Truffle将使用高级快照功能来确保您的测试文件不会彼此共享状态。当与其他以太坊客户一起运行时，Truffle将在每个测试文件开始时重新部署所有迁移，以确保您拥有一组新的测试合约。</p>
+<h3 id="速度和可靠性考虑"><a href="#速度和可靠性考虑" class="headerlink" title="速度和可靠性考虑"></a>速度和可靠性考虑</h3><p>运行自动化测试时，Ganache和Truffle Develop比其他客户快得多。此外，它们还包含Truffle利用其特殊功能将测试运行时间提高近90％。作为一个通用的工作流程，我们建议您在正常开发和测试过程中使用Ganache或Truffle Develop，然后在您准备部署到现场或生产网络时，针对以太坊或其他官方Ethereum客户端运行一次测试。</p>
+<h2 id="在JavaScript中编写测试"><a href="#在JavaScript中编写测试" class="headerlink" title="在JavaScript中编写测试"></a>在JavaScript中编写测试</h2><p>Truffle使用<a href="https://mochajs.org/" target="_blank" rel="noopener">Mocha</a>测试框架和<a href="http://chaijs.com/" target="_blank" rel="noopener">Chai</a>进行断言，为您提供一个可编写JavaScript测试的可靠框架。让我们深入了解Truffle如何在Mocha上建立轻松您的合同的测试。</p>
+<p><b style="color:#6ab0de">注意：如果您不熟悉在Mocha中编写单元测试，请在继续之前参阅<a href="https://mochajs.org/" target="_blank" rel="noopener">Mocha的文档</a>。</b></p>
+<h3 id="使用CONTRACT-取代DESCRIBE"><a href="#使用CONTRACT-取代DESCRIBE" class="headerlink" title="使用CONTRACT()取代DESCRIBE()"></a>使用CONTRACT()取代DESCRIBE()</h3><p>在结构上，你的测试应该与Mocha的测试基本保持不变：你的测试应该存在于<code>./test</code>目录中，它们应该以<code>.js</code>扩展名结尾，并且它们应该包含Mocha将认为是自动化测试的代码。什么使truffle测试不同于Mocha的测试是<code>contract()</code>函数：该函数的工作原理与<code>describe()</code>相同，只是没有Truffle无尘室功能。它是这样工作的：</p>
+<ul>
+<li>在每个<code>contract()</code>函数运行之前，您的合约将重新部署到正在运行的以太坊客户端，以便其中的测试以干净的合约状态运行。</li>
+<li>该<code>contract()</code>函数提供了您的以太坊客户端提供的账户列表，您可以使用它来编写测试。</li>
+</ul>
+<p><b style="color:#6ab0de">由于Truffle在发动机罩下使用了Mocha，因此<code>describe()</code>只要不需要松露清洁室功能，您仍然可以使用它来运行正常的Mocha测试。</b></p>
+<h3 id="在测试中使用合约抽象"><a href="#在测试中使用合约抽象" class="headerlink" title="在测试中使用合约抽象"></a>在测试中使用合约抽象</h3><p>合约抽象是通过JavaScript实现合约交互的基础（它们基本上就是我们的助熔电容器）。由于truffle无法检测到在测试中需要与哪些合约进行交互，因此您需要明确要求这些合约。您可以通过使用<code>artifacts.require()</code>方法来做到这一点，该方法是由Truffle提供的一种方法，允许您为特定的Solidity合约请求可用的合约抽象。正如你在下面的例子中看到的那样，你可以使用这个抽象来确保你的合约正常工作。</p>
+<p>有关使用合同抽象的更多信息，请参阅<a href="http://truffleframework.com/docs/getting_started/contracts" target="_blank" rel="noopener">与您的合同交互</a>一节。</p>
+<h3 id="使用ARTIFACTS-REQUIRE"><a href="#使用ARTIFACTS-REQUIRE" class="headerlink" title="使用ARTIFACTS.REQUIRE()"></a>使用ARTIFACTS.REQUIRE()</h3><p>测试中使用<code>artifacts.require()</code>的工作方式与您在迁移中使用它是一样的; 你只需要通过合约的名称。有关详细用法，请参阅<a href="http://truffleframework.com/docs/getting_started/migrations#artifacts-require-" target="_blank" rel="noopener">artifacts.require()</a>的文档。</p>
+<h3 id="使用web3"><a href="#使用web3" class="headerlink" title="使用web3"></a>使用web3</h3><p>每个测试文件都有一个<code>web3</code>实例，配置为正确的提供者。所以调用<code>web3.eth.getBalance</code>就行了！</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="使用-THEN"><a href="#使用-THEN" class="headerlink" title="使用.THEN"></a>使用<code>.THEN</code></h4><p>这是<a href="http://truffleframework.com/boxes/metacoin" target="_blank" rel="noopener">MetaCoin Truffle Box</a>中提供的一个示例测试。请注意使用该<code>contract()</code>函数，该<code>accounts</code>数组用于指定可用的以太坊帐户，以及我们使用<code>artifacts.require()</code>直接与我们的合同进行交互。</p>
+<p>文件：<code>./test/metacoin.js</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">var MetaCoin = artifacts.require(&quot;./MetaCoin.sol&quot;);</span><br><span class="line"></span><br><span class="line">contract(&apos;MetaCoin&apos;, function(accounts) &#123;</span><br><span class="line">  it(&quot;should put 10000 MetaCoin in the first account&quot;, function() &#123;</span><br><span class="line">    return MetaCoin.deployed().then(function(instance) &#123;</span><br><span class="line">      return instance.getBalance.call(accounts[0]);</span><br><span class="line">    &#125;).then(function(balance) &#123;</span><br><span class="line">      assert.equal(balance.valueOf(), 10000, &quot;10000 wasn&apos;t in the first account&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">  it(&quot;should call a function that depends on a linked library&quot;, function() &#123;</span><br><span class="line">    var meta;</span><br><span class="line">    var metaCoinBalance;</span><br><span class="line">    var metaCoinEthBalance;</span><br><span class="line"></span><br><span class="line">    return MetaCoin.deployed().then(function(instance) &#123;</span><br><span class="line">      meta = instance;</span><br><span class="line">      return meta.getBalance.call(accounts[0]);</span><br><span class="line">    &#125;).then(function(outCoinBalance) &#123;</span><br><span class="line">      metaCoinBalance = outCoinBalance.toNumber();</span><br><span class="line">      return meta.getBalanceInEth.call(accounts[0]);</span><br><span class="line">    &#125;).then(function(outCoinBalanceEth) &#123;</span><br><span class="line">      metaCoinEthBalance = outCoinBalanceEth.toNumber();</span><br><span class="line">    &#125;).then(function() &#123;</span><br><span class="line">      assert.equal(metaCoinEthBalance, 2 * metaCoinBalance, &quot;Library function returned unexpected function, linkage may be broken&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">  it(&quot;should send coin correctly&quot;, function() &#123;</span><br><span class="line">    var meta;</span><br><span class="line"></span><br><span class="line">    // Get initial balances of first and second account.</span><br><span class="line">    var account_one = accounts[0];</span><br><span class="line">    var account_two = accounts[1];</span><br><span class="line"></span><br><span class="line">    var account_one_starting_balance;</span><br><span class="line">    var account_two_starting_balance;</span><br><span class="line">    var account_one_ending_balance;</span><br><span class="line">    var account_two_ending_balance;</span><br><span class="line"></span><br><span class="line">    var amount = 10;</span><br><span class="line"></span><br><span class="line">    return MetaCoin.deployed().then(function(instance) &#123;</span><br><span class="line">      meta = instance;</span><br><span class="line">      return meta.getBalance.call(account_one);</span><br><span class="line">    &#125;).then(function(balance) &#123;</span><br><span class="line">      account_one_starting_balance = balance.toNumber();</span><br><span class="line">      return meta.getBalance.call(account_two);</span><br><span class="line">    &#125;).then(function(balance) &#123;</span><br><span class="line">      account_two_starting_balance = balance.toNumber();</span><br><span class="line">      return meta.sendCoin(account_two, amount, &#123;from: account_one&#125;);</span><br><span class="line">    &#125;).then(function() &#123;</span><br><span class="line">      return meta.getBalance.call(account_one);</span><br><span class="line">    &#125;).then(function(balance) &#123;</span><br><span class="line">      account_one_ending_balance = balance.toNumber();</span><br><span class="line">      return meta.getBalance.call(account_two);</span><br><span class="line">    &#125;).then(function(balance) &#123;</span><br><span class="line">      account_two_ending_balance = balance.toNumber();</span><br><span class="line"></span><br><span class="line">      assert.equal(account_one_ending_balance, account_one_starting_balance - amount, &quot;Amount wasn&apos;t correctly taken from the sender&quot;);</span><br><span class="line">      assert.equal(account_two_ending_balance, account_two_starting_balance + amount, &quot;Amount wasn&apos;t correctly sent to the receiver&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>这个测试会输出下面的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Contract: MetaCoin</span><br><span class="line">  √ should put 10000 MetaCoin in the first account (83ms)</span><br><span class="line">  √ should call a function that depends on a linked library (43ms)</span><br><span class="line">  √ should send coin correctly (122ms)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">3 passing (293ms)</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用ASYNC-AWAIT"><a href="#使用ASYNC-AWAIT" class="headerlink" title="使用ASYNC/AWAIT"></a>使用ASYNC/AWAIT</h3><p>这里是一个相似的实例，但是是使用<a href="https://javascript.info/async-await" target="_blank" rel="noopener">async/await</a>符号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">const MetaCoin = artifacts.require(&quot;MetaCoin&quot;);</span><br><span class="line"></span><br><span class="line">contract(&apos;2nd MetaCoin test&apos;, async (accounts) =&gt; &#123;</span><br><span class="line"></span><br><span class="line">  it(&quot;should put 10000 MetaCoin in the first account&quot;, async () =&gt; &#123;</span><br><span class="line">     let instance = await MetaCoin.deployed();</span><br><span class="line">     let balance = await instance.getBalance.call(accounts[0]);</span><br><span class="line">     assert.equal(balance.valueOf(), 10000);</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  it(&quot;should call a function that depends on a linked library&quot;, async () =&gt; &#123;</span><br><span class="line">    let meta = await MetaCoin.deployed();</span><br><span class="line">    let outCoinBalance = await meta.getBalance.call(accounts[0]);</span><br><span class="line">    let metaCoinBalance = outCoinBalance.toNumber();</span><br><span class="line">    let outCoinBalanceEth = await meta.getBalanceInEth.call(accounts[0]);</span><br><span class="line">    let metaCoinEthBalance = outCoinBalanceEth.toNumber();</span><br><span class="line">    assert.equal(metaCoinEthBalance, 2 * metaCoinBalance);</span><br><span class="line"></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  it(&quot;should send coin correctly&quot;, async () =&gt; &#123;</span><br><span class="line"></span><br><span class="line">    // Get initial balances of first and second account.</span><br><span class="line">    let account_one = accounts[0];</span><br><span class="line">    let account_two = accounts[1];</span><br><span class="line"></span><br><span class="line">    let amount = 10;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    let instance = await MetaCoin.deployed();</span><br><span class="line">    let meta = instance;</span><br><span class="line"></span><br><span class="line">    let balance = await meta.getBalance.call(account_one);</span><br><span class="line">    let account_one_starting_balance = balance.toNumber();</span><br><span class="line"></span><br><span class="line">    balance = await meta.getBalance.call(account_two);</span><br><span class="line">    let account_two_starting_balance = balance.toNumber();</span><br><span class="line">    await meta.sendCoin(account_two, amount, &#123;from: account_one&#125;);</span><br><span class="line"></span><br><span class="line">    balance = await meta.getBalance.call(account_one);</span><br><span class="line">    let account_one_ending_balance = balance.toNumber();</span><br><span class="line"></span><br><span class="line">    balance = await meta.getBalance.call(account_two);</span><br><span class="line">    let account_two_ending_balance = balance.toNumber();</span><br><span class="line"></span><br><span class="line">    assert.equal(account_one_ending_balance, account_one_starting_balance - amount, &quot;Amount wasn&apos;t correctly taken from the sender&quot;);</span><br><span class="line">    assert.equal(account_two_ending_balance, account_two_starting_balance + amount, &quot;Amount wasn&apos;t correctly sent to the receiver&quot;);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>这个测试将产生与前面例子相同的输出。</p>
+<h3 id="指定测试"><a href="#指定测试" class="headerlink" title="指定测试"></a>指定测试</h3><p>您可以限制特定文件执行的测试，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">truffle test ./test/metacoin.js</span><br></pre></td></tr></table></figure></p>
+<p>有关更多信息，请参阅完整的<a href="http://truffleframework.com/docs/advanced/commands#test" target="_blank" rel="noopener">命令</a>参考。</p>
+<h3 id="高级"><a href="#高级" class="headerlink" title="高级"></a>高级</h3><p>truffle可以让你访问Mocha的配置，这样你就可以改变Mocha的行为方式。请参阅<a href="http://truffleframework.com/docs/advanced/configuration#mocha" target="_blank" rel="noopener">项目配置</a>部分了解更多详情。</p>
+<h2 id="在SOLIDITY中编写测试"><a href="#在SOLIDITY中编写测试" class="headerlink" title="在SOLIDITY中编写测试"></a>在SOLIDITY中编写测试</h2><p>solidity测试合约与Javascript测试一起作为<code>.sol</code>文件存在。当<code>truffle test</code>运行时，它们将被包括作为每个测试合约单独的测试套件。这些合约保留了Javascript测试的所有好处：即每个测试套件都有一个<a href="http://truffleframework.com/docs/getting_started/testing#clean-room-environment" target="_blank" rel="noopener">洁净室环境</a>，可直接访问已部署的合约以及导入任何合约依赖关系的能力。除了这些特性外，Truffle的Solidity测试框架的构建还考虑到以下问题：</p>
+<ul>
+<li>solidity测试不应该来自任何合约（如Test合约）。这使您的测试尽可能最小化，并让您完全控制您编写的合约。</li>
+<li>solidity测试不应受任何断言库的影响。truffle为您提供了一个默认的断言库，但您可以随时更改此库以符合您的需求。</li>
+<li>您应该能够针对任何Ethereum客户端运行您的Solidity测试。</li>
+</ul>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>在深入探索之前，我们来看一个示例Solidity测试。以下是通过<code>truffle unbox metacoin</code>为您提供的示例Solidity测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import &quot;truffle/Assert.sol&quot;;</span><br><span class="line">import &quot;truffle/DeployedAddresses.sol&quot;;</span><br><span class="line">import &quot;../contracts/MetaCoin.sol&quot;;</span><br><span class="line"></span><br><span class="line">contract TestMetacoin &#123;</span><br><span class="line">  function testInitialBalanceUsingDeployedContract() &#123;</span><br><span class="line">    MetaCoin meta = MetaCoin(DeployedAddresses.MetaCoin());</span><br><span class="line"></span><br><span class="line">    uint expected = 10000;</span><br><span class="line"></span><br><span class="line">    Assert.equal(meta.getBalance(tx.origin), expected, &quot;Owner should have 10000 MetaCoin initially&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function testInitialBalanceWithNewMetaCoin() &#123;</span><br><span class="line">    MetaCoin meta = new MetaCoin();</span><br><span class="line"></span><br><span class="line">    uint expected = 10000;</span><br><span class="line"></span><br><span class="line">    Assert.equal(meta.getBalance(tx.origin), expected, &quot;Owner should have 10000 MetaCoin initially&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ truffle test</span><br><span class="line">Compiling ConvertLib.sol...</span><br><span class="line">Compiling MetaCoin.sol...</span><br><span class="line">Compiling truffle/Assert.sol</span><br><span class="line">Compiling truffle/DeployedAddresses.sol</span><br><span class="line">Compiling ../test/TestMetacoin.sol...</span><br><span class="line"></span><br><span class="line">  TestMetacoin</span><br><span class="line">    ✓ testInitialBalanceUsingDeployedContract (61ms)</span><br><span class="line">    ✓ testInitialBalanceWithNewMetaCoin (69ms)</span><br><span class="line"></span><br><span class="line">  2 passing (3s)</span><br></pre></td></tr></table></figure></p>
+<h3 id="测试结构"><a href="#测试结构" class="headerlink" title="测试结构"></a>测试结构</h3><p>为了更好地理解发生了什么，让我们更详细地讨论一些事情。</p>
+<h4 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h4><p>您的断言功能就像<code>Assert.equal()</code>通过<code>truffle/Assert.sol</code>库提供给你。这是默认的断言库，但是只要库通过触发正确的断言事件而松散地与Truffle的测试运行器集成，就可以包含自己的断言库。你可以在<a href="https://github.com/ConsenSys/truffle/blob/beta/lib/testing/Assert.sol" target="_blank" rel="noopener">Assert.sol</a>中找到所有可用的断言函数。</p>
+<h4 id="部署的地址"><a href="#部署的地址" class="headerlink" title="部署的地址"></a>部署的地址</h4><p>您部署的合约的地址（即作为迁移一部分部署的合约）可通过<code>truffle/DeployedAddresses.sol</code>库获得。这是由Truffle提供的，并且在每个套件运行之前重新编译并重新链接，以便为您的测试提供Truffle的洁净室环境。该库为所有已部署的合约提供函数，形式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DeployedAddresses.&lt;contract name&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>这将返回一个地址，然后您可以使用该地址访问该合约。请参阅上面的示例测试了解使用情况。</p>
+<p>为了使用已部署的合约，您必须将合约代码导入到测试套件中。注意示例中的<code>import &quot;../contracts/MetaCoin.sol&quot;;</code>。此导入与<code>./test</code>目录中存在的测试合约相关，并且它位于测试目录之外以便查找MetaCoin合约。然后它使用该合约将该地址转换为<code>MetaCoin</code>类型。</p>
+<h3 id="测试合约名称"><a href="#测试合约名称" class="headerlink" title="测试合约名称"></a>测试合约名称</h3><p>所有测试合同必须<code>Test</code>开头，<code>t</code>为大写字母<code>T</code>。这与测试助手和项目合约（即被测合约）区别开来，让测试运行人员知道哪些合约代表测试套件。</p>
+<h3 id="测试函数的名称"><a href="#测试函数的名称" class="headerlink" title="测试函数的名称"></a>测试函数的名称</h3><p>与测试合约名称一样，所有测试函数都必须以test小写字母开头。每个测试函数都按单个交易执行，按测试文件中的指定顺序（如Javascript测试）执行。由<code>truffle/Assert.sol</code>测试运行程序评估以确定测试结果的触发事件提供的断言函数。断言函数返回一个表示断言结果的布尔值，您可以使用它来尽早从测试中返回以防止执行错误（例如，<a href="http://truffleframework.com/ganache" target="_blank" rel="noopener">Ganache</a>或Truffle Develop将会公开的错误）。</p>
+<h3 id="Before-After钩子"><a href="#Before-After钩子" class="headerlink" title="Before/After钩子"></a>Before/After钩子</h3><p>提供了许多测试钩子，如下例所示。这些钩子是<code>beforeAll</code>，<code>beforeEach</code>，<code>afterAll</code>和<code>afterEach</code>;你的Javascript测试中由Mocha提供的相同钩子。您可以使用这些钩子在每次测试之前和之后，或每个套件运行之前和之后执行设置和拆卸操作。像测试函数一样，每个钩子都作为单个交易执行。请注意，一些复杂的测试需要执行大量的设置，这可能会溢出单个交易的gas限制; 您可以通过创建具有不同后缀的多个钩子来解决此限制，如下例所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import &quot;truffle/Assert.sol&quot;;</span><br><span class="line"></span><br><span class="line">contract TestHooks &#123;</span><br><span class="line">  uint someValue;</span><br><span class="line"></span><br><span class="line">  function beforeEach() &#123;</span><br><span class="line">    someValue = 5;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function beforeEachAgain() &#123;</span><br><span class="line">    someValue += 1;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function testSomeValueIsSix() &#123;</span><br><span class="line">    uint expected = 6;</span><br><span class="line"></span><br><span class="line">    Assert.equal(someValue, expected, &quot;someValue should have been 6&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该测试合约还显示您的测试函数和钩子函数都共享相同的合约状态。您可以在测试之前设置合约数据，在测试过程中使用该数据，然后重新设置数据以便下一个测试。请注意，就像您的Javascript测试一样，您的下一个测试函数将从之前运行的测试函数的状态继续。</p>
+<h3 id="高级特性"><a href="#高级特性" class="headerlink" title="高级特性"></a>高级特性</h3><p>Solidity测试具有一些高级功能，可以让您测试Solidity中的特定用例。</p>
+<h4 id="测试例外情况"><a href="#测试例外情况" class="headerlink" title="测试例外情况"></a>测试例外情况</h4><p>您可以轻松测试您的合同是否应该引发异常（例如，针对<code>require()</code>/ <code>assert()</code>/ <code>revert()</code>语句; 以前版本的Solidity会<code>throw</code>）。</p>
+<p>这个主题首先由作者Simon de la Rouviere在他的教程“<a href="http://truffleframework.com/tutorials/testing-for-throws-in-solidity-tests" target="_blank" rel="noopener">松露固体测试中的投掷测试</a>”中撰写。N.B.的教程中大量使用通过过时的关键字<code>throw</code>,，从Solidity v0.4.13开始, 取而代之的是<code>revert()</code>，<code>require()</code>和<code>assert()</code>。</p>
+<h4 id="测试以太网交易"><a href="#测试以太网交易" class="headerlink" title="测试以太网交易"></a>测试以太网交易</h4><p>您还可以测试您的合同如何对接收Ether做出反应，并在Solidity中编写该交互的脚本。要做到这一点，你的Solidity测试应该有一个返回一个uint叫做<code>initialBalance</code>的公共函数。这可以直接写成函数或公共变量，如下所示。当您的测试合同被部署到网络中时，truffle会向您的测试合同的测试账户中的发送这一数量的以太币。然后，您的测试合约可以使用该以太网币来与您的合约测试中的以太网交互。请注意，这<code>initialBalance</code>是可选的，不是必需的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import &quot;truffle/Assert.sol&quot;;</span><br><span class="line">import &quot;truffle/DeployedAddresses.sol&quot;;</span><br><span class="line">import &quot;../contracts/MyContract.sol&quot;;</span><br><span class="line"></span><br><span class="line">contract TestContract &#123;</span><br><span class="line">  // Truffle will send the TestContract one Ether after deploying the contract.</span><br><span class="line">  uint public initialBalance = 1 ether;</span><br><span class="line"></span><br><span class="line">  function testInitialBalanceUsingDeployedContract() &#123;</span><br><span class="line">    MyContract myContract = MyContract(DeployedAddresses.MyContract());</span><br><span class="line"></span><br><span class="line">    // perform an action which sends value to myContract, then assert.</span><br><span class="line">    myContract.send(...);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function () &#123;</span><br><span class="line">    // This will NOT be executed when Ether is sent. \o/</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>请注意，Truffle向你的账户发送以太币，但是不会执行fallback函数，因此您仍然可以在您的Solidity测试中使用fallback函数进行高级测试用例。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/solidity/" rel="tag"># solidity</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/09/blockchain/solidity内联装配通用语言/" rel="next" title="solidity内联装配通用语言">
+                <i class="fa fa-chevron-left"></i> solidity内联装配通用语言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">84</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个项目"><span class="nav-number">2.</span> <span class="nav-text">创建一个项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择以太坊客户端"><span class="nav-number">3.</span> <span class="nav-text">选择以太坊客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开发时"><span class="nav-number">3.1.</span> <span class="nav-text">开发时</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Ganache"><span class="nav-number">3.1.1.</span> <span class="nav-text">Ganache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#truffle开发"><span class="nav-number">3.1.2.</span> <span class="nav-text">truffle开发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GANACHE-CLI"><span class="nav-number">3.1.3.</span> <span class="nav-text">GANACHE CLI</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正式环境部署"><span class="nav-number">3.2.</span> <span class="nav-text">正式环境部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试网络"><span class="nav-number">3.3.</span> <span class="nav-text">测试网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译合约"><span class="nav-number">4.</span> <span class="nav-text">编译合约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#位置"><span class="nav-number">4.1.</span> <span class="nav-text">位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令"><span class="nav-number">4.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建结果"><span class="nav-number">4.3.</span> <span class="nav-text">构建结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖"><span class="nav-number">4.4.</span> <span class="nav-text">依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过文件名导入依赖关系"><span class="nav-number">4.4.1.</span> <span class="nav-text">通过文件名导入依赖关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从外部包导入合约"><span class="nav-number">4.4.2.</span> <span class="nav-text">从外部包导入合约</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行迁移"><span class="nav-number">5.</span> <span class="nav-text">运行迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令-1"><span class="nav-number">5.1.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迁移文件"><span class="nav-number">5.2.</span> <span class="nav-text">迁移文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ARTIFACTS-REQUIRE"><span class="nav-number">5.2.1.</span> <span class="nav-text">ARTIFACTS.REQUIRE()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MODULE-EXPORTS"><span class="nav-number">5.2.2.</span> <span class="nav-text">MODULE.EXPORTS</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化迁移"><span class="nav-number">5.3.</span> <span class="nav-text">初始化迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DEPLOYER"><span class="nav-number">5.4.</span> <span class="nav-text">DEPLOYER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络考虑"><span class="nav-number">5.5.</span> <span class="nav-text">网络考虑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可用的账户"><span class="nav-number">5.6.</span> <span class="nav-text">可用的账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DEPLOYER-API"><span class="nav-number">5.7.</span> <span class="nav-text">DEPLOYER API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DEPLOYER-DEPLOY-CONTRACT-ARGS…-OPTIONS"><span class="nav-number">5.7.1.</span> <span class="nav-text">DEPLOYER.DEPLOY(CONTRACT, ARGS…, OPTIONS)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DEPLOYER-LINK-LIBRARY-DESTINATIONS"><span class="nav-number">5.7.2.</span> <span class="nav-text">DEPLOYER.LINK(LIBRARY, DESTINATIONS)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DEPLOYER-THEN-FUNCTION-…"><span class="nav-number">5.7.3.</span> <span class="nav-text">DEPLOYER.THEN(FUNCTION() {…})</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试你的合约"><span class="nav-number">6.</span> <span class="nav-text">测试你的合约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#框架"><span class="nav-number">6.1.</span> <span class="nav-text">框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#位置-1"><span class="nav-number">6.2.</span> <span class="nav-text">位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令-2"><span class="nav-number">6.3.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清空环境"><span class="nav-number">6.4.</span> <span class="nav-text">清空环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#速度和可靠性考虑"><span class="nav-number">6.5.</span> <span class="nav-text">速度和可靠性考虑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在JavaScript中编写测试"><span class="nav-number">7.</span> <span class="nav-text">在JavaScript中编写测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用CONTRACT-取代DESCRIBE"><span class="nav-number">7.1.</span> <span class="nav-text">使用CONTRACT()取代DESCRIBE()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在测试中使用合约抽象"><span class="nav-number">7.2.</span> <span class="nav-text">在测试中使用合约抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ARTIFACTS-REQUIRE"><span class="nav-number">7.3.</span> <span class="nav-text">使用ARTIFACTS.REQUIRE()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用web3"><span class="nav-number">7.4.</span> <span class="nav-text">使用web3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">7.5.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-THEN"><span class="nav-number">7.5.1.</span> <span class="nav-text">使用.THEN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ASYNC-AWAIT"><span class="nav-number">7.6.</span> <span class="nav-text">使用ASYNC/AWAIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定测试"><span class="nav-number">7.7.</span> <span class="nav-text">指定测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高级"><span class="nav-number">7.8.</span> <span class="nav-text">高级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在SOLIDITY中编写测试"><span class="nav-number">8.</span> <span class="nav-text">在SOLIDITY中编写测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例"><span class="nav-number">8.1.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试结构"><span class="nav-number">8.2.</span> <span class="nav-text">测试结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#断言"><span class="nav-number">8.2.1.</span> <span class="nav-text">断言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署的地址"><span class="nav-number">8.2.2.</span> <span class="nav-text">部署的地址</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试合约名称"><span class="nav-number">8.3.</span> <span class="nav-text">测试合约名称</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试函数的名称"><span class="nav-number">8.4.</span> <span class="nav-text">测试函数的名称</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Before-After钩子"><span class="nav-number">8.5.</span> <span class="nav-text">Before/After钩子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高级特性"><span class="nav-number">8.6.</span> <span class="nav-text">高级特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#测试例外情况"><span class="nav-number">8.6.1.</span> <span class="nav-text">测试例外情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试以太网交易"><span class="nav-number">8.6.2.</span> <span class="nav-text">测试以太网交易</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
