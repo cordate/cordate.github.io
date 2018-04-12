@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="assembly," />
+
+
+<meta name="description" content="近日在研究solidity语言的时候，发现了很多关于汇编的有趣知识，感觉知识无涯，勤奋是道呀！要学习的东西还是很多的，今天就来研究一下这个Go语言的汇编。本文是参考Go语言官方的文档，好像这个没有详细的文档，就先入个门吧！ 前言官方文档提到里面的内容是不全面的，试问全面的在哪？ Go的汇编语言基于Plan 9的汇编，Plan 9网站的页面上有详细描述。如果你想编写汇编语言，你应该读这篇文档，虽然它">
+<meta name="keywords" content="assembly">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go的汇编程序快速指南">
+<meta property="og:url" content="http://cordate.github.io/2018/04/11/golang/Go的汇编程序快速指南/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="近日在研究solidity语言的时候，发现了很多关于汇编的有趣知识，感觉知识无涯，勤奋是道呀！要学习的东西还是很多的，今天就来研究一下这个Go语言的汇编。本文是参考Go语言官方的文档，好像这个没有详细的文档，就先入个门吧！ 前言官方文档提到里面的内容是不全面的，试问全面的在哪？ Go的汇编语言基于Plan 9的汇编，Plan 9网站的页面上有详细描述。如果你想编写汇编语言，你应该读这篇文档，虽然它">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-12T03:09:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go的汇编程序快速指南">
+<meta name="twitter:description" content="近日在研究solidity语言的时候，发现了很多关于汇编的有趣知识，感觉知识无涯，勤奋是道呀！要学习的东西还是很多的，今天就来研究一下这个Go语言的汇编。本文是参考Go语言官方的文档，好像这个没有详细的文档，就先入个门吧！ 前言官方文档提到里面的内容是不全面的，试问全面的在哪？ Go的汇编语言基于Plan 9的汇编，Plan 9网站的页面上有详细描述。如果你想编写汇编语言，你应该读这篇文档，虽然它">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/11/golang/Go的汇编程序快速指南/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Go的汇编程序快速指南 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/11/golang/Go的汇编程序快速指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go的汇编程序快速指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-11T17:14:18+08:00">2018-04-11</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go语言/" itemprop="url" rel="index"><span itemprop="name">Go语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>近日在研究solidity语言的时候，发现了很多关于汇编的有趣知识，感觉知识无涯，勤奋是道呀！要学习的东西还是很多的，今天就来研究一下这个Go语言的汇编。本文是参考Go语言官方的文档，好像这个没有详细的文档，就先入个门吧！</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>官方文档提到里面的内容是不全面的，试问全面的在哪？</p>
+<p>Go的汇编语言基于<a href="https://zh.wikipedia.org/wiki/%E8%B2%9D%E7%88%BE%E5%AF%A6%E9%A9%97%E5%AE%A4%E4%B9%9D%E8%99%9F%E8%A8%88%E7%95%AB" target="_blank" rel="noopener">Plan 9</a>的汇编，<a href="https://9p.io/plan9/" target="_blank" rel="noopener">Plan 9网站</a>的页面上有详细描述。如果你想编写汇编语言，你应该读<a href="https://9p.io/sys/doc/asm.html" target="_blank" rel="noopener">这篇文档</a>，虽然它是Plan 9相关的。这边文档总结了汇编的语法，并且描述了使用汇编语言和Go程序交互时的特殊之处。</p>
+<p>有一点是很重要的是，Go的汇编中没有直接体现出底层的机器。有些汇编细节能直接对应到机器，但有些不是。这是因为编译器套件在常规过程中不需要汇编语言。取而代之的是，编译器产生二进制的不完整的汇编指令集，链接器会完成它。<b style="color:blue">实际上，链接器做了汇编指令的选择，所以当你看到类似于MOV这样的指令，链接器的实际操作可能不是一个移动指令，也许是清除或者载入</b>。或者可能会根据指令的名字对应到真实的机器指令。总体上，机器相关的指令操作趋向于体现出真实的机器指令，但是一些通用的概念类似于移动内存数据、调用子例程、返回等操作就更抽象了。具体的细节和架构相关，我们为这种不精确性道歉;情况并不明确。</p>
+<p>汇编程序是生成中间码的一种方法，未完整定义的指令集作为链接器的输入。如果你想看到特定CPU架构下的汇编指令集，如amd64，在Go标准库的源文件中就有许多例子，在<a href="https://golang.org/pkg/runtime/" target="_blank" rel="noopener">runtime</a>和<a href="https://golang.org/pkg/math/big/" target="_blank" rel="noopener">math/big</a>包中。 或者你还可以参照下面的程序，来检查编译器的汇编输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ cat x.go</span><br><span class="line">package main</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	println(3)</span><br><span class="line">&#125;</span><br><span class="line">$ GOOS=linux GOARCH=amd64 go tool compile -S x.go        # or: go build -gcflags -S x.go</span><br><span class="line"></span><br><span class="line">--- prog list &quot;main&quot; ---</span><br><span class="line">0000 (x.go:3) TEXT    main+0(SB),$8-0</span><br><span class="line">0001 (x.go:3) FUNCDATA $0,gcargs·0+0(SB)</span><br><span class="line">0002 (x.go:3) FUNCDATA $1,gclocals·0+0(SB)</span><br><span class="line">0003 (x.go:4) MOVQ    $3,(SP)</span><br><span class="line">0004 (x.go:4) PCDATA  $0,$8</span><br><span class="line">0005 (x.go:4) CALL    ,runtime.printint+0(SB)</span><br><span class="line">0006 (x.go:4) PCDATA  $0,$-1</span><br><span class="line">0007 (x.go:4) PCDATA  $0,$0</span><br><span class="line">0008 (x.go:4) CALL    ,runtime.printnl+0(SB)</span><br><span class="line">0009 (x.go:4) PCDATA  $0,$-1</span><br><span class="line">0010 (x.go:5) RET     ,</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>FUNCDATA和PCDATA指令包含一些垃圾收集器需要的信息。它们由编译器产生。</p>
+<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><p>尽管汇编程序从Plan 9汇编程序中获得了指导，但它是一个独特的程序，因此存在一些差异。一个是不断的评估。汇编器中的常量表达式使用Go的运算符优先级解析，而不是原始的类C优先级。因此<code>3&amp;1&lt;&lt;2</code>是4，而不是0–它解析为<code>(3&amp;1)&lt;&lt;2</code> 不是<code>3&amp;(1&lt;&lt;2)</code>。而且，常量总是被评估为64位无符号整数。因此-2，不是整数值负2，而是具有相同位模式的无符号64位整数。这种区别无关紧要，但是这是为了当右操作数的高位被设置，避免除法或右移的歧义性。</p>
+<h2 id="符号"><a href="#符号" class="headerlink" title="符号"></a>符号</h2><p>一些符号（如R1或LR）是预定义的，并且指的是寄存器。确切的集合取决于体系结构。</p>
+<p><b style="color:red">有四个预先标记的符号表示伪寄存器。这些不是真正的寄存器，而是由工具链维护的虚拟寄存器，例如帧指针</b>。所有体系结构的伪寄存器组都是相同的：</p>
+<ul>
+<li>FP：帧（frame）指针：参数和本地变量。</li>
+<li>PC：程序计数器：跳转和分支。</li>
+<li>SB：静态基址指针：全局符号。</li>
+<li>SP：堆栈指针：堆栈顶部。</li>
+</ul>
+<p>所有用户定义的符号都被写为伪寄存器FP（参数和本地变量）和SB（全局）的偏移量 。</p>
+<p>SB伪寄存器可以被认为是内存的原点，所以符号<code>foo(SB)</code>的名称是foo在内存中的地址。这种格式用于命名全局函数和数据。在名称中添加&lt;&gt;，就像<code>foo&lt;&gt;(SB)</code>一样，那么该名称只能在当前源文件中看到，就像C文件中的<code>static</code>顶级声明。给名称添加一个偏移量就是指符号地址的偏移量，因此<code>foo+4(SB)</code>是foo开始处的四个字节。</p>
+<p><code>FP</code>伪寄存器是用来指向函数参数的虚拟帧指针。编译器维护一个虚拟帧指针，并将堆栈中的参数作为该伪寄存器的偏移量。因此<code>0(FP)</code>是函数的第一个参数，<code>8(FP)</code>第二个参数（在64位机器上）等等。但是，当以这种方式引用函数参数时，有必要在开始处放置一个名称，如<code>first_arg+0(FP)</code>和<code>second_arg+8(FP)</code>。（帧指针的偏移量，偏移量的含义 - 与其使用SB的偏移量不同，它是与符号的偏移量。）有些汇编程序强制执行这个约定，拒绝普通的<code>0(FP)</code>和<code>8(FP)</code>。实际名称在语义上不相关，但应该用来记录参数的名称。值得强调的是<code>FP</code>始终是伪寄存器，而不是硬件寄存器，即使在具有硬件帧指针的体系结构中也是如此。</p>
+<p>对于使用Go的汇编函数，<code>go vet</code>将检查参数名称和偏移量是否匹配。在32位系统上，64位值的低32位和高32位通过在名称中添加<code>_lo</code>或<code>_hi</code>后缀来区分，如<code>arg_lo+0(FP)</code>或<code>arg_hi+4(FP)</code>。如果Go原型没有命名它的结果，那么预期的汇编名称是<code>ret</code>。</p>
+<p><code>SP</code>伪寄存器是虚拟堆栈指针，用来指向帧局部变量和为函数调用准备的参数。它指向本地堆栈帧的顶部，因此引用应使用负数表示的范围<code>[-framesize，0）</code>中：例如：<code>x-8(SP)</code>，<code>y-4(SP)</code>等等。</p>
+<p><b style="color:blue">在名<code>SP</code>为硬件寄存器的体系结构中，名称前缀将对虚拟堆栈指针的引用与对帧（frame）SP寄存器的引用进行区分。即，<code>x-8(SP)</code>和<code>-8(SP)</code> 是不同的存储位置：所述第一指虚拟堆栈指针伪寄存器，而第二指硬件的SP寄存器。</b></p>
+<p><b style="color:blue">在物理机器上SP和PC是传统的物理地址寄存器中的别名，在Go汇编中名称SP和PC仍然特殊处理; 例如，SP引用要求符号，很像FP。要访问实际的硬件寄存器，请使用真实的寄存器名称。例如，在ARM体系结构上的硬件上硬件SP，PC可作为R13和R15访问。</b></p>
+<p>分支和直接跳转总是在PC中写为的偏移量，或跳转到标签：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">label:</span><br><span class="line">	MOVW $0, R1</span><br><span class="line">	JMP label</span><br></pre></td></tr></table></figure></p>
+<p>每个标签只能在其定义的函数中可见。因此允许文件中的多个函数定义和使用相同的标签名称。直接跳转和调用指令可以将文本符号作为目标，例如<code>name(SB)</code>,但不是符号的偏移量<code>name+4(SB)</code>。</p>
+<p>指令，寄存器和汇编程序指令总是以大写形式提醒您，汇编编程是一项艰巨的工作。（例外：在ARM平台下，代表当前goroutine的g寄存器被重新命名。）</p>
+<p>在Go对象文件和二进制文件中，符号的完整名字是包的路径加上一个句点：<code>fmt.Printf</code>或<code>math/rand.Int</code>。由于汇编器的解析器将句点和斜线视为标点符号，因此这些字符串不能直接用作标识符名称。相反，汇编程序允许标识符中的中点字符<code>U+00B7</code>和除法斜杠<code>U+2215</code>，并将它们重写为纯句点和斜杠。在汇编源代码文件中，上面的符号写成<code>fmt·Printf</code>和<code>math∕rand·Int</code>。通过在编译时使用-S标志看到的汇编代码列表中直接显示了句点和斜杠，而不是在汇编程序中需要的Unicode替代字符(指上面的两个特殊Unicode字符)。</p>
+<p>大部分手写的汇编文件中，不要在符号名中包含完整的包路径，因为链接器会在任何以句点开头的名字前面插入当前对象文件的路径：包含<code>math/rand</code>包的汇编源文件中，rand包的Int函数可以当做<code>·Int</code>来引用。这种便捷性避免了需要在自身的源代码中硬编码导入路径，可以让代码从一个地方移动到另一个地方时变得更容易。</p>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><p>汇编程序使用各种指令将文本和数据绑定到符号名称。例如，这里是一个简单但是完整的函数定义。<code>TEXT</code>指令声明符号<code>runtime·profileloop</code>, 指令紧接在类似于函数的主体中。<code>TEXT</code>块中的最后一条指令必须是某种跳转，通常是<code>RET</code>（伪）指令。（如果不是，链接器会追加跳转到块自身的指令;<code>TEXT</code>块中没有<code>fallthrough</code>。）在符号之后，参数是<code>标志</code>（见下面）和<code>栈帧</code>的大小，是一个常量（参见下面的代码）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">TEXT runtime·profileloop(SB),NOSPLIT,$8</span><br><span class="line">    MOVQ    $runtime·profileloop1(SB), CX</span><br><span class="line">    MOVQ    CX, 0(SP)</span><br><span class="line">    CALL    runtime·externalthreadhandler(SB)</span><br><span class="line">    RET</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">这个函数的栈帧大小为8字节(MOVQ CX, 0(SP)操作栈指针)，没有参数</b></p>
+<p>一般情况下，栈帧大小后面跟着一个由减号分隔的参数大小。（这不是一个减法，只是特殊的语法。）栈帧大小是<code>$24-8</code>描述该函数有一个24字节的栈帧，并且需要一个8个字节的参数，它位于调用者的栈帧上。如果没有为<code>TEXT</code>指定<code>NOSPLIT</code>标志，则必须提供参数大小。对于使用Go标准的汇编函数，<code>go vet</code>将检查参数大小是否正确。</p>
+<p>请注意，符号名称使用中点分隔组件，并且被定义为从伪寄存器SB开始的一个offsets。在Go源码的runtime包中，使用简称profileloop来调用。</p>
+<p>全局数据符号使用初始化的一系列<code>DATA</code>指令来定义，并且跟在一个<code>GLOBAL</code>指令之后。每个<code>DATA</code>指令初始化一块指定的内存区域。没有明确初始化的内存区域会被置为零。标准的<code>DATA</code>指令形式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DATA	symbol+offset(SB)/width, value</span><br></pre></td></tr></table></figure></p>
+<p>这样就初始化了symbol，内存在指定的offset处，带有指定的width和给定的value。一个symbol中的DATA指令必须是逐渐增长的offsets。</p>
+<p><code>GLOBL</code>指令声明一个符号是全局的。参数是可选的标志和需要声明为全局的数据的大小，除非<code>DATA</code>指令已初始化它，否则初始值将全部为零。<code>GLOBAL</code>指令必须跟在对应的<code>DATA</code>指令之后。</p>
+<p>例如，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DATA divtab&lt;&gt;+0x00(SB)/4, $0xf4f8fcff</span><br><span class="line">DATA divtab&lt;&gt;+0x04(SB)/4, $0xe6eaedf0</span><br><span class="line">...</span><br><span class="line">DATA divtab&lt;&gt;+0x3c(SB)/4, $0x81828384</span><br><span class="line">GLOBL divtab&lt;&gt;(SB), RODATA, $64</span><br><span class="line"></span><br><span class="line">GLOBL runtime·tlsoffset(SB), NOPTR, $4</span><br></pre></td></tr></table></figure></p>
+<p>声明并初始化<code>divtab&lt;&gt;</code>, 一个只读的64位<code>table</code>含有4字节的整数值。并声明<code>runtime·tlsoffset</code>一个4字节的，隐式地置零的变量，该变量不包含指针。</p>
+<p>指令可能有一个或两个参数。如果有两个，第一个是比特掩码的标志，它可以写成数字表达式，多个掩码之间可以相加或者做逻辑或运算，或者可以写成友好可读的形式。这些值定义在头文件<code>textflag.h</code>中：</p>
+<ul>
+<li><code>NOPROF = 1</code> (TEXT项使用.) 不优化NOPROF标记的函数。这个标志已废弃。</li>
+<li><code>DUPOK = 2</code> 在二进制文件中允许一个符号的多个实例。链接器会选择其中之一。</li>
+<li><code>NOSPLIT = 4</code> (TEXT项使用.) 不插入预先检测是否将栈空间分裂的代码。程序的栈帧中，如果调用任何其他代码都会增加栈帧的大小，必须在栈顶留出可用空间。用来保护处理栈空间分裂的代码本身。</li>
+<li><code>RODATA = 8</code> (DATA和GLOBAL项使用.) 将这个数据放在只读的块中。</li>
+<li><code>NOPTR = 16</code> (DATA和GLOBAL项使用.)这个数据不包含指针所以就不需要垃圾收集器来扫描。</li>
+<li><code>WRAPPER = 32</code> (TEXT项使用.) This is a wrapper function and should not count as disabling recover.</li>
+<li><code>NEEDCTXT= 64</code> （对于TEXT项目。）这个函数是一个闭包，所以它使用它的传入上下文寄存器。</li>
+</ul>
+<h2 id="协调Runtime"><a href="#协调Runtime" class="headerlink" title="协调Runtime"></a>协调Runtime</h2><p>要使垃圾收集正确运行，运行时必须知道所有全局数据和大多数堆栈帧中指针的位置。Go编译器在编译Go源文件时会发出此信息，但汇编程序必须明确定义这些信息。</p>
+<p>标有NOPTR标志的数据符号（见上面）被视为不包含指向Runtime分配数据的指针。带有<code>RODATA</code>标志的数据符号被分配在只读存储器中，因此被视为隐式标记<code>NOPTR</code>。总的大小小于指针大小的数据符号也被视为隐式标记<code>NOPTR</code>。无法在汇编语言中定义包含指针的符号; 这种符号必须在Go源文件中定义。汇编源文件仍然可以通过名称来引用符号，即使这个符号没有使用<code>DATA</code>和<code>GLOBL</code>指令也是如此。一个很好的通用规则是，在Go代码中定义非只读的数据，而不是在汇编程序中。</p>
+<p>每个函数都需要注释，标明在其参数、返回结果和本地栈帧上给出活动指针的位置。如果汇编函数没有指针类型的结果并且没有本地栈帧，或者没有调用函数，唯一需要做的是为函数在同名的包中定义一个Go函数原型（例如，syscall包中的函数Syscall应该在其TEXT指令中使用名称·Syscall而不是等效名称syscall·Syscall）。在更复杂的情况下，需要明确的注释出。这些注释使用在头文件<code>funcdata.h</code>中定义的伪指令。</p>
+<p>如果一个函数没有参数并且没有结果，指针信息可以省略。这可以通过在TEXT指令中使用参数大小<code>$n-0</code>指出。否则，指针信息必须由Go源文件中的Go原型函数提供，即使汇编函数不是直接被Go代码调用的。（原型还会使用<code>go vet</code>检查参数引用。）在函数的开头，参数都假设是已经被初始化的，但是函数的返回结果会假设是未初始化的。如果在执行CALL指令时，结果中HOLD住一个指针，函数应该在开头就将返回结果初始化为零值，并且接着执行伪指令<code>GO_RESULTS_INITIALIZED</code>。这个指令记录了当前返回结果已经被初始化，并且在当栈帧转移和垃圾收集的时候扫描返回结果。非常具有代表性的是会安排汇编函数不返回指针或者不包含任何CALL指令；在Go标准库中的汇编函数都没有使用<code>GO_RESULTS_INITIALIZED</code>。</p>
+<p>如果函数没有本地堆栈帧，则可以省略指针信息。这可以通过在TEXT指令中使用栈帧大小$0-n指出。如果函数不包含<code>CALL</code>指令，指针信息也可以省略。否则，本地栈帧不能包含指针，汇编必须通过执行<code>NO_LOCAL_POINTERS</code>伪指令来确认这种情况。由于堆栈大小调整是通过移动堆栈来实现的，栈指针可能在函数调用的时候发生改变：即使指向堆栈数据的指针也不能保存在局部变量中。</p>
+<p>汇编程序函数应该总是给出Go原型，以提供参数和结果的指针信息，并用<code>go vet</code>检查访问偏移量的偏移量是否正确。</p>
+<h2 id="架构相关的细节"><a href="#架构相关的细节" class="headerlink" title="架构相关的细节"></a>架构相关的细节</h2><p>列出某种机器的全部指令和细节是不切实际的。如果要查看为特定机器定义了哪些指令，比如ARM，请查看该体系结构支持库的obj源代码，源码在<code>src/cmd/internal/obj/arm</code>目录中。在那个目录中是一个文件<code>a.out.go</code>; 它包含一长串以<code>A</code>开头的常量，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const (</span><br><span class="line">	AAND = obj.ABaseARM + obj.A_ARCHSPECIFIC + iota</span><br><span class="line">	AEOR</span><br><span class="line">	ASUB</span><br><span class="line">	ARSB</span><br><span class="line">	AADD</span><br><span class="line">	...</span><br></pre></td></tr></table></figure></p>
+<p>这是该架构的汇编器和链接器已知的指令及其拼写列表。该列表中的每条指令都以首字母<code>A</code>开始，因此<code>AAND</code>表示按位和指令 <code>AND</code>（不带前导A），并以<code>AND</code>写入汇编源代码。枚举主要按字母顺序排列。（<code>AXXX</code>体系结构无关，在<code>cmd/internal/obj</code>程序包中定义 ，代表无效指令）。这些A名称的顺序与机器指令的实际编码无关。<code>cmd/internal/obj</code>包负责处理这些细节。</p>
+<p>有关386和AMD64体系结构的说明均已列入<code>cmd/internal/obj/x86/a.out.go</code>。</p>
+<p>这些架构共享共同寻址模式的标签名，例如 <code>(R1)</code>（直接寄存器寻址）， <code>4(R1)</code>（寄存器间接偏移）和 <code>$foo(SB)</code>（绝对地址）。汇编器还支持每种体系结构特有的一些（不一定是全部）寻址模式。下面的部分列出了这些。</p>
+<p>前面几部分示例中的一个细节是指令中的数据从左向右流动： <code>MOVQ $0, CX</code>清除<code>CX</code>。即使在某些架构上顺序是相反的，这种规则也是适用的。</p>
+<p>这里有一些对于Go所指的架构的相关的细节的描述。</p>
+<h3 id="32位英特尔386"><a href="#32位英特尔386" class="headerlink" title="32位英特尔386"></a>32位英特尔386</h3><p>指向g(goroutine)结构的Runtime指针通过MMU中其他未使用（就go而言）寄存器的值进行维护。如果源文件包含一个特别的头<code>go_asm.h</code>, 则为汇编程序定义一个与操作系统相关的宏<code>get_tls</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;go_asm.h&quot;</span><br></pre></td></tr></table></figure></p>
+<p>runtime中，<code>get_tls</code>宏通过一个指向<code>g</code>指针的指针来加载它的参数寄存器，<code>g</code>结构包含<code>m</code>指针。加载<code>g</code>和<code>m</code>的序列使用<code>CX</code>，就像下面这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">get_tls(CX)</span><br><span class="line">MOVL	g(CX), AX     // Move g into AX.</span><br><span class="line">MOVL	g_m(AX), BX   // Move g.m into BX.</span><br></pre></td></tr></table></figure></p>
+<p>寻址模式：</p>
+<ul>
+<li><code>(DI)(BX*2)</code>：地址<code>DI</code>加上<code>BX*2</code>的位置。</li>
+<li><code>64(DI)(BX*2)</code>：地址<code>DI</code>加上<code>BX*2</code>加上<code>64</code> 的位置。这些模式只接受1,2,4和8作为比例因子。</li>
+</ul>
+<p>在使用编译器和汇编程序的<code>-dynlink</code>或<code>-shared</code>模式时，固定内存位置任何加载或存储（如全局变量）必须假定重写<code>CX</code>。因此，为了安全使用这些模式，除了在内存引用之间外，汇编源码通常应避免使用<code>CX</code>。</p>
+<h3 id="64位Intel-386（又名amd64）"><a href="#64位Intel-386（又名amd64）" class="headerlink" title="64位Intel 386（又名amd64）"></a>64位Intel 386（又名amd64）</h3><p>这两种体系结构在汇编程序级别上表现基本相同。访问 64位版本的<code>m</code>和<code>g</code>指针的汇编代码与32位386相同，只是它使用MOVQ而不是MOVL：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">get_tls(CX)</span><br><span class="line">MOVQ	g(CX), AX     // Move g into AX.</span><br><span class="line">MOVQ	g_m(AX), BX   // Move g.m into BX.</span><br></pre></td></tr></table></figure></p>
+<h3 id="ARM"><a href="#ARM" class="headerlink" title="ARM"></a>ARM</h3><p>寄存器<code>R10</code>和<code>R11</code> 由编译器和链接保留使用。</p>
+<p><b style="color:red"><code>R10</code>指向<code>g</code>（<code>goroutine</code>）结构</b>。在汇编源代码中，这个指针必须被称为g; 名称<code>R10</code>不被识别。</p>
+<p>为了让人们和编译器更容易地编写汇编代码，ARM链接器允许一般寻址形式和<code>DIV</code>或者<code>MOD</code>伪指令，这些伪指令使用单个硬件指令可能无法表达。它实现这些多条指令形式，通常使用<code>R11</code>寄存器来保存临时值。手写汇编可以使用<code>R11</code>，但这样做需要确保链接程序不会使用它来实现函数中的任何其他指令。</p>
+<p>定义一个<code>TEXT</code>时，指定帧大小<code>$-4</code>告诉链接器，这是一个叶函数，不需要在Entry上保存<code>LR</code>。</p>
+<p><code>SP</code>始终指向前面描述的虚拟堆栈指针。对于硬件寄存器，请使用<code>R13</code>。</p>
+<p>条件码的语法是在指令中添加一个句点和一个或两个字母的代码，如下所示<code>MOVW.EQ</code>。可以附加多个代码：<code>MOVM.IA.W</code>。代码修饰符的顺序是无关紧要的。</p>
+<p>寻址模式：</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R0-&gt;16 </span><br><span class="line">R0&gt;&gt;16 </span><br><span class="line">R0&lt;&lt;16 </span><br><span class="line">R0@&gt;16：对于&lt;&lt;，左移16位的R0。其他代码是-&gt;（算术右移）， &gt;&gt;（逻辑右移）和 @&gt;（右旋）。</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R0-&gt;R1 </span><br><span class="line">R0&gt;&gt;R1 </span><br><span class="line">R0&lt;&lt;R1 </span><br><span class="line">R0@&gt;R1：因为&lt;&lt;，R0计数在左移R1。其他代码是-&gt;（算术右移）， &gt;&gt;（逻辑右移）和 @&gt;（右旋）。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>[R0,g,R12-R15]</code>：对于多寄存器指令，该组包括 <code>R0</code>，<code>g</code>，和<code>R12</code>到<code>R15</code>。</p>
+</li>
+<li><code>(R5, R6)</code>：目的寄存器对。</li>
+</ul>
+<h3 id="ARM64"><a href="#ARM64" class="headerlink" title="ARM64"></a>ARM64</h3><p>ARM64端口处于实验状态。</p>
+<p>指令修饰符附加到指令后的句点。只有修饰符P（后置）和W（前递增）： <code>MOVW.P</code>，<code>MOVW.W</code></p>
+<p>寻址模式：</p>
+<ul>
+<li><code>(R5, R6)</code>：LDP/STP的寄存器对。</li>
+</ul>
+<h3 id="64位PowerPC，又名ppc64"><a href="#64位PowerPC，又名ppc64" class="headerlink" title="64位PowerPC，又名ppc64"></a>64位PowerPC，又名ppc64</h3><p>64位PowerPC端口处于试验状态。</p>
+<p>寻址模式：</p>
+<ul>
+<li><code>(R5)(R6*1)</code>：<code>R5</code>加<code>R6</code>的位置。它是x86上的缩放模式，但是唯一允许的扩展是1。</li>
+<li><code>(R5+R6)</code>：<code>(R5)(R6*1)</code>的别名</li>
+</ul>
+<h3 id="IBM-z-Architecture，又名s390x"><a href="#IBM-z-Architecture，又名s390x" class="headerlink" title="IBM z/Architecture，又名s390x"></a>IBM z/Architecture，又名s390x</h3><p>寄存器<code>R10</code>和<code>R11</code>保留。汇编程序在汇编某些指令时使用它们来保存临时值。</p>
+<p><code>R13</code>指向<code>g</code>（goroutine）结构。这个寄存器必须被称为g; 名称<code>R13</code>不被识别。</p>
+<p><code>R15</code>指向堆栈帧，通常只能使用虚拟寄存器<code>SP</code>和<code>FP</code>。</p>
+<p>加载和存储多条指令在一系列寄存器上运行。寄存器范围由开始寄存器和结束寄存器指定。例如，<code>LMG(R9)</code>, <code>R5</code>, <code>R7</code>将加载<code>R5</code>，<code>R6</code>和<code>R7</code>与在64位值<code>0(R9)</code>，<code>8(R9)</code>和<code>16(R9)</code>分别。</p>
+<p>存储和存储指令（如<code>MVC</code>和<code>XC</code>）的长度作为第一个参数写入。例如，<code>XC $8, (R9)</code>, (R9)将在指定的地址处清除R9中八个字节。</p>
+<p>如果一个向量指令将长度或索引作为参数，那么它将成为第一个参数。例如，<code>VLEIF $1, $16, V2</code>将16个值加载到V2索引之一中。使用向量指令时应注意确保它们在运行时可用。要使用矢量指令，机器必须同时具有矢量功能（设施列表中的位129）和内核支持。如果没有内核支持，矢量指令将不起作用（它将相当于一条<code>NOP</code>指令）。</p>
+<p>寻址模式：</p>
+<ul>
+<li><code>(R5)(R6*1)</code>：R5加R6的位置。它是x86上的缩放模式，但是唯一允许的尺寸是1。</li>
+</ul>
+<h3 id="MIPS，MIPS64"><a href="#MIPS，MIPS64" class="headerlink" title="MIPS，MIPS64"></a>MIPS，MIPS64</h3><p>通用寄存器被命名<code>R0</code>到<code>R31</code>，浮点寄存器<code>F0</code>到<code>F31</code>。</p>
+<p><code>R30</code>保留指向g。 <code>R23</code>被用作临时寄存器。</p>
+<p>在<code>TEXT</code>指令中，栈大小MIPS是<code>$-4</code>，对于MIPS64是<code>$-8</code>，指示链接器不保存LR。</p>
+<p><code>SP</code>指的是虚拟堆栈指针。对于硬件寄存器，请使用<code>R29</code>。</p>
+<p>寻址模式：</p>
+<ul>
+<li>16(R1)：位置在R1加16。</li>
+<li>(R1)：别名0(R1)。</li>
+</ul>
+<p>GOMIPS的环境变量的值（<code>hardfloat</code>或 <code>softfloat</code>）由预先定义<code>GOMIPS_hardfloat</code>或<code>GOMIPS_softfloat</code>提供给汇编代码。</p>
+<h3 id="不支持的操作码"><a href="#不支持的操作码" class="headerlink" title="不支持的操作码"></a>不支持的操作码</h3><p>汇编器旨在支持编译器，因此并非所有硬件指令都针对所有体系结构定义：如果编译器不生成它，它可能不在那里。如果您需要使用缺少的指令，有两种方法可以继续。</p>
+<ul>
+<li>一种是直接修改汇编程序以支持该指令，这是直接的，但只有在指令可能再次使用时才值得。</li>
+<li>相反，对于简单的一次性修改案例，可以使用<code>BYTE</code> 和<code>WORD</code>指令将明确的数据放入<code>TEXT</code>的指令流中。以下是386运行时如何定义64位原子加载函数。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// uint64 atomicload64(uint64 volatile* addr);</span><br><span class="line">// so actually</span><br><span class="line">// void atomicload64(uint64 *res, uint64 volatile *addr);</span><br><span class="line">TEXT runtime·atomicload64(SB), NOSPLIT, $0-12</span><br><span class="line">	MOVL	ptr+0(FP), AX</span><br><span class="line">	TESTL	$7, AX</span><br><span class="line">	JZ	2(PC)</span><br><span class="line">	MOVL	0, AX // crash with nil ptr deref</span><br><span class="line">	LEAL	ret_lo+4(FP), BX</span><br><span class="line">	// MOVQ (%EAX), %MM0</span><br><span class="line">	BYTE $0x0f; BYTE $0x6f; BYTE $0x00</span><br><span class="line">	// MOVQ %MM0, 0(%EBX)</span><br><span class="line">	BYTE $0x0f; BYTE $0x7f; BYTE $0x03</span><br><span class="line">	// EMMS</span><br><span class="line">	BYTE $0x0F; BYTE $0x77</span><br><span class="line">	RET</span><br></pre></td></tr></table></figure>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://golang.org/doc/asm#arm64" target="_blank" rel="noopener">A Quick Guide to Go’s Assembler</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/assembly/" rel="tag"># assembly</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/10/blockchain/OpenZeppelin文档说明/" rel="next" title="OpenZeppelin文档说明">
+                <i class="fa fa-chevron-left"></i> OpenZeppelin文档说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">83</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常量"><span class="nav-number">2.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#符号"><span class="nav-number">3.</span> <span class="nav-text">符号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指令"><span class="nav-number">4.</span> <span class="nav-text">指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协调Runtime"><span class="nav-number">5.</span> <span class="nav-text">协调Runtime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构相关的细节"><span class="nav-number">6.</span> <span class="nav-text">架构相关的细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#32位英特尔386"><span class="nav-number">6.1.</span> <span class="nav-text">32位英特尔386</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#64位Intel-386（又名amd64）"><span class="nav-number">6.2.</span> <span class="nav-text">64位Intel 386（又名amd64）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARM"><span class="nav-number">6.3.</span> <span class="nav-text">ARM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARM64"><span class="nav-number">6.4.</span> <span class="nav-text">ARM64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#64位PowerPC，又名ppc64"><span class="nav-number">6.5.</span> <span class="nav-text">64位PowerPC，又名ppc64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IBM-z-Architecture，又名s390x"><span class="nav-number">6.6.</span> <span class="nav-text">IBM z/Architecture，又名s390x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MIPS，MIPS64"><span class="nav-number">6.7.</span> <span class="nav-text">MIPS，MIPS64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不支持的操作码"><span class="nav-number">6.8.</span> <span class="nav-text">不支持的操作码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">7.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

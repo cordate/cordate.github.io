@@ -276,6 +276,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/算法/Paxos协议详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/22/算法/Paxos协议详解/" itemprop="url">Paxos协议详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T15:40:51+08:00">2018-03-22</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Paxos协议/算法是分布式系统中比较重要的协议，它有多重要呢？</p>
+<p><a href="https://coolshell.cn/articles/10910.html" target="_blank" rel="noopener">&lt;分布式系统的事务处理&gt;</a>：</p>
+<ul>
+<li>Google Chubby的作者Mike Burrows说过这个世界上只有一种一致性算法，那就是Paxos，其它的算法都是残次品。</li>
+</ul>
+<p><a href="https://book.douban.com/subject/25723658/" target="_blank" rel="noopener">&lt;大规模分布式存储系统&gt;</a>：</p>
+<ul>
+<li>理解了这两个分布式协议之后(Paxos/2PC)，学习其他分布式协议会变得相当容易。</li>
+</ul>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>记得一年前去看Paxos的算法，那真是云里雾里根本不知道在讲什么，后来看了网上的一个视频（<a href="http://cxh.me/2014/08/26/paxos-study/" target="_blank" rel="noopener">知行学社的分布式系统与Paxos算法视频课程</a>）终于记住了。但是时间一长又忘记了，但是永远记住了两个规则，我觉得总结的很好。这个视频讲解的也十分到位。</p>
+<ol>
+<li>Prepare阶段喜新厌旧</li>
+<li>Commit阶段后者认同前者</li>
+<li>最终少数服从多数</li>
+</ol>
+<h2 id="算法的说明"><a href="#算法的说明" class="headerlink" title="算法的说明"></a>算法的说明</h2><p><b style="color:red">首先将议员的角色分为proposers，acceptors，和learners（允许身兼数职）</b>。proposers提出提案，提案信息包括提案编号和提议的value；acceptor收到提案后可以<b style="color:red">接受</b>（accept）提案，若提案获得多数acceptors的接受，则称该提案被<b style="color:red">批准（chosen）</b>；learners只能<b style="color:red">“学习”</b>被批准的提案。划分角色后，就可以更精确的定义问题：</p>
+<ul>
+<li><b style="color:red">决议（value）</b>只有在被proposers提出后才能被批准（未经批准的决议称为“提案（proposal）”）；</li>
+<li>在一次Paxos算法的执行实例中，只<b style="color:red">批准（chosen）</b>一个value；</li>
+<li>learners只能获得<b style="color:red">被批准（chosen）</b>的value。</li>
+</ul>
+<p>另外还需要保证progress。这一点以后再讨论。作者通过不断加强上述3个约束（主要是第二个）获得了Paxos算法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P1：一个acceptor必须接受（accept）第一次收到的提案。</span><br></pre></td></tr></table></figure>
+<p>这个比较好理解。（但是这里忽略了预提交阶段的事情了）。然后下面就是后者认同前者了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2：一旦一个具有value v的提案被批准（chosen），那么之后批准（chosen）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>这个是对接收者后者认同前者的说明，但是貌似只是对一个acceptor有约束，所以必须成为所有acceptors的共识，于是有了P2a。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2a：一旦一个具有value v的提案被批准（chosen），那么之后任何acceptor再次接受（accept）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>之前说的后者认同前者都是针对acceptor，但如果对于Proposer呢？于是又出现了P2b：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2b：一旦一个具有value v的提案被批准（chosen），那么以后任何proposer提出的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
+<p>但是根据P2b难以提出实现手段。因此需要进一步加强P2b。虽然以上规则很美好，但是总会出现各种异常的情况，但总会出现被大多数人接收的提案（少数服从多数原则）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">P2c：如果一个编号为n的提案具有value v，那么存在一个多数派，要么他们中所有人都没有接受（accept）编号小于n</span><br><span class="line">的任何提案，要么他们已经接受（accept）的所有编号小于n的提案中编号最大的那个提案具有value v。</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">最后这一条可能大家都不太明白，其实大概是这样的，当一个Proposer发现自己已经获得超过半数的之后后，就会进行广播说“我的提案通过啦，新的提案就不要再提出来啦”，于是众人开始学习（有点像区块链中挖出矿的幸运儿有木有）。对于掉队的孩子又找到队伍了，发起的旧协议终于到了“我提出一个提案，xxx”，于是其他人对他说“还提这些陈芝麻烂谷子干嘛，我们已经通过这个问题的提案了，就是XXX”，于是新人说那是晚到的邮件啊，我其实早就收到消息了呀！</b>不知你看懂没有，这就是Paxos协议。</p>
+<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>以上就是理解这个Paxos算法的思路，如果你想具体了解这个算法的过程，可以查看视频，也可以看wiki百科里面关于Paxos的示例，写得已经很明白了，只有按照前言中的三条规则向下面走，你一定会明白，这个应该不是特别难于理解。</p>
+<h2 id="决议的发布（主acceptor）"><a href="#决议的发布（主acceptor）" class="headerlink" title="决议的发布（主acceptor）"></a>决议的发布（主acceptor）</h2><p>一个显而易见的方法是当acceptors批准一个value时，将这个消息发送给所有learner。但是这个方法会导致消息量过大。</p>
+<p>由于假设没有Byzantine failures，learners可以通过别的learners获取已经通过的决议。因此acceptors只需将批准的消息发送给指定的某一个learner，其他learners向它询问已经通过的决议。这个方法降低了消息量，但是指定learner失效将引起系统失效。</p>
+<p><b style="color:red">因此acceptors需要将accept消息发送给learners的一个子集，然后由这些learners去通知所有learners。</b></p>
+<p>但是由于消息传递的不确定性，可能会没有任何learner获得了决议批准的消息。当learners需要了解决议通过情况时，可以让一个proposer重新进行一次提案。注意一个learner可能兼任proposer。</p>
+<h2 id="Progress的保证-主Proposer"><a href="#Progress的保证-主Proposer" class="headerlink" title="Progress的保证(主Proposer)"></a>Progress的保证(主Proposer)</h2><p><b style="color:red">根据上述过程当一个proposer发现存在编号更大的提案时将终止提案。这意味着提出一个编号更大的提案会终止之前的提案过程。如果两个proposer在这种情况下都转而提出一个编号更大的提案，就可能陷入活锁</b>，违背了Progress的要求。这种情况下的解决方案是选举出一个leader，仅允许leader提出提案。但是由于消息传递的不确定性，可能有多个proposer自认为自己已经成为leader。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://new-play.tudou.com/v/446596938.html?spm=a2hzp.8253869.0.0" target="_blank" rel="noopener">paxos和分布式系统</a><br><a href="https://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95#.E5.AE.9E.E4.BE.8B" target="_blank" rel="noopener">Paxos算法</a><br><a href="http://codemacro.com/2014/10/15/explain-poxos/" target="_blank" rel="noopener">图解分布式一致性协议Paxos</a><br><a href="http://blog.jobbole.com/106327/" target="_blank" rel="noopener">图解 Paxos 一致性协议</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/21/java/Java中volatile解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2825,167 +3008,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/15/blockchain/比特币的checkpoint理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/15/blockchain/比特币的checkpoint理解/" itemprop="url">比特币的checkpoint理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-15T16:22:25+08:00">2018-03-15</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在写之前的bitcoinj的网络参数时候，有一个字段叫checkpoints。当时始终没有理解这个是用来做啥的，就知道是检查点，可就是不明白检查什么。今天研读到，bitcoinj中Block的组织方式处的代码的时候又见到了这个字段，但是还是不知其意。但是知道了一个类CheckpointManager，于是今天准备来好好说道这个类。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一开始看到这个类的时候还是不明白作用是啥，但是名字上呢是略知一二，看了说明也是云里雾里，于是网上搜索checkpoint也没有比较好的回答，随着代码的深入阅读，终于搞明白了这个类的作用，这可真是太棒了！在类的说明中也提到了SPV。那么checkpoints和SPV有啥关系呢？</p>
-<h2 id="解惑"><a href="#解惑" class="headerlink" title="解惑"></a>解惑</h2><p>我们知道，接收一个新块的时候需要很多的验证，否则可能会被别人进行分叉的攻击等等。检测点，是用于保护网络不受全网51%算力攻击，因为攻击者是不能逆转最后一个检测点前发生的那些交易的。</p>
-<p>检测点是通过硬编码方式写入标准客户端的。意味着标准客户端将在检测点之前将接受所有有效交易，这些交易将是不可逆的。如果任何人试图在检测点前从一个区块对区块链进行分叉，客户端将不会接受这个分叉，这使得那些区块一成不变（set in stone）。</p>
-<p>但其实在CheckpointManager类说明上我们也可以获得一些信息：在整个链中对StoredBlock进行了硬编码。Checkpoints有两个目的：</p>
-<ul>
-<li>他们作为一种安全机制来对抗可能会重写大块历史的巨大重组，只有在时间轴的最新部分中，将区块链限制为一种共识机制。</li>
-<li>它们可以让同步到链头上的新钱包/用户比同步创建块中的所有头部更快。</li>
-</ul>
-<p><b style="color:red">这个意思就是说，你只需要同步检查点数据，以及最新检查点之后的区块，然后你的链就可以建立起来了，这样的好处就是你不需要同步所有的链上的区块。总之你利用这个特性可以简化空间和验证hash的时间，我想SPV一定是基于这种方式进行的实现。这种思路特别像跳跃表的实现。</b></p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><b style="color:red">对了这里可能是bitcoinj的实现，至于比特币内部的实现，我是不知道的。但是都是相同的，即使bitcoinj实现方式不同，但是只要被所有区块接受，那就是有效的算法不是吗？</b></p>
-<p><b style="color:red">这里我就不写一大堆的文字，唯一要提示的就是流的编码问题。如果你读的是二进制的文件，那么开头必须是<code>&quot;CHECKPOINTS 1&quot;</code>，如果读的是文件必须是<code>&quot;TXT CHECKPOINTS 1&quot;</code>开头，还有就是txt有范例在resources目录下。SPVStoredBlock需要Compact格式化（序列化）存储，之前讲过compact格式，最长是256，所以有<code>private static final int MAX_SIGNATURES = 256;</code>.下面贴源码和我的注释，这里就不深入地去探讨了。</b></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line">public class CheckpointManager &#123;</span><br><span class="line">    private static final Logger log = LoggerFactory.getLogger(CheckpointManager.class);</span><br><span class="line"></span><br><span class="line">    // 二进制流的头部检查，这个好像没有example，不过知道是这回事就可以了。</span><br><span class="line">    private static final String BINARY_MAGIC = &quot;CHECKPOINTS 1&quot;;</span><br><span class="line">    // 文件格式的开头，查看resources目录下的txt文件即可</span><br><span class="line">    private static final String TEXTUAL_MAGIC = &quot;TXT CHECKPOINTS 1&quot;;</span><br><span class="line">    private static final int MAX_SIGNATURES = 256;</span><br><span class="line"></span><br><span class="line">    // Map of block header time to data.</span><br><span class="line">    // 存放检查点</span><br><span class="line">    protected final TreeMap&lt;Long, StoredBlock&gt; checkpoints = new TreeMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    protected final NetworkParameters params;</span><br><span class="line">    // sha256hash对象</span><br><span class="line">    protected final Sha256Hash dataHash;</span><br><span class="line"></span><br><span class="line">    // base64编码器</span><br><span class="line">    public static final BaseEncoding BASE64 = BaseEncoding.base64().omitPadding();</span><br><span class="line"></span><br><span class="line">    /** Loads the default checkpoints bundled with bitcoinj */</span><br><span class="line">    public CheckpointManager(Context context) throws IOException &#123;</span><br><span class="line">        this(context.getParams(), null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Loads the checkpoints from the given stream */</span><br><span class="line">    public CheckpointManager(NetworkParameters params, @Nullable InputStream inputStream) throws IOException &#123;</span><br><span class="line">        this.params = checkNotNull(params);</span><br><span class="line">        if (inputStream == null)</span><br><span class="line">            inputStream = openStream(params);</span><br><span class="line">        checkNotNull(inputStream);</span><br><span class="line">        inputStream = new BufferedInputStream(inputStream);</span><br><span class="line">        inputStream.mark(1);</span><br><span class="line">        int first = inputStream.read();</span><br><span class="line">        inputStream.reset();</span><br><span class="line">        if (first == BINARY_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readBinary(inputStream);</span><br><span class="line">        else if (first == TEXTUAL_MAGIC.charAt(0))</span><br><span class="line">            dataHash = readTextual(inputStream);</span><br><span class="line">        else</span><br><span class="line">            throw new IOException(&quot;Unsupported format.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a checkpoints stream pointing to inside the bitcoinj JAR */</span><br><span class="line">    // 这个可以查看resources目录下的txt文件，你就能明白一二了。</span><br><span class="line">    public static InputStream openStream(NetworkParameters params) &#123;</span><br><span class="line">        return CheckpointManager.class.getResourceAsStream(&quot;/&quot; + params.getId() + &quot;.checkpoints.txt&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 看从这个流中是如何进行text读取，解析的步骤表明txt文件的格式。</span><br><span class="line">     * @param inputStream</span><br><span class="line">     * @return</span><br><span class="line">     * @throws IOException</span><br><span class="line">     */</span><br><span class="line">    private Sha256Hash readBinary(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        DataInputStream dis = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 信息分解器</span><br><span class="line">            MessageDigest digest = Sha256Hash.newDigest();</span><br><span class="line">            // 将数据读取，并进行分化</span><br><span class="line">            DigestInputStream digestInputStream = new DigestInputStream(inputStream, digest);</span><br><span class="line">            // 转为数据流</span><br><span class="line">            dis = new DataInputStream(digestInputStream);</span><br><span class="line">            digestInputStream.on(false);</span><br><span class="line">            byte[] header = new byte[BINARY_MAGIC.length()];</span><br><span class="line">            dis.readFully(header);</span><br><span class="line">            // 先读取header，查看header是否有效。</span><br><span class="line">            if (!Arrays.equals(header, BINARY_MAGIC.getBytes(&quot;US-ASCII&quot;)))</span><br><span class="line">                throw new IOException(&quot;Header bytes did not match expected version&quot;);</span><br><span class="line">            // 检查索引是否数组越界。</span><br><span class="line">            int numSignatures = checkPositionIndex(dis.readInt(), MAX_SIGNATURES, &quot;Num signatures out of range&quot;);</span><br><span class="line">            for (int i = 0; i &lt; numSignatures; i++) &#123;</span><br><span class="line">                byte[] sig = new byte[65];</span><br><span class="line">                // 读取签名</span><br><span class="line">                dis.readFully(sig);</span><br><span class="line">                // TODO: Do something with the signature here.</span><br><span class="line">            &#125;</span><br><span class="line">            digestInputStream.on(true);</span><br><span class="line">            // 继续读一个整型</span><br><span class="line">            int numCheckpoints = dis.readInt();</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            // 生成缓冲区大小，通过Compact编码读取数据。</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                if (dis.read(buffer.array(), 0, size) &lt; size)</span><br><span class="line">                    throw new IOException(&quot;Incomplete read whilst loading checkpoints.&quot;);</span><br><span class="line">                // 利用参数从数据中恢复，会进行校验检查</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                // 存入检查点</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            // 读取hash</span><br><span class="line">            Sha256Hash dataHash = Sha256Hash.wrap(digest.digest());</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), dataHash);</span><br><span class="line">            // 这里返回的hash，可能是整体文件的hash，也可能是最后的checkpoint的hash</span><br><span class="line">            return dataHash;</span><br><span class="line">        &#125; catch (ProtocolException e) &#123;</span><br><span class="line">            throw new IOException(e);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (dis != null) dis.close();</span><br><span class="line">            inputStream.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Sha256Hash readTextual(InputStream inputStream) throws IOException &#123;</span><br><span class="line">        // google的sha256 hash函数</span><br><span class="line">        Hasher hasher = Hashing.sha256().newHasher();</span><br><span class="line">        BufferedReader reader = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.US_ASCII));</span><br><span class="line">            String magic = reader.readLine();</span><br><span class="line">            // 开头TXT CHECKPOINTS 1，这个可以查看txt下的checkpoints文件。</span><br><span class="line">            if (!TEXTUAL_MAGIC.equals(magic))</span><br><span class="line">                throw new IOException(&quot;unexpected magic: &quot; + magic);</span><br><span class="line">            int numSigs = Integer.parseInt(reader.readLine());</span><br><span class="line">            // 多签名的量，依次读取，txt中第二行都是0</span><br><span class="line">            for (int i = 0; i &lt; numSigs; i++)</span><br><span class="line">                reader.readLine(); // Skip sigs for now.</span><br><span class="line">            // 查找有多少的检查点</span><br><span class="line">            int numCheckpoints = Integer.parseInt(reader.readLine());</span><br><span class="line">            checkState(numCheckpoints &gt; 0);</span><br><span class="line">            // Hash numCheckpoints in a way compatible to the binary format.</span><br><span class="line">            hasher.putBytes(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(numCheckpoints).array());</span><br><span class="line">            final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(size);</span><br><span class="line">            for (int i = 0; i &lt; numCheckpoints; i++) &#123;</span><br><span class="line">                byte[] bytes = BASE64.decode(reader.readLine());</span><br><span class="line">                hasher.putBytes(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                buffer.put(bytes);</span><br><span class="line">                buffer.position(0);</span><br><span class="line">                StoredBlock block = StoredBlock.deserializeCompact(params, buffer);</span><br><span class="line">                checkpoints.put(block.getHeader().getTimeSeconds(), block);</span><br><span class="line">            &#125;</span><br><span class="line">            HashCode hash = hasher.hash();</span><br><span class="line">            log.info(&quot;Read &#123;&#125; checkpoints, hash is &#123;&#125;&quot;, checkpoints.size(), hash);</span><br><span class="line">            return Sha256Hash.wrap(hash.asBytes());</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (reader != null) reader.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Returns a &#123;@link StoredBlock&#125; representing the last checkpoint before the given time, for example, normally</span><br><span class="line">     * you would want to know the checkpoint before the earliest wallet birthday.</span><br><span class="line">     *</span><br><span class="line">     * 返回给定时间节点之前最近的StoredBlock类的checkpoints。</span><br><span class="line">     */</span><br><span class="line">    public StoredBlock getCheckpointBefore(long time) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 时间一定要比创世区块时间要晚</span><br><span class="line">            checkArgument(time &gt; params.getGenesisBlock().getTimeSeconds());</span><br><span class="line">            // This is thread safe because the map never changes after creation.</span><br><span class="line">            Map.Entry&lt;Long, StoredBlock&gt; entry = checkpoints.floorEntry(time);</span><br><span class="line">            if (entry != null) return entry.getValue();</span><br><span class="line">            Block genesis = params.getGenesisBlock().cloneAsHeader();</span><br><span class="line">            return new StoredBlock(genesis, genesis.getWork(), 0);</span><br><span class="line">        &#125; catch (VerificationException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);  // Cannot happen.</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns the number of checkpoints that were loaded. */</span><br><span class="line">    public int numCheckpoints() &#123;</span><br><span class="line">        return checkpoints.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /** Returns a hash of the concatenated checkpoint data. */</span><br><span class="line">    // 返回串联检查点数据的散列。</span><br><span class="line">    public Sha256Hash getDataHash() &#123;</span><br><span class="line">        return dataHash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * &lt;p&gt;Convenience method that creates a CheckpointManager, loads the given data, gets the checkpoint for the given</span><br><span class="line">     * time, then inserts it into the store and sets that to be the chain head. Useful when you have just created</span><br><span class="line">     * a new store from scratch and want to use configure it all in one go.&lt;/p&gt;</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;Note that time is adjusted backwards by a week to account for possible clock drift in the block headers.&lt;/p&gt;</span><br><span class="line">     */</span><br><span class="line">    public static void checkpoint(NetworkParameters params, InputStream checkpoints, BlockStore store, long time)</span><br><span class="line">            throws IOException, BlockStoreException &#123;</span><br><span class="line">        checkNotNull(params);</span><br><span class="line">        checkNotNull(store);</span><br><span class="line">        checkArgument(!(store instanceof FullPrunedBlockStore), &quot;You cannot use checkpointing with a full store.&quot;);</span><br><span class="line"></span><br><span class="line">        time -= 86400 * 7;</span><br><span class="line"></span><br><span class="line">        checkArgument(time &gt; 0);</span><br><span class="line">        log.info(&quot;Attempting to initialize a new block store with a checkpoint for time &#123;&#125; (&#123;&#125;)&quot;, time, Utils.dateTimeFormat(time * 1000));</span><br><span class="line"></span><br><span class="line">        BufferedInputStream stream = new BufferedInputStream(checkpoints);</span><br><span class="line">        CheckpointManager manager = new CheckpointManager(params, stream);</span><br><span class="line">        StoredBlock checkpoint = manager.getCheckpointBefore(time);</span><br><span class="line">        store.put(checkpoint);</span><br><span class="line">        store.setChainHead(checkpoint);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3037,7 +3059,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">85</span>
+                    <span class="site-state-item-count">86</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3261,7 +3283,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">82</span>
+                      
+                    
+                    <span class="site-state-item-count">83</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
