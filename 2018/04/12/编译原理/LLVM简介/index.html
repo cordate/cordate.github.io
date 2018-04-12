@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="编译原理,LLVM," />
+
+
+<meta name="description" content="什么是LLVM官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：http://llvm.org/ 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。 LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于SSA（static single assignment form，静态单赋值形">
+<meta name="keywords" content="编译原理,LLVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLVM简介">
+<meta property="og:url" content="http://cordate.github.io/2018/04/12/编译原理/LLVM简介/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="什么是LLVM官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：http://llvm.org/ 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。 LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于SSA（static single assignment form，静态单赋值形">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-12T08:57:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LLVM简介">
+<meta name="twitter:description" content="什么是LLVM官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：http://llvm.org/ 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。 LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于SSA（static single assignment form，静态单赋值形">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/12/编译原理/LLVM简介/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>LLVM简介 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/12/编译原理/LLVM简介/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LLVM简介</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T15:28:52+08:00">2018-04-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编译原理/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是LLVM"><a href="#什么是LLVM" class="headerlink" title="什么是LLVM"></a>什么是LLVM</h2><p>官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：<a href="http://llvm.org/" target="_blank" rel="noopener">http://llvm.org/</a> 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。</p>
+<p>LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于<a href="https://zh.wikipedia.org/wiki/%E9%9D%99%E6%80%81%E5%8D%95%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F" target="_blank" rel="noopener">SSA</a>（static single assignment form，静态单赋值形式）的编译策略，能够支持任意编程语言的静态和动态编译。 从那时起，LLVM已经发展成为一个由多个子项目组成的综合项目，其中许多子项目正在各种商业和开源项目的生产中使用，并且被广泛用于学术研究。 LLVM项目中的代码遵循“UIUC”BSD-Style许可证.</p>
+<p>LLVM的主要子项目有：</p>
+<ol>
+<li>LLVM核心库提供了一个独立于现代的源和目标的<a href="http://llvm.org/docs/Passes.html" target="_blank" rel="noopener">优化器</a>，以及支持许多流行CPU的<a href="http://llvm.org/docs/CodeGenerator.html" target="_blank" rel="noopener">代码生成</a>（以及一些不太常见的CPU）。这些库是围绕一个<a href="http://llvm.org/docs/LangRef.html" target="_blank" rel="noopener">良好规范</a>的代码表示而建立的，称为LLVM<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E9%96%93%E8%AA%9E%E8%A8%80" target="_blank" rel="noopener">中间语言</a>（“LLVM IR”）。 LLVM Core库有<a href="http://llvm.org/docs/" target="_blank" rel="noopener">详细的文档</a>，并且<a href="http://llvm.org/docs/tutorial/" target="_blank" rel="noopener">使用LLVM用作优化器和代码生成器</a>，将使你特别容易地将创建自己的语言（或移植现有的编译器）。</li>
+<li><a href="http://clang.llvm.org/" target="_blank" rel="noopener">Clang</a>是一种“LLVM原生”的C/C++/Objective-C编译器，它旨在提供惊人的快速编译（例如，在编译调试配置中编译Objective-C代码时<a href="http://clang.llvm.org/features.html#performance" target="_blank" rel="noopener">比GCC快大约3倍</a>），非常有用的<a href="http://clang.llvm.org/diagnostics.html" target="_blank" rel="noopener">错误和警告消息</a>，为构建优秀的源代码级工具提供了一个平台。<a href="http://clang-analyzer.llvm.org/" target="_blank" rel="noopener">Clang静态分析器</a>是一个可以自动发现代码中的错误的工具，并且它是使用Clang前端作为库来解析C/C++代码的工具。</li>
+<li><a href="http://lldb.llvm.org/" target="_blank" rel="noopener">LLDB</a>项目建立在由LLVM和Clang提供的库上，以提供一个出色的本地调试器。 它使用Clang AST和表达式解析器，LLVM JIT，LLVM反汇编器等，以便提供“正常工作”的体验。 在加载符号时，它比GDB更快速，内存效率更高。</li>
+<li><a href="http://libcxx.llvm.org/" target="_blank" rel="noopener">libc++</a>和<a href="http://libcxxabi.llvm.org/" target="_blank" rel="noopener">libc++ ABI</a>项目提供了C++标准库的标准一致性和高性能实现，包括对C++11的全面支持。</li>
+<li><a href="http://compiler-rt.llvm.org/" target="_blank" rel="noopener">编译器rt</a>项目提供高级优化的低级代码生成器支持例程的实现，例如<code>“__fixunsdfdi”</code>以及当目标没有执行核心IR操作的短序列本机指令时生成的其他调用。 它还为动态测试工具（如<a href="http://clang.llvm.org/docs/AddressSanitizer.html" target="_blank" rel="noopener">AddressSanitizer</a>，<a href="http://clang.llvm.org/docs/ThreadSanitizer.html" target="_blank" rel="noopener">ThreadSanitizer</a>，<a href="http://clang.llvm.org/docs/MemorySanitizer.html" target="_blank" rel="noopener">MemorySanitizer</a>和<a href="http://clang.llvm.org/docs/DataFlowSanitizer.html" target="_blank" rel="noopener">DataFlowSanitizer</a>）提供了运行时库的实现。</li>
+<li><a href="http://openmp.llvm.org/" target="_blank" rel="noopener">OpenMP</a>子项目提供<a href="http://www.openmp.org/" target="_blank" rel="noopener">OpenMP</a> Runtime，以便与Clang中的OpenMP实现一起使用。</li>
+<li><a href="http://polly.llvm.org/" target="_blank" rel="noopener">polly</a>项目实现了一套缓存局部优化以及使用多面体模型的自动并行和向量化。</li>
+<li><a href="http://libclc.llvm.org/" target="_blank" rel="noopener">libclc</a>项目旨在实现OpenCL标准库。</li>
+<li><a href="http://klee.llvm.org/" target="_blank" rel="noopener">klee</a>项目实现了一个“符号虚拟机”，它使用定理证明器来尝试评估程序中的所有动态路径，以努力寻找错误并证明函数的属性。 klee的一个主要特点是它可以在检测到错误的情况下生成一个测试用例。</li>
+<li><a href="http://safecode.cs.illinois.edu/" target="_blank" rel="noopener">SAFECode</a>项目是用于C/C++程序的内存安全编译器。它使用运行时检查代码来检测运行时的内存安全错误（例如，缓冲区溢出）。它可以用来保护软件免受安全攻击，也可以用作Valgrind之类的内存安全错误调试工具。</li>
+<li><a href="http://lld.llvm.org/" target="_blank" rel="noopener">lld</a>项目旨在成为clang/llvm的内置链接器。目前，clang必须调用系统链接器来生成可执行文件。</li>
+</ol>
+<p>除了LLVM的官方子项目之外，还有各种各样<a href="http://llvm.org/ProjectsWithLLVM/" target="_blank" rel="noopener">使用LLVM组件执行各种任务的其他项目</a>。 通过这些外部项目，您可以使用LLVM编译Ruby，Python，Haskell，Java，D，PHP，Pure，Lua和一些其他语言。 LLVM的一个主要优势是其多功能性，灵活性和可重用性，这就是为什么它被用于如此广泛的各种不同任务的原因：从Lua等嵌入式语言的轻量级JIT编译到编译Fortran代码以实现大规模超级电脑。</p>
+<p>和其他所有事情一样，LLVM拥有广泛而友好的社区，他们对构建优秀的底层工具感兴趣。如果您有兴趣参与，首先要浏览<a href="http://blog.llvm.org/" target="_blank" rel="noopener">LLVM博客</a>并注册<a href="http://lists.llvm.org/mailman/listinfo/llvm-dev" target="_blank" rel="noopener">LLVM Developer邮件列表</a>。 有关如何发送补丁程序，获取提交权限以及版权和许可证主题的信息，请参阅<a href="http://llvm.org/docs/DeveloperPolicy.html" target="_blank" rel="noopener">LLVM开发者规则</a>。</p>
+<h2 id="关于LLVM"><a href="#关于LLVM" class="headerlink" title="关于LLVM"></a><b style="color:red">关于LLVM</b></h2><p><b style="color:green">看上面的说明可能有点懵，但其实就是LLVM定义了一种<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E9%96%93%E8%AA%9E%E8%A8%80" target="_blank" rel="noopener">中间语言</a>或称<a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E4%B8%AD%E9%97%B4%E8%AF%AD%E8%A8%80" target="_blank" rel="noopener">通用中间语言</a>,提供了丰富的中间码(IR),这样就为我们创建自己的语言提供了极大的便利，其实就是感觉自己用IR去生成自己的命令，类似于CPU中的微指令了。另外就是将自己的语言转成对应的LLVM IR，那么就可以直接使用LLVM子项目中的JIT，这样你就不用自己写虚拟机了，的确是带来了极大的遍历。</b></p>
+<p><b style="color:blue">再比如像solidity这样的语言需要运行在以太坊的CPP节点，Go节点，Parity的Scala节点，这样的话我们要写很多的编译器和虚拟机，但是有了LLVM后，一切都不用担心了，实现起来还是比较靠谱的，不是吗？</b></p>
+<p><b style="color:green">另外通过LLVM我们可以实现不同语言之间的互转，比如C++代码转成node代码。中间只要通过LLVM就可以了。以前不明白微软怎么支持多种语言实现在win10上安装，现在终于有思路了，只是微软要写多种编译器，可能这个过程比较难吧，他们放弃了。还有就比如以太坊的<a href="https://github.com/ethereum/solc-bin" target="_blank" rel="noopener">solc-bin</a>里面有用的文件只有一个7M多的js文件，而且还是压缩的，从ReadMe中我们可以发现，这个项目中的文件都是通过emscripten生成的；而emscripten是将LLVM中间语言转化为node代码，一切已然明了。</b></p>
+<p><b style="color:blue">所以我觉得学习LLVM语言还是很有必要的过程，应该深入去学习一下。</b></p>
+<h2 id="关于emscripten"><a href="#关于emscripten" class="headerlink" title="关于emscripten"></a>关于emscripten</h2><p>这是一个很棒的项目，将LLVM中间语言转化为node的代码。更多的东西就不用多介绍了，也不进行深入地学习了，这样精通node的编译器和语法知识才行，我就读读Readme、WIKI和api文档就好了。下面列一下学习的资料吧！<br><a href="https://github.com/kripken/emscripten" target="_blank" rel="noopener">官方github项目</a><br><a href="https://github.com/kripken/emscripten/wiki" target="_blank" rel="noopener">Emscripten Wiki</a><br><a href="http://kripken.github.io/emscripten-site/index.html" target="_blank" rel="noopener">Emscripten 文档</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://llvm.org/" target="_blank" rel="noopener">The LLVM Compiler Infrastructure</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8232943" target="_blank" rel="noopener"> LLVM每日谈之七 Clang</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8593380" target="_blank" rel="noopener">七天LLVM零基础入门（Linux版本）——第一天</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编译原理/" rel="tag"># 编译原理</a>
+          
+            <a href="/tags/LLVM/" rel="tag"># LLVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/11/golang/Go的汇编程序快速指南/" rel="next" title="Go的汇编程序快速指南">
+                <i class="fa fa-chevron-left"></i> Go的汇编程序快速指南
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">85</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是LLVM"><span class="nav-number">1.</span> <span class="nav-text">什么是LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于LLVM"><span class="nav-number">2.</span> <span class="nav-text">关于LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于emscripten"><span class="nav-number">3.</span> <span class="nav-text">关于emscripten</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">4.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
