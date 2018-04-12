@@ -277,7 +277,7 @@ p {
   margin: 0 0 20px 0;
 }
 a {
-  color: #555;
+  color: #268bd2;
   text-decoration: none;
   outline: none;
   border-bottom: 1px solid #999;
@@ -498,7 +498,7 @@ code {
 code {
   padding: 2px 4px;
   word-wrap: break-word;
-  color: #555;
+  color: #bf616a;
   background: #eee;
   border-radius: 3px;
   font-size: 14px;
@@ -513,7 +513,7 @@ pre code {
   text-shadow: none;
 }
 .highlight {
-  border-radius: 1px;
+  border-radius: 6px;
 }
 .highlight pre {
   border: none;
@@ -555,16 +555,19 @@ pre code {
   padding-right: 10px;
   color: #869194;
   text-align: right;
-  background-color: #eff2f3;
+  background: #d1f2eb;
 }
 .highlight .code pre {
   width: 100%;
   padding-left: 10px;
   padding-right: 10px;
-  background-color: #f7f7f7;
+  background: #e7f2fa;
 }
 .highlight .line {
   height: 20px;
+}
+figure.highlight {
+  background: #e7f2fa;
 }
 .gutter {
   -webkit-user-select: none;
@@ -914,7 +917,7 @@ pre .javascript .function {
 }
 .post-body .tabs ul.nav-tabs li.tab.active a {
   cursor: default;
-  color: #555;
+  color: #268bd2;
 }
 .post-body .tabs .tab-content {
   background-color: #fff;
@@ -1570,7 +1573,7 @@ pre .javascript .function {
   display: block;
   line-height: 25px;
   font-size: 14px;
-  color: #555;
+  color: #268bd2;
   border-bottom: none;
 }
 .post-nav-item a:hover {
@@ -1819,7 +1822,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #0e3da7;
+  background: #fc3721;
 }
 .links-of-blogroll {
   font-size: 13px;
