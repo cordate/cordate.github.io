@@ -276,6 +276,165 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/通用日志表的设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/系统设计/通用日志表的设计/" itemprop="url">通用日志表的设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:40:58+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="1-快照表"><a href="#1-快照表" class="headerlink" title="1. 快照表"></a>1. 快照表</h3><p>表结构修改具有关联性，存储的数据比较多。可维护性很强。</p>
+<h3 id="2-JSON"><a href="#2-JSON" class="headerlink" title="2. JSON"></a>2. JSON</h3><h4 id="2-1-记录修改前后值"><a href="#2-1-记录修改前后值" class="headerlink" title="2.1 记录修改前后值"></a>2.1 记录修改前后值</h4><p>这个性能可能和前面的快照表的性能损耗是一样的，要有很多修改的东西。</p>
+<h4 id="2-2-记录修改后的值"><a href="#2-2-记录修改后的值" class="headerlink" title="2.2 记录修改后的值"></a>2.2 记录修改后的值</h4><p>修改前的值可以用parent_id进行关联，这种方式可以解决我们的问题。但是root没有关联，需要将插入的数据保存一分过来。</p>
+<h4 id="2-3-记录修改的字段的值"><a href="#2-3-记录修改的字段的值" class="headerlink" title="2.3 记录修改的字段的值"></a>2.3 记录修改的字段的值</h4><p>这个和2.2 差不多只是，只序列化修改的字段，这样存储的信息更少。但是如果想要知道哪个字段的修改就无能为力，需要找到所有的更改记录。</p>
+<h3 id="3-操作表-更改表"><a href="#3-操作表-更改表" class="headerlink" title="3. 操作表+更改表"></a>3. 操作表+更改表</h3><p>就是一个记录基本操作信息的表，然后另一张表记录修改哪张表的哪个字段，哪个值被改为哪个值。如果要查改动之前的值就是会有查询的操作，另外就是批量更改可能会产生大量需要更改的数据。</p>
+<h4 id="3-1-原值-现值"><a href="#3-1-原值-现值" class="headerlink" title="3.1 原值+现值"></a>3.1 原值+现值</h4><p>依然还是存储想要的值，但是只有修改的字段的原值和现值。</p>
+<h4 id="3-2-只记录现值"><a href="#3-2-只记录现值" class="headerlink" title="3.2 只记录现值"></a>3.2 只记录现值</h4><p>还是通过parent_id记录修改的历史，但是root必须是原来的值，所以插入的时候需要保存一份在这个地方。</p>
+<p>原值的改动可以在第一次查询使用的时候，通过parent_id找到，这种方式的缺点是，无从知晓上一次本字段是在哪次编辑的，反正找打了就要存下来。如果原值不需要查询，那么在生成日志的时候就一起存下来。有的原值是NULL，这样就达不到缓存的策略，所以可以设置为空字符串也不要设置为NULL，这样缓存策略才能生效。</p>
+<p>其实parent_id这种方式只能保证更改的记录串行而已，但是无法确定一个字段的原值，通过parent-id进行回溯，可能存在次数过多的问题。所以应该在记录filed的这张表设置中加入被修改表的信息，以及修改的记录id的信息，通过记录id和字段名找到所有值，这样就可以知道原来的值是什么了，排序就是事件的发生顺序，所以应该没有问题。</p>
+<h3 id="4-No-SQL的存储"><a href="#4-No-SQL的存储" class="headerlink" title="4. No SQL的存储"></a>4. No SQL的存储</h3><p>这种存储方式，可能会出现数据不好解析的问题，因为我们可能是进行序列化的。MongoDB可能比较适合，我们能进行相应数据的查询。但是普遍没有事务的支持。</p>
+<p>还有一种文档存储就是基于Lucene的存储，一般我们不会直接使用Lucene，而是使用封装好的结构进行存储，比如说solr和EleasticSearch。</p>
+<h3 id="5-列存储"><a href="#5-列存储" class="headerlink" title="5. 列存储"></a>5. 列存储</h3><p>如果进行列存储的话，其实可以解决我们的不少问题。我其实比较倾向于使用列存储的方式来解决我们遇到的问题。表格存储最大的好处就是列信息可以变动。</p>
+<h3 id="6-日志文件打印"><a href="#6-日志文件打印" class="headerlink" title="6. 日志文件打印"></a>6. 日志文件打印</h3><p>日志文件的打印不一定是打入到文件里面去，也可以打印到流里面去。网上有很多网络流的工具，比如apache的flume。</p>
+<p>当然也可以打印到日志文件中，这样由第三方的工具再从日志文件中读取分析。但是读取的数据需要分析存储。当然这需要工具记录上次的读取位置。</p>
+<h3 id="7-MQ中继方式"><a href="#7-MQ中继方式" class="headerlink" title="7. MQ中继方式"></a>7. MQ中继方式</h3><p>将数据直接推送至MQ中，或者直接发给flume，再由flume推送到MQ中。一般有3层机制也有多层的架构机制。</p>
+<p>使用这些机制的原因是一层一层的速度放缓，其实这就是本质，flume快速接受，MQ推送可以暂存一部分数据，然后storm或者spark进行分析，进一步完成数据的分析过程，又是一层的数据放缓，最后存储最终整理或者分析后的数据。</p>
+<p>当然hadoop是用来处理离线数据的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上就是我对通用日志的一些总结信息，想到数据分析的作用，日后如果有新的想法，我会继续加入改进。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/分布式定时器的设计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1825,192 +1984,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/13/blockchain/Bitcoinj中协议抽象学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/13/blockchain/Bitcoinj中协议抽象学习/" itemprop="url">Bitcoinj中协议抽象学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-13T15:11:15+08:00">2018-03-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我们内部的比特币钱包系统是通过Bitcoinj实现的，但是我们发现这个系统里面有很多不符合我们应用开发的地方，所以呢，我决定进行源码阅读，但是读起来比较费劲，一段时间后很容易忘记，所以干脆写一些博客来记录一下。在读的过程中我发现了Message这个类，仔细一看这个类貌似和协议是有关系的，所以今天就来深入学习探索一下，由于很多地方我也不是很明白，所以难免理解上是有错误的。日后回来修改吧！先来看一下类图：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/bitcoinj%E4%B8%ADMessage%E7%B1%BB%E5%9B%BE.png?raw=true" alt=""></p>
-<h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><p>Message数据结构可以被序列化为bitcoin的序列化结构。特殊类型的message可以在blockchain中使用，也可以在wire中使用，都是从这个类派生。Message类不是线程安全的。我们也要注意的是Block类也是继承Message的，所以说可能在比特币中，Block也被看作成一个消息协议。但也许Block也只是复用里面的东西而已。</p>
-<p><b style="color:red">在Message中，协议是存放在payload这个字节数组中，用offset标记有效数据的开始位置（前面可能是标记啥的，这个需要后面阅读代码的时候进行深一步解析，不过我猜测就是因为父消息包含子消息放在了同一个byte数组里面），cursor用于标记已经解析到的数据位置。length表示数据的长度。内部还有MessageSerializer的实例，这个是序列化的接口类，实现类这个需要看了。还有网络信息参数NetworkParameters。</b></p>
-<p>内部有一个自检的函数，看似是非常有用的一个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* 自我检查（已解析字段反序列化，与原字段进行比较查看结果）</span><br><span class="line">* @param payload ：包含消息内容的Bitcoin协议格式化字节数组</span><br><span class="line">* @param offset    偏移</span><br><span class="line">*/</span><br><span class="line">private void selfCheck(byte[] payload, int offset) &#123;</span><br><span class="line">    // 如果不是VersionMessage的话</span><br><span class="line">    if (!(this instanceof VersionMessage)) &#123;</span><br><span class="line">        // 取得已经解析的部分</span><br><span class="line">        byte[] payloadBytes = new byte[cursor - offset];</span><br><span class="line">        System.arraycopy(payload, offset, payloadBytes, 0, cursor - offset);</span><br><span class="line">        // 调用序列化进行序列化</span><br><span class="line">        byte[] reserialized = bitcoinSerialize();</span><br><span class="line">        // 检查当前解析序列化结果的值是不是正常的。</span><br><span class="line">        if (!Arrays.equals(reserialized, payloadBytes))</span><br><span class="line">            throw new RuntimeException(&quot;Serialization is wrong: \n&quot; +</span><br><span class="line">                    Utils.HEX.encode(reserialized) + &quot; vs \n&quot; +</span><br><span class="line">                    Utils.HEX.encode(payloadBytes));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个类里面还有一些功能就是修改属性之后，可能需要修改payload这个字节数组。还有就是对内容进行序列化。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// 调整长度</span><br><span class="line">protected void adjustLength(int newArraySize, int adjustment) &#123;</span><br><span class="line">    if (length == UNKNOWN_LENGTH)</span><br><span class="line">        return;</span><br><span class="line">    // Our own length is now unknown if we have an unknown length adjustment.</span><br><span class="line">    if (adjustment == UNKNOWN_LENGTH) &#123;</span><br><span class="line">        length = UNKNOWN_LENGTH;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    // 调整长度</span><br><span class="line">    length += adjustment;</span><br><span class="line">    // Check if we will need more bytes to encode the length prefix.</span><br><span class="line">    // 检查我们是否需要风度哦的字节数来编码长度前缀</span><br><span class="line">    if (newArraySize == 1)</span><br><span class="line">        length++;  // The assumption here is we never call adjustLength with the same arraySize as before.</span><br><span class="line">    else if (newArraySize != 0)</span><br><span class="line">        // 不知道这里操作的意义。</span><br><span class="line">        length += VarInt.sizeOf(newArraySize) - VarInt.sizeOf(newArraySize - 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>一开始并没有看懂这个调整长度后面代码的意思，这里我们可以看一下VarInt类里面的实现，你就明白了。VarInt主要的作用是对long整型进行编码，我们看一下里面的一个方法就明白了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static int sizeOf(long value) &#123;</span><br><span class="line">    // if negative, it&apos;s actually a very large unsigned long value</span><br><span class="line">    if (value &lt; 0) return 9; // 1 marker + 8 data bytes</span><br><span class="line">    if (value &lt; 253) return 1; // 1 data byte</span><br><span class="line">    if (value &lt;= 0xFFFFL) return 3; // 1 marker + 2 data bytes</span><br><span class="line">    if (value &lt;= 0xFFFFFFFFL) return 5; // 1 marker + 4 data bytes</span><br><span class="line">    return 9; // 1 marker + 8 data bytes</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这就是编码的方式，取得一个long编码需要的字节大小，最大9个字节。再去看一下adjustLength的代码你就明白它在做什么了。</p>
-<h2 id="EmptyMessage"><a href="#EmptyMessage" class="headerlink" title="EmptyMessage"></a>EmptyMessage</h2><p>这个是代表某种父消息，但是父消息只有头部信息，没有payload。比如说getaddr命令、verack命令等。</p>
-<h2 id="AddressMessage"><a href="#AddressMessage" class="headerlink" title="AddressMessage"></a>AddressMessage</h2><p>这个代表P2P网络中的“addr”，它的内容就是<code>private List&lt;PeerAddress&gt; addresses;</code>,限制最大的量是1024.下面看一下解析的方法吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void parse() throws ProtocolException &#123;</span><br><span class="line">    // 先读容量大小</span><br><span class="line">    long numAddresses = readVarInt();</span><br><span class="line">    // Guard against ultra large messages that will crash us.</span><br><span class="line">    if (numAddresses &gt; MAX_ADDRESSES)</span><br><span class="line">        throw new ProtocolException(&quot;Address message too large.&quot;);</span><br><span class="line">    addresses = new ArrayList&lt;&gt;((int) numAddresses);</span><br><span class="line">    for (int i = 0; i &lt; numAddresses; i++) &#123;</span><br><span class="line">        // payload是地址传递。</span><br><span class="line">        PeerAddress addr = new PeerAddress(params, payload, cursor, protocolVersion, this, serializer);</span><br><span class="line">        addresses.add(addr);</span><br><span class="line">        cursor += addr.getMessageSize();</span><br><span class="line">    &#125;</span><br><span class="line">    length = new VarInt(addresses.size()).getSizeInBytes();</span><br><span class="line">    // The 4 byte difference is the uint32 timestamp that was introduced in version 31402</span><br><span class="line">    length += addresses.size() * (protocolVersion &gt; 31402 ? PeerAddress.MESSAGE_SIZE : PeerAddress.MESSAGE_SIZE - 4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>现在知道PeerAddress的使用了，也知道这个类的作用了吧！反序列化的过程基本是类似的。</p>
-<p>更多的不用细看了，我们的主要目的是了解bitcoinj是如何工作的，如果要改代码再去追寻细节的知识。</p>
-<h2 id="AlertMessage"><a href="#AlertMessage" class="headerlink" title="AlertMessage"></a>AlertMessage</h2><p>我们知道比特币有一个紧急通知的功能，而且私钥只有几个人知道，这个AlertMessage就是用来接收这个广播消息的。我们看一下字段吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private byte[] content; // 内容</span><br><span class="line">private byte[] signature; // 签名</span><br><span class="line"></span><br><span class="line">// See the getters for documentation of what each field means.</span><br><span class="line">private long version = 1; // 匹配的版本</span><br><span class="line">private Date relayUntil; // 停止广播的时间</span><br><span class="line">private Date expiration; // 消息失效的时间（到期后消息不再显示）</span><br><span class="line">private long id; // 这个消息的唯一id</span><br><span class="line">private long cancel; // 任何小于给定的id（指cannel），都认为是被删除的</span><br><span class="line">private long minVer, maxVer; // 如果是指定的版本有问题，这个表示的就是这个意思</span><br><span class="line">private long priority; // 消息权重</span><br><span class="line">private String comment, statusBar, reserved; // comment不显示，给开发人员的说明。statusBar是GUI状态栏会显示的消息。reserved是保留字段。</span><br></pre></td></tr></table></figure></p>
-<p>关于里面的意义就不解析了，因为一般我们不用太关心去处理警告，关于公钥可以在类<code>org.bitcoinj.params.TestNet3Params</code>看到。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alertSigningKey = Utils.HEX.decode(&quot;04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a&quot;);</span><br></pre></td></tr></table></figure></p>
-<h2 id="GetAddrMessage"><a href="#GetAddrMessage" class="headerlink" title="GetAddrMessage"></a>GetAddrMessage</h2><p>这个就是刚才我们说EmptyMessage例子，是EmptyMessage的子类。</p>
-<h2 id="GetBlocksMessage"><a href="#GetBlocksMessage" class="headerlink" title="GetBlocksMessage"></a>GetBlocksMessage</h2><p>getblocks命令的P2P协议消息。这个是请求部分遗失的区块头部信息。这个区块的信息随后会使用GetDataMessage进行下载。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 版本</span><br><span class="line">protected long version;</span><br><span class="line">// 头部信息</span><br><span class="line">protected List&lt;Sha256Hash&gt; locator;</span><br><span class="line">// 结束的区块hash</span><br><span class="line">protected Sha256Hash stopHash;</span><br></pre></td></tr></table></figure></p>
-<p>我们从Sha256Hash类中可以知道，hash长度32字节（16进制标识的话是64个字符），里面的方法我就不做更多说明了。</p>
-<h2 id="GetDataMessage"><a href="#GetDataMessage" class="headerlink" title="GetDataMessage"></a>GetDataMessage</h2><p>getdata命令的网络消息类型，代表区块的内容或者事务给出他们的hash。GetDataMessage没啥东西，但是父类ListMessage的属性如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">private long arrayLen;</span><br><span class="line">// For some reason the compiler complains if this is inside InventoryItem</span><br><span class="line">protected List&lt;InventoryItem&gt; items;</span><br></pre></td></tr></table></figure></p>
-<p>InventoryItem就是这个消息的内容实体，是基类的话，getData应该是可以返回复合消息的。我们来看一下这个类的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class InventoryItem &#123;</span><br><span class="line">    </span><br><span class="line">    /**</span><br><span class="line">     * 4 byte uint32 type field + 32 byte hash</span><br><span class="line">     */</span><br><span class="line">    static final int MESSAGE_LENGTH = 36;</span><br><span class="line">    </span><br><span class="line">    public enum Type &#123;</span><br><span class="line">        Error,</span><br><span class="line">        Transaction,</span><br><span class="line">        Block,</span><br><span class="line">        FilteredBlock</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public final Type type;</span><br><span class="line">    public final Sha256Hash hash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个数据总长64个字节，type占32字节，hash占32字节。</p>
-<h2 id="GetHeadersMessage"><a href="#GetHeadersMessage" class="headerlink" title="GetHeadersMessage"></a>GetHeadersMessage</h2><p>基本没做什么，继承自GetBlocksMessage，是getheaders命令的使用，注意我们这里的分析都是返回结果，但是没有先关的请求参数协议，这个如果后面我们分析到了，再做说明，这里提一下，需要特别注意的地方。</p>
-<h2 id="GetUTXOsMessage"><a href="#GetUTXOsMessage" class="headerlink" title="GetUTXOsMessage"></a>GetUTXOsMessage</h2><p>这个命令现在好像只有比特现金有实现，可以查看：<a href="https://github.com/bitcoinxt/bitcoinxt。另外询问其他节点的utxo，可能会被欺骗。一般都是自己做index进行查找。" target="_blank" rel="noopener">https://github.com/bitcoinxt/bitcoinxt。另外询问其他节点的utxo，可能会被欺骗。一般都是自己做index进行查找。</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public static final int MIN_PROTOCOL_VERSION = 70002;</span><br><span class="line">/** Bitmask of service flags required for a node to support this command (0x3) */</span><br><span class="line">public static final long SERVICE_FLAGS_REQUIRED = 3;</span><br><span class="line">private boolean includeMempool;</span><br><span class="line">private ImmutableList&lt;TransactionOutPoint&gt; outPoints;</span><br></pre></td></tr></table></figure></p>
-<p>TransactionOutPoint也是一个ChildMessage，是交易的输出内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">static final int MESSAGE_LENGTH = 36;</span><br><span class="line"></span><br><span class="line">/** Hash of the transaction to which we refer. */</span><br><span class="line">private Sha256Hash hash;</span><br><span class="line">/** Which output of that transaction we are talking about. */</span><br><span class="line">private long index;</span><br><span class="line"></span><br><span class="line">// This is not part of bitcoin serialization. It points to the connected transaction.</span><br><span class="line">Transaction fromTx;</span><br><span class="line"></span><br><span class="line">// The connected output.</span><br><span class="line">TransactionOutput connectedOutput;</span><br></pre></td></tr></table></figure></p>
-<p>TransactionOutPoint就是为了聚合不同交易的输出作为新交易的输入。</p>
-<h2 id="HeadersMessage"><a href="#HeadersMessage" class="headerlink" title="HeadersMessage"></a>HeadersMessage</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// The main client will never send us more than this number of headers.</span><br><span class="line">public static final int MAX_HEADERS = 2000;</span><br><span class="line"></span><br><span class="line">private List&lt;Block&gt; blockHeaders;</span><br></pre></td></tr></table></figure>
-<p>Block就是区块的信息类。</p>
-<h2 id="InventoryMessage"><a href="#InventoryMessage" class="headerlink" title="InventoryMessage"></a>InventoryMessage</h2><p>拥有更长区块链的对等节点比其他节点有更多的区块，可以识别出哪些区块们是其他节点需要“补充”的。它会识别出第一批可供分享的500个区块，通过使用inv（inventory）消息把这些区块的哈希值传播出去。缺少这些区块的节点便可以通过各自发送的getdata消息来请求得到全区块信息，用包含在inv消息中的哈希值来确认是否为正确的被请求的区块，从而读取这些缺失的区块。</p>
-<p>这个类是inv的P2P消息的实例，继承自ListMessage。取得头部信息后，通过GetDataMessage获得具体的消息。</p>
-<h2 id="MemoryPoolMessage"><a href="#MemoryPoolMessage" class="headerlink" title="MemoryPoolMessage"></a>MemoryPoolMessage</h2><p>这个mempool的信息，请求一个远程的节点来宣布所有的交易都在他们的内存池中，可能在连接上还设置了Bloom过滤器。在inv消息中返回交易hash列表。注意这和TxConfidenceTable对象不同，后者不会尝试去追踪阻塞的交易，只是为交易持有一段区域。mempool消息没有字段的。其实就是发送mempool，对方回复一个inv</p>
-<h2 id="NotFoundMessage"><a href="#NotFoundMessage" class="headerlink" title="NotFoundMessage"></a>NotFoundMessage</h2><p>当有getdata的请求时，如果没有数据在mempool中的话，就会返回这个消息。</p>
-<h2 id="PartialMerkleTree"><a href="#PartialMerkleTree" class="headerlink" title="PartialMerkleTree"></a>PartialMerkleTree</h2><p>这是默克尔树的结构，使用深度遍历。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// the total number of transactions in the block</span><br><span class="line">private int transactionCount;</span><br><span class="line"></span><br><span class="line">// node-is-parent-of-matched-txid bits</span><br><span class="line">private byte[] matchedChildBits;</span><br><span class="line"></span><br><span class="line">// txids and internal hashes</span><br><span class="line">private List&lt;Sha256Hash&gt; hashes;</span><br></pre></td></tr></table></figure></p>
-<p>通过上面的数组我们知道这是一颗完全二叉树。</p>
-<h2 id="ping-pong"><a href="#ping-pong" class="headerlink" title="ping/pong"></a>ping/pong</h2><p>应该是检测活跃的消息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">private long nonce;</span><br><span class="line">private boolean hasNonce;</span><br></pre></td></tr></table></figure></p>
-<h2 id="RejectMessage"><a href="#RejectMessage" class="headerlink" title="RejectMessage"></a>RejectMessage</h2><p>如果我们发送的交易被拒绝，就会返回这个消息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">private String message, reason;</span><br><span class="line">public enum RejectCode &#123;</span><br><span class="line">    /** The message was not able to be parsed */</span><br><span class="line">    MALFORMED((byte) 0x01),</span><br><span class="line">    /** The message described an invalid object */</span><br><span class="line">    INVALID((byte) 0x10),</span><br><span class="line">    /** The message was obsolete or described an object which is obsolete (eg unsupported, old version, v1 block) */</span><br><span class="line">    OBSOLETE((byte) 0x11),</span><br><span class="line">    /**</span><br><span class="line">        * The message was relayed multiple times or described an object which is in conflict with another.</span><br><span class="line">        * This message can describe errors in protocol implementation or the presence of an attempt to DOUBLE SPEND.</span><br><span class="line">        */</span><br><span class="line">    DUPLICATE((byte) 0x12),</span><br><span class="line">    /**</span><br><span class="line">        * The message described an object was not standard and was thus not accepted.</span><br><span class="line">        * Bitcoin Core has a concept of standard transaction forms, which describe scripts and encodings which</span><br><span class="line">        * it is willing to relay further. Other transactions are neither relayed nor mined, though they are considered</span><br><span class="line">        * valid if they appear in a block.</span><br><span class="line">        */</span><br><span class="line">    NONSTANDARD((byte) 0x40),</span><br><span class="line">    /**</span><br><span class="line">        * This refers to a specific form of NONSTANDARD transactions, which have an output smaller than some constant</span><br><span class="line">        * defining them as dust (this is no longer used).</span><br><span class="line">        */</span><br><span class="line">    DUST((byte) 0x41),</span><br><span class="line">    /** The messages described an object which did not have sufficient fee to be relayed further. */</span><br><span class="line">    INSUFFICIENTFEE((byte) 0x42),</span><br><span class="line">    /** The message described a block which was invalid according to hard-coded checkpoint blocks. */</span><br><span class="line">    CHECKPOINT((byte) 0x43),</span><br><span class="line">    OTHER((byte) 0xff);</span><br><span class="line"></span><br><span class="line">    byte code;</span><br><span class="line">    RejectCode(byte code) &#123; this.code = code; &#125;</span><br><span class="line">    static RejectCode fromCode(byte code) &#123;</span><br><span class="line">        for (RejectCode rejectCode : RejectCode.values())</span><br><span class="line">            if (rejectCode.code == code)</span><br><span class="line">                return rejectCode;</span><br><span class="line">        return OTHER;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">private RejectCode code;</span><br><span class="line">private Sha256Hash messageHash;</span><br></pre></td></tr></table></figure></p>
-<h2 id="SendHeadersMessage"><a href="#SendHeadersMessage" class="headerlink" title="SendHeadersMessage"></a>SendHeadersMessage</h2><p>一个新的协议，sendheaders，一个节点更喜欢通过headers消息，而不是inv消息收到一个新的block。</p>
-<h2 id="UTXOsMessage"><a href="#UTXOsMessage" class="headerlink" title="UTXOsMessage"></a>UTXOsMessage</h2><p>代表未花费的列表”utxos”，是通过GetUTXOsMessage发送而返回的结果。比特核心团队都是不支持的，这个和GetUTXOsMessage是一致的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 高度</span><br><span class="line">private long height;</span><br><span class="line">// 区块头部</span><br><span class="line">private Sha256Hash chainHead;</span><br><span class="line">// 小端存储的bitset显示输出是否被发现（检查输出是否被使用过吧）</span><br><span class="line">private byte[] hits;   // little-endian bitset indicating whether an output was found or not.</span><br><span class="line">// 输出列表（查询匹配到的输出）</span><br><span class="line">private List&lt;TransactionOutput&gt; outputs;</span><br><span class="line">// 每个输出的块高</span><br><span class="line">private long[] heights;</span><br></pre></td></tr></table></figure></p>
-<h2 id="VersionAck"><a href="#VersionAck" class="headerlink" title="VersionAck"></a>VersionAck</h2><p>verack命令，Client发送，会从server返回version消息。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我从core包下暂时就发现这些Message，里面有各种消息的说明，基本上都是有的。但是也有没有，应该是有漏网之鱼的。其实在bitcoin的包下面也有协议的说明，这里就不深入分析，以后我会进行深入的分析。另外这些Message是如何使用的会在接下来看代码的时候有更多的了解。关于序列化和解序列化，这里就不做更多的说明了。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2062,7 +2035,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-count">88</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

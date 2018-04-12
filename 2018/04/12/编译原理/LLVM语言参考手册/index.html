@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="编译原理,LLVM," />
+
+
+<meta name="description" content="概要本文档是LLVM汇编语言的参考手册。LLVM是一种基于静态单赋值（SSA）的表现形式的语言。它提供类型安全、底层指令、灵活性以及干净地表示“所有”高级语言的能力。 介绍LLVM代码表示被设计为以三种不同的形式使用：作为内存中编译器IR（中间码），作为磁盘上的位代码表示（适用于即时编译器进行快速加载）以及作为人可读汇编语言表达。这允许LLVM为有效的编译器的转换和分析提供强大的中间表示，同时提供">
+<meta name="keywords" content="编译原理,LLVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLVM语言参考手册">
+<meta property="og:url" content="http://cordate.github.io/2018/04/12/编译原理/LLVM语言参考手册/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="概要本文档是LLVM汇编语言的参考手册。LLVM是一种基于静态单赋值（SSA）的表现形式的语言。它提供类型安全、底层指令、灵活性以及干净地表示“所有”高级语言的能力。 介绍LLVM代码表示被设计为以三种不同的形式使用：作为内存中编译器IR（中间码），作为磁盘上的位代码表示（适用于即时编译器进行快速加载）以及作为人可读汇编语言表达。这允许LLVM为有效的编译器的转换和分析提供强大的中间表示，同时提供">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-12T14:26:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LLVM语言参考手册">
+<meta name="twitter:description" content="概要本文档是LLVM汇编语言的参考手册。LLVM是一种基于静态单赋值（SSA）的表现形式的语言。它提供类型安全、底层指令、灵活性以及干净地表示“所有”高级语言的能力。 介绍LLVM代码表示被设计为以三种不同的形式使用：作为内存中编译器IR（中间码），作为磁盘上的位代码表示（适用于即时编译器进行快速加载）以及作为人可读汇编语言表达。这允许LLVM为有效的编译器的转换和分析提供强大的中间表示，同时提供">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/12/编译原理/LLVM语言参考手册/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>LLVM语言参考手册 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/12/编译原理/LLVM语言参考手册/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LLVM语言参考手册</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T17:38:40+08:00">2018-04-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编译原理/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>本文档是LLVM汇编语言的参考手册。LLVM是一种基于<a href="https://zh.wikipedia.org/wiki/%E9%9D%99%E6%80%81%E5%8D%95%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F" target="_blank" rel="noopener">静态单赋值</a>（SSA）的表现形式的语言。它提供类型安全、底层指令、灵活性以及干净地表示“所有”高级语言的能力。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><b style="color:green">LLVM代码表示被设计为以三种不同的形式使用：作为内存中编译器IR（中间码），作为磁盘上的位代码表示（适用于即时编译器进行快速加载）以及作为人可读汇编语言表达。这允许LLVM为有效的编译器的转换和分析提供强大的中间表示，同时提供调试和可视化转换的自然方式。LLVM的三种不同形式都是等价的。本文档描述了人类可读的表示形式和符号。</b></p>
+<p>LLVM表示旨在轻量级和低级别，同时具有表现力，类型化和可扩展性。它的目标是成为一种“通用的IR”，通过处于足够低的水平，可以将高层次的想法清晰地映射到它（类似于微处理器是“通用IR”），允许将许多源语言映射到它们）。通过提供类型信息，LLVM可以用作优化的目标：例如，通过指针分析，可以证明C自动变量从不在当前函数之外访问，从而允许将它提升为简单的SSA值而不是一个内存位置。</p>
+<h2 id="良好的格式"><a href="#良好的格式" class="headerlink" title="良好的格式"></a>良好的格式</h2><p>重要的是要注意，本文档描述了“良好格式”的LLVM汇编语言。 解析器接受什么和被认为是“良好格式”之间是有区别。例如，下面的指令在语法上没问题，但不是良好形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%x = add i32 1, %x</span><br></pre></td></tr></table></figure></p>
+<p>因为<code>％x</code>的定义并不控制它的所有用途。 LLVM基础架构提供了一个验证过程，可用于验证LLVM模块是否格式良好。在解析输入的汇编程序之后和优化程序在输出bitcode之前，该过程由解析器自动运行。验证程序验证过程中指出的违规暗示转换过程中的错误或输入到解析器中的错误。</p>
+<h2 id="标识符"><a href="#标识符" class="headerlink" title="标识符"></a>标识符</h2><p>LLVM标识符有两种基本类型：全局和本地。全局标识符（函数，全局变量）以<code>&#39;@&#39;</code>字符开头。本地标识符（寄存器名称，类型）以<code>&#39;%&#39;</code>字符开头 。此外，有三种不同的标识符格式，用于不同的目的：</p>
+<ol>
+<li>命名值用一串字符和前缀表示。例如<code>%foo</code>，<code>@DivisionByZero</code>， <code>%a.really.long.identifier</code>。实际使用的正则表达式是 <code>&#39;[%@][-a-zA-Z$._][-a-zA-Z$._0-9]*&#39;</code>。在名称中需要其他字符的标识符可以用引号包裹起来。通过使用<code>&quot;\xx&quot;</code>，特殊字符可以被转义，<code>xx</code>是ASCII代码的十六进制字符的表示。这样，任何字符都可以用于名称值，甚至可以引用它们自己。全局变量可以使用前缀”\01”来阻止截断。</li>
+<li>未命名的值用前缀表示为无符号数值。例如<code>%12</code>，<code>@2</code>，<code>%44</code>。</li>
+<li>常量，在下面的<a href="http://llvm.org/docs/LangRef.html#constants" target="_blank" rel="noopener">常量</a>章节中进行了介绍。</li>
+</ol>
+<p>LLVM要求值以一个前缀开始，原因有两个：编译器不需要担心名称与保留字的冲突，并且保留字的集合可能在将来被扩展而不会产生什么不利。此外，未命名标识符允许编译器快速创建临时变量，而不必设法避免符号表冲突。</p>
+<p>LLVM中的保留字与其他语言中的保留字非常相似。对于不同的操作码（<code>&#39;add&#39;</code>，<code>&#39;bitcast&#39;</code>，<code>&#39;ret&#39;</code>等等），对于原始类型名称（<code>&#39;void&#39;</code>，<code>&#39;i32&#39;</code>等等），以及其他的关键字。这些保留字不能与变量名冲突，因为它们都没有以前缀字符（<code>&#39;%&#39;</code>或<code>&#39;@&#39;</code>）开始。</p>
+<p>以下是将整数变量“%X’乘以8的LLVM代码示例：<br>简单的方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%result = mul i32 %X, 8</span><br></pre></td></tr></table></figure></p>
+<p>减少强度之后（也是最推荐的方式）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%result = shl i32 %X, 3</span><br></pre></td></tr></table></figure></p>
+<p>最复杂的方式是(很有意思)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%0 = add i32 %X, %X           ; yields i32:%0</span><br><span class="line">%1 = add i32 %0, %0           ; yields i32:%1</span><br><span class="line">%result = add i32 %1, %1</span><br></pre></td></tr></table></figure></p>
+<p><code>%X</code>乘以8的最后一种方式说明了LLVM的几个重要的词法特征：</p>
+<ol>
+<li>注释用分号<code>&#39;;&#39;</code>分隔，直到行尾。</li>
+<li>当计算结果未分配给指定命名值时，将创建未命名的临时对象。</li>
+<li>未命名的临时对象按序号进行编号（使用预处理函数递增计数器，从0开始）。<b style="color:green">请注意，此编号中包含基本块和未命名的函数参数。例如，如果基本块入口没有给出标签名称并且所有函数参数都被命名，则它将得到编号0。</b></li>
+</ol>
+<p>它也显示了我们在本文件中遵循的惯例。在展示说明时，我们将按照说明书的注释来说明所产生值的类型和名称。</p>
+<h2 id="高级结构"><a href="#高级结构" class="headerlink" title="高级结构"></a>高级结构</h2><h3 id="模块结构"><a href="#模块结构" class="headerlink" title="模块结构"></a>模块结构</h3><p>LLVM程序由<code>Module&#39;s</code>组成，每个模块都是输入程序的翻译单元。每个模块由函数，全局变量和符号表入口（symbol table entries）组成。模块可以与LLVM链接器组合在一起，LLVM链接器合并函数（和全局变量）定义，解析前置声明并合并符号表入口。以下是“hello world”模块的示例：<br><figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">; Declare the string constant as a global constant.</span></span><br><span class="line"><span class="comment">@.str = private unnamed_addr constant [13 x i8] c"hello world\0A\00"</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">; External declaration of the puts function</span></span><br><span class="line"><span class="comment">declare i32 @puts(i8* nocapture) nounwind</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">; Definition of main function</span></span><br><span class="line"><span class="comment">define i32 @main() &#123;   ; i32()*</span></span><br><span class="line"><span class="comment">  ; Convert [13 x i8]* to i8*...</span></span><br><span class="line"><span class="comment">  %cast210 = getelementptr [13 x i8], [13 x i8]* @.str, i64 0, i64 0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  ; Call puts function to write out the string to stdout.</span></span><br><span class="line"><span class="comment">  call i32 @puts(i8* %cast210)</span></span><br><span class="line"><span class="comment">  ret i32 0</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">; Named metadata</span></span><br><span class="line"><span class="comment">!0 = !&#123;i32 42, null, !"string"&#125;</span></span><br><span class="line"><span class="comment">!foo = !&#123;!0&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>这个例子由一个名为<code>.str</code>的<a href="http://llvm.org/docs/LangRef.html#globalvars" target="_blank" rel="noopener">全局变量</a>，<code>“puts”</code>函数的外部声明，<code>&quot;main&quot;</code>的<a href="http://llvm.org/docs/LangRef.html#functionstructure" target="_blank" rel="noopener">函数定义</a>和<code>”foo“</code>的<a href="http://llvm.org/docs/LangRef.html#namedmetadatastructure" target="_blank" rel="noopener">命名元数据</a>组成。</p>
+<p><b style="color:green">通常，模块由全局值列表组成（其中函数和全局变量都是全局值）。全局值由指向内存位置的指针表示（在本例中，指向char数组的指针和指向函数的指针），并且具有以下<a href="http://llvm.org/docs/LangRef.html#linkage" target="_blank" rel="noopener">链接类型</a>之一。</b></p>
+<h3 id="链接类型"><a href="#链接类型" class="headerlink" title="链接类型"></a>链接类型</h3><p>所有全局变量和函数都具有以下链接类型之一：</p>
+<h4 id="private"><a href="#private" class="headerlink" title="private"></a>private</h4><p>具有<code>“private”</code>连接的全局值只能由当前模块中的对象直接访问。特别是，将代码链接到具有private全局值的模块中可能会导致private变量重新命名以避免冲突。由于符号对模块是私有的，因此所有引用都可以更新。这不会在对象文件的任何符号表中显示。</p>
+<h4 id="internal"><a href="#internal" class="headerlink" title="internal"></a>internal</h4><p>与私有类似，但该值在对象文件中显示为本地符号（STB_LOCAL在ELF的情况下）。这就像<code>C</code>中的<code>&#39;static&#39;</code>关键字。</p>
+<h4 id="available-externally"><a href="#available-externally" class="headerlink" title="available_externally"></a>available_externally</h4><p>具有<code>“available_externally”</code>链接的全局程序永远不会被发送到对应于LLVM模块的目标文件中。从链接器的角度来看，<code>available_externally</code>全局相当于external声明。它们的存在是为了允许内联和其他优化在知道全局变量（函数或语句块）的定义的情况下发生，这被称为模块之外的某个地方。具有<code>available_externally</code>链接的全局值可以随意丢弃，并允许内联和其他优化。这种连接类型只允许定义，而不允许声明。</p>
+<h4 id="linkonce"><a href="#linkonce" class="headerlink" title="linkonce"></a>linkonce</h4><p><code>linkonce</code>连接的全局值在链接发生时，可以与其他同名的全局值合。这可以用来实现某些形式的内联函数，模板（templates）或其他代码，这些代码必须在使用它的每个翻译单元中生成，但是稍后可能会在更明确的定义中覆盖正文。未引用的<code>linkonce</code>全局变量允许被丢弃。请注意，<code>linkonce</code>链接实际上并不允许优化器将此函数的主体内联到调用者中，因为它不知道该函数的定义是否是程序中的权威定义，或者是否会被更强的定义覆盖。要启用内联和其他优化器，请使用<code>“linkonce_odr”</code>链接。</p>
+<h4 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h4><p><code>“weak”</code>链接具有与<code>linkonce</code>链接相同的合并语义，除了未引用<code>weak</code>链接的全局可能不会被丢弃。这用于在C源代码中声明为<a href="http://www.cnblogs.com/hgfrzh/p/4064098.html" target="_blank" rel="noopener"><code>weak</code></a>的全局变量。</p>
+<h4 id="common"><a href="#common" class="headerlink" title="common"></a>common</h4><p><code>common</code>连接与<code>weak</code>连接最为相似，但它们用于C中的临时定义，例如：全局作用域的<code>int x</code>。带有<code>common</code>连接的符号与<code>weak</code>是相同的方式合并；如果未引用<code>common</code>符号，它们可能不会被删除。<code>common</code>符号可能没有明确的部分，必须具有零初始化器，并且可能未被标记为“<code>constant</code>”。函数和别名可能没有共同的连接。</p>
+<h4 id="appending"><a href="#appending" class="headerlink" title="appending"></a>appending</h4><p>“<code>appending</code>”链接可能只适用于指向数组类型的全局变量。当两个具有appending链接的全局变量链接在一起时，这两个全局数组被附加在一起。这是LLVM类型安全的，当<code>.o</code>文件被链接时，系统链接器将具有相同的名称的<code>“sections”</code>附加在一起。</p>
+<p>不幸的是，这不符合<code>.o</code>文件中的任何特性，所以它只能用于像<code>llvm.global_ctors</code>的变量，<code>llvm</code>专门解释这样的变量。</p>
+<h4 id="extern-weak"><a href="#extern-weak" class="headerlink" title="extern_weak"></a>extern_weak</h4><p>这个链接的语义遵循<code>ELF</code>目标文件模型：符号在链接之前是弱的，如果不链接，符号变为空，而不是未定义的引用。</p>
+<h4 id="linkonce-odr，-weak-odr"><a href="#linkonce-odr，-weak-odr" class="headerlink" title="linkonce_odr， weak_odr"></a><code>linkonce_odr</code>， <code>weak_odr</code></h4><p>有些语言允许合并不同的全局变量，比如两个具有不同语义的函数。其他语言，例如C++，确保只有等效的全局变量被合并（“一个定义规则(one definition rule)” - “ODR”）。这些语言可以使用<code>linkonce_odr</code>和<code>weak_odr</code>连接类型来表示全局将仅与等效的全局变量合并。对于其他不支持<code>ODR</code>的语言，这些链接类型与其<code>非odr</code>的链接相同。</p>
+<h4 id="external"><a href="#external" class="headerlink" title="external"></a>external</h4><p>如果没有使用上述标识符，则全局变量是外部可见的，这意味着它参与链接并可用于解析外部符号引用。</p>
+<p><b style="color:red">对于函数声明，除<code>external</code>或<code>extern_weak</code>之外的任何链接类型都是非法的。</b></p>
+<h3 id="调用约定"><a href="#调用约定" class="headerlink" title="调用约定"></a><a href="https://zh.wikipedia.org/wiki/%E8%B0%83%E7%94%A8%E7%BA%A6%E5%AE%9A" target="_blank" rel="noopener">调用约定</a></h3><p>LLVM<a href="http://llvm.org/docs/LangRef.html#functionstructure" target="_blank" rel="noopener">函数(functions)</a>，<a href="http://llvm.org/docs/LangRef.html#i-call" target="_blank" rel="noopener">调用(calls)</a>和 <a href="http://llvm.org/docs/LangRef.html#i-invoke" target="_blank" rel="noopener">调用(invokes)</a>都可以为该调用指定一个可选的调用约定。任何一对动态<code>调用者(caller)/被调用者(callee)</code>的调用约定都必须匹配，否则程序的行为是未定义的。<b style="color:green">LLVM支持以下调用约定，未来还可能添加更多调用约定：</b></p>
+<h4 id="ccc-C调用约定"><a href="#ccc-C调用约定" class="headerlink" title="ccc - C调用约定"></a><code>ccc</code> - <a href="https://blog.csdn.net/fly2k5/article/details/544112" target="_blank" rel="noopener">C调用约定</a></h4><p>这个调用约定（如果没有指定其他调用约定，则默认是这个调用约定）匹配目标C调用约定。这个调用约定支持可变参数函数调用，并且允许在声明的原型和实现的函数声明中存在一些不匹配（就像普通的C一样）。</p>
+<h4 id="“fastcc”-快速调用约定"><a href="#“fastcc”-快速调用约定" class="headerlink" title="“fastcc” - 快速调用约定"></a>“<code>fastcc</code>” - 快速调用约定</h4><p>这个调用约定试图尽可能快地进行调用（例如通过在寄存器中传递参数）。这个调用约定允许目标使用任何想要为目标生成快速代码的技巧，而不必遵守外部指定的<code>ABI</code>（应用程序二进制接口）。<a href="http://llvm.org/docs/CodeGenerator.html#id80" target="_blank" rel="noopener">只有在使用此调用约定、<code>GHC</code>调用约定或<code>HiPE</code>调用约定时，才能<a href="http://www.ruanyifeng.com/blog/2015/04/tail-call.html" target="_blank" rel="noopener"><b style="color:red">优化尾部调用</b></a></a>。此调用约定不支持可变参数，并要求所有被调用者的原型与函数定义的原型完全匹配。</p>
+<h4 id="“coldcc”-冷调用约定"><a href="#“coldcc”-冷调用约定" class="headerlink" title="“coldcc” - 冷调用约定"></a>“<code>coldcc</code>” - 冷调用约定</h4><p>这个调用约定尝试在调用不是共同执行的条件下尽可能高效地在调用者中编写代码。因此，这些调用通常会保留所有的寄存器，以便调用不会破坏调用方的任何实时范围（live range）。此调用约定不支持可变参数，并要求所有被调用者的原型与函数定义的原型完全匹配。此外，内联器不考虑这种内联函数调用。</p>
+<h4 id="“cc-10”-GHC约定"><a href="#“cc-10”-GHC约定" class="headerlink" title="“cc 10” - GHC约定"></a>“<code>cc 10</code>” - <code>GHC</code>约定</h4><p>这个调用约定专门供<a href="http://www.haskell.org/ghc" target="_blank" rel="noopener">格拉斯哥Haskell编译器（GHC）</a>使用。它在寄存器中的传递所有内容，通过禁用被调用者保存寄存器来达到极限。这种调用约定不应该被轻率使用，而只能用于特定情况下，例如替代实现函数式编程语言时经常使用的寄存器锁定性能技术。目前只有X86支持这种约定，它有以下限制：</p>
+<ul>
+<li>在X86-32上最多只支持4位类型参数。不支持浮点类型。</li>
+<li>在X86-64上最多只支持10位类型参数和6个浮点参数。</li>
+</ul>
+<p>这种调用约定支持<a href="http://www.ruanyifeng.com/blog/2015/04/tail-call.html" target="_blank" rel="noopener">尾部调用优化</a>，但要求主调方和被调方都在使用它。</p>
+<h4 id="“cc-11”-HiPE调用约定"><a href="#“cc-11”-HiPE调用约定" class="headerlink" title="“cc 11” - HiPE调用约定"></a>“<code>cc 11</code>” - <code>HiPE</code>调用约定</h4><p>该调用约定专门用于<a href="http://www.it.uu.se/research/group/hipe/" target="_blank" rel="noopener">高性能Erlang（HiPE）</a>编译器，即<a href="http://www.erlang.org/download.shtml" target="_blank" rel="noopener">爱立信开源Erlang/OTP系统</a>的本地代码编译器。它比通常的C调用约定使用更多的寄存器进行参数传递，并且不定义被调者使用的保存寄存器。调用约定正确支持<a href="http://www.ruanyifeng.com/blog/2015/04/tail-call.html" target="_blank" rel="noopener">尾部调用优化</a>，但要求调用者和被调用者都使用它。它使用寄存器固定机制，与<code>GHC</code>调用约定类似，用于将频繁访问的运行时组件固定到特定的硬件寄存器。目前只有X86支持这种约定（32位和64位）。</p>
+<h4 id="“webkit-jscc”-WebKit的JavaScript调用约定"><a href="#“webkit-jscc”-WebKit的JavaScript调用约定" class="headerlink" title="“webkit_jscc” - WebKit的JavaScript调用约定"></a>“<code>webkit_jscc</code>” - WebKit的JavaScript调用约定</h4><p>此调用约定已针对<a href="https://trac.webkit.org/wiki/FTLJIT" target="_blank" rel="noopener">WebKit FTL JIT</a>实施。它将堆栈上的参数从右向左传递（如<code>cdecl</code>那样），并在平台的惯用返回寄存器中返回一个值。</p>
+<h4 id="“anyregcc”-代码修补的动态调用约定"><a href="#“anyregcc”-代码修补的动态调用约定" class="headerlink" title="“anyregcc” - 代码修补的动态调用约定"></a>“<code>anyregcc</code>” - 代码修补的动态调用约定</h4><p>这是一个特殊的约定，它支持在调用点增补任意代码序列。这个约定强制调用参数进入寄存器，但允许它们动态分配。目前只能用于调用<code>llvm.experimental.patchpoint</code>，因为只有这个内部函数将其参数的位置记录在旁边表中。请参阅<a href="http://llvm.org/docs/StackMaps.html" target="_blank" rel="noopener">LLVM中的堆栈映射和修补程序点</a>。</p>
+<h4 id="“preserve-mostcc”-PreserveMost调用约定"><a href="#“preserve-mostcc”-PreserveMost调用约定" class="headerlink" title="“preserve_mostcc” - PreserveMost调用约定"></a>“<code>preserve_mostcc</code>” - <code>PreserveMost</code>调用约定</h4><p>此调用约定会尽可能使调用方中的代码尽可能是非侵入性的。该约定的行为与C 调用约定的参数和返回值的传递方式相同，但它使用了一组不同的调用方/被调用方保存的寄存器。<b style="color:green">这减轻了在调用者调用之前和之后保存和恢复大型寄存器组的负担。如果参数在被调用方保存的寄存器中传递，那么它们将在整个调用过程中由被调用方保存。这不适用于在被调用方保存的寄存器中返回的值。</b></p>
+<ul>
+<li>在X86-64上，被调用方保存所有通用寄存器，<code>R11</code>除外。<code>R11</code>可以用作临时寄存器。浮点寄存器（<code>XMMs/YMMs</code>）不会保留，需要由调用者保存。</li>
+</ul>
+<p>这个约定背后的想法是支持对具有热路径和冷路径的运行时（Runtime）函数调用。<b style="color:green">热路径通常是一小段不使用多个寄存器的代码。冷路径可能需要调用另一个函数，因此只需要保留调用者保存的寄存器，这些寄存器还未被调用者保存</b>。就调用者/被调用者保存的寄存器方面，<code>PreserveMost</code>调用约定是与冷（cold）调用约定非常相似的，但它们用于不同类型的函数调用。<code>coldcc</code>适用于很少执行的函数调用，而<code>preserve_mostcc</code>函数调用旨在处于热路径上，并且相对执行更多一些。此外<code>preserve_mostcc</code>不会阻止内联器的内联函数调用。</p>
+<p>这个调用约定将被未来版本的ObjectiveC运行时使用，因此此时应该仍被认为是实验性的。虽然此惯例是为了优化对ObjectiveC运行时的某些运行时调用而创建的，但它并不局限于此运行时，并且在将来也可能会被其他运行时使用。目前的实现只支持X86-64，但其目的是在未来支持更多架构。</p>
+<h4 id="“preserve-allcc”-PreserveAll调用约定"><a href="#“preserve-allcc”-PreserveAll调用约定" class="headerlink" title="“preserve_allcc” - PreserveAll调用约定"></a>“<code>preserve_allcc</code>” - <code>PreserveAll</code>调用约定</h4><p>此调用约定会尝试使调用方中的代码比<code>PreserveMost</code>调用约定更不具侵入性。此调用约定的行为与C调用约定的参数和返回值的传递方式相同，但它使用一组不同的调用方/被调用方保存的寄存器。这消除了在调用者的调用之前和之后保存和恢复大型寄存器组的负担。如果参数在被调用方保存的寄存器中传递，那么它们将在整个调用过程中由被调用方保存。这不适用于在被调用方保存的寄存器中返回的值。</p>
+<ul>
+<li>在X86-64上，被调用方保存所有通用寄存器，<code>R11</code>除外。<code>R11</code>可以用作临时寄存器。此外，它还保留所有浮点寄存器（<code>XMM/YMM</code>）。</li>
+</ul>
+<p>这个约定背后的想法是支持对不需要调用任何其他函数的运行时(Runtime)函数的调用。</p>
+<p>此调用约定与<code>PreserveMost</code>调用约定一样，将被未来版本的ObjectiveC运行时使用，此时应视为实验性的。</p>
+<h4 id="“cxx-fast-tlscc”-访问函数的CXX-FAST-TLS调用约定"><a href="#“cxx-fast-tlscc”-访问函数的CXX-FAST-TLS调用约定" class="headerlink" title="“cxx_fast_tlscc” - 访问函数的CXX_FAST_TLS调用约定"></a>“<code>cxx_fast_tlscc</code>” - 访问函数的<code>CXX_FAST_TLS</code>调用约定</h4><p>Clang生成一个访问函数来访问C++风格的TLS。访问函数通常有一个入口块，一个出口块和一个初次运行的初始化块。入口和出口块可以访问一些TLS IR变量，每个访问将被降低到平台特定的序列。</p>
+<p>此调用约定旨在通过保留尽可能多的寄存器（所有寄存器保存在快速路径中，由入口和出口块组成）来尽量减少调用者的开销。</p>
+<p>这个调用约定的行为与C调用约定在参数和返回值的传递方式上是一样的，但它使用了一组不同的调用者/被调用者保存的寄存器。</p>
+<p>鉴于每个平台都有自己的降序序列，因此它有自己的一组保存的寄存器，所以我们不能使用现有的<code>PreserveMost</code>。</p>
+<ul>
+<li>在X86-64上，被调用方保存所有通用寄存器，<code>RDI</code>和<code>RAX</code>除外。</li>
+</ul>
+<h4 id="“swiftcc”-这个调用约定用于Swift语言。"><a href="#“swiftcc”-这个调用约定用于Swift语言。" class="headerlink" title="“swiftcc” - 这个调用约定用于Swift语言。"></a>“<code>swiftcc</code>” - 这个调用约定用于Swift语言。</h4><ul>
+<li>在X86-64上，<code>RCX</code>和<code>R8</code>可用于额外的整数返回，并且<code>XMM2</code>和<code>XMM3</code>可用于其他<code>FP/vector</code>返回。</li>
+<li>在iOS平台上，我们使用<code>AAPCS-VFP</code>调用约定。<br>“<code>cc &lt;n&gt;</code>” - 编号调用约定<br>任何调用约定都可以用数字指定，从而允许使用特定于目标的调用约定。目标特定调用约定从64开始。</li>
+</ul>
+<p>可以根据需要添加/定义更多调用约定，以支持<code>Pascal</code>约定或任何其他众所周知的目标独立的调用约定。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编译原理/" rel="tag"># 编译原理</a>
+          
+            <a href="/tags/LLVM/" rel="tag"># LLVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/12/编译原理/LLVM简介/" rel="next" title="LLVM简介">
+                <i class="fa fa-chevron-left"></i> LLVM简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">85</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#良好的格式"><span class="nav-number">3.</span> <span class="nav-text">良好的格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标识符"><span class="nav-number">4.</span> <span class="nav-text">标识符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级结构"><span class="nav-number">5.</span> <span class="nav-text">高级结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模块结构"><span class="nav-number">5.1.</span> <span class="nav-text">模块结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链接类型"><span class="nav-number">5.2.</span> <span class="nav-text">链接类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#private"><span class="nav-number">5.2.1.</span> <span class="nav-text">private</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#internal"><span class="nav-number">5.2.2.</span> <span class="nav-text">internal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#available-externally"><span class="nav-number">5.2.3.</span> <span class="nav-text">available_externally</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#linkonce"><span class="nav-number">5.2.4.</span> <span class="nav-text">linkonce</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#weak"><span class="nav-number">5.2.5.</span> <span class="nav-text">weak</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#common"><span class="nav-number">5.2.6.</span> <span class="nav-text">common</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#appending"><span class="nav-number">5.2.7.</span> <span class="nav-text">appending</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extern-weak"><span class="nav-number">5.2.8.</span> <span class="nav-text">extern_weak</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#linkonce-odr，-weak-odr"><span class="nav-number">5.2.9.</span> <span class="nav-text">linkonce_odr， weak_odr</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#external"><span class="nav-number">5.2.10.</span> <span class="nav-text">external</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调用约定"><span class="nav-number">5.3.</span> <span class="nav-text">调用约定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ccc-C调用约定"><span class="nav-number">5.3.1.</span> <span class="nav-text">ccc - C调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“fastcc”-快速调用约定"><span class="nav-number">5.3.2.</span> <span class="nav-text">“fastcc” - 快速调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“coldcc”-冷调用约定"><span class="nav-number">5.3.3.</span> <span class="nav-text">“coldcc” - 冷调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“cc-10”-GHC约定"><span class="nav-number">5.3.4.</span> <span class="nav-text">“cc 10” - GHC约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“cc-11”-HiPE调用约定"><span class="nav-number">5.3.5.</span> <span class="nav-text">“cc 11” - HiPE调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“webkit-jscc”-WebKit的JavaScript调用约定"><span class="nav-number">5.3.6.</span> <span class="nav-text">“webkit_jscc” - WebKit的JavaScript调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“anyregcc”-代码修补的动态调用约定"><span class="nav-number">5.3.7.</span> <span class="nav-text">“anyregcc” - 代码修补的动态调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“preserve-mostcc”-PreserveMost调用约定"><span class="nav-number">5.3.8.</span> <span class="nav-text">“preserve_mostcc” - PreserveMost调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“preserve-allcc”-PreserveAll调用约定"><span class="nav-number">5.3.9.</span> <span class="nav-text">“preserve_allcc” - PreserveAll调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“cxx-fast-tlscc”-访问函数的CXX-FAST-TLS调用约定"><span class="nav-number">5.3.10.</span> <span class="nav-text">“cxx_fast_tlscc” - 访问函数的CXX_FAST_TLS调用约定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“swiftcc”-这个调用约定用于Swift语言。"><span class="nav-number">5.3.11.</span> <span class="nav-text">“swiftcc” - 这个调用约定用于Swift语言。</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
