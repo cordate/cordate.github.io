@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="什么是LLVM官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：http://llvm.org/ 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。 LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于SSA（static single assignment form，静态单赋值形">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-04-12T08:57:29.000Z">
+<meta property="og:updated_time" content="2018-04-12T09:28:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LLVM简介">
 <meta name="twitter:description" content="什么是LLVM官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：http://llvm.org/ 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。 LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于SSA（static single assignment form，静态单赋值形">
@@ -383,8 +383,43 @@
 <p><b style="color:blue">再比如像solidity这样的语言需要运行在以太坊的CPP节点，Go节点，Parity的Scala节点，这样的话我们要写很多的编译器和虚拟机，但是有了LLVM后，一切都不用担心了，实现起来还是比较靠谱的，不是吗？</b></p>
 <p><b style="color:green">另外通过LLVM我们可以实现不同语言之间的互转，比如C++代码转成node代码。中间只要通过LLVM就可以了。以前不明白微软怎么支持多种语言实现在win10上安装，现在终于有思路了，只是微软要写多种编译器，可能这个过程比较难吧，他们放弃了。还有就比如以太坊的<a href="https://github.com/ethereum/solc-bin" target="_blank" rel="noopener">solc-bin</a>里面有用的文件只有一个7M多的js文件，而且还是压缩的，从ReadMe中我们可以发现，这个项目中的文件都是通过emscripten生成的；而emscripten是将LLVM中间语言转化为node代码，一切已然明了。</b></p>
 <p><b style="color:blue">所以我觉得学习LLVM语言还是很有必要的过程，应该深入去学习一下。</b></p>
-<h2 id="关于emscripten"><a href="#关于emscripten" class="headerlink" title="关于emscripten"></a>关于emscripten</h2><p>这是一个很棒的项目，将LLVM中间语言转化为node的代码。更多的东西就不用多介绍了，也不进行深入地学习了，这样精通node的编译器和语法知识才行，我就读读Readme、WIKI和api文档就好了。下面列一下学习的资料吧！<br><a href="https://github.com/kripken/emscripten" target="_blank" rel="noopener">官方github项目</a><br><a href="https://github.com/kripken/emscripten/wiki" target="_blank" rel="noopener">Emscripten Wiki</a><br><a href="http://kripken.github.io/emscripten-site/index.html" target="_blank" rel="noopener">Emscripten 文档</a></p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://llvm.org/" target="_blank" rel="noopener">The LLVM Compiler Infrastructure</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8232943" target="_blank" rel="noopener"> LLVM每日谈之七 Clang</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8593380" target="_blank" rel="noopener">七天LLVM零基础入门（Linux版本）——第一天</a></p>
+<h2 id="关于emscripten"><a href="#关于emscripten" class="headerlink" title="关于emscripten"></a>关于emscripten</h2><p>这是一个很棒的项目，将LLVM中间语言转化为node的代码。更多的东西就不用多介绍了，也不进行深入地学习了，这要精通node的编译器和语法知识才行，我就读读Readme、WIKI和api文档就好了。下面列一下学习的资料吧！<br><a href="https://github.com/kripken/emscripten" target="_blank" rel="noopener">官方github项目</a><br><a href="https://github.com/kripken/emscripten/wiki" target="_blank" rel="noopener">Emscripten Wiki</a><br><a href="http://kripken.github.io/emscripten-site/index.html" target="_blank" rel="noopener">Emscripten 文档</a></p>
+<h2 id="LLVM的命令指南"><a href="#LLVM的命令指南" class="headerlink" title="LLVM的命令指南"></a>LLVM的命令指南</h2><p>以下文档是所有LLVM工具的命令描述。 这些页面描述如何使用LLVM命令以及它们的选项。 请注意，这些页面没有描述所有工具可用的所有选项。 要获得完整列表，请将–help（常规选项）或–help-hidden（常规和调试选项）参数传递给您感兴趣的工具。</p>
+<h3 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h3><ul>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-as.html" target="_blank" rel="noopener">llvm-as - LLVM汇编程序</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-dis.html" target="_blank" rel="noopener">llvm-dis - LLVM反汇编程序</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/opt.html" target="_blank" rel="noopener">opt - LLVM优化器</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llc.html" target="_blank" rel="noopener">llc - LLVM静态编译器</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/lli.html" target="_blank" rel="noopener">lli - 直接从LLVM位码执行程序</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-link.html" target="_blank" rel="noopener">llvm-link - LLVM位码链接器</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-ar.html" target="_blank" rel="noopener">llvm-ar - LLVM归档打包 archiver</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-lib.html" target="_blank" rel="noopener">llvm-lib - LLVM lib.exe lib.exe兼容库工具</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-nm.html" target="_blank" rel="noopener">llvm-nm - 列出LLVM位码和目标文件的符号表</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-config.html" target="_blank" rel="noopener">llvm-config - 打印LLVM编译选项</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-diff.html" target="_blank" rel="noopener">llvm-diff - LLVM结构差异</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-cov.html" target="_blank" rel="noopener">llvm-cov - 发布覆盖信息</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-profdata.html" target="_blank" rel="noopener">llvm-profdata - 配置数据工具</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-stress.html" target="_blank" rel="noopener">llvm-stress - 生成随机的.ll文件</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-symbolizer.html" target="_blank" rel="noopener">llvm-symbolizer - 将地址转换为源代码位置</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-dwarfdump.html" target="_blank" rel="noopener">llvm-dwarfdump - 转储并验证DWARF调试信息</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/dsymutil.html" target="_blank" rel="noopener">dsymutil - 处理归档的DWARF调试符号文件</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-mca.html" target="_blank" rel="noopener">llvm-mca - LLVM机器代码分析器</a></li>
+</ul>
+<h3 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a>调试工具</h3><ul>
+<li><a href="http://llvm.org/docs/CommandGuide/bugpoint.html" target="_blank" rel="noopener">bugpoint - 自动测试案例缩减工具</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-extract.html" target="_blank" rel="noopener">llvm-extract - 从LLVM模块中提取函数</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-bcanalyzer.html" target="_blank" rel="noopener">llvm-bcanalyzer - LLVM位码分析器</a></li>
+</ul>
+<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><ul>
+<li><a href="http://llvm.org/docs/CommandGuide/FileCheck.html" target="_blank" rel="noopener">FileCheck - 灵活的模式匹配文件验证器</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/tblgen.html" target="_blank" rel="noopener">tblgen - 目标描述到C ++代码生成器</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/lit.html" target="_blank" rel="noopener">lit - LLVM综合测试仪</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-build.html" target="_blank" rel="noopener">llvm-build - LLVM项目构建实用程序</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-exegesis.html" target="_blank" rel="noopener">llvm-exegesis - LLVM机器指令基准</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-pdbutil.html" target="_blank" rel="noopener">llvm-pdbutil - PDB文件取证和诊断</a></li>
+<li><a href="http://llvm.org/docs/CommandGuide/llvm-readobj.html" target="_blank" rel="noopener">llvm-readobj - LLVM对象读取器</a></li>
+</ul>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://llvm.org/" target="_blank" rel="noopener">The LLVM Compiler Infrastructure</a><br><a href="http://llvm.org/docs/CommandGuide/" target="_blank" rel="noopener">LLVM Command Guide</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8232943" target="_blank" rel="noopener"> LLVM每日谈之七 Clang</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8593380" target="_blank" rel="noopener">七天LLVM零基础入门（Linux版本）——第一天</a></p>
 
       
     </div>
@@ -774,7 +809,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是LLVM"><span class="nav-number">1.</span> <span class="nav-text">什么是LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于LLVM"><span class="nav-number">2.</span> <span class="nav-text">关于LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于emscripten"><span class="nav-number">3.</span> <span class="nav-text">关于emscripten</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">4.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是LLVM"><span class="nav-number">1.</span> <span class="nav-text">什么是LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于LLVM"><span class="nav-number">2.</span> <span class="nav-text">关于LLVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于emscripten"><span class="nav-number">3.</span> <span class="nav-text">关于emscripten</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLVM的命令指南"><span class="nav-number">4.</span> <span class="nav-text">LLVM的命令指南</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础命令"><span class="nav-number">4.1.</span> <span class="nav-text">基础命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试工具"><span class="nav-number">4.2.</span> <span class="nav-text">调试工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发工具"><span class="nav-number">4.3.</span> <span class="nav-text">开发工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">5.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
             
 
           </div>
