@@ -687,7 +687,157 @@
 <li>有一个”<code>funclet</code>绑定，它的操作数不是最近输入的尚未退出funclet EH板（pad）。</li>
 </ul>
 <p>类似地，如果没有funclet EH焊盘（pads）进入但尚未退出，在一个”<code>funclet</code>“bundle中执行一个call或invoke是未定义的行为。</p>
-<h4 id="GC转换操作数包"><a href="#GC转换操作数包" class="headerlink" title="GC转换操作数包"></a>GC转换操作数包</h4><p>GC转换操作数绑定由”gc-transition”操作数绑定标记表征。这些操作数绑定将一个调用标记为具有一个GC策略的函数与具有不同GC策略的函数之间的过渡。如果协调GC策略之间的转换需要在调用点生成额外的代码，则这些软件绑定可能包含生成的代码所需的任何值。有关更多详细信息，请参阅<a href="http://llvm.org/docs/Statepoints.html#gc-transition-args" target="_blank" rel="noopener">GC转场</a>。</p>
+<h4 id="GC转换操作数绑定"><a href="#GC转换操作数绑定" class="headerlink" title="GC转换操作数绑定"></a>GC转换操作数绑定</h4><p>GC转换操作数绑定由”gc-transition”操作数绑定标记表征。这些操作数绑定将一个调用标记为具有一个GC策略的函数与具有不同GC策略的函数之间的过渡。如果协调GC策略之间的转换需要在调用点生成额外的代码，则这些软件绑定可能包含生成的代码所需的任何值。有关更多详细信息，请参阅<a href="http://llvm.org/docs/Statepoints.html#gc-transition-args" target="_blank" rel="noopener">GC转场</a>。</p>
+<h3 id="模块级内联汇编"><a href="#模块级内联汇编" class="headerlink" title="模块级内联汇编"></a>模块级内联汇编</h3><p>模块可能包含“模块级内联asm”块，它对应于GCC“文件范围inline asm”块。这些块由LLVM内部连接并作为一个单元进行处理，但如果需要可以在<code>.ll</code>文件中分开。语法非常简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">module asm &quot;inline asm code goes here&quot;</span><br><span class="line">module asm &quot;more can go here&quot;</span><br></pre></td></tr></table></figure></p>
+<p>字符串可以通过转义不可打印的字符来包含任何字符。使用的转义序列只是“\xx”，其中“xx”是数字的两位十六进制代码。</p>
+<p>请注意，汇编字符串必须由LLVM的集成汇编程序解析（除非它被禁用），即使在发送<code>.s</code>文件时也是如此。</p>
+<h3 id="数据布局"><a href="#数据布局" class="headerlink" title="数据布局"></a>数据布局</h3><p>模块可以指定目标特定数据布局字符串，该字符串指定数据如何布置在内存中。数据布局的语法很简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target datalayout = &quot;layout specification&quot;</span><br></pre></td></tr></table></figure></p>
+<p>该布局规范包括规范用减号字符分隔（“-”）的列表中。每个规范都以字母开头，并可能在字母后包含其他信息以定义数据布局的某些方面。接受的规格如下：</p>
+<ul>
+<li><code>E</code>: 指定目标以big-endian格式显示数据。也就是说，最重要的位具有最低的地址位置。</li>
+<li><code>e</code>: 指定目标以little-endian形式显示数据。也就是说，具有最低重要性的位具有最低的地址位置。</li>
+<li><code>S&lt;size&gt;</code>: 指定堆栈的自然对齐位数。堆栈变量的对齐提升仅限于自然堆栈对齐，以避免动态堆栈重新对齐。堆栈对齐必须是8位的倍数。如果省略，则自然堆栈对齐默认为“未指定”，这不会阻止任何对齐升级。</li>
+<li><code>P&lt;address space&gt;</code>: 指定对应于程序内存的地址空间。哈佛（Harvard）体系结构可以使用它来指定LLVM应该在哪些空间放置诸如函数之类的东西。如果省略，程序存储器空间默认为默认地址空间0，这对应于具有相同空间中的代码和数据的冯诺依曼体系结构。</li>
+<li><code>A&lt;address space&gt;</code>: 指定由’<code>alloca</code>‘创建的对象的地址空间。默认为默认地址空间0。</li>
+<li><code>p[n]:&lt;size&gt;:&lt;abi&gt;:&lt;pref&gt;:&lt;idx&gt;</code>: 这将指定大小的指针和它的<code>&lt;abi&gt;</code>和 <code>&lt;pref&gt;</code>错误的地址的空间对齐n。第四个参数<code>&lt;idx&gt;</code>是用于地址计算的索引大小。如果未指定，则默认索引大小等于指针大小。所有尺寸都是位。地址空间n是可选的，如果未指定，则表示默认地址空间0.值n必须在<code>[1,2^23)</code>范围内。</li>
+<li><code>i&lt;size&gt;:&lt;abi&gt;:&lt;pref&gt;</code>: 这指定了给定<code>&lt;size&gt;</code>位的整数类型的对齐方式。值<code>&lt;size&gt;</code>必须在<code>[1,2^23)</code>范围内。</li>
+<li><code>v&lt;size&gt;:&lt;abi&gt;:&lt;pref&gt;</code>: 这指定了给定<code>&lt;size&gt;</code>位的向量类型的对齐方式。</li>
+<li><code>f&lt;size&gt;:&lt;abi&gt;:&lt;pref&gt;</code>: 这指定了给定<code>&lt;size&gt;</code>位的浮点类型的对齐方式。只有目标支持的<code>&lt;size&gt;</code>值才有效。所有目标都支持32（浮动）和64（双）。一些目标也支持80或128（不同长度的双重版本）。</li>
+<li><code>a:&lt;abi&gt;:&lt;pref&gt;</code>: 这指定了聚合类型对象的对齐方式。</li>
+<li><code>m:&lt;mangling&gt;</code>: 如果存在，则指定llvm名称在输出中被损坏。以mangling转义字符作为前缀的符号<code>\01</code>直接传递给汇编器而不使用转义字符。mangling风格选项是<ul>
+<li><code>e</code>：ELF mangling：专用符号获取<code>.L</code>前缀。</li>
+<li><code>m</code>：Mips mangling：私有符号获取<code>$</code>前缀。</li>
+<li><code>o</code>：Mach-O修改：专用符号获取<code>L</code>前缀。其他符号会得到一个<code>_</code>前缀。</li>
+<li><code>x</code>：Windows x86 COFF mangling：私有符号获取通常的前缀。普通的C符号会得到一个<code>_</code>前缀。带有<code>__stdcall</code>，<code>__fastcall</code>，和<code>__vectorcall</code>的函数具有附加的自定义修剪(mangling)，<code>@N</code>其中N是用于传递参数的字节数。以<code>?</code>开头的C++符号不会以任何方式的变形（mangling）。</li>
+<li><code>w</code>：Windows COFF mangling：类似于<code>x</code>，除了普通的C符号不接受<code>_</code>前缀。</li>
+</ul>
+</li>
+<li><code>n&lt;size1&gt;:&lt;size2&gt;:&lt;size3&gt;...</code>: 这为位目标CPU指定了一组本地整数宽度。例如，它可能包含32位PowerPC的n32，对于PowerPC 64是<code>n32:64</code>或对于X86-64是<code>n8:16:32:64</code>。这组元素被认为可以有效地支持大多数一般的算术运算。</li>
+<li><code>ni:&lt;address space0&gt;:&lt;address space1&gt;:&lt;address space2&gt;...</code>: 这指定具有指定地址空间的指针类型作为<a href="http://llvm.org/docs/LangRef.html#nointptrtype" target="_blank" rel="noopener">非整体指针类型</a>。该<code>0</code>地址空间不能被指定为非积分(non-integral)。</li>
+</ul>
+<p>在每个采用的<code>&lt;abi&gt;:&lt;pref&gt;</code>规范上，指定<code>&lt;pref&gt;</code>对齐是可选的。如果省略，则前面的内容也应该省略, 并且<code>&lt;pref&gt;</code>等于<code>&lt;abi&gt;</code>。</p>
+<p>在为给定目标构建数据布局时，LLVM从默认的一组规范开始，然后（可能）由<code>datalayout</code>关键字中的规范覆盖。默认规格在此列表中给出：</p>
+<ul>
+<li><code>E</code> - 大端</li>
+<li><code>p:64:64:64</code> - 与64位对齐的64位指针。</li>
+<li><code>p[n]:64:64:64</code> - 其他地址空间被假定为与默认地址空间相同。</li>
+<li><code>S0</code> - 自然堆栈对齐未指定</li>
+<li><code>i1:8:8</code> - i1是8位（字节）对齐</li>
+<li><code>i8:8:8</code> - i8是8位（字节）对齐</li>
+<li><code>i16:16:16</code> - i16是16位对齐的</li>
+<li><code>i32:32:32</code> - i32是32位对齐的</li>
+<li><code>i64:32:64</code> - i64具有32位的ABI对齐，但优选对齐64位</li>
+<li><code>f16:16:16</code> - 一半是16位对齐的</li>
+<li><code>f32:32:32</code> - 浮点数是32位对齐的</li>
+<li><code>f64:64:64</code> - 双是64位对齐</li>
+<li><code>f128:128:128</code> - 四位是128位对齐</li>
+<li><code>v64:64:64</code> - 64位向量是64位对齐的</li>
+<li><code>v128:128:128</code> - 128位向量是128位对齐的</li>
+<li><code>a:0:64</code> - 聚合是64位对齐</li>
+</ul>
+<p>当LLVM确定给定类型的对齐时，它使用以下规则：</p>
+<ol>
+<li>如果所寻找的类型与其中一个规格完全匹配，则使用该规格。</li>
+<li>如果未找到匹配项，并且所查找的类型是整数类型，则使用大于所查找类型的位宽的最小整数类型。如果没有任何规格大于位宽，则使用最大的整数类型。例如，给定上面的默认规格，<code>i7</code>类型将使用<code>i8</code>（次大）的对齐，而<code>i65</code>和<code>i256</code>将使用<code>i64</code>（最大指定）的对齐。</li>
+<li>如果找不到匹配，并且所寻找的类型是矢量类型，那么将使用小于所寻找的矢量类型的最大矢量类型作为回退。发生这种情况是因为<code>&lt;128 x double&gt;</code>可以用<code>64 &lt;2 x double&gt;</code>来实现，例如。</li>
+</ol>
+<p>数据布局字符串的功能可能不是您所期望的。值得注意的是，这不是来自代码生成器应该使用的对齐前端(frontend)的规范。</p>
+<p>相反，如果指定，则需要目标数据布局来匹配最终代码生成器所期望的内容。这个字符串被中级优化器用来改进代码，这只有在它与最终的代码生成器使用的匹配时才有效。没有办法生成IR，这并不会将这个特定于目标的细节嵌入到IR中。如果您未指定字符串，则将使用默认规格来生成数据布局，并且优化阶段将相应地运行，并针对这些默认规格向IR中引入目标特异性。</p>
+<h3 id="目标机三重表示法-Target-Triple"><a href="#目标机三重表示法-Target-Triple" class="headerlink" title="目标机三重表示法(Target Triple)"></a>目标机三重表示法(Target Triple)</h3><p>模块可以指定描述目标主机的目标机三元字符串。目标三元组的语法很简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target triple = &quot;x86_64-apple-macosx10.7.0&quot;</span><br></pre></td></tr></table></figure></p>
+<p>该目标机三重串包括由减号（“<code>-</code>”）字符分隔的一系列标识符。规范形式是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ARCHITECTURE-VENDOR-OPERATING_SYSTEM</span><br><span class="line">ARCHITECTURE-VENDOR-OPERATING_SYSTEM-ENVIRONMENT</span><br></pre></td></tr></table></figure></p>
+<p>这些信息被传递到后端，以便为适当的架构生成代码。可以使用<code>-mtriple</code>命令行选项在命令行上覆盖它。</p>
+<h3 id="指针别名规则"><a href="#指针别名规则" class="headerlink" title="指针别名规则"></a>指针别名规则</h3><p>任何内存访问都必须通过与内存访问的地址范围关联的指针值来完成，否则行为是不确定的。根据以下规则，指针值与地址范围相关联：</p>
+<ul>
+<li>指针值与关联基于任何值的地址相关联。（这其实是比较绕口的废话）</li>
+<li>全局变量的地址与变量存储的地址范围相关联。</li>
+<li>分配指令的结果值与分配的存储器的地址范围相关联。</li>
+<li>默认地址空间中的空指针与无地址相关联。</li>
+<li>一个非零整数常量或从未在LLVM中定义的函数返回的指针值可能与通过LLVM提供的机制以外的机制分配的地址范围关联。这些范围不得与由LLVM提供的机制分配的任何地址范围重叠。</li>
+</ul>
+<p>根据以下规则，指针值基于另一个指针值：</p>
+<ul>
+<li>由标量<code>getelementptr</code>操作符形成的指针值基于指针类型的操作符<code>getelementptr</code>。</li>
+<li>在车道(lane)中的指针/升的矢量的结果的<code>getelementptr</code>操作是基于对车道(lane)指针升的的类型的载体的指针操作符<code>getelementptr</code>。</li>
+<li><code>bitcast</code>的结果值是基于操作符<code>bitcast</code>。</li>
+<li>由<code>inttoptr</code>形成的指针值是基于对造成（直接或间接）到指针的值的计算中的所有指针值。</li>
+<li>“基于”的关系是传递性的。</li>
+</ul>
+<p>请注意，这个“based”的定义有意地类似于C99 中“based”的定义，尽管它稍微弱一些。</p>
+<p>LLVM IR不会将类型与内存相关联。<code>load</code>的结果类型仅指示要加载的内存的大小和对齐方式，以及对值的解释。类似的第一个操作数类型store仅指示存储的大小和对齐方式。</p>
+<p>因此，基于类型的别名分析，又名TBAA，也就是说<code>-fstrict-aliasing</code>，不适用于通用的非LLVM IR。<a href="http://llvm.org/docs/LangRef.html#metadata" target="_blank" rel="noopener">元数据</a>可用于编码额外的信息，专门的优化过程可用于实现基于类型的别名分析。</p>
+<h3 id="易失性-volatile-内存访问"><a href="#易失性-volatile-内存访问" class="headerlink" title="易失性(volatile)内存访问"></a>易失性(volatile)内存访问</h3><p>某些内存访问，如<a href="http://llvm.org/docs/LangRef.html#i-load" target="_blank" rel="noopener">load</a>‘s，<a href="http://llvm.org/docs/LangRef.html#i-store" target="_blank" rel="noopener">store</a>‘s和<a href="http://llvm.org/docs/LangRef.html#int-memcpy" target="_blank" rel="noopener">llvm.memcpy</a>‘s可能被标记<code>volatile</code>。优化器不得更改易失性操作的数量或更改其相对于其他volatile操作的执行顺序。优化器可以改变相对于非volatile操作的易失性操作的顺序。<b style="color:red">这不是Java的“volatile”，并且没有跨线程同步行为。</b></p>
+<p>即使那些内部函数被标记为<code>volatile</code>，IR级别的volatile加载和存储也不能安全地优化到<code>llvm.memcpy</code>或<code>llvm.memmove</code>内在函数中。同样，后端不应该拆分或合并目标机器合法的易失性加载/存储指令。</p>
+<table>
+<thead>
+<tr>
+<th>合理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平台可能依赖volatile加载，并且本地支持的数据宽度存储将作为单条指令执行。例如，在C中，这适用于具有本地硬件支持的易失性基本类型的l值，但不一定适用于聚合类型。前端支持这些预期，这在IR中是故意没有说明的。上述规则确保IR转换不会违反前端（应该是前置的语言）与该语言的合同。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="并发操作的内存模型"><a href="#并发操作的内存模型" class="headerlink" title="并发操作的内存模型"></a>并发操作的内存模型</h3><p>LLVM IR没有定义任何启动并行执行线程或注册信号处理程序的方法。尽管如此，还是有特定于平台的方式来创建它们，并且我们定义LLVM IR他们存在的行为。该模型受C++ 0x内存模型的启发。</p>
+<p>有关此模型的更多非正式介绍，请参阅<a href="http://llvm.org/docs/Atomics.html" target="_blank" rel="noopener">LLVM原子指令和并发指南</a>。</p>
+<p>我们将发生之前的偏序定义为最小偏序(partial order).</p>
+<ul>
+<li>是单线程程序顺序的超集，并且</li>
+<li>当同步<code>b</code>时，包含一个从<code>a</code>到<code>b</code>的边缘。通过特定于平台的技术（如pthread锁，线程创建，线程连接等）以及原子指令引入同步对。（另请参<a href="http://llvm.org/docs/LangRef.html#ordering" target="_blank" rel="noopener">阅原子内存排序约束</a>）。</li>
+</ul>
+<p>请注意，程序顺序不会在线程和该线程内执行的信号之间引入边界之前发生的事件。</p>
+<p>每个（定义的）读取操作（加载指令，memcpy，原子加载/读取-修改-写入等）<code>R</code>读取由（定义的）写入操作写入的一系列字节（存储指令，原子存储/读取-修改-写入，memcpy等）。就本节而言，已初始化的全局变量被认为是写入了初始化程序，它是原子化的，并且在任何其他读或写有问题的内存之前发生。对于读R的每个字节，R<sub>byte</sub> 可能会看到对相同字节的任何写入，除了：</p>
+<ul>
+<li>如果write<sub>1</sub> 发生在write<sub>2</sub>之前，并且write<sub>2</sub>发生在R<sub>byte</sub>之前，则R<sub>byte</sub>不会看到Write<sub>1</sub>。</li>
+<li>如果R<sub>byte</sub>在write<sub>3</sub>之前发生，则R<sub>byte</sub>不会看到write<sub>3</sub>。</li>
+</ul>
+<p>鉴于该定义，R<sub>byte</sub>定义如下：</p>
+<ul>
+<li>如果R是volatile的，则结果与目标相关。（Volatile应该提供可以在C/C++中支持<code>sig_atomic_t</code>的保证，并且可以用于访问不像正常内存那样行为的地址，它通常不会提供跨线程同步。）</li>
+<li>否则，如果没有写入R<sub>byte</sub>发生之前的相同字节，则R<sub>byte</sub>会对该字节返回<code>undef</code>。</li>
+<li>否则，如果R<sub>byte</sub>可能只看到一次写入，则R<sub>byte</sub>将返回该写入写入的值。</li>
+<li>否则，如果R是原子的，并且所有写入的R<sub>byte</sub>可能看到的都是原子的，它将选择其中一个写入的值。请参阅<a href="http://llvm.org/docs/LangRef.html#ordering" target="_blank" rel="noopener">原子内存排序约束</a>部分了解如何进行选择的其他限制条件。</li>
+<li>否则R<sub>byte</sub>返回undef。</li>
+</ul>
+<p>R返回由它读取的一系列字节组成的值。这意味着该值内的一些字节可能是<code>undef</code>，没有整个值的<code>undef</code>。请注意，这只定义了操作的语义; 这并不意味着目标将发出多个指令来读取一系列字节。</p>
+<p>请注意，在没有使用任何原子内在函数的情况下，此模型仅对单线程执行所需的IR转换放置一个限制：将store引入可能不会被存储的字节一般是不允许的。（具体来说，在另一个线程可以写入和读取地址的情况下，引入一个store可以改变一个load，可以看到只有一个写入可能看到多个写入的load。）</p>
+<h3 id="原子内存排序约束"><a href="#原子内存排序约束" class="headerlink" title="原子内存排序约束"></a>原子内存排序约束</h3><p>原子指令（<a href="http://llvm.org/docs/LangRef.html#i-cmpxchg" target="_blank" rel="noopener">cmpxchg</a>，<a href="http://llvm.org/docs/LangRef.html#i-atomicrmw" target="_blank" rel="noopener">atomicrmw</a>，<a href="http://llvm.org/docs/LangRef.html#i-fence" target="_blank" rel="noopener">fence</a>，<a href="http://llvm.org/docs/LangRef.html#i-load" target="_blank" rel="noopener">atomic load</a>和<a href="http://llvm.org/docs/LangRef.html#i-store" target="_blank" rel="noopener">atomic store</a>）使用排序参数来确定与它们同步的同一地址上的其他原子指令。这些语义是从Java和C ++ 0x中借用的，但是更通俗一点。如果这些描述不够精确，请检查这些规格（请参阅<a href="http://llvm.org/docs/Atomics.html" target="_blank" rel="noopener">Atomic指南</a>中的规格参考）。<a href="http://llvm.org/docs/LangRef.html#i-fence" target="_blank" rel="noopener">fence</a>指令对待这些排序有些不同，因为他们没有收到地址。有关详细信息，请参阅该说明文档。</p>
+<p>有关排序约束的更简单介绍，请参阅<a href="http://llvm.org/docs/Atomics.html" target="_blank" rel="noopener">LLVM原子指令和并发指南</a>。</p>
+<ul>
+<li><code>unordered</code>: 可以读取的一组值由发生前的部分顺序决定。除非某些操作写入，否则无法读取值。这旨在提供足够强大的保证来模拟Java的非volatile共享变量。此顺序不能指定为读取-修改-写入操作; 它不足以使它们以任何有趣的方式成为原子。</li>
+<li><code>monotonic</code>: 除了保证<code>unordered</code>之外，每个地址上的<code>monotonic</code>操作都有单个总顺序。所有修改顺序都必须与先发生的订单兼容。不能保证修改顺序可以合并到整个程序的全局总顺序中（而这通常是不可能的）。原子读取-修改-写入操作（<code>cmpxchg</code>和<code>atomicrmw</code>）中的读取会在写入值之前立即读取修改顺序中的值。如果在同一地址的另一个原子读取之前发生一次原子读取，则稍后的读取必须在地址的修改顺序中看到相同的值或更高的值。这不允许重新排序<code>monotonic</code>（或更强大）的操作。如果地址是由一个线程<code>monotonic-ally</code>写入和其他线程monotonic-ally读取的 - 反复读取该地址，其他线程最终必须看到写入。这对应于C++ 0x/C1x的<code>memory_order_relaxed</code>。</li>
+<li><code>acquire</code>: 除了<code>monotonic</code>的保障，一个进行同步边缘可以与形成release操作。这是为了模拟C++的<code>memory_order_acquire</code>。</li>
+<li><code>release</code>: 除了保证<code>monotonic</code>，如果此操作写入随后由<code>acquire</code>操作读取的值，则与该操作同步。（这不是一个完整的描述;请参阅发布序列的C++0x定义。）这对应于C ++ 0x/C1x的<code>memory_order_release</code>。</li>
+<li><code>acq_rel （获取+释放）</code>: <code>acquire</code>和<code>release</code>操作作为地址的一部分。这对应于C ++ 0x / C1x <code>memory_order_acq_rel</code>。</li>
+<li><code>seq_cst （顺序一致）</code>: 除了保证<code>acq_rel</code>（<code>acquire</code>对于仅读取的操作，<code>release</code>对于仅写入的操作），对于所有地址上的所有顺序一致的操作，存在全局总顺序，这与在部分顺序之前发生的以及与所有受影响地址的修改顺序一致。每个按顺序一致的读取将按照此全局顺序查看最后一个先前写入相同地址的内容。这对应于C ++ 0x / C1x <code>memory_order_seq_cst</code>和Java <code>volatile</code>。</li>
+</ul>
+<p>如果标记了一个原子操作<code>syncscope(&quot;singlethread&quot;)</code>，它只会同步并仅参与在同一线程中运行的其他操作（例如，在信号处理程序中）的<code>seq_cst</code>总排序。</p>
+<p>如果标记了一个原子操作<code>syncscope(&quot;&lt;target-scope&gt;&quot;)</code>，其中 <code>&lt;target-scope&gt;</code>是目标特定的同步范围，那么它与目标相关，如果它与其他操作的<code>seq_cst</code>总排序同步并参与其中。</p>
+<p>否则，未标记的原子操作<code>syncscope(&quot;singlethread&quot;)</code> 或<code>syncscope(&quot;&lt;target-scope&gt;&quot;)</code> 与同步和参与未标记<code>syncscope(&quot;singlethread&quot;)</code>或<code>syncscope(&quot;&lt;target-scope&gt;&quot;)</code>的其它操作的<code>seq_cst</code>总排序 。</p>
+<h3 id="浮点环境"><a href="#浮点环境" class="headerlink" title="浮点环境"></a>浮点环境</h3><p>默认的LLVM浮点环境假定浮点指令没有副作用。结果假设为舍入到舍入模式。此环境中不保留浮点异常状态。因此，在这些示例中，不会尝试创建或保留无效操作（SNaN）或零除异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  %A = fdiv 0x7ff0000000000001, %X  ; 64-bit SNaN hex value</span><br><span class="line">  %B = fdiv %X, 0.0</span><br><span class="line">Safe:</span><br><span class="line">  %A = NaN</span><br><span class="line">  %B = NaN</span><br></pre></td></tr></table></figure></p>
+<p>这种无异常假设的好处是可以自由推测浮点运算，而无需对浮点模型进行任何其他快速数学放松(fast-math relaxations)。</p>
+<p>需要与此不同的行为的代码应使用<a href="http://llvm.org/docs/LangRef.html#constrainedfp" target="_blank" rel="noopener">约束浮点内部函数</a>。</p>
+<h3 id="快速数学标志"><a href="#快速数学标志" class="headerlink" title="快速数学标志"></a>快速数学标志</h3><p>LLVM IR浮点运算（<a href="http://llvm.org/docs/LangRef.html#i-fadd" target="_blank" rel="noopener"><code>fadd</code></a>，<a href="http://llvm.org/docs/LangRef.html#i-fsub" target="_blank" rel="noopener"><code>fsub</code></a>，<a href="http://llvm.org/docs/LangRef.html#i-fmul" target="_blank" rel="noopener"><code>fmul</code></a>，<a href="http://llvm.org/docs/LangRef.html#i-fdiv" target="_blank" rel="noopener"><code>fdiv</code></a>，<a href="http://llvm.org/docs/LangRef.html#i-frem" target="_blank" rel="noopener"><code>frem</code></a>，<a href="http://llvm.org/docs/LangRef.html#i-fcmp" target="_blank" rel="noopener"><code>fcmp</code></a>）和<a href="http://llvm.org/docs/LangRef.html#i-call" target="_blank" rel="noopener"><code>call</code></a>可以使用以下标志来启用其他不安全的浮点转换。</p>
+<ul>
+<li><code>nnan</code>: 没有NaNs - 允许优化假设参数和结果不是NaN。需要进行这样的优化才能在NaN上保留已定义的行为，但结果的值未定义。</li>
+<li><code>ninf</code>: 无Infs - 允许优化假设参数和结果不是<code>+/-Inf</code>。需要进行这样的优化才能在<code>+/-Inf</code>上保留已定义的行为，但结果的值未定义。</li>
+<li><code>nsz</code>: 无签名零 - 允许优化将零参数或结果的符号视为无关紧要。</li>
+<li><code>arcp</code>: 允许互惠(Reciprocal) - 允许优化使用参数的倒数而不是执行除法。</li>
+<li><code>contract</code>: 允许浮点收缩（例如，融合乘法，然后将加法融合为融合乘加）。</li>
+<li><code>afn</code>: 近似函数 - 允许用近似计算代替函数（<code>sin</code>，<code>log</code>，<code>sqrt</code>等）。有关可应用于LLVM的内在数学函数的位置，请参阅浮点内在定义。</li>
+<li><code>reassoc</code>: 允许重新关联转换为浮点指令。这可能会显着改变浮点结果。</li>
+<li><code>fast</code>: 这个标志暗示其他所有的。</li>
+</ul>
+<h3 id="使用列表顺序指令"><a href="#使用列表顺序指令" class="headerlink" title="使用列表顺序指令"></a>使用列表顺序指令</h3><p>使用列表指令对每个使用列表的内存顺序进行编码，从而允许重新创建订单。<code>&lt;order-indexes&gt;</code>是分配给引用值用途的索引的逗号分隔列表。引用值的使用列表会立即按这些索引排序。</p>
+<p>Use-List指令可能出现在函数作用域或全局作用域中。它们不是指令，对IR的语义没有影响。当它们在函数范围内时，它们必须出现在最终基本块的终止符之后。</p>
+<p>如果基本块的地址是通过<code>blockaddress()</code>表达式获取的， <code>uselistorder_bb</code>则可用于从其函数范围之外对其使用列表重新排序。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uselistorder &lt;ty&gt; &lt;value&gt;, &#123; &lt;order-indexes&gt; &#125;</span><br><span class="line">uselistorder_bb @function, %block &#123; &lt;order-indexes&gt; &#125;</span><br></pre></td></tr></table></figure></p>
+<p>例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">define void @foo(i32 %arg1, i32 %arg2) &#123;</span><br><span class="line">entry:</span><br><span class="line">  ; ... instructions ...</span><br><span class="line">bb:</span><br><span class="line">  ; ... instructions ...</span><br><span class="line"></span><br><span class="line">  ; At function scope.</span><br><span class="line">  uselistorder i32 %arg1, &#123; 1, 0, 2 &#125;</span><br><span class="line">  uselistorder label %bb, &#123; 1, 0 &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">; At global scope.</span><br><span class="line">uselistorder i32* @global, &#123; 1, 2, 0 &#125;</span><br><span class="line">uselistorder i32 7, &#123; 1, 0 &#125;</span><br><span class="line">uselistorder i32 (i32) @bar, &#123; 1, 0 &#125;</span><br><span class="line">uselistorder_bb @foo, %bb, &#123; 5, 1, 3, 2, 0, 4 &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="源文件名"><a href="#源文件名" class="headerlink" title="源文件名"></a>源文件名</h3><p>源文件名字符串设置为原来的模块标识符，当通过clang前端从源代码编译时，例如，这将是编译的源文件的名称。然后通过IR和比特码进行保存。</p>
+<p>目前，这对于为配置文件数据中使用的本地函数生成一致的唯一全局标识符是非常必要的，该配置文件将源文件名预先设置为本地函数名称。</p>
+<p>源文件名的语法很简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source_filename = &quot;/path/to/source.c&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇文章，翻译起来的确是非常麻烦，由于没有通读全文，里面应该有不少错误的地方，日后会重新修改。</p>
 
           
         
