@@ -276,6 +276,184 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/散标的设计之道/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/散标的设计之道/" itemprop="url">散标的设计之道</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:48:28+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>最近再做债权匹配的业务，需求是这样的，将债权（后面改称标的）打包放到一个投资计划里面去，然后接受用户的投资，那么用户投资过来的钱，要直接匹配上债权。当时我们在设计这个算法的时候，我就考虑到了以下几点：</p>
+<ul>
+<li>匹配的标的最好和用户投资的金额相等，不要留有空间，否则会出现等待资金。</li>
+<li>如果出现资金不能单独匹配一个标的就需要和其他的人一起投资进入标的。这样用户的资金开始分散。</li>
+<li>优先使用大额标的匹配用户资金，这样留下来的小额资金能够适应后面的变化。</li>
+<li>用户等待的资金何时进入的问题，如果他人投资的金额每次都能完好匹配进入，那么之前的等待资金就会一直不进入。我们的策略是他人投资加上等待资金，如果能够完好匹配，那么就加上等待资金一起进入。</li>
+<li>因为标的有一定的期限，标的到期可能资金的流转还没结束，必须匹配新的标的，这是我们发现流转资金的在匹配可能会出现路径问题。</li>
+<li>在匹配资金中，只能有一种策略那就是同一个人的资金拆完之后，就不要试图去合并，这样程序的复杂度会攀升。注意不是不能合并，而是复杂度及其的高，最好保持原有的状态，这样处理起来比较方便。</li>
+<li>资金拆解进入标的后，我们一定要做资金的画像，将资金的流转使用图数据库进行记录，以流转图的形式记录下来。</li>
+<li>如果出现新的标的集中，无法完全匹配新产生的债权，那么就会面临新的问题，新的资金拆解，如果程序写的不好，多次轮转之后，我们的资金可能越来越细化，这不是我们想看到的现象。</li>
+<li>散标的多态性：以上说的是标的是固定的状态，但是可能标的是根据资金进行选取，这种方式相对简单很多，但是也有待支付标的，走我们放款的，就是用户选择标的付钱，然后放款给借款人，这里的问题就是及时性，如果不及时可能影响用户的体验。还有就是单笔标的的自由交易，这种也相对比较简单。最讨厌的还是收益复投，这个会有一大堆的小资金，进入就是一个麻烦。</li>
+</ul>
+<h2 id="资金如何整合"><a href="#资金如何整合" class="headerlink" title="资金如何整合"></a>资金如何整合</h2><p>我们看到之前的设计中，我们对资金是有一定的要求的，如果资金本身的数字不规整，那么散标是无法匹配资金的，这会带来很多的麻烦，所以我们不得不考虑规整资金的问题。</p>
+<p>在我们的业务中，可能要求资金必须是100的整数倍，这样资金就规整了，至少我们可以解决很多的问题，但是如果引入收益复投，这样问题就来了，这么散的资金如何进入匹配呢？</p>
+<p>思路就是职责拆分，整合资金是一部分，资金投资是一部分。其实就是整个资金做一次整合变成规整的资金，然后利用规整的资金进行散标匹配，日后的资金结算以规整后的资金为主，如果资金结算具体到某一个人，那么需要这边的职责进行拆分。这样我们原来的散标策略又可以起作用了，也不担心一些问题了。如果一个人的钱是规整的，直接进入匹配，然后在这里记录整资金，这样完美兼容原来的设计。只是收益可能不规整，所有收益的零头可能要做个标计，并且还要确定是谁的部分收益不能进入，这里就是另一种策略了，当然最好保证所有人的收益都是能进入的。这里就不深入讨论了。</p>
+<p>以上就是我们对资金的和散标的处理过程。</p>
+<h2 id="资产固定匹配"><a href="#资产固定匹配" class="headerlink" title="资产固定匹配"></a>资产固定匹配</h2><p>一般发布计划时资产都是固定的，那么我们该如何进入匹配呢？一般我们是根据一些条件先判断能否匹配。比如我们知道金额，就知道一些零头是不能完全匹配的，这样我们直接匹配，不用考虑完全匹配。</p>
+<p>那么我们如何检查是否完全匹配能。一般我们是统计现有的金额和对应的标的量，采用回归的策略进行查找。本来这没啥问题，但是如果用户投资的金额比较大，那么这样的递归速度不是很差？所以我们决定，如果金额很大，先使用大额标的，将要匹配的空间尽量压缩，当到了一定的阈值之后，再来使用精确匹配，匹配掉剩余的值。另外我们还做了一些其他的优化，整个算法测下来，金额的匹配都是相当快得，本来我们还打算走异步匹配，后来发现压根就没有这个必要，最后我们还是使用了同步匹配的策略。</p>
+<p>当然这里需要注意，当你匹配大额资产的时候可能会出现，本来能匹配的资金由于大额资产多了，而不能精确匹配上去，这时候可以考虑退一个大额资产，再进行匹配的策略。总之这个问题不是那么好去解决的。</p>
+<p>还有就是如果我们的资产价值又多了一个，我们的策略是否还会生效，这也是我们不得不面对的一个问题。一般来说资产价值不会有多种，我们利用统计的策略就是为了，一是预检资金能否完全匹配，二是将匹配问题变成一个类似求24点的问题，这样比较简单，但是如果资产的价值情况是多样的，而且数量也是多样的，那么这个问题可能会很严重。这个我们只能使用递归策略找到最优解，这样的性能可能是大家所不能接受的。可以做必要的优化。记录哪些值是走过的，否则这个时间都是浪费的。</p>
+<p>其实还有一种情况就是如果资产价值本身不规整，那么我们该如何处理，一是计划金额不好办，二是用户投资也不能限定。当然最好的思路就是一个资产价值地卖，这样就没问题了。如果实在不行，那可能和前面一样资产分组规整资产，这个确实实现起来比较复杂。这种极端情况应该不怎么出现。</p>
+<p><b style="color:red">总之这里一定要实现：数据、策略、业务三者的分离，不能靠在一起，否则会出现大问题。</b></p>
+<h2 id="轮转资金匹配"><a href="#轮转资金匹配" class="headerlink" title="轮转资金匹配"></a>轮转资金匹配</h2><p>一是资产打包进入匹配，二是根据需要的金额数量定制资产包。其实我比较偏向于第二种方法，这样资金的流程比较简单，但是也会出现一个问题，就是资产包可能由于资产的问题，可以打出相应金额的包，但是不能实现定制，那么这个时候，你不想去拆你的资金都是不能的。</p>
+<p>重点是我们的散标策略必须知道这些，这个时候是有一个前提条件的，那就是金额和资产总价值是恒等的，这比之前的匹配好多了，但是这次需要记录资金的路径。而且是按照价值进行匹配，如果某个价值不能匹配，应该先放在一边进行晾着。</p>
+<p>第一轮匹配完成后，进入拆解匹配剩余资金的流程，这里主要有个策略就是应该优先拆解谁的资金，一是一个人的整资金，二是本身的混合资金。在我看来如果拆混合资金，会导致很多问题，所以最好拆整资金，成分单一无历史包袱，所以最好这样去处理。但是如果只剩混合资金怎么办？那就不得不这样去做，所以这个流程你还是会去处理，这个就比较麻烦了。有些事情你还是逃不掉的。必须去做。</p>
+<p>以上就是轮转资金的匹配策略了，我们要处理的还有很多。</p>
+<h2 id="直投式的匹配"><a href="#直投式的匹配" class="headerlink" title="直投式的匹配"></a>直投式的匹配</h2><p>这里其实分两种情况，一是用户现在自己账户设置为投入多少钱，风险系数，高风险标的不投；那么这时的处理可能不是这么简单了，散标考虑的事情应该很多，掺杂一点业务需求。不过散标匹配相对简单，只是选择谁的资金进入而已。这种是典型的先有资金，后有标的的情况，但是这种方式也不是那么简单地解决。因为你要保证谁的钱先到优先使谁的资金先进入，但是也可能面临将别人的资金拆得比较散的情况；不管这么说这种方式比较简单的。</p>
+<p>但是如果用户投资的金额不足以满足一个标的，标的里面也堆积了很多标的，那么这笔金额是等待，还是找那些急着使用的标的放款。这个我觉得应该使用一个时间段的，如果在这个时间段的标的有个组合能满足标的，为啥不放，但是这样会面临一个风险就是最需要资金的标的可能会饿死，这是很有可能发生的情况。这个问题又回到了之前先有标的后有资金的问题，但是又加了一个紧急度的维度，这样处理起来还是有点麻烦的。</p>
+<p>还有就是标的到了，用户选择标的放款。这种方式就更好了，这样我们其实什么都不用担心，像处理普通业务一样而已。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>也许关于散标匹配的内容还有很多，也没有在网上找到相应的资料的，所以发现这个却成了我们的一个问题，经过一段时间的考虑和实践，我们总结出了一套自己的散标匹配策略。随着实践的深入，我们还会不停地完善这个策略。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/账务系统平级和层级账户体系设计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1835,157 +2013,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/java/ServiceLocator模式学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/java/ServiceLocator模式学习/" itemprop="url">ServiceLocator模式学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T13:29:35+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>关于这个模式第一次见应该是Dubbo的服务加载器了，由于看Dubbo的源码已经很久远了，记不住了。只知道所有的服务都是通过ServiceLocator进行加载的。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>其实ServiceLocator的实现就像是策略模式之前加上了一层路由转发，也可以说有点像网络中的路由器，通过这个路由器找到对应的服务，所以我觉得起名字叫ServiceRouter也不是不可以呀！如果说看成交换机也行！当然路由规则也是多种多样的，一是直接在系统启动的时候，在ServiceLocator中放入服务即可。还有一种方式就是通过放置资源，用类加载器加载，然后利用反射进行初始化也可以。总之方式是多种多样的就看你的实现了。</p>
-<h2 id="SPI机制"><a href="#SPI机制" class="headerlink" title="SPI机制"></a>SPI机制</h2><p>我们先来说说这个SPI机制，感觉有点像ServiceLocator的泛型版，但是所有的实现都是基于反射实现，类的配置是META-INF里面。我觉得在某些方面我们可以认为，这个ServiceLoader就是ServiceLocator的实现方式之一。</p>
-<h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><p>利用java的命名服务，我们可以将所有的资源都给一个命名，然后我们通过名称找到相应的资源，这种实现方式还是和ServiceLocator的实现有些不一样的。我感觉这种更类似于，先登记在使用，而所有人的登记是放在一个登记的中心。而ServiceLocator并没有中心的这个概念在里面，所以我觉得这个也是比较明显的不同。但是如果广义上来说，这个也是一样的，实现方式不同而已，但是目的都达到了。</p>
-<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>工厂模式其实就是各种产品已经做好了，等着挑选，如果调好了产品就进行制作。工厂模式（包括抽象工厂）是两种抽象一是产品，二是工厂。有4个维度去解析，一个工厂可生产不同商品，不同工厂生产不同商品等等，总之这种模式比较固定，一般来说没有灵活的空间，不能进行后期的定制化操作。或者定制化操作是非常复杂的。但是也可认为是有ServiceLocator的模式在里面的。因为我们在使用策略模式的使用，也经常使用工厂模式去生成策略。我觉得工厂模式很像交换机，ServiceLocator是路由器，不信你自己再仔细想想他们的区别。</p>
-<h2 id="AOP-DI"><a href="#AOP-DI" class="headerlink" title="AOP/DI"></a>AOP/DI</h2><p>这里我就不介绍AOP和DI的基本概念了，我相信大家都是懂得。我们来讲如何实现AOP/DI，大家知道Spring实习AOP/DI的方式其实大体来说有两种，AOP是代理类的实现，至于DI则是通过扫描方式实现的。</p>
-<p>ServiceLocator和DependencyInjection是实现IoC的两种不同方式。第三种方式是FactoryPattern。ServiceLocator强调预先定义资源映射，隔离资源的具体实现，也就是在所实现类的外部某处RegisterService，例如在应用程序初始化时。DependencyInjection强调辅助创建和管理对象，在创建对象是可采用构造函数注入和属性Setter注入等方式。</p>
-<p>当然所有的功能我们可以在类中通过反射的方式来进行实现，没有反射类，其实我们什么也做不了，有了反射之后，一切都变得很强大。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我觉得分析问题一定是辩证统一，所有事物都是相通的，但是又有所区别的。问题还是要看透事情的本质，这样才能更好地理解问题。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/iefreer/article/details/9342519" target="_blank" rel="noopener">服务定位器模式（Service Locator Pattern）详解和代码示范</a><br><a href="http://www.cnblogs.com/gaochundong/archive/2013/04/12/service_locator_pattern.html" target="_blank" rel="noopener">Service Locator 模式</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2037,7 +2064,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">89</span>
+                    <span class="site-state-item-count">90</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

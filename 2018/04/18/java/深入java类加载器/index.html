@@ -100,28 +100,28 @@
 
 
   
-  <meta name="keywords" content="交易替换,比特币," />
+  <meta name="keywords" content="spi,ServiceLoader," />
 
 
-<meta name="description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
-<meta name="keywords" content="交易替换,比特币">
+<meta name="description" content="概要对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。  启动类加载器(Bootstrap ClassLoader)：这个类加载器使用C++语言实现，并非C">
+<meta name="keywords" content="spi,ServiceLoader">
 <meta property="og:type" content="article">
-<meta property="og:title" content="BIP125：可选的交易费用替换信号【翻译】">
-<meta property="og:url" content="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/index.html">
+<meta property="og:title" content="深入java类加载器">
+<meta property="og:url" content="http://cordate.github.io/2018/04/18/java/深入java类加载器/index.html">
 <meta property="og:site_name" content="柳絮纷飞">
-<meta property="og:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
+<meta property="og:description" content="概要对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。  启动类加载器(Bootstrap ClassLoader)：这个类加载器使用C++语言实现，并非C">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-03-21T07:44:27.000Z">
+<meta property="og:updated_time" content="2018-04-18T11:27:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BIP125：可选的交易费用替换信号【翻译】">
-<meta name="twitter:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
+<meta name="twitter:title" content="深入java类加载器">
+<meta name="twitter:description" content="概要对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。  启动类加载器(Bootstrap ClassLoader)：这个类加载器使用C++语言实现，并非C">
 
 
 
 
 
 
-  <link rel="canonical" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/"/>
+  <link rel="canonical" href="http://cordate.github.io/2018/04/18/java/深入java类加载器/"/>
 
 
 
@@ -130,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>BIP125：可选的交易费用替换信号【翻译】 | 柳絮纷飞</title>
+  <title>深入java类加载器 | 柳絮纷飞</title>
   
 
 
@@ -277,7 +277,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/18/java/深入java类加载器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gavin Zhang">
@@ -294,7 +294,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">BIP125：可选的交易费用替换信号【翻译】</h1>
+          <h1 class="post-title" itemprop="name headline">深入java类加载器</h1>
         
 
         <div class="post-meta">
@@ -306,7 +306,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-18T17:41:35+08:00">2018-04-18</time>
             
 
             
@@ -327,14 +327,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
@@ -368,58 +361,27 @@
       
 
       
-        <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
-<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。</p>
 <ul>
-<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
-<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
+<li>启动类加载器(Bootstrap ClassLoader)：<br>这个类加载器使用C++语言实现，并非ClassLoader的子类。主要负责加载存放在<code>JAVA_HOME/jre/lib/rt.jar</code>里面所有的class文件，或者被<code>-Xbootclasspath</code>参数所指定路径中以rt.jar命名的文件。</li>
+<li>扩展类加载器(Extension ClassLoader)：<br>这个加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载<code>JAVA_HOME/lib/ext</code>目录中的，或者被<code>java.ext.dirs</code>系统变量所指定的路径中的所有类库。</li>
+<li>应用程序类加载器(Application ClassLoader)：<br>这个加载器由sun.misc.Launcher$AppClassLoader实现，它负责加载<code>classpath</code>对应的jar及目录。一般情况下这个就是程序中默认的类加载器。</li>
+<li>自定义类加载器(User Defined ClassLoader)：<br>开发人员继承ClassLoader抽象类自行实现的类加载器，基于自行开发的ClassLoader可用于并非加载classpath中(例如从网络上下载的jar或二进制字节码)、还可以在加载class文件之前做些小动作 如：加密等。</li>
 </ul>
-<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
-<ul>
-<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
-<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
-</ul>
-<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
-<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
-<ul>
-<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
-<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
-<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
-<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
-<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
-</ul>
-<p>最初的实现可以在<a href="https://github.com/bitcoin/bitcoin/pull/6871" target="_blank" rel="noopener">比特核心PR＃6871</a>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
-<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
-<ul>
-<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
-<li>在确认之前忽略选择性（opt-in）交易。</li>
-</ul>
-<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
-<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
-<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin的Wiki页面</a>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
-<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<a href="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434" target="_blank" rel="noopener">允许</a> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
-<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<a href="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522" target="_blank" rel="noopener">删除了替代品</a>，仅留下评论“暂时禁用替换功能”。</p>
-<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
-<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
-<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
-<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
-<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
-<p>在满足两个条件之前，实际更换可能不可靠：</p>
-<ul>
-<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
-<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
-</ul>
-<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
-<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
-<li><a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin Wiki上的交易可替换性</a>旨在帮助钱包作者使用RBF</li>
-<li>用于创建选择性全RBF交易的工具：<a href="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools" target="_blank" rel="noopener">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools</a></li>
-<li>Reddit：<a href="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/" target="_blank" rel="noopener">关于选择性RBF的问题</a>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
-</ol>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener">Opt-in Full Replace-by-Fee Signaling</a></p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>类加载器(ClassLoader)用来加载 class字节码到 Java 虚拟机中，并转换成 java.lang.Class 类的一个实例。当然class字节码的来源可能有多种，一种就是自己拼写class文件的内容。</p>
+<p>Java中如何比较两个类相等呢？这里所指的“相等”包括代表类的Class对象的equal方法、isAssignableFrom()、isInstance()方法及instance关键字返回的结果。</p>
+<p>其实在Java中，一个类是否是相同的，主要取决于类加载器和包名+类名，只有以上条件都满足了，我们才说这两个类是相等的。我并没有在class文件中发现equals方法，这说明类加载的去重完全是在definedClass方法中，调用了底层的一些C代码实现的。也就是说，我们无法自己实例化一个Class实例，这需要JVM底层帮我们处理，每个Class实例的去重，完全是JVM的底层代码帮忙处理的。但是我们可以在class类中发现一个ClassLoader类的成员。</p>
+<h2 id="ParallelLoaders"><a href="#ParallelLoaders" class="headerlink" title="ParallelLoaders"></a>ParallelLoaders</h2><p>这是ClassLoader里面的一个内部类，用来封装一组并行能力的加载器类型。这个一般是用不到的，有兴趣可以先看一下。但是需要知道ClassLoader是支持并行加载的。</p>
+<h2 id="类加载过程与双亲委派"><a href="#类加载过程与双亲委派" class="headerlink" title="类加载过程与双亲委派"></a>类加载过程与双亲委派</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">&#123;</span><br><span class="line">    synchronized (getClassLoadingLock(name)) &#123; // 获得要用的锁</span><br><span class="line">        // First, check if the class has already been loaded</span><br><span class="line">        Class&lt;?&gt; c = findLoadedClass(name); // 检查这个类有没有被加载</span><br><span class="line">        if (c == null) &#123;</span><br><span class="line">            long t0 = System.nanoTime(); // 时间</span><br><span class="line">            try &#123;</span><br><span class="line">                if (parent != null) &#123; // 如果父类加载器，就用父类加载器加载</span><br><span class="line">                    c = parent.loadClass(name, false);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    // 默认的父类加载器是启动类加载器</span><br><span class="line">                    c = findBootstrapClassOrNull(name);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                // ClassNotFoundException thrown if class not found</span><br><span class="line">                // from the non-null parent class loader</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (c == null) &#123; // 如果最终没有加载到这个类</span><br><span class="line">                // If still not found, then invoke findClass in order</span><br><span class="line">                // to find the class.</span><br><span class="line">                long t1 = System.nanoTime(); // 取得系统时间</span><br><span class="line">                c = findClass(name); // 如果没有父类加载器就自己加载</span><br><span class="line"></span><br><span class="line">                // this is the defining class loader; record the stats</span><br><span class="line">                sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (resolve) &#123;</span><br><span class="line">            resolveClass(c);</span><br><span class="line">        &#125;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码很清楚，就不用过多解释了。双亲委派不是基于继承实现的，而是基于组合的方式实现的，默认使用启动类加载器作为父类加载器。如果类加器的父类加载器没有帮助我们加载到相应的类，那么就会调用findClass这个方法，所以为啥我们定义类加载器的时候需要重写findClass方法的原因就在这里。</p>
+<p>默认的findClass实现是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line">    throw new ClassNotFoundException(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以发现，如果加载不了类就抛异常，我们进行重写的时候，也应该注意这点（这是典型的模板方法模式）。</p>
+<p>其次我们发现loadClass不是final方法，也就是说我们可以打破双亲委派的模型，直接使用自己的类加载器，但这样会出现无法使用系统类的问题了，这个只是我的猜测，但是如果我想ClassLoader中会不会相应的信息，也许需要以后研究JVM底层的时候，才会有答案了。</p>
+<h2 id="重写findClass"><a href="#重写findClass" class="headerlink" title="重写findClass"></a>重写findClass</h2><p>我们可以发现重写findClass完全达不到自己生成Class的目的。然后你会发现defineClass也是返回Class类型的，所以我们需要在方法中调用这个方法进行相应的处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len,</span><br><span class="line">                                         ProtectionDomain protectionDomain)</span><br><span class="line">        throws ClassFormatError</span><br><span class="line">&#123;</span><br><span class="line">    protectionDomain = preDefineClass(name, protectionDomain);</span><br><span class="line">    // 从codeSource中获取类所在文件路径</span><br><span class="line">    String source = defineClassSourceLocation(protectionDomain);</span><br><span class="line">    Class&lt;?&gt; c = defineClass1(name, b, off, len, protectionDomain, source);</span><br><span class="line">    postDefineClass(c, protectionDomain);</span><br><span class="line">    return c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>有趣发现这里也有模板方法模式，如果你想前后处理一些事情，可以重写preDefineClass、postDefineClass这两个方法，但是注意原来的方法时private的，你无法调用super里面的方法，这会带来很多的问题。</p>
+<p>当然defineClass本省就是一个重载方法，所以详细的信息请查看源码，这里就不多说明了，其实用到才关注，一般的时候是不用管的。</p>
+<h2 id="resolveClass方法"><a href="#resolveClass方法" class="headerlink" title="resolveClass方法"></a>resolveClass方法</h2><p>resolveClass 此方法负责完成Class对象的链接，如果链接过，则直接返回。</p>
+<h2 id="findLibrary-loadLiberay"><a href="#findLibrary-loadLiberay" class="headerlink" title="findLibrary/loadLiberay"></a>findLibrary/loadLiberay</h2><p>这两个方法其实是为了加载动态链接库使用的，以前我也分析过里面的代码，有些影响，这里就不做更多的解释了。</p>
 
       
     </div>
@@ -440,9 +402,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/交易替换/" rel="tag"># 交易替换</a>
+            <a href="/tags/spi/" rel="tag"># spi</a>
           
-            <a href="/tags/比特币/" rel="tag"># 比特币</a>
+            <a href="/tags/ServiceLoader/" rel="tag"># ServiceLoader</a>
           
         </div>
       
@@ -455,8 +417,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/20/blockchain/比特币粉尘和空块/" rel="next" title="比特币粉尘和空块">
-                <i class="fa fa-chevron-left"></i> 比特币粉尘和空块
+              <a href="/2018/04/18/编译原理/LLVM语言参考手册(类型系统到其他值)/" rel="next" title="LLVM语言参考手册(类型系统到其他值)">
+                <i class="fa fa-chevron-left"></i> LLVM语言参考手册(类型系统到其他值)
               </a>
             
           </div>
@@ -464,10 +426,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/03/21/java/Java中volatile解析/" rel="prev" title="Java中volatile解析">
-                Java中volatile解析 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -813,7 +771,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">2.</span> <span class="nav-text">概要</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实施细节"><span class="nav-number">2.1.</span> <span class="nav-text">实施细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收钱包政策"><span class="nav-number">2.2.</span> <span class="nav-text">接收钱包政策</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支出钱包政策"><span class="nav-number">2.3.</span> <span class="nav-text">支出钱包政策</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">3.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户支持"><span class="nav-number">5.</span> <span class="nav-text">客户支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#也可以看看"><span class="nav-number">6.</span> <span class="nav-text">也可以看看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">7.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作用"><span class="nav-number">2.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParallelLoaders"><span class="nav-number">3.</span> <span class="nav-text">ParallelLoaders</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载过程与双亲委派"><span class="nav-number">4.</span> <span class="nav-text">类加载过程与双亲委派</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写findClass"><span class="nav-number">5.</span> <span class="nav-text">重写findClass</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resolveClass方法"><span class="nav-number">6.</span> <span class="nav-text">resolveClass方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#findLibrary-loadLiberay"><span class="nav-number">7.</span> <span class="nav-text">findLibrary/loadLiberay</span></a></li></ol></div>
             
 
           </div>
