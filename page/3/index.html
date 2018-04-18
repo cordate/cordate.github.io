@@ -276,6 +276,172 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/什么是Secp256k1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/28/blockchain/什么是Secp256k1/" itemprop="url">什么是Secp256k1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T20:53:47+08:00">2018-03-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文的阅读需要理解椭圆曲线，了解相关知识请查看我之前的博客文档。</p>
+<p><b style="color:red">secp256k1是指比特币中使用的ECDSA曲线的参数</b>，并且在高效密码学标准（SEC）（Certicom Research，<a href="http://www.secg.org/sec2-v2.pdf）中进行了定义。" target="_blank" rel="noopener">http://www.secg.org/sec2-v2.pdf）中进行了定义。</a></p>
+<p>在比特币开始流行之前，secp256k1几乎从未使用过，但由于其几个不错的属性，它现在越来越受欢迎。大多数常用曲线具有随机结构，但secp256k1是以特殊的非随机方式构建的，可以实现特别高效的计算。<b style="color:red">因此，如果实施得到充分优化，它通常比其他曲线快30％以上</b>。<b style="color:blue">另外，与流行的NIST曲线不同，secp256k1的常量是以可预测的方式选择的，这大大降低了曲线创建者在曲线中插入任何后门的可能性。</b></p>
+<p>下面看一下这里面的函数图：</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/Secp256k1%E5%87%BD%E6%95%B0%E5%9B%BE.png?raw=true" alt=""></p>
+<p><b style="color:blue">Secp256k1是secp256k1椭圆曲线y<sup>2</sup> = x<sup>3</sup> + 7在实数上的图形。请注意，因为secp256k1实际上是在字段Z<sub>p</sub>上定义的，所以它的图形实际上看起来像是随机分散的点，而不是像图中这样是连续的点。</b></p>
+<h2 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h2><p>从标准摘录：</p>
+<p>与Koblitz曲线secp256k1相关联的F<sub>p</sub>上的椭圆曲线域参数由单元T=（p，a，b，G，n，h）指定，其中有限域F<sub>p</sub>由下式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p = FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F</span><br><span class="line">= 2256 - 232 - 29 - 28 - 27 - 26 - 24 - 1</span><br></pre></td></tr></table></figure></p>
+<p>F<sub>p</sub>上的曲线E：y<sup>2</sup> = x<sup>3</sup> + ax + b由下式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000</span><br><span class="line">b = 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000007</span><br></pre></td></tr></table></figure></p>
+<p>压缩形式的基点G是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G = 02 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798</span><br></pre></td></tr></table></figure></p>
+<p>而在未压缩的形式是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G = 04 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8</span><br></pre></td></tr></table></figure></p>
+<p>最后，G的循环因子n(就是指nG=G)和辅因子h如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">n = FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141</span><br><span class="line">h = 01</span><br></pre></td></tr></table></figure></p>
+<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><ul>
+<li>secp256k1具有特征p，它的素数域定义为ℤ<sub>p</sub>。常用的一些其他曲线具有特征2，并且在二进制伽罗瓦(Galois)域GF(2<sup>n</sup>)上定义，但secp256k1不是其中之一。</li>
+<li>因为一个常数为零，曲线方程中<code>ax</code>项始终为零，因此曲线方程变为y<sup>2</sup> = x<sup>3</sup> + 7。</li>
+</ul>
+<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><p><a href="https://bitcoin.stackexchange.com/questions/21907/what-does-the-curve-used-in-bitcoin-secp256k1-look-like" target="_blank" rel="noopener">secp256k1是什么（Pieter Wuille的比特币堆栈交换答案）</a></p>
+<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><a href="https://en.bitcoin.it/wiki/Secp256k1" target="_blank" rel="noopener">Secp256k1</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/Bitcoin中Base58Check/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2174,184 +2340,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/blockchain/共识算法概述/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/23/blockchain/共识算法概述/" itemprop="url">共识算法概述</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T15:46:06+08:00">2018-03-23</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>一开始就认为共识算法其实比较简单，但是一直没有认真地总结，导致这块知识一直都是短板。其实共识算法的本质是分布式一致性的问题，但是显然这和分布式一致性略有区别。有以下两个主要的区别：</p>
-<ol>
-<li>传统的分布式一致性算法认为，每个节点都不会欺诈，如果出现问题一般都是网络分区，请求顺序的问题。但是共识算法不能保证每一个节点都是正常节点，可能就是欺诈节点。</li>
-<li>传统的一致性算法只要有值就行，不太关心哪个节点写入数据。<b style="color:red">但是共识算法，必须公平地对待每一个节点，选取这个节点必须是公平的，于是就有了POW和POS机制的出现。这个就好像是选择值本来一个很纯粹的事情绑定了特定的业务，所以要处理的事情就变得很复杂了。所以在分析共识算法的时候要将这个点剥离出来，拨出来之后这就是一个分布式一致性的问题。</b></li>
-</ol>
-<p>所以说共识算法，剥离了上面两个方面的因素就是一个纯粹的分布式一致性算法。<b style="color:red">其实说白了共识算法就是分布式一致性在P2P网络中的应用。</b></p>
-<p>其他的分布式协议：<a href="/2018/03/22/算法/Paxos协议详解/">Paxos</a>、<a href="/2018/03/23/算法/Raft算法简介/">Raft</a>。</p>
-<h2 id="从拜占庭将军问题谈起"><a href="#从拜占庭将军问题谈起" class="headerlink" title="从拜占庭将军问题谈起"></a>从拜占庭将军问题谈起</h2><p>这是一个很经典的分布式一致性问题的提出，这里我们就不做很多的说明。可以查看维基百科中关于这点的描述。</p>
-<h2 id="拜占庭容错-BFT"><a href="#拜占庭容错-BFT" class="headerlink" title="拜占庭容错 BFT"></a>拜占庭容错 BFT</h2><p>这是拜占庭将军问题的早期的解决方案。在1982年的论文中提过几个解决方案。方案中把问题往下拆解，认为在“拜占庭将军”的问题可以在“军官与士官的问题”里解决，以降低将军问题的发生。而所谓的“军官与士官的问题”，就是探讨军官与他的士官是否能忠实实行命令。</p>
-<p>其中一个解决方案认为即使出现了伪造或错误的消息。只要有问题的将军的数量不到三分之一，仍可以达到“拜占庭容错”。原因是把同样的标准下放到“军官与士官的问题”时，在背叛的军士官不足三分之一的情况下，有问题的军士官可以很容易的被纠出来。<b style="color:blue">比如有军官A，士官B与士官C。当A要求B进攻，却要求C撤退时</b>。<b style="color:red">只要B与C交换所收到的命令，就会立刻发现A有问题</b>。<b style="color:blue">以函数来表示，将军的总数为n，n里面背叛者的数量为t，则只要n &gt; 3t就可以容错。</b></p>
-<p><b style="color:red">另一个解决方案需要有无法消去的签名。在现今许多高度信息安全要求的关键系统里，数字签名就经常被用来实现拜占庭容错，找出有问题的将军。然而，在生命攸关系统里，使用 错误侦测码就可以大幅降低问题的发生。无论系统是否存在拜占庭将军问题。所以需要做密码军算的数字签名也不一定适合这类系统。</b></p>
-<p>假如上述两个解决方案里，将军们无法直接通信时，该论文亦有进一步的解决方案。<br>此外，1980年代还有其他用来达到拜占庭容错的架构被提出，如：FTMP、MMFCS 与 SIFT。</p>
-<h2 id="使用拜占庭容错算法-PBFT"><a href="#使用拜占庭容错算法-PBFT" class="headerlink" title="使用拜占庭容错算法 PBFT"></a>使用拜占庭容错算法 PBFT</h2><p>1999年，卡斯托（Miguel Castro）与李斯克夫（Barbara Liskov）提出了实用拜占庭容错（PBFT）算法。该算法能提供高性能的运算，使得系统可以每秒处理成千的请求，比起旧式系统快了一些。<b style="color:red">后来也有针对BFT算法的各种优化版，但是优化的方向不同，有的是为了加强健壮性，有的是为了加强网络速度等。</b>下面来提一下这个PBFT算法的一些简要知识，具体请查看：<a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a></p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/PBFT%E6%B5%81%E7%A8%8B.png?raw=true" alt="PFBT流程图"><br>上面是PBFT的图示，下面我们讲个上面流程的故事。</p>
-<ol>
-<li>总司令给军长下命令向前行军500公里；</li>
-<li>军长将消息（不只有命令）传递给所有师长；</li>
-<li>1号2号师长又把消息传给其他师长，3号师长处于叛逃状态；</li>
-<li>军长再次询问各位师长是否同意执行命令。</li>
-<li>所有军官（包括军长和师长）向总司令汇报结果。</li>
-</ol>
-<p><b style="color:blue">这个算法的实用性为何高于BFT呢？因为在BFT的描述中，我们可以发现每个节点都不知道其他节点的情况，都会去询问所有的人他们所获得情况，进而做出自己的判断（只要大多数人同意的就是正确的）。这个过程达成一致性的时间比较长，而且耗费大量的P2P网络资源，不适合共识算法（规模不大是可以的）</b>。<b style="color:red">PBFT算法就是校验放给一个人去校验就可以了，而不需要全体所有的人来进行校验，你也不知道进行校验的人是谁，所以是安全的，分布式一致性也很容易达成。</b></p>
-<h2 id="节点验证的机制"><a href="#节点验证的机制" class="headerlink" title="节点验证的机制"></a>节点验证的机制</h2><p>节点验证的方式其实是两方面的，一是节点未篡改通讯协议，二是节点的选举极具公平意义。现在区块链上的实现主要是POW和POS两种方式。</p>
-<h2 id="工作量证明-POW"><a href="#工作量证明-POW" class="headerlink" title="工作量证明 POW"></a>工作量证明 POW</h2><p>这是比特币使用的共识机制，主要是通过不停地hash计算，算出nonce已满足难度系数。这样请求不易伪造，而且谁先解决难题谁就有记账权，我觉得这个是不可被攻击的。要想攻击必须具有51%以上的算力。</p>
-<h2 id="权益证明-POS"><a href="#权益证明-POS" class="headerlink" title="权益证明 POS"></a>权益证明 POS</h2><p>这种安全的机制比较简单就是你持有币所获得的权限。</p>
-<p>POS：也称股权证明，类似于财产储存在银行，这种模式会根据你持有数字货币的量和时间，分配给你相应的利息。 </p>
-<p>简单来说，就是一个根据你持有货币的量和时间，给你发利息的一个制度，在股权证明POS模式下，有一个名词叫币龄，每个币每天产生1币龄，比如你持有100个币，总共持有了30天，那么，此时你的币龄就为3000，这个时候，如果你发现了一个POS区块，你的币龄就会被清空为0。你每被清空365币龄，你将会从区块中获得0.05个币的利息(假定利息可理解为年利率5%)，那么在这个案例中，利息 = 3000 * 5% / 365 = 0.41个币，这下就很有意思了，持币有利息。</p>
-<h2 id="委任权益证明-DPOS"><a href="#委任权益证明-DPOS" class="headerlink" title="委任权益证明 DPOS"></a>委任权益证明 DPOS</h2><p>比特股的DPoS机制，中文名叫做股份授权证明机制（又称受托人机制），它的原理是让每一个持有比特股的人进行投票，由此产生101位代表 , 我们可以将其理解为101个超级节点或者矿池，而这101个超级节点彼此的权利是完全相等的。从某种角度来看，DPOS有点像是议会制度或人民代表大会制度。如果代表不能履行他们的职责（当轮到他们时，没能生成区块），他们会被除名，网络会选出新的超级节点来取代他们。DPOS的出现最主要还是因为矿机的产生，大量的算力在不了解也不关心比特币的人身上，类似演唱会的黄牛，大量囤票而丝毫不关心演唱会的内容。</p>
-<h2 id="Casper"><a href="#Casper" class="headerlink" title="Casper"></a>Casper</h2><p>这个协议也是POS，是以太坊正在开发的下一代以太坊共识协议。</p>
-<p>以太坊社区提出的正在研发中的共识协议名为Casper。Casper的基本思路是，任何人抵押足够多的以太币到系统中就可以成为矿工参与到挖矿过程。共识算法要求所有的矿工诚实工作，如果一个矿工有意破坏，不遵守协议，系统就会对矿工做出惩罚：没收之前抵押的以太币。有人把Casper这样的挖矿机制称为“虚拟挖矿”，比特币的矿工要参与挖矿需要先购买矿机，Casper则要先抵押以太币到系统中；比特币的矿工如果不按规则挖矿，则会损失电费以及可能的挖矿收益，而Casper中，不守规则的惩罚更为严重，除了失去挖矿收益，还要销毁“矿机”：抵押的以太币会被系统没收！</p>
-<h2 id="有向无环图-DAG"><a href="#有向无环图-DAG" class="headerlink" title="有向无环图 DAG"></a>有向无环图 DAG</h2><p>DAG则采用异步机制替代链式检查点的同步策略，在优秀的软件实现中如果能够有效控制网络风暴带来的带宽需求指数增加，其不失为一种对最终一致性场景有较好应用前景的算法。但是DAG的局限性也极为明显，其体系无法被利用在需要进行同步操作或一致性要求较高的操作中（例如支付结算等）。</p>
-<p>第一次提出DAG跟区块链结合是在Nxt社区，可以发现DAG最初出现就是为了解决区块链的效率问题。比特币的效率一直比较低，基于工作量证明共识下的出块机制是一个原因，由于链式的存储结构，整个网络中同时只能有一条链，导致出块无法并发执行。社区有人提出DAG的拓扑结构来存储区块，这个时候更多还是类似侧链的解决思路，不同的链条存储不同类型的交易，这样降低出现双花的可能，在之后某个节点需要合并的时候，几个分支再归并到一个区块。</p>
-<h2 id="共识规则和软分叉"><a href="#共识规则和软分叉" class="headerlink" title="共识规则和软分叉"></a>共识规则和软分叉</h2><p>共识规则决定着每个交易或每个区块的有效性。比特币网络上的每个用户和矿工都遵守着同一套共识规则，代表着他们都愿意接受和同意一个账本。</p>
-<p>当大多数用户和/或矿工决定采用更严格的共识规则时，软分叉就可能出现，这使一些以前有效的交易/区块将变为无效，而不是相反。如果大多数人执行新的规则的话，其他任何违规分叉（统计上）都不会在工作量证明方面赶上新的更严格的共识分叉。遵守旧规则的少数人将始终遵循更长，更严格的分叉，使得网络上的每个人都会最终接受和同意一个账本。</p>
-<p>关于分叉的更多知识，我觉得<a href="http://me.tryblockchain.org/blockchain-dpos-bm-eos.html" target="_blank" rel="noopener">DPOS共识算法-by BM</a>这篇文档讲得挺好的。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>共识算法的知识很多这里就不做更多地说明了。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98#%E5%AF%A6%E7%94%A8%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%AE%B9%E9%8C%AF" target="_blank" rel="noopener">拜占庭将军问题</a><br><a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a><br><a href="https://www.jianshu.com/p/fb5edf031afd" target="_blank" rel="noopener">区块链核心技术：拜占庭共识算法之PBFT</a><br><a href="http://www.chidaolian.com/article-680-1" target="_blank" rel="noopener">案例分析软分叉的艺术——政策规则保护</a><br><a href="http://8btc.com/thread-40113-1-1.html" target="_blank" rel="noopener">以太坊紫皮书（中文版）</a><br><a href="https://blog.csdn.net/lsttoy/article/details/61624287" target="_blank" rel="noopener">[区块链]共识算法（POW,POS,DPOS,PBFT）介绍和心得</a><br><a href="http://8btc.com/thread-35475-1-1.html" target="_blank" rel="noopener">以太坊共识协议Casper原理是怎样的？</a><br><a href="http://chainx.org/news/index/detail/id/14.html" target="_blank" rel="noopener">拜占庭容错(BFT)算法介绍</a><br><a href="http://www.btc38.com/others/other_all/49.html" target="_blank" rel="noopener">加密的钱包如何获得POS利息</a><br><a href="http://www.btc38.com/altcoin/general/47.html" target="_blank" rel="noopener">深度教程：POS和POW全解析</a><br><a href="http://www.chidaolian.com/article-828-8" target="_blank" rel="noopener">盘点区块链共识机制——论PoW，PoS，DPos和DAG的优缺点对比分析</a><br><a href="https://www.7234.cn/dag/36392" target="_blank" rel="noopener">DAG也许是真正的区块链3.0</a><br><a href="http://me.tryblockchain.org/blockchain-dpos-bm-eos.html" target="_blank" rel="noopener">DPOS共识算法-by BM</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2403,7 +2391,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="编译原理,LLVM," />
+
+
+<meta name="description" content="类型系统LLVM类型系统是中间表示的最重要的特征之一。类型化使得可以直接对中间表示执行许多优化，而不必在转换之前在侧面进行额外的分析。强大的类型系统使读取生成的代码变得更加容易，并且支持新的分析和转换，这些分析和转换在普通的三个地址代码表示上不可行。 void类型概述：void类型不代表任何值并且没有大小。 句法：1void 函数类型概述：    函数类型可以被认为是函数签名。它由一个返回类型和一">
+<meta name="keywords" content="编译原理,LLVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLVM语言参考手册(类型系统到其他值)">
+<meta property="og:url" content="http://cordate.github.io/2018/04/18/编译原理/LLVM语言参考手册(类型系统到其他值)/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="类型系统LLVM类型系统是中间表示的最重要的特征之一。类型化使得可以直接对中间表示执行许多优化，而不必在转换之前在侧面进行额外的分析。强大的类型系统使读取生成的代码变得更加容易，并且支持新的分析和转换，这些分析和转换在普通的三个地址代码表示上不可行。 void类型概述：void类型不代表任何值并且没有大小。 句法：1void 函数类型概述：    函数类型可以被认为是函数签名。它由一个返回类型和一">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-18T08:38:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LLVM语言参考手册(类型系统到其他值)">
+<meta name="twitter:description" content="类型系统LLVM类型系统是中间表示的最重要的特征之一。类型化使得可以直接对中间表示执行许多优化，而不必在转换之前在侧面进行额外的分析。强大的类型系统使读取生成的代码变得更加容易，并且支持新的分析和转换，这些分析和转换在普通的三个地址代码表示上不可行。 void类型概述：void类型不代表任何值并且没有大小。 句法：1void 函数类型概述：    函数类型可以被认为是函数签名。它由一个返回类型和一">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/04/18/编译原理/LLVM语言参考手册(类型系统到其他值)/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>LLVM语言参考手册(类型系统到其他值) | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/18/编译原理/LLVM语言参考手册(类型系统到其他值)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LLVM语言参考手册(类型系统到其他值)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-18T12:34:05+08:00">2018-04-18</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编译原理/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="类型系统"><a href="#类型系统" class="headerlink" title="类型系统"></a>类型系统</h1><p>LLVM类型系统是中间表示的最重要的特征之一。类型化使得可以直接对中间表示执行许多优化，而不必在转换之前在侧面进行额外的分析。强大的类型系统使读取生成的代码变得更加容易，并且支持新的分析和转换，这些分析和转换在普通的三个地址代码表示上不可行。</p>
+<h2 id="void类型"><a href="#void类型" class="headerlink" title="void类型"></a>void类型</h2><p>概述：void类型不代表任何值并且没有大小。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void</span><br></pre></td></tr></table></figure></p>
+<h2 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h2><p>概述：    函数类型可以被认为是函数签名。它由一个返回类型和一个形式参数类型列表组成。函数类型的返回类型是void类型或第一类类型 - <a href="http://llvm.org/docs/LangRef.html#t-label" target="_blank" rel="noopener">标签</a>和<a href="http://llvm.org/docs/LangRef.html#t-metadata" target="_blank" rel="noopener">元数据</a>类型除外。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;returntype&gt; (&lt;parameter list&gt;)</span><br></pre></td></tr></table></figure></p>
+<p>…其中<code>&lt;parameter list&gt;</code>是逗号分隔的类型说明符列表。可选地，参数列表可以包括类型…，该类型指示该函数采用可变数目的参数。变量参数函数可以通过<a href="http://llvm.org/docs/LangRef.html#int-varargs" target="_blank" rel="noopener">处理内部函数的变量参数</a>来访问它们的参数。<code>&lt;returntype&gt;</code>是除<a href="http://llvm.org/docs/LangRef.html#t-label" target="_blank" rel="noopener">标签</a>和<a href="http://llvm.org/docs/LangRef.html#t-metadata" target="_blank" rel="noopener">元数据</a>之外的任何类型。</p>
+<p>例子：<br><code>i32 (i32)</code>    函数接受i32，返回一个i32<br><code>float (i16, i32 *) *</code>    指针，以接受一个函数i16和一个i32指针来返回float。<br><code>i32 (i8*, ...)</code>    可变参数函数，它有至少一个指针到i8（在C中是char），它返回一个整数。LLVM中这是printf的签名。<br><code>{i32, i32} (i32)</code>    一个函数i32，返回一个包含两个i32值的<a href="http://llvm.org/docs/LangRef.html#t-struct" target="_blank" rel="noopener">结构</a></p>
+<h2 id="第一类类型（First-Class-Types）"><a href="#第一类类型（First-Class-Types）" class="headerlink" title="第一类类型（First Class Types）"></a>第一类类型（First Class Types）</h2><p>第一类的类型可能是最重要的。这些类型的值是唯一可以通过指令产生的类型。</p>
+<h3 id="单值类型"><a href="#单值类型" class="headerlink" title="单值类型"></a>单值类型</h3><p>这些是从CodeGen的角度来看在寄存器中有效的类型。</p>
+<h4 id="整数类型"><a href="#整数类型" class="headerlink" title="整数类型"></a>整数类型</h4><p>概述：    整数类型是一个非常简单的类型，它简单地为所需的整数类型指定一个任意的位宽。可以指定从1位到2<sup>23</sup>-1（约8百万）的任何位宽。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iN</span><br></pre></td></tr></table></figure></p>
+<p>整数将占据的位数由该<code>N</code>值指定。</p>
+<p>例子：<br><code>i1</code>    一个单位整数。<br><code>i32</code>    一个32位整数。<br><code>i1942652</code>    一个超过100万位的大整数。</p>
+<h4 id="浮点类型"><a href="#浮点类型" class="headerlink" title="浮点类型"></a>浮点类型</h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>half</td>
+<td>16位浮点值</td>
+</tr>
+<tr>
+<td>float</td>
+<td>32位浮点值</td>
+</tr>
+<tr>
+<td>double</td>
+<td>64位浮点值</td>
+</tr>
+<tr>
+<td>fp128</td>
+<td>128位浮点值（112位尾数）</td>
+</tr>
+<tr>
+<td>x86_fp80</td>
+<td>80位浮点值（X87）</td>
+</tr>
+<tr>
+<td>ppc_fp128</td>
+<td>128位浮点值（两个64位）</td>
+</tr>
+</tbody>
+</table>
+<p>half，float，double和fp128的二进制格式分别对应于binary16，binary32，binary64和binary128的IEEE-754-2008规范。</p>
+<h4 id="X86-mmx类型"><a href="#X86-mmx类型" class="headerlink" title="X86_mmx类型"></a>X86_mmx类型</h4><p>概述：    x86_mmx类型表示在x86机器上的MMX寄存器中保存的值。允许的操作相当有限：参数和返回值，load和store以及bitcast。用户指定的<code>MMX</code>指令表示为具有参数<code>and/or</code>此类型结果的内部调用或asm调用。没有这种类型的数组、向量或常量。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x86_mmx</span><br></pre></td></tr></table></figure></p>
+<h4 id="指针类型"><a href="#指针类型" class="headerlink" title="指针类型"></a>指针类型</h4><p>概述：    指针类型用于指定内存位置。指针通常用于引用内存中的对象。</p>
+<p>指针类型可能有一个可选的地址空间属性，用于定义指向对象所在的编号地址空间。默认地址空间是数字零。非零地址空间的语义是特定于目标的。</p>
+<p>请注意，LLVM不允许指向<code>void（void*）</code>的指针，也不允许指向标签<code>（label*）</code>的指针。改为使用<code>i8*</code>。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;type&gt; *</span><br></pre></td></tr></table></figure></p>
+<p>例子：<br><code>[4 x i32]*</code>    4个的i32值数组的指针。<br><code>i32 (i32*) *</code>    函数指针，它接受一个<code>i32*</code>，并返回i32。<br><code>i32 addrspace(5)*</code>    i32值的指针，驻留在地址空间<code>#5</code>中的值。</p>
+<h4 id="矢量类型"><a href="#矢量类型" class="headerlink" title="矢量类型"></a>矢量类型</h4><p>概述：    矢量类型是表示元素矢量的简单派生类型。当使用单个指令（SIMD）并行操作多个原始数据时，使用矢量类型。矢量类型需要大小（元素数量）和基础原始数据类型。矢量类型被认为是<a href="http://llvm.org/docs/LangRef.html#t-firstclass" target="_blank" rel="noopener">第一类</a>。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt; &lt;# elements&gt; x &lt;elementtype&gt; &gt;</span><br></pre></td></tr></table></figure></p>
+<p>元素的数量是一个大于0的常数整数值; <code>elementtype</code>可以是任何整数、浮点或指针类型。大小为零的矢量是不允许的。</p>
+<p>例子：<br><code>&lt;4 x i32&gt;</code>    4个32位整数值的向量。<br><code>&lt;8 x float&gt;</code>    8个32位浮点值的向量。<br><code>&lt;2 x i64&gt;</code>    2个64位整数值的向量。<br><code>&lt;4 x i64*&gt;</code>    4个64位整数值指针的向量。</p>
+<h3 id="标签类型"><a href="#标签类型" class="headerlink" title="标签类型"></a>标签类型</h3><p>概述：    标签类型代表代码标签。<br>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">label</span><br></pre></td></tr></table></figure></p>
+<h3 id="令牌-token-类型"><a href="#令牌-token-类型" class="headerlink" title="令牌(token)类型"></a>令牌(token)类型</h3><p>概述：    当值与指令相关联时使用token类型，但该值的所有用法不得试图反思或模糊它。因此，具有<a href="http://llvm.org/docs/LangRef.html#i-phi" target="_blank" rel="noopener">phi</a>或<a href="http://llvm.org/docs/LangRef.html#i-select" target="_blank" rel="noopener">select</a>类型令牌是不合适的。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">token</span><br></pre></td></tr></table></figure></p>
+<h3 id="元数据类型"><a href="#元数据类型" class="headerlink" title="元数据类型"></a>元数据类型</h3><p>概述：    元数据类型表示嵌入的元数据。除函数参数外，不得从元数据创建派生类型。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">metadata</span><br></pre></td></tr></table></figure></p>
+<h3 id="聚合类型"><a href="#聚合类型" class="headerlink" title="聚合类型"></a>聚合类型</h3><p>聚合类型是派生类型的一个子集，可以包含多个成员类型。<a href="http://llvm.org/docs/LangRef.html#t-array" target="_blank" rel="noopener">数组</a>和<a href="http://llvm.org/docs/LangRef.html#t-struct" target="_blank" rel="noopener">结构</a>是聚合类型。<a href="http://llvm.org/docs/LangRef.html#t-vector" target="_blank" rel="noopener">向量</a>不被视为聚合类型。</p>
+<h4 id="数组类型"><a href="#数组类型" class="headerlink" title="数组类型"></a>数组类型</h4><p>概述：    数组类型是一种非常简单的派生类型，它将元素按顺序排列在内存中。数组类型需要大小（元素数量）和基础数据类型。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&lt;# elements&gt; x &lt;elementtype&gt;]</span><br></pre></td></tr></table></figure></p>
+<p>元素的数量是一个常数整数值; <code>elementtype</code>可以是任何尺寸的类型。</p>
+<p>例子：<br><code>[40 x i32]</code>    包含40个32位整数值的数组。<br><code>[41 x i32]</code>    41个32位整数值的数组。<br><code>[4 x i8]</code>    包含4个8位整数值的数组。<br>以下是多维数组的一些示例：<br><code>[3 x [4 x i32]]</code>    3x4 32位整数值数组。<br><code>[12 x [10 x float]]</code>    单精度浮点值的12×10数组。<br><code>[2 x [3 x [4 x i16]]]</code>    2x3x4的16位整数值数组。</p>
+<p>除了静态类型隐含的数组末尾之外，没有对索引的限制（尽管在某些情况下索引超出了分配对象的范围）。这意味着可以在零长度数组类型的LLVM中实现单维“可变大小数组”。例如，在LLVM中实现“pascal样式数组”可以使用类型“<code>{ i32, [0 x float]}</code>”。</p>
+<h4 id="结构类型"><a href="#结构类型" class="headerlink" title="结构类型"></a>结构类型</h4><p>概述：    结构类型用于在内存中一起表示数据成员的集合。结构的元素可以是任何具有大小的类型。</p>
+<p>使用’<code>load</code>‘和’<code>store</code>‘通过使用’<code>getelementptr</code>‘指令获取指向字段的指针来访问内存中的结构。使用’<code>extractvalue</code>‘和’<code>insertvalue</code>‘指令访问寄存器中的结构。</p>
+<p>结构可以选择是“压缩”结构，其指示结构的对齐是一个字节，并且元素之间没有填充。在非压缩结构中，字段类型之间的填充按照DataLayout字符串在模块中定义的方式插入，该模块需要与基础代码生成器的预期匹配。</p>
+<p>结构可以是“文字”或“识别符”。字面结构与其他类型（例如<code>{i32, i32}*</code>）内联定义，而标识类型始终在顶层使用名称定义。文字类型被其内容所独占，因为没有办法编写它们，所以永远不会递归或不透明。识别符的类型可以是递归的，可以是不透明的，并且永远不会被分离。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%T1 = type &#123; &lt;type list&gt; &#125;     ; Identified normal struct type</span><br><span class="line">%T2 = type &lt;&#123; &lt;type list&gt; &#125;&gt;   ; Identified packed struct type</span><br></pre></td></tr></table></figure></p>
+<p>例子：<br><code>{ i32, i32, i32 }</code>    三个i32值的结构<br><code>{ float, i32 (i32) * }</code>    一对，其中第一个元素是a float，第二个元素是一个指向函数的指针，该函数接受一个i32返回值i32。<br><code>&lt;{ i8, i32 }&gt;</code>    一个已知为5字节大小的打包结构。</p>
+<h4 id="不透明结构类型"><a href="#不透明结构类型" class="headerlink" title="不透明结构类型"></a>不透明结构类型</h4><p>概述：    不透明结构类型用于表示没有指定主体的命名结构类型。这符合（例如）正向声明结构的C概念。</p>
+<p>句法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%X = type opaque</span><br><span class="line">%52 = type opaque</span><br></pre></td></tr></table></figure></p>
+<p>例子：<br><code>opaque</code>    一种不透明的类型。</p>
+<h1 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h1><p>LLVM有几种不同的基本类型的常量。本节介绍它们的全部和它们的语法。</p>
+<h2 id="简单常量"><a href="#简单常量" class="headerlink" title="简单常量"></a>简单常量</h2><ul>
+<li>布尔常量: 两个字符串’ true’和’ false’都是该i1类型的有效常量。</li>
+<li>整型常量: 标准整数（如’4’）是整数类型的常量 。负数可能与整数类型一起使用。</li>
+<li>浮点常量: 浮点常量使用标准十进制表示法（例如123.421），指数表示法（例如1.23421e + 2）或更精确的十六进制表示法（请参见下文）。汇编器需要浮点常量的精确十进制值。例如，汇编程序接受1.25，但拒绝1.3，因为1.3是二进制中的重复小数。浮点常量必须具有 浮点类型。</li>
+<li>空指针常量: 标识符’<code>null</code>‘被识别为空指针常量，并且必须是指针类型。</li>
+<li>令牌(Token)常量: 标识符’none’被识别为空的标记常量，并且必须是标记类型。</li>
+</ul>
+<p>常量的一个非直观符号是浮点常量的十六进制形式。例如，形式为’<code>double    0x432ff973cafa8000</code>‘等同于（但难以阅读）’<code>double 4.5e+15</code>‘。唯一需要十六进制浮点常量（以及它们由反汇编程序生成的唯一时间）是必须发出浮点常量但不能用合理数目的十进制浮点数表示的浮点常量数字。例如，<code>NaN&#39;s</code>，<code>infinities</code>和其他特殊值以IEEE十六进制格式表示，因此汇编和反汇编不会导致常量中的任何位发生更改。</p>
+<p>当使用十六进制形式时，half，float和double类型的常量使用上面显示的16位数字形式表示（与IEEE754表示符合double）; 然而，half和float值必须分别精确表示为IEEE 754的半精度和单精度。十六进制格式总是用于长双，并有三种形式的长双。x86使用的80位格式表示0xK后跟20个十六进制数字。PowerPC使用的128位格式（两个相邻的双精度） 0xM由32个十六进制数字表示。IEEE 128位格式0xL由32个十六进制数字表示。长双打只有在你的目标上的长双重格式匹配时才有效。IEEE 16位格式（半精度）由表示0xH 后跟4个十六进制数字。所有的十六进制格式都是big-endian（左边的符号位）。</p>
+<p>没有<code>x86_mmx</code>类型的常量。</p>
+<h2 id="复杂（Complex）常量"><a href="#复杂（Complex）常量" class="headerlink" title="复杂（Complex）常量"></a>复杂（Complex）常量</h2><p>复杂常量是简单常量和较小复常量的（可能递归）组合。</p>
+<h3 id="结构常数"><a href="#结构常数" class="headerlink" title="结构常数"></a>结构常数</h3><p>结构常量用类似于结构类型定义的符号表示（逗号分隔的元素列表，用大括号（{}）括起来）。例如：“<code>{ i32 4, float 17.0, i32* @G }</code>”，其中“<code>@G</code>”被声明为“<code>@G = external global i32</code>”。结构常量必须具有<a href="http://llvm.org/docs/LangRef.html#t-struct" target="_blank" rel="noopener">结构类型</a>，并且元素的数量和类型必须与该类型指定的类型匹配。</p>
+<h3 id="数组常量"><a href="#数组常量" class="headerlink" title="数组常量"></a>数组常量</h3><p>数组常量用类似于数组类型定义的符号表示（逗号分隔的元素列表，用方括号（[]）括起来）。例如：“<code>[ i32 42, i32 11, i32 74 ]</code>”。数组常量必须具有<a href="http://llvm.org/docs/LangRef.html#t-array" target="_blank" rel="noopener">数组类型</a>，并且元素的数量和类型必须与该类型指定的数量和类型相匹配。作为一种特殊情况，字符数组常量也可以用 前缀表示为双引号字符串。例如：“c<code>&quot;Hello World\0A\00&quot;</code>”。</p>
+<h3 id="矢量-Vector-常量"><a href="#矢量-Vector-常量" class="headerlink" title="矢量(Vector)常量"></a>矢量(Vector)常量</h3><p>向量常量用类似于向量类型定义的符号表示（逗号分隔的元素列表，由小于/大于（（&lt;&gt;））围绕）。例如：“<code>&lt; i32 42, i32 11, i32 74, i32 100 &gt;</code>”。向量常量必须具有向量类型，并且元素的数量和类型必须与该类型指定的类型匹配。</p>
+<h3 id="零初始化"><a href="#零初始化" class="headerlink" title="零初始化"></a>零初始化</h3><p>字符串“<code>zeroinitializer</code>‘可用于将零值初始化为任何类型的零，包括标量和<a href="http://llvm.org/docs/LangRef.html#t-aggregate" target="_blank" rel="noopener">聚合类型</a>。这通常用于避免必须打印大型零初始化器（例如，用于大型数组），并且始终完全等同于使用显式零初始化器。</p>
+<h3 id="元数据节点"><a href="#元数据节点" class="headerlink" title="元数据节点"></a>元数据节点</h3><p>元数据节点是一个没有类型的常量元组。例如：“<code>!{!0, !{!2, !0}, !&quot;test&quot;}</code>”。元数据可以引用常量值，例如：“<code>!{!0, i32 0, i8* @global, i64 (i64)* @function, !&quot;str&quot;}</code>”。与其他类型化的常量不同，它们被解释为指令流的一部分，元数据是附加附加信息的地方，例如调试信息。</p>
+<h2 id="全局变量和函数地址"><a href="#全局变量和函数地址" class="headerlink" title="全局变量和函数地址"></a>全局变量和函数地址</h2><p><a href="http://llvm.org/docs/LangRef.html#globalvars" target="_blank" rel="noopener">全局变量</a>和 <a href="http://llvm.org/docs/LangRef.html#functionstructure" target="_blank" rel="noopener">函数</a>总是隐式有效（链接时间）常量。当使用<a href="http://llvm.org/docs/LangRef.html#identifiers" target="_blank" rel="noopener">全局标识符</a>并且总是有指针类型时，这些常量被明确引用。例如，以下是合法的LLVM文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@X = global i32 17</span><br><span class="line">@Y = global i32 42</span><br><span class="line">@Z = global [2 x i32*] [ i32* @X, i32* @Y ]</span><br></pre></td></tr></table></figure></p>
+<h2 id="未定义的值"><a href="#未定义的值" class="headerlink" title="未定义的值"></a>未定义的值</h2><p>字符串’<code>undef</code>‘可以用于任何需要常量的地方，并且表示该值的用户可能会收到未指定的位模式。未定义的值可以是任何类型（除了’<code>label</code>‘或’<code>void</code>‘），并且可以在任何允许常量的地方使用。</p>
+<p>未定义的值非常有用，因为它们向编译器指出，无论使用什么值，该程序都已定义良好。这为编译器提供了更多的优化自由度。下面是一些有效的（可能令人惊讶的）转换的例子（在伪IR中）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  %A = add %X, undef</span><br><span class="line">  %B = sub %X, undef</span><br><span class="line">  %C = xor %X, undef</span><br><span class="line">Safe:</span><br><span class="line">  %A = undef</span><br><span class="line">  %B = undef</span><br><span class="line">  %C = undef</span><br></pre></td></tr></table></figure></p>
+<p>这是安全的，因为所有的输出位都受<code>undef</code>位的影响。任何输出位都可以有一个零或一个依赖的输入位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">  %A = or %X, undef</span><br><span class="line">  %B = and %X, undef</span><br><span class="line">Safe:</span><br><span class="line">  %A = -1</span><br><span class="line">  %B = 0</span><br><span class="line">Safe:</span><br><span class="line">  %A = %X  ;; By choosing undef as 0</span><br><span class="line">  %B = %X  ;; By choosing undef as -1</span><br><span class="line">Unsafe:</span><br><span class="line">  %A = undef</span><br><span class="line">  %B = undef</span><br></pre></td></tr></table></figure></p>
+<p>这些逻辑操作的位不总是受输入的影响。例如，如果%X有一个零位，那么“<code>and</code>‘操作的输出将始终为该位的零，而不管”<code>undef</code>‘ 的相应位是什么。因此，优化或假设<code>and</code>的结果是<code>undef</code>是不安全的。但是，假设<code>undef</code>的所有位都可以是0，并且将’<code>and</code>‘优化为0是安全的。同样，假设可以设置<code>undef</code>的<code>or</code>操作的所有位是安全的，允许’<code>or</code>‘被折叠为-1。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">  %A = select undef, %X, %Y</span><br><span class="line">  %B = select undef, 42, %Y</span><br><span class="line">  %C = select %X, %Y, undef</span><br><span class="line">Safe:</span><br><span class="line">  %A = %X     (or %Y)</span><br><span class="line">  %B = 42     (or %Y)</span><br><span class="line">  %C = %Y</span><br><span class="line">Unsafe:</span><br><span class="line">  %A = undef</span><br><span class="line">  %B = undef</span><br><span class="line">  %C = undef</span><br></pre></td></tr></table></figure></p>
+<p>这组例子表明，未定义的’<code>select</code>‘（和条件分支）条件可以采取任何方式，但它们必须来自两个操作数中的一个。在<code>%A</code>例子中，如果<code>%X</code>和<code>%Y</code>是两个已知具有明显的低位，那么<code>%A</code>就必须有一个清除低位。然而，在这个<code>%C</code>例子中，优化器被允许假设’<code>undef</code>‘操作可以是和<code>%Y</code>相同的，允许整个’<code>select</code>‘被消除。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">  %A = xor undef, undef</span><br><span class="line"></span><br><span class="line">  %B = undef</span><br><span class="line">  %C = xor %B, %B</span><br><span class="line"></span><br><span class="line">  %D = undef</span><br><span class="line">  %E = icmp slt %D, 4</span><br><span class="line">  %F = icmp gte %D, 4</span><br><span class="line"></span><br><span class="line">Safe:</span><br><span class="line">  %A = undef</span><br><span class="line">  %B = undef</span><br><span class="line">  %C = undef</span><br><span class="line">  %D = undef</span><br><span class="line">  %E = undef</span><br><span class="line">  %F = undef</span><br></pre></td></tr></table></figure></p>
+<p>这个例子指出两个<code>undef</code>操作不一定相同。这对于人们来说可能是令人惊讶的（并且也匹配C语义），他们认为“<code>X^X</code>”总是零，即使 X未定义也是如此。由于多种原因，这是不正确的，但简单的答案是，一个<code>undef</code>“变量”可以在其“生存范围”内随意改变它的值。这是真的，因为这个变量实际上并没有生存范围。相反，该值是从任意寄存器中逻辑读取的，这些寄存器恰好在需要时发生变化，因此该值不一定随时间变化。事实上，<code>%A</code>和<code>%C</code>需要有相同的语法或核心LLVM“全部替换与使用”的概念将不成立。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  %A = sdiv undef, %X</span><br><span class="line">  %B = sdiv %X, undef</span><br><span class="line">Safe:</span><br><span class="line">  %A = 0</span><br><span class="line">b: unreachable</span><br></pre></td></tr></table></figure></p>
+<p>这些示例显示了未定义的值 和未定义的行为之间的关键区别。一个未定义的值（如’<code>undef</code>‘）允许有一个任意的位模式。这意味着<code>%A</code>操作可以不断折叠为’0’，因为’<code>undef</code>‘可能为零，并且零除以任何值为零。但是，在第二个例子中，我们可以做一个更积极的假设：因为<code>undef</code>允许它是一个任意值，我们可以假设它可能为零。由于被零除以具有未定义的行为，我们被允许假设该操作根本不执行。这允许我们删除分割和所有代码。由于未定义的操作“不可能发生”，因此优化器可以假定它发生在死代码中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a:  store undef -&gt; %X</span><br><span class="line">b:  store %X -&gt; undef</span><br><span class="line">Safe:</span><br><span class="line">a: &lt;deleted&gt;</span><br><span class="line">b: unreachable</span><br></pre></td></tr></table></figure></p>
+<p>存储的未定义的值可以被假设为不具有任何影响; 我们可以假设这个值被恰好与已经存在的相匹配的位覆盖。然而，一个存储到一个未定义的位置可能破坏任意的内存，因此，它具有未定义行为。</p>
+<h2 id="毒药（Poison）值"><a href="#毒药（Poison）值" class="headerlink" title="毒药（Poison）值"></a>毒药（Poison）值</h2><p>毒性（Poison）值与undef值相似，但它们也表示这样的事实，即不能引起副作用的指令或常量表达式已经检测到导致未定义行为的条件。</p>
+<p>目前在IR中无法表示毒物值; 它们只存在于某些操作的调用，如带有<code>nsw</code>标志的<code>add</code>操作。</p>
+<p>毒药值行为是根据值依赖来定义的：</p>
+<ul>
+<li><a href="http://llvm.org/docs/LangRef.html#i-phi" target="_blank" rel="noopener">phi</a>节点以外的值取决于它们的操作数。</li>
+<li><a href="http://llvm.org/docs/LangRef.html#i-phi" target="_blank" rel="noopener">Phi</a>节点取决于对应于其动态前驱基本块的操作数。</li>
+<li>函数参数取决于其函数的动态调用者中相应的实际参数值。</li>
+<li>调用(<a href="http://llvm.org/docs/LangRef.html#i-call" target="_blank" rel="noopener">call</a>)指令取决于将控制动态传回给它们的<a href="http://llvm.org/docs/LangRef.html#i-ret" target="_blank" rel="noopener">ret</a>指令。</li>
+<li>调用(<a href="http://llvm.org/docs/LangRef.html#i-invoke" target="_blank" rel="noopener">invoke</a>)指令取决于ret， <a href="http://llvm.org/docs/LangRef.html#i-resume" target="_blank" rel="noopener">resume</a>或异常抛出调用指令，动态地将控制权交还给它们。</li>
+<li>非易失性加载和存储取决于所有引用的内存地址的最新存储，遵循IR中的命令（包括由<a href="mailto:`@llvm.memcpy" target="_blank" rel="noopener">`@llvm.memcpy</a>`等内在函数隐含的加载和存储）。</li>
+<li>具有外部可见副作用的指令取决于最近的先前的指令，其具有外部可见的副作用，遵循IR中的顺序。（这包括易失性操作。）</li>
+<li>指令控制依赖于一个终止指令，如果终止子指令有多个后继者和指令总是被执行时控制转移到后继的一个，并且当控制被转移到另一个可以不执行。</li>
+<li>此外，指令也是控制 - 取决于终止指令，如果终止指令已将控制权转移给不同的后继者，则其所依赖的指令集将会不​​同。</li>
+<li>依赖性是传递性的。</li>
+</ul>
+<p>Poison值具有与undef值相同的行为，另外的效果是任何依赖poison值的指令都具有未定义的行为。</p>
+<p>这里有些例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">entry:</span><br><span class="line">  %poison = sub nuw i32 0, 1           ; Results in a poison value.</span><br><span class="line">  %still_poison = and i32 %poison, 0   ; 0, but also poison.</span><br><span class="line">  %poison_yet_again = getelementptr i32, i32* @h, i32 %still_poison</span><br><span class="line">  store i32 0, i32* %poison_yet_again  ; memory at @h[0] is poisoned</span><br><span class="line"></span><br><span class="line">  store i32 %poison, i32* @g           ; Poison value stored to memory.</span><br><span class="line">  %poison2 = load i32, i32* @g         ; Poison value loaded back from memory.</span><br><span class="line"></span><br><span class="line">  store volatile i32 %poison, i32* @g  ; External observation; undefined behavior.</span><br><span class="line"></span><br><span class="line">  %narrowaddr = bitcast i32* @g to i16*</span><br><span class="line">  %wideaddr = bitcast i32* @g to i64*</span><br><span class="line">  %poison3 = load i16, i16* %narrowaddr ; Returns a poison value.</span><br><span class="line">  %poison4 = load i64, i64* %wideaddr  ; Returns a poison value.</span><br><span class="line"></span><br><span class="line">  %cmp = icmp slt i32 %poison, 0       ; Returns a poison value.</span><br><span class="line">  br i1 %cmp, label %true, label %end  ; Branch to either destination.</span><br><span class="line"></span><br><span class="line">true:</span><br><span class="line">  store volatile i32 0, i32* @g        ; This is control-dependent on %cmp, so</span><br><span class="line">                                       ; it has undefined behavior.</span><br><span class="line">  br label %end</span><br><span class="line"></span><br><span class="line">end:</span><br><span class="line">  %p = phi i32 [ 0, %entry ], [ 1, %true ]</span><br><span class="line">                                       ; Both edges into this PHI are</span><br><span class="line">                                       ; control-dependent on %cmp, so this</span><br><span class="line">                                       ; always results in a poison value.</span><br><span class="line"></span><br><span class="line">  store volatile i32 0, i32* @g        ; This would depend on the store in %true</span><br><span class="line">                                       ; if %cmp is true, or the store in %entry</span><br><span class="line">                                       ; otherwise, so this is undefined behavior.</span><br><span class="line"></span><br><span class="line">  br i1 %cmp, label %second_true, label %second_end</span><br><span class="line">                                       ; The same branch again, but this time the</span><br><span class="line">                                       ; true block doesn&apos;t have side effects.</span><br><span class="line"></span><br><span class="line">second_true:</span><br><span class="line">  ; No side effects!</span><br><span class="line">  ret void</span><br><span class="line"></span><br><span class="line">second_end:</span><br><span class="line">  store volatile i32 0, i32* @g        ; This time, the instruction always depends</span><br><span class="line">                                       ; on the store in %end. Also, it is</span><br><span class="line">                                       ; control-equivalent to %end, so this is</span><br><span class="line">                                       ; well-defined (ignoring earlier undefined</span><br><span class="line">                                       ; behavior in this example).</span><br></pre></td></tr></table></figure></p>
+<h2 id="基本块的地址"><a href="#基本块的地址" class="headerlink" title="基本块的地址"></a>基本块的地址</h2><p><code>blockaddress(@function, %block)</code></p>
+<p>在“<code>blockaddress</code>”常数计算在指定函数指定的基本块的地址，并总是有一个<code>i8*</code>类型。取出输入块的地址是非法的。</p>
+<p>当用作’<code>indirectbr</code>‘指令的操作指令时，或者用于与空值进行比较时，该值仅具有已定义的行为。标签地址之间的指针相等测试会导致未定义的行为 - 但是，再次，与null进行比较是可以的，并且没有标签等于空指针。只要这些位未被检查，这可以作为不透明的指针大小值传递。ptrtoint只要原始值在indirectbr 指令之前重新构成，就允许和计算这些值。</p>
+<p>最后，有些目标可能会在使用该值作为内联程序集的操作数时提供定义的语义，但这是目标特定的。</p>
+<h2 id="常量表达式"><a href="#常量表达式" class="headerlink" title="常量表达式"></a>常量表达式</h2><p>常量表达式用于允许涉及其他常量的表达式用作常量。常量表达式可以是任何<a href="http://llvm.org/docs/LangRef.html#t-firstclass" target="_blank" rel="noopener">第一类类型</a>，并且可能涉及没有副作用的任何LLVM操作（例如，不支持加载和调用）。以下是常量表达式的语法：</p>
+<ul>
+<li><code>trunc (CST to TYPE)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-trunc" target="_blank" rel="noopener">trunc操作</a>。</li>
+<li><code>zext (CST to TYPE)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-zext" target="_blank" rel="noopener">zext操作</a>。</li>
+<li><code>sext (CST to TYPE)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-sext" target="_blank" rel="noopener">sext操作</a>。</li>
+<li><code>fptrunc (CST to TYPE)</code>: 将浮点常量截断为另一个浮点类型。CST的大小必须大于TYPE的大小。这两种类型都必须是浮点型。</li>
+<li><code>fpext (CST to TYPE)</code>: 浮点将常量扩展为另一种类型。CST的大小必须小于或等于TYPE的大小。这两种类型都必须是浮点型。</li>
+<li><code>fptoui (CST to TYPE)</code>: 将浮点常量转换为相应的无符号整数常量。TYPE必须是标量或向量整数类型。CST必须是标量或向量浮点类型。CST和TYPE都必须是标量，或者具有相同数量元素的向量。如果该值不适合整数类型，则结果未定义。</li>
+<li><code>fptosi (CST to TYPE)</code>: 将浮点常量转换为相应的有符号整数常量。TYPE必须是标量或向量整数类型。CST必须是标量或向量浮点类型。CST和TYPE都必须是标量，或者具有相同数量元素的向量。如果该值不适合整数类型，则结果未定义。</li>
+<li><code>uitofp (CST to TYPE)</code>: 将无符号整数常量转换为相应的浮点常量。TYPE必须是标量或向量浮点类型。CST必须是标量或向量整数类型。CST和TYPE都必须是标量，或者具有相同数量元素的向量。如果该值不适合浮点类型，则结果未定义。</li>
+<li><code>sitofp (CST to TYPE)</code>: 将有符号整数常量转换为相应的浮点常量。TYPE必须是标量或向量浮点类型。CST必须是标量或向量整数类型。CST和TYPE都必须是标量，或者具有相同数量元素的向量。如果该值不适合浮点类型，则结果未定义。</li>
+<li><code>ptrtoint (CST to TYPE)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-ptrtoint" target="_blank" rel="noopener">ptrtoint操作</a>。</li>
+<li><code>inttoptr (CST to TYPE)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-inttoptr" target="_blank" rel="noopener">inttoptr操作</a>。这个真的很危险！</li>
+<li><code>bitcast (CST to TYPE)</code>: 将常数CST转换为另一个TYPE。操作数的限制与<a href="http://llvm.org/docs/LangRef.html#i-bitcast" target="_blank" rel="noopener">bitcast指令</a>的限制相同 。</li>
+<li><code>addrspacecast (CST to TYPE)</code>: 将指针CST的常量指针或常量向量转换为另一个地址空间中的另一个TYPE。操作数的约束与<a href="http://llvm.org/docs/LangRef.html#i-addrspacecast" target="_blank" rel="noopener">addrspacecast指令</a>的约束相同。</li>
+<li><code>getelementptr (TY, CSTPTR, IDX0, IDX1, ...)， getelementptr inbounds (TY, CSTPTR, IDX0, IDX1, ...)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-getelementptr" target="_blank" rel="noopener">getelementptr操作</a>。与<a href="http://llvm.org/docs/LangRef.html#i-getelementptr" target="_blank" rel="noopener">getelementptr</a> 指令一样，索引列表可能有一个或多个索引，这些索引对于“指向TY的指针”类型是有意义的。</li>
+<li><code>select (COND, VAL1, VAL2)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-select" target="_blank" rel="noopener">选择操作</a>。</li>
+<li><code>icmp COND (VAL1, VAL2)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-icmp" target="_blank" rel="noopener">icmp操作</a>。</li>
+<li><code>fcmp COND (VAL1, VAL2)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-fcmp" target="_blank" rel="noopener">fcmp操作</a>。</li>
+<li><code>extractelement (VAL, IDX)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-extractelement" target="_blank" rel="noopener">extractelement操作</a>。</li>
+<li><code>insertelement (VAL, ELT, IDX)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-insertelement" target="_blank" rel="noopener">insertelement操作</a>。</li>
+<li><code>shufflevector (VEC1, VEC2, IDXMASK)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-shufflevector" target="_blank" rel="noopener">shufflevector操作</a>。</li>
+<li><code>extractvalue (VAL, IDX0, IDX1, ...)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-extractvalue" target="_blank" rel="noopener">extractvalue操作</a>。索引列表的解释方式与“<a href="http://llvm.org/docs/LangRef.html#i-getelementptr" target="_blank" rel="noopener">getelementptr</a>”操作中的索引类似。至少必须指定一个索引值。</li>
+<li><code>insertvalue (VAL, ELT, IDX0, IDX1, ...)</code>: 对常量执行<a href="http://llvm.org/docs/LangRef.html#i-insertvalue" target="_blank" rel="noopener">insertvalue操作</a>。索引列表的解释方式与“<a href="http://llvm.org/docs/LangRef.html#i-getelementptr" target="_blank" rel="noopener">getelementptr</a>”操作中的索引类似。至少必须指定一个索引值。</li>
+<li><code>OPCODE (LHS, RHS)</code>: 执行LHS和RHS常量的指定操作。操作码可以是任何<a href="http://llvm.org/docs/LangRef.html#binaryops" target="_blank" rel="noopener">二进制</a>或<a href="http://llvm.org/docs/LangRef.html#bitwiseops" target="_blank" rel="noopener">按位二进制</a>操作。操作数的限制与相应指令的限制相同（例如，不允许对浮点值进行按位操作）。</li>
+</ul>
+<h1 id="其他值"><a href="#其他值" class="headerlink" title="其他值"></a>其他值</h1><h2 id="内嵌汇编表达式"><a href="#内嵌汇编表达式" class="headerlink" title="内嵌汇编表达式"></a>内嵌汇编表达式</h2><p>LLVM 通过使用特殊值支持内联汇编表达式（与模块级内联汇编相反）。该值表示内联汇编程序作为模板字符串（包含要发出的指令），操作数约束列表（存储为字符串），指示内联asm表达式是否具有副作用的标志以及指示是否包含asm的函数需要保守地调整堆栈。</p>
+<p>模板字符串支持使用<code>$</code>后跟一个数字的参数替换，以指示由约束字符串指定的给定寄存器/内存位置的替换。“<code>${NUM:MODIFIER}</code>”也可以使用，其中MODIFIER是如何打印操作数的特定于目标的注释（请参阅<a href="http://llvm.org/docs/LangRef.html#inline-asm-modifiers" target="_blank" rel="noopener">Asm模板参数修饰符</a>）。</p>
+<p>字符<code>$</code>可以在模板中使用“<code>$$</code>”。要在输出中包含其他特殊字符，可以使用通常的“<code>\XX</code>”转义符，就像在其他字符串中一样。请注意，在模板替换之后，生成的汇编字符串将由LLVM的集成汇编器进行分析，除非它被禁用 - 即使发出<code>.s</code>文件 - 也必须包含LLVM已知的汇编语法。</p>
+<p>LLVM还支持一些有用的内联汇编代码：</p>
+<ul>
+<li><code>${:uid}</code>：扩展为这个内联汇编blob唯一的十进制整数。在声明本地标签时，这种替换很有用。许多标准的编译器优化（如内联）可能会复制内联asm blob。添加blob唯一标识符可确保这两个标签在装配过程中不会发生冲突。这用于实现<a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html" target="_blank" rel="noopener">GCC的％=特殊格式字符串</a>。</li>
+<li><code>${:comment}</code>：扩展为当前目标的汇编方言的注释字符。这通常是<code>#</code>，但很多指标使用其他字符串，例如<code>;</code>，<code>//</code>或<code>!</code>。</li>
+<li><code>${:private}</code>：扩展为汇编器专用标签前缀。带有此前缀的标签不会出现在组装对象的符号表中。通常前缀是<code>L</code>，但目标可能使用其他字符串。<code>.L</code>是比较受欢迎的。</li>
+</ul>
+<p>LLVM对inline asm的支持与Clang的GCC兼容的inline-asm支持的要求紧密相关。因此，这里列出的特征集以及约束和修饰符代码与GCC内联asm支持中的代码类似或相同。然而，要清楚的是，这里描述的模板和约束字符串的语法与GCC和Clang所接受的语法并不相同，并且尽管大多数约束字母是通过Clang原样传递的，但当从C源代码转换为LLVM程序集时，有些字符会被转换为其他代码。</p>
+<p>一个内联汇编表达式的例子是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i32 (i32) asm &quot;bswap $0&quot;, &quot;=r,r&quot;</span><br></pre></td></tr></table></figure></p>
+<p>内联汇编程序表达式只能用作调用(call)或调用(invoke)指令的被调用者操作数。因此，通常我们有：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%X = call i32 asm &quot;bswap $0&quot;, &quot;=r,r&quot;(i32 %Y)</span><br></pre></td></tr></table></figure></p>
+<p>带有在约束列表中不可见的副作用的内联asms必须标记为具有副作用。这是通过使用’sideeffect’关键字完成的，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call void asm sideeffect &quot;eieio&quot;, &quot;&quot;()</span><br></pre></td></tr></table></figure></p>
+<p>在某些情况下，内联asms将包含无法工作的代码，除非堆栈以某种方式对齐，例如x86上的调用或SSE指令，但不会包含在asm中执行对齐的代码。编译器应该对asm可能包含的内容做出保守的假设，并且如果’alignstack’关键字存在，应该在序言中生成其通常的堆栈对齐代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call void asm alignstack &quot;eieio&quot;, &quot;&quot;()</span><br></pre></td></tr></table></figure></p>
+<p>内联asms也支持使用非标准汇编方言。假定的方言是ATT。当’<code>inteldialect</code>‘关键字存在时，内联asm使用英特尔方言。目前，ATT和Intel是唯一支持的方言。一个例子是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call void asm inteldialect &quot;eieio&quot;, &quot;&quot;()</span><br></pre></td></tr></table></figure></p>
+<p>如果出现多个关键字，则’<code>sideeffect</code>‘关键字必须首先出现，’<code>alignstack</code>‘关键字第二关键字和’<code>inteldialect</code>‘关键字最后出现。</p>
+<h3 id="内联汇编约束字符串"><a href="#内联汇编约束字符串" class="headerlink" title="内联汇编约束字符串"></a>内联汇编约束字符串</h3><p>约束列表是逗号分隔的字符串，每个元素包含一个或多个约束代码。</p>
+<p>对于约束列表中的每个元素，将选择一个适当的寄存器或内存操作数，并且将对<code>$0</code>列表中的第一个约束，<code>$1</code>第二个等将使其可用于组件模板字符串扩展。</p>
+<p>有三种不同类型的约束，它们通过约束代码前面的前缀符号进行区分：输出，输入和Clobber。必须始终按照以下顺序给出约束：先输出，然后输入，然后是clobbers。他们不能混在一起。</p>
+<p>还有三种不同类型的约束代码：</p>
+<ul>
+<li>注册约束。这是一个寄存器类，或者是一个固定的物理寄存器。这种约束将分配一个寄存器，并且如果必要的话，将该参数或结果进行bitcast到适当的类型。</li>
+<li>内存约束。这种约束用于获取内存操作数的指令。不同的约束允许目标使用不同的寻址模式。</li>
+<li>立即值限制。这种约束是针对整数或其他立即值的，它可以直接渲染到指令中。各种特定于目标的约束条件允许为您希望使用的指令选择合适范围内的值。</li>
+</ul>
+<h4 id="输出约束"><a href="#输出约束" class="headerlink" title="输出约束"></a>输出约束</h4><p>输出约束由“<code>=</code>”前缀（例如“<code>=r</code>”）指定。这表示程序集将写入此操作数，然后操作数将作为asm表达式的返回值提供。输出约束不会消耗调用指令中的参数。（除了下面关于间接输出的内容）。</p>
+<p>通常，在读取所有输入之前，预计没有输出位置被汇编表达式写入。因此，LLVM可以将相同的寄存器分配给输出和输入。如果这不安全（例如，如果程序集包含两条指令，其中第一条写入一个输出，第二条读取输入并写入第二条输出），则必须使用“<code>&amp;</code>”修饰符（例如“<code>=&amp;r</code>”）来指定输出是“早期破坏”输出。将输出标记为“<code>early-clobber</code>”可确保LLVM不会对任何输入（除了与此输出关联的输入）使用相同的寄存器。</p>
+<h4 id="输入约束"><a href="#输入约束" class="headerlink" title="输入约束"></a>输入约束</h4><p><b style="color:green">输入约束没有前缀 - 只是约束代码。每个输入约束将从调用指令中消耗一个参数。asm不允许写入任何输入寄存器或存储单元（除非该输入连接到输出）。还要注意，如果LLVM可以确定它们必然都包含相同的值，则可以将多个输入全部分配给相同的寄存器。</b></p>
+<p>通过提供一个整数作为约束字符串，输入约束可以将它们自己绑定到输出约束，而不是提供约束代码。被绑定的输入仍然会从调用指令中消耗一个参数，并且按照通常的方式在asm模板编号中占据一个位置 - 它们将被简单地限制为始终使用与其绑定的输出相同的寄存器。例如，一个约束字符串“<code>=r,0</code>”表示为输出分配一个寄存器，并将该寄存器用作输入（它是第<code>0</code>个约束）。</p>
+<p>允许将输入连接到“早期破坏(early-clobber)”输出。在这种情况下，没有 其他输入可能与连接到早期触发器的输入共享相同的寄存器（即使其他输入具有相同的值）。</p>
+<p>您只能将输入绑定到具有寄存器约束但不受内存约束的输出。只有一个输入可能与输出相关联。</p>
+<p>还有一个“有趣”的特性，值得一点解释：如果寄存器类约束分配的寄存器对于作为输入提供的值类型操作数来说太小，则输入值将被分成多个寄存器，并且所有寄存器传递给内联asm。</p>
+<p>但是，此功能通常不如您想象的那么有用。</p>
+<p>首先，寄存器不保证连续。因此，在那些具有多条连续指令操作指令的体系结构上，这不是支持它们的适当方式。（例如，32位SparcV8具有64位加载，该指令只需要一个32位寄存器，然后硬件将加载到指定的寄存器和下一个寄存器中。内联asm的此功能对于此的支持将不会有用。）</p>
+<p>几个目标提供了一个模板字符串修改，允许两寄存器操作数的第二个寄存器明确的访问（例如MIPS L，M和 D）。在这样的体系结构中，您实际上可以访问第二个已分配的寄存器（但是，仍然没有任何后续的寄存器）。但是，在这种情况下，为了清晰起见，将这个值简化为两个独立的操作数仍然可能更好。（例如，请参阅AX86 上的约束描述，尽管该特性仅用于此功能，但使用并不是一个好主意）</p>
+<h4 id="间接投入和产出"><a href="#间接投入和产出" class="headerlink" title="间接投入和产出"></a>间接投入和产出</h4><p>间接输出或输入约束可以由“<code>*</code>”修饰符（在输出的情况下在“<code>=</code>”之后）指定。这表明asm将写入或读取作为输入参数提供的地址的内容。（注意，在这种方式，间接输出更像一个输入而不是输出：只是像输入，它们消耗的调用表达式的参数，而不是产生一个返回值。间接输出约束是“输出”仅是希望在asm可以写入输入内存位置的内容，而不是从中读取）。</p>
+<p><b style="color:green">这通常用于内存约束，例如“<code>=*m</code>”，以将变量的地址作为值传递。</b></p>
+<p>也可以使用间接寄存器约束，但仅限于输出（例如“<code>=*r</code>”）。这会导致LLVM正常地为输出值分配一个寄存器，然后在提供的内联asm之后，单独发送一个存储到作为输入提供的地址。（与在asm语句后明确写入store相比，此功能提供了什么值尚不清楚，而且它只能生成更糟糕的代码，因为它绕过了许多优化过程，我建议不要使用它。）</p>
+<h4 id="Clobber约束"><a href="#Clobber约束" class="headerlink" title="Clobber约束"></a>Clobber约束</h4><p>一个clobber约束由一个“<code>~</code>”前缀表示。clobber不会消耗输入操作数，也不会生成输出。Clobbers不能使用任何一般的约束代码字母 - 它们可能只使用明确的寄存器约束，例如“<code>~{eax}</code>”。一个例外是，“<code>~{memory}</code>” 的clobber字符串表示程序集写入任意未声明的内存位置 - 不仅是由声明的间接输出指向的内存。</p>
+<p>请注意，输出约束中也存在的clobbering命名寄存器是不合法的。</p>
+<h4 id="约束代码"><a href="#约束代码" class="headerlink" title="约束代码"></a>约束代码</h4><p>潜在的前缀来了约束代码或代码之后。</p>
+<p>约束代码可以是单个字母（例如“<code>r</code>”），“<code>^</code>”字符后跟两个字母（例如“<code>^wc</code>”）或“<code>{”寄存器名称“ }</code>”（例如“<code>{eax}</code>”）。</p>
+<p>通常选择单字母和双字母约束代码与GCC的约束代码相同。</p>
+<p>一个约束可能包含一个或多个约束代码，而让LLVM选择使用哪一个约束代码。这主要包括与来自clang的GCC inline asm的翻译兼容。</p>
+<p>有两种方式可以指定替代方案，并且可以在内联asm约束列表中使用其中之一或两者。</p>
+<ol>
+<li>相互追加代码，制作约束代码集。例如“<code>im</code>”或“ <code>{eax}m</code>”。这意味着“选择集合中的任何选项”。对约束列表中的每个约束独立进行约束的选择。</li>
+<li>在约束代码集之间使用“<code>|</code>”，创建替代方案。约束列表中的每个约束都必须具有相同数量的备选集。使用这种语法，约束列表中所有项目中的相同备选项将一起选择。</li>
+</ol>
+<p>把它们放在一起，你可能会有两个操作数约束字符串,像”<code>rm|r,ri|rm</code>“。这表明如果操作数0是r或m，则操作数1可以是r或i。如果操作数0是r，则操作数1可以是r或m。但是，操作数0和1不能都是m类型。</p>
+<p>但是，不推荐使用其中任何一种替代功能，因为LLVM无法对使用哪种替代功能做出明智选择。（在当前需要选择的时候，没有足够的信息可以用聪明的方式来实现。）因此，它只是试图做出最有可能编译的选择，而不是最优性能的选择。（例如，给定“rm”，它总是选择使用内存，而不是寄存器）。而且，如果给定多个寄存器或多个寄存器类，它将简单地选择第一个。（实际上，目前它甚至不确保明确指定的物理寄存器是唯一的，因此指定多个物理寄存器作为替代，例如 {r11}{r12},{r11}{r12}，将r11分配给两个操作数，而不是所有打算的。）</p>
+<h4 id="支持的约束代码列表"><a href="#支持的约束代码列表" class="headerlink" title="支持的约束代码列表"></a>支持的约束代码列表</h4><p>一般来说，约束代码的行为与GCC中的一样。LLVM的支持通常是在’按需’的基础上实现的，以支持GCC支持的C inline代码。LLVM和GCC之间的行为不匹配可能表明LLVM存在错误。</p>
+<p>所有目标通常都支持一些约束代码：</p>
+<ul>
+<li>r：目标通用寄存器类中的寄存器。</li>
+<li>m：存储器地址操作数。它支持哪些寻址模式，典型的例子是寄存器，寄存器+寄存器偏移量，或寄存器+直接偏移量（某些目标特定的大小）。</li>
+<li>i：一个整数常量（目标特定宽度）。允许简单的即时或可重定位的值。</li>
+<li>n：一个整数常量 - 不包括可重定位值。</li>
+<li>s：一个整数常量，但只允许重定位值。</li>
+<li>X：允许任何类型的操作数，不受任何限制。通常用于为asm分支或call传递标签。</li>
+<li>{register-name}：需要完整的指定物理寄存器。</li>
+</ul>
+<p>其他约束是针对具体目标的：</p>
+<p>AArch64：</p>
+<ul>
+<li>z：一个立即数整数0.输出WZR或者XZR视情况而定。</li>
+<li>I：对一个ADD或SUB指令有效的立即整数，即0到4095，可选的移位12。</li>
+<li>J：一个立即数，取反时对一个ADD或 SUB指令有效，即-1到-4095，可选左移12。</li>
+<li>K：一个直接整数，它是有效的“位掩码即时32”的逻辑指令等AND，EOR或ORR与32位寄存器。</li>
+<li>L：一个直接整数，它是有效的“位掩码即时64”的逻辑指令等AND，EOR或ORR与64位寄存器。</li>
+<li>M：与MOV32位寄存器上的程序集别名一起使用的立即整数。这是一个超集K：除了bitmask立即数，还允许立即可以装载单个MOVZ或MOVL指令的整数 。</li>
+<li>N：用于MOV64位寄存器上的程序集别名的立即整数。这是一个超集L。</li>
+<li>Q：存储器地址操作数必须位于单个寄存器中（无偏移量）。（但是，LLVM目前也为m约束做了这个。）</li>
+<li>r：32位或64位整数寄存器（W <em>或X </em>）。</li>
+<li>w：一个32,64或128位浮点/ SIMD寄存器。</li>
+<li>x：较低的128位浮点/ SIMD寄存器（V0至V15）。</li>
+</ul>
+<p>AMDGPU：</p>
+<ul>
+<li>r：32位或64位整数寄存器。</li>
+<li>[0-9]v：32位VGPR寄存器，编号0-9。</li>
+<li>[0-9]s：32位SGPR寄存器，编号0-9。</li>
+</ul>
+<p>所有ARM模式：</p>
+<ul>
+<li>Q，Um，Un，Uq，Us，Ut，Uv，Uy：内存地址的操作数。目前处理方式与操作数相同m。</li>
+</ul>
+<p>ARM和ARM的Thumb2模式：</p>
+<ul>
+<li>j：0到65535之间的一个立即数（有效MOVW）</li>
+<li>I：对数据处理指令有效的立即整数。</li>
+<li>J：一个介于-4095和4095之间的直接整数。</li>
+<li>K：一个立即数，它的位反转对数据处理指令有效。（可以与模板修饰符“ B”一起使用以打印反转的值）。</li>
+<li>L：一个立即整数，其否定对数据处理指令有效。（可以与模板修饰符“ n”一起使用以打印否定值）。</li>
+<li>M：2的幂或0到32之间的整数。</li>
+<li>N：无效的即时约束。</li>
+<li>O：无效的即时约束。</li>
+<li>r：一个通用的32位整数寄存器（r0-r15）。</li>
+<li>l：在Thumb2模式下，低32位GPR寄存器（r0-r7）。在ARM模式下，与r。</li>
+<li>h：在Thumb2模式下，一个高32位的GPR寄存器（r8-r15）。在ARM模式下，无效。</li>
+<li>w：一个32，64或128位浮点/ SIMD寄存器：s0-s31， d0-d31，或q0-q15。</li>
+<li>x：一个32，64或128位浮点/ SIMD寄存器：s0-s15， d0-d7，或q0-q3。</li>
+<li>t：一个低浮点/ SIMD寄存器：s0-s31，d0-d16，或 q0-q8。</li>
+</ul>
+<p>ARM的Thumb1模式：</p>
+<ul>
+<li>I：0到255之间的立即数。</li>
+<li>J：-255和-1之间的立即数。</li>
+<li>K：0到255之间的直接整数，可选左移一定数量。</li>
+<li>L：-7和7之间的立即数。</li>
+<li>M：0到1020之间的整数，是4的倍数。</li>
+<li>N：0到31之间的立即数。</li>
+<li>O：在-508和508之间的立即数，是4的倍数。</li>
+<li>r：一个低32位的GPR寄存器（r0-r7）。</li>
+<li>l：一个低32位的GPR寄存器（r0-r7）。</li>
+<li>h：高GPR寄存器（r0-r7）。</li>
+<li>w：一个32，64或128位浮点/ SIMD寄存器：s0-s31， d0-d31，或q0-q15。</li>
+<li>x：一个32，64或128位浮点/ SIMD寄存器：s0-s15， d0-d7，或q0-q3。</li>
+<li>t：一个低浮点/ SIMD寄存器：s0-s31，d0-d16，或 q0-q8。</li>
+</ul>
+<p>Hexagon：</p>
+<ul>
+<li>o，v：此时存储器地址操作数，与约束一样对待m。</li>
+<li>r：一个32位或64位寄存器。</li>
+</ul>
+<p>MSP430：</p>
+<ul>
+<li>r：一个8位或16位寄存器。</li>
+</ul>
+<p>MIPS：</p>
+<ul>
+<li>I：一个直接带符号的16位整数。</li>
+<li>J：一个立即整数零。</li>
+<li>K：一个直接无符号的16位整数。</li>
+<li>L：一个直接的32位整数，其中低16位是0。</li>
+<li>N：-65535和-1之间的立即数。</li>
+<li>O：一个立即有符号的15位整数。</li>
+<li>P：1到65535之间的立即数。</li>
+<li>m：存储器地址操作数。在MIPS-SE模式下，允许一个基址寄存器加上16位立即数偏移量。在MIPS模式下，只需一个基址寄存器。</li>
+<li>R：存储器地址操作数。在MIPS-SE模式下，允许一个基地址寄存器加上一个9位有符号偏移量。在MIPS模式下，与约束相同 m。</li>
+<li>ZC：一个存储器地址操作数，适用于使用pref，ll或 sc在给定的子目标指令（细节有所不同）。</li>
+<li>r，d， y：一个32位或64位GPR寄存器。</li>
+<li>f：一个32位或64位FPU寄存器（F0-F31）或一个128位MSA寄存器（W0-W31）。在MSA寄存器的情况下，建议使用w 参数修饰符与GCC兼容。</li>
+<li>c：适用于间接跳转（始终25）的32位或64位GPR寄存器 。</li>
+<li>l：lo寄存器，32或64位。</li>
+<li>x：无效。</li>
+</ul>
+<p>NVPTX：</p>
+<ul>
+<li>b：1位整数寄存器。</li>
+<li>c或者h：一个16位整数寄存器。</li>
+<li>r：一个32位整数寄存器。</li>
+<li>l或者N：一个64位整数寄存器。</li>
+<li>f：一个32位浮点寄存器。</li>
+<li>d：一个64位的浮点寄存器。</li>
+</ul>
+<p>PowerPC的：</p>
+<ul>
+<li>I：一个直接带符号的16位整数。</li>
+<li>J：直接无符号的16位整数，左移16位。</li>
+<li>K：一个直接无符号的16位整数。</li>
+<li>L：立即带符号的16位整数，左移16位。</li>
+<li>M：大于31的立即数。</li>
+<li>N：是2的精确幂的立即数。</li>
+<li>O：立即整数常量0。</li>
+<li>P：一个立即整型常量，其否定是一个有符号的16位常量。</li>
+<li>es，o，Q，Z，Zy：一个存储器地址操作数，目前一样对待m。</li>
+<li>r：32位或64位整数寄存器。</li>
+<li>b：32位或64位整数寄存器，不包括R0（即 ：）R1-R31。</li>
+<li>f：32位或64位浮点寄存器（F0-F31）或QPX使能时，128位或256位QPX寄存器（Q0-Q31;用于别名F寄存器）。</li>
+<li>v：对于或类型，当启用QPX时，为128或256位QPX寄存器（），否则为128位altivec向量寄存器（）。4 x f324 x f64Q0-Q31V0-V31</li>
+<li>y：条件寄存器（CR0-CR7）。</li>
+<li>wc：CR寄存器中的单独CR位。</li>
+<li>wa，wd，wf：任何128位VSX向量寄存器，从全VSX寄存器组（重叠两个浮点和向量寄存器文件）。</li>
+<li>ws：来自完整的VSX寄存器组的32位或64位浮点寄存器。</li>
+</ul>
+<p>SPARC：</p>
+<ul>
+<li>I：一个立即的13位有符号整数。</li>
+<li>r：一个32位整数寄存器。</li>
+<li>f：SparcV8上的任何浮点寄存器或SparcV9上“低”一半寄存器中的浮点寄存器。</li>
+<li>e：任何浮点寄存器。（与fSparcV8 相同。）</li>
+</ul>
+<p>SystemZ：</p>
+<ul>
+<li>I：直接无符号的8位整数。</li>
+<li>J：直接无符号的12位整数。</li>
+<li>K：一个直接带符号的16位整数。</li>
+<li>L：一个直接签名的20位整数。</li>
+<li>M：立即整数0x7fffffff。</li>
+<li>Q：具有基地址和12位立即无符号位移的存储器地址操作数。</li>
+<li>R：一个带有基地址的内存地址操作数，一个12位立即无符号位移和一个索引寄存器。</li>
+<li>S：一个内存地址操作数，带有一个基址和一个20位立即带符号的位移。</li>
+<li>T：一个带有基地址的内存地址操作数，一个20位立即带符号位移和一个索引寄存器。</li>
+<li>r或者d：一个32位，64位或128位整数寄存器。</li>
+<li>a：32,64或128位整数地址寄存器（不包括地址上下文中评估为0的R0）。</li>
+<li>h：64位数据寄存器高位部分的32位值（LLVM专用）</li>
+<li>f：一个32,64或128位浮点寄存器。</li>
+</ul>
+<p>X86：</p>
+<ul>
+<li>I：0到31之间的立即数。</li>
+<li>J：0到64之间的立即数。</li>
+<li>K：一个立即有符号的8位整数。</li>
+<li>L：立即整数，0xff或0xffff或（仅在64位模式下）0xffffffff。</li>
+<li>M：0到3之间的立即数。</li>
+<li>N：直接无符号的8位整数。</li>
+<li>O：0到127之间的立即数。</li>
+<li>e：一个立即的32位有符号整数。</li>
+<li>Z：一个立即的32位无符号整数。</li>
+<li>o，v：目前处理方式与此相同m。</li>
+<li>q：一个8,16,32或64位寄存器，可以作为8位 l整数寄存器访问。在X86-32，这是a，b，c，和d 寄存器，以及X86-64，它是所有的整数寄存器。</li>
+<li>Q：一个8,16,32或64位寄存器，可以作为8位 h整数寄存器访问。这是a，b，c，和d寄存器。</li>
+<li>r或者l：8,16,32或64位整数寄存器。</li>
+<li>R：8,16,32或64位“传统”整数寄存器 - 自i386以来一直存在，并且可以在没有REX前缀的情况下访问。</li>
+<li>f：一个32,64或80位’387 FPU堆栈伪寄存器。</li>
+<li>y：如果启用MMX，则为64位MMX寄存器。</li>
+<li>x：如果启用SSE：SSE寄存器中的32位或64位标量操作数或128位向量操作数。如果AVX也被使能，也可以是AVX寄存器中的256位向量操作数。如果AVX-512也被使能，也可以是AVX512寄存器中的512位向量操作数，否则会出错。</li>
+<li>Y：同x，如果SSE2被启用，否则会出现错误。</li>
+<li>A：特殊情况：首先为EAX分配EAX，然后再为EDX分配单个操作数（在32位模式下，64位整数操作数将分成两个寄存器）。不建议使用此约束，因为在64位模式下，64位操作数只会分配给RAX - 如果需要两个32位操作数，则最好在将其分配给它之前自行分割asm声明。</li>
+</ul>
+<p>XCore：</p>
+<ul>
+<li>r：一个32位整数寄存器。</li>
+</ul>
+<h3 id="Asm模板参数修饰符"><a href="#Asm模板参数修饰符" class="headerlink" title="Asm模板参数修饰符"></a>Asm模板参数修饰符</h3><p>在asm模板字符串中，可以在操作数引用上使用修饰符，如“<code>${0:n}</code>”。</p>
+<p>一般来说，修饰符的行为与GCC中的相同。LLVM的支持通常是在’按需’的基础上实现的，以支持GCC支持的C inline代码。LLVM和GCC之间的行为不匹配可能表明LLVM存在错误。</p>
+<p>目标无关的：</p>
+<ul>
+<li>c：不带目标特定的直接标点符号（例如无$前缀）打印一个立即的整数常量。</li>
+<li>n：取消并打印立即数整数常量，不带目标特定的直接标点符号（例如无$前缀）。</li>
+<li>l：打印为无标签的标签，没有特定于目标的标签标点（例如无$前缀）。</li>
+</ul>
+<p>AArch64：</p>
+<ul>
+<li>w：用w<em>名称而不是x</em>名称打印GPR寄存器。例如，而不是x30打印w30。</li>
+<li>x：用x*名称打印GPR寄存器。（无论如何，这是默认的）。</li>
+<li>b，h，s，d，q：打印浮点/ SIMD寄存器有 b<em>，h</em>，s<em>，d</em>，或q<em>名称，而不是默认的 v</em>。</li>
+</ul>
+<p>AMDGPU：</p>
+<ul>
+<li>r： 没有效果。</li>
+</ul>
+<p>ARM：</p>
+<ul>
+<li>a：打印操作数作为一个地址（[和]周围的寄存器）。</li>
+<li>P： 没有效果。</li>
+<li>q： 没有效果。</li>
+<li>y：将VFP单精度寄存器作为索引双精度打印（例如打印d4[1]而不是s9）</li>
+<li>B：按位反转并打印不带# 前缀的立即整数常量。</li>
+<li>L：打印立即整数常量的低16位。</li>
+<li>M：打印为适合ldm / stm的寄存器组。同时打印 指定的一个（！）后面的所有寄存器操作数，请谨慎使用。</li>
+<li>Q：打印寄存器对的低位寄存器或双寄存器操作数的低位寄存器。</li>
+<li>R：打印寄存器对的高位寄存器或双寄存器操作数的高位寄存器。</li>
+<li>H：打印寄存器对的第二个寄存器。（在大端系统上， H相当于Q小端系统，H相当于R。）</li>
+<li>e：打印NEON四路寄存器的低双字寄存器。</li>
+<li>f：打印NEON四路寄存器的高位双字寄存器。</li>
+<li>m：打印没有[和] 装饰的内存操作数的基址寄存器。</li>
+</ul>
+<p>Hexagon：</p>
+<ul>
+<li>L：打印双寄存器操作数的第二个寄存器。要求它已被连续分配到第一个。</li>
+<li>I：如果操作数是一个整数常量，则打印字母’i’，否则不打印。用于打印’addi’和’add’指令。</li>
+</ul>
+<p>MSP430：</p>
+<ul>
+<li>没有额外的修饰符。</li>
+</ul>
+<p>MIPS：</p>
+<ul>
+<li>X：以十六进制形式打印一个立即数</li>
+<li>x：以十六进制形式打印立即数的低16位。</li>
+<li>d：以小数形式打印一个立即数。</li>
+<li>m：减去一个并以十进制形式打印一个立即数。</li>
+<li>z：如果立即为零，则打印$ 0，否则正常打印。</li>
+<li>L：打印双寄存器操作数的低位寄存器，或打印双字存储器操作数的低位字的地址。</li>
+<li>M：打印双寄存器操作数的高位寄存器，或者打印双字存储器操作数的高位字的地址。</li>
+<li>D：打印双寄存器操作数的第二个寄存器，或打印双字存储器操作数的第二个字。（在大端系统上，D相当于L小端系统，D相当于 M。）</li>
+<li>w： 没有效果。为了与需要此修饰符的GCC兼容才能打印W0-W31具有f 约束条件的MSA寄存器（）。</li>
+</ul>
+<p>NVPTX：</p>
+<ul>
+<li>r： 没有效果。</li>
+</ul>
+<p>PowerPC的：</p>
+<ul>
+<li>L：打印双寄存器操作数的第二个寄存器。要求它已被连续分配到第一个。</li>
+<li>I：如果操作数是一个整数常量，则打印字母’i’，否则不打印。用于打印’addi’和’add’指令。</li>
+<li>y：对于内存操作数，打印双寄存器X-form指令的格式化程序。（目前始终打印r0,OPERAND）。</li>
+<li>U：如果内存操作数是更新形式，则打印’u’，否则不打印。（注意：LLVM不支持更新表单，所以它现在总是不会打印任何内容）</li>
+<li>X：如果内存操作数是索引形式，则打印’x’。（注意：LLVM不支持索引形式，所以目前这总是不会打印任何东西）</li>
+</ul>
+<p>SPARC：</p>
+<ul>
+<li>r： 没有效果。</li>
+</ul>
+<p>SystemZ：</p>
+<ul>
+<li>SystemZ仅实现n，并且也不会支持任何其他目标无关的改性剂。</li>
+</ul>
+<p>X86：</p>
+<ul>
+<li>c：打印一个无用的整数或符号名称。（后者是这个典型的与目标无关的修饰符的目标特定行为）。</li>
+<li>A：*在它之前用一个“ ‘ 打印一个注册名称。</li>
+<li>b：打印一个8位寄存器名称（例如al）; 内存操作数不做任何事情。</li>
+<li>h：打印上面的8位寄存器名称（例如ah）; 内存操作数不做任何事情。</li>
+<li>w：打印16位寄存器名称（例如ax）; 内存操作数不做任何事情。</li>
+<li>k：打印32位寄存器名称（例如eax）; 内存操作数不做任何事情。</li>
+<li>q：打印64位寄存器名称（例如rax），如果64位寄存器可用，则返回32位寄存器名称; 内存操作数不做任何事情。</li>
+<li>n：取反并打印一个未修饰的整数，或者，对于非立即整数的操作数（例如可重定位符号表达式），在操作数前面打印一个’ - ‘。（可重定位符号表达式的行为是针对此通常与目标无关的修饰符的目标特定行为）</li>
+<li>H：用额外的偏移量+8打印存储器引用。</li>
+<li>P：打印内存引用或操作数以用作调用指令的参数。（例如(rip)，即使它是PC相对的，也省略。）</li>
+</ul>
+<p>XCore：</p>
+<ul>
+<li>没有额外的修饰符。</li>
+</ul>
+<h3 id="内联Asm元数据"><a href="#内联Asm元数据" class="headerlink" title="内联Asm元数据"></a>内联Asm元数据</h3><p>包装内联asm节点的调用指令可能会附加一个“<code>!srcloc</code>”MDNode，它包含一个常量整数列表。如果存在，则当通过LLVMContext 错误报告机制报告错误时，代码生成器将使用该整数作为位置cookie值。这允许前端将内联asm中发生的后端错误与产生它的源代码关联起来。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">call void asm sideeffect &quot;something bad&quot;, &quot;&quot;(), !srcloc !42</span><br><span class="line">...</span><br><span class="line">!42 = !&#123; i32 1234567 &#125;</span><br></pre></td></tr></table></figure></p>
+<p>直到前端才能理解它在IR中的神奇数字。如果MDNode包含多个常量，则代码生成器将使用与发生错误的asm行相对应的那个常量。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编译原理/" rel="tag"># 编译原理</a>
+          
+            <a href="/tags/LLVM/" rel="tag"># LLVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/12/编译原理/LLVM语言参考手册(开始至高级结构)/" rel="next" title="LLVM语言参考手册(开始至高级结构)">
+                <i class="fa fa-chevron-left"></i> LLVM语言参考手册(开始至高级结构)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">89</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">85</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#类型系统"><span class="nav-number">1.</span> <span class="nav-text">类型系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#void类型"><span class="nav-number">1.1.</span> <span class="nav-text">void类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数类型"><span class="nav-number">1.2.</span> <span class="nav-text">函数类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一类类型（First-Class-Types）"><span class="nav-number">1.3.</span> <span class="nav-text">第一类类型（First Class Types）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单值类型"><span class="nav-number">1.3.1.</span> <span class="nav-text">单值类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#整数类型"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">整数类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浮点类型"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">浮点类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#X86-mmx类型"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">X86_mmx类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#指针类型"><span class="nav-number">1.3.1.4.</span> <span class="nav-text">指针类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#矢量类型"><span class="nav-number">1.3.1.5.</span> <span class="nav-text">矢量类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签类型"><span class="nav-number">1.3.2.</span> <span class="nav-text">标签类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#令牌-token-类型"><span class="nav-number">1.3.3.</span> <span class="nav-text">令牌(token)类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#元数据类型"><span class="nav-number">1.3.4.</span> <span class="nav-text">元数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#聚合类型"><span class="nav-number">1.3.5.</span> <span class="nav-text">聚合类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数组类型"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">数组类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结构类型"><span class="nav-number">1.3.5.2.</span> <span class="nav-text">结构类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不透明结构类型"><span class="nav-number">1.3.5.3.</span> <span class="nav-text">不透明结构类型</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常量"><span class="nav-number">2.</span> <span class="nav-text">常量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单常量"><span class="nav-number">2.1.</span> <span class="nav-text">简单常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复杂（Complex）常量"><span class="nav-number">2.2.</span> <span class="nav-text">复杂（Complex）常量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结构常数"><span class="nav-number">2.2.1.</span> <span class="nav-text">结构常数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组常量"><span class="nav-number">2.2.2.</span> <span class="nav-text">数组常量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#矢量-Vector-常量"><span class="nav-number">2.2.3.</span> <span class="nav-text">矢量(Vector)常量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#零初始化"><span class="nav-number">2.2.4.</span> <span class="nav-text">零初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#元数据节点"><span class="nav-number">2.2.5.</span> <span class="nav-text">元数据节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全局变量和函数地址"><span class="nav-number">2.3.</span> <span class="nav-text">全局变量和函数地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未定义的值"><span class="nav-number">2.4.</span> <span class="nav-text">未定义的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#毒药（Poison）值"><span class="nav-number">2.5.</span> <span class="nav-text">毒药（Poison）值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本块的地址"><span class="nav-number">2.6.</span> <span class="nav-text">基本块的地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常量表达式"><span class="nav-number">2.7.</span> <span class="nav-text">常量表达式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他值"><span class="nav-number">3.</span> <span class="nav-text">其他值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#内嵌汇编表达式"><span class="nav-number">3.1.</span> <span class="nav-text">内嵌汇编表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内联汇编约束字符串"><span class="nav-number">3.1.1.</span> <span class="nav-text">内联汇编约束字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#输出约束"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">输出约束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#输入约束"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">输入约束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#间接投入和产出"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">间接投入和产出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Clobber约束"><span class="nav-number">3.1.1.4.</span> <span class="nav-text">Clobber约束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#约束代码"><span class="nav-number">3.1.1.5.</span> <span class="nav-text">约束代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#支持的约束代码列表"><span class="nav-number">3.1.1.6.</span> <span class="nav-text">支持的约束代码列表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Asm模板参数修饰符"><span class="nav-number">3.1.2.</span> <span class="nav-text">Asm模板参数修饰符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内联Asm元数据"><span class="nav-number">3.1.3.</span> <span class="nav-text">内联Asm元数据</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -276,6 +276,184 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/blockchain/共识算法概述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/23/blockchain/共识算法概述/" itemprop="url">共识算法概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T15:46:06+08:00">2018-03-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一开始就认为共识算法其实比较简单，但是一直没有认真地总结，导致这块知识一直都是短板。其实共识算法的本质是分布式一致性的问题，但是显然这和分布式一致性略有区别。有以下两个主要的区别：</p>
+<ol>
+<li>传统的分布式一致性算法认为，每个节点都不会欺诈，如果出现问题一般都是网络分区，请求顺序的问题。但是共识算法不能保证每一个节点都是正常节点，可能就是欺诈节点。</li>
+<li>传统的一致性算法只要有值就行，不太关心哪个节点写入数据。<b style="color:red">但是共识算法，必须公平地对待每一个节点，选取这个节点必须是公平的，于是就有了POW和POS机制的出现。这个就好像是选择值本来一个很纯粹的事情绑定了特定的业务，所以要处理的事情就变得很复杂了。所以在分析共识算法的时候要将这个点剥离出来，拨出来之后这就是一个分布式一致性的问题。</b></li>
+</ol>
+<p>所以说共识算法，剥离了上面两个方面的因素就是一个纯粹的分布式一致性算法。<b style="color:red">其实说白了共识算法就是分布式一致性在P2P网络中的应用。</b></p>
+<p>其他的分布式协议：<a href="/2018/03/22/算法/Paxos协议详解/">Paxos</a>、<a href="/2018/03/23/算法/Raft算法简介/">Raft</a>。</p>
+<h2 id="从拜占庭将军问题谈起"><a href="#从拜占庭将军问题谈起" class="headerlink" title="从拜占庭将军问题谈起"></a>从拜占庭将军问题谈起</h2><p>这是一个很经典的分布式一致性问题的提出，这里我们就不做很多的说明。可以查看维基百科中关于这点的描述。</p>
+<h2 id="拜占庭容错-BFT"><a href="#拜占庭容错-BFT" class="headerlink" title="拜占庭容错 BFT"></a>拜占庭容错 BFT</h2><p>这是拜占庭将军问题的早期的解决方案。在1982年的论文中提过几个解决方案。方案中把问题往下拆解，认为在“拜占庭将军”的问题可以在“军官与士官的问题”里解决，以降低将军问题的发生。而所谓的“军官与士官的问题”，就是探讨军官与他的士官是否能忠实实行命令。</p>
+<p>其中一个解决方案认为即使出现了伪造或错误的消息。只要有问题的将军的数量不到三分之一，仍可以达到“拜占庭容错”。原因是把同样的标准下放到“军官与士官的问题”时，在背叛的军士官不足三分之一的情况下，有问题的军士官可以很容易的被纠出来。<b style="color:blue">比如有军官A，士官B与士官C。当A要求B进攻，却要求C撤退时</b>。<b style="color:red">只要B与C交换所收到的命令，就会立刻发现A有问题</b>。<b style="color:blue">以函数来表示，将军的总数为n，n里面背叛者的数量为t，则只要n &gt; 3t就可以容错。</b></p>
+<p><b style="color:red">另一个解决方案需要有无法消去的签名。在现今许多高度信息安全要求的关键系统里，数字签名就经常被用来实现拜占庭容错，找出有问题的将军。然而，在生命攸关系统里，使用 错误侦测码就可以大幅降低问题的发生。无论系统是否存在拜占庭将军问题。所以需要做密码军算的数字签名也不一定适合这类系统。</b></p>
+<p>假如上述两个解决方案里，将军们无法直接通信时，该论文亦有进一步的解决方案。<br>此外，1980年代还有其他用来达到拜占庭容错的架构被提出，如：FTMP、MMFCS 与 SIFT。</p>
+<h2 id="使用拜占庭容错算法-PBFT"><a href="#使用拜占庭容错算法-PBFT" class="headerlink" title="使用拜占庭容错算法 PBFT"></a>使用拜占庭容错算法 PBFT</h2><p>1999年，卡斯托（Miguel Castro）与李斯克夫（Barbara Liskov）提出了实用拜占庭容错（PBFT）算法。该算法能提供高性能的运算，使得系统可以每秒处理成千的请求，比起旧式系统快了一些。<b style="color:red">后来也有针对BFT算法的各种优化版，但是优化的方向不同，有的是为了加强健壮性，有的是为了加强网络速度等。</b>下面来提一下这个PBFT算法的一些简要知识，具体请查看：<a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/PBFT%E6%B5%81%E7%A8%8B.png?raw=true" alt="PFBT流程图"><br>上面是PBFT的图示，下面我们讲个上面流程的故事。</p>
+<ol>
+<li>总司令给军长下命令向前行军500公里；</li>
+<li>军长将消息（不只有命令）传递给所有师长；</li>
+<li>1号2号师长又把消息传给其他师长，3号师长处于叛逃状态；</li>
+<li>军长再次询问各位师长是否同意执行命令。</li>
+<li>所有军官（包括军长和师长）向总司令汇报结果。</li>
+</ol>
+<p><b style="color:blue">这个算法的实用性为何高于BFT呢？因为在BFT的描述中，我们可以发现每个节点都不知道其他节点的情况，都会去询问所有的人他们所获得情况，进而做出自己的判断（只要大多数人同意的就是正确的）。这个过程达成一致性的时间比较长，而且耗费大量的P2P网络资源，不适合共识算法（规模不大是可以的）</b>。<b style="color:red">PBFT算法就是校验放给一个人去校验就可以了，而不需要全体所有的人来进行校验，你也不知道进行校验的人是谁，所以是安全的，分布式一致性也很容易达成。</b></p>
+<h2 id="节点验证的机制"><a href="#节点验证的机制" class="headerlink" title="节点验证的机制"></a>节点验证的机制</h2><p>节点验证的方式其实是两方面的，一是节点未篡改通讯协议，二是节点的选举极具公平意义。现在区块链上的实现主要是POW和POS两种方式。</p>
+<h2 id="工作量证明-POW"><a href="#工作量证明-POW" class="headerlink" title="工作量证明 POW"></a>工作量证明 POW</h2><p>这是比特币使用的共识机制，主要是通过不停地hash计算，算出nonce已满足难度系数。这样请求不易伪造，而且谁先解决难题谁就有记账权，我觉得这个是不可被攻击的。要想攻击必须具有51%以上的算力。</p>
+<h2 id="权益证明-POS"><a href="#权益证明-POS" class="headerlink" title="权益证明 POS"></a>权益证明 POS</h2><p>这种安全的机制比较简单就是你持有币所获得的权限。</p>
+<p>POS：也称股权证明，类似于财产储存在银行，这种模式会根据你持有数字货币的量和时间，分配给你相应的利息。 </p>
+<p>简单来说，就是一个根据你持有货币的量和时间，给你发利息的一个制度，在股权证明POS模式下，有一个名词叫币龄，每个币每天产生1币龄，比如你持有100个币，总共持有了30天，那么，此时你的币龄就为3000，这个时候，如果你发现了一个POS区块，你的币龄就会被清空为0。你每被清空365币龄，你将会从区块中获得0.05个币的利息(假定利息可理解为年利率5%)，那么在这个案例中，利息 = 3000 * 5% / 365 = 0.41个币，这下就很有意思了，持币有利息。</p>
+<h2 id="委任权益证明-DPOS"><a href="#委任权益证明-DPOS" class="headerlink" title="委任权益证明 DPOS"></a>委任权益证明 DPOS</h2><p>比特股的DPoS机制，中文名叫做股份授权证明机制（又称受托人机制），它的原理是让每一个持有比特股的人进行投票，由此产生101位代表 , 我们可以将其理解为101个超级节点或者矿池，而这101个超级节点彼此的权利是完全相等的。从某种角度来看，DPOS有点像是议会制度或人民代表大会制度。如果代表不能履行他们的职责（当轮到他们时，没能生成区块），他们会被除名，网络会选出新的超级节点来取代他们。DPOS的出现最主要还是因为矿机的产生，大量的算力在不了解也不关心比特币的人身上，类似演唱会的黄牛，大量囤票而丝毫不关心演唱会的内容。</p>
+<h2 id="Casper"><a href="#Casper" class="headerlink" title="Casper"></a>Casper</h2><p>这个协议也是POS，是以太坊正在开发的下一代以太坊共识协议。</p>
+<p>以太坊社区提出的正在研发中的共识协议名为Casper。Casper的基本思路是，任何人抵押足够多的以太币到系统中就可以成为矿工参与到挖矿过程。共识算法要求所有的矿工诚实工作，如果一个矿工有意破坏，不遵守协议，系统就会对矿工做出惩罚：没收之前抵押的以太币。有人把Casper这样的挖矿机制称为“虚拟挖矿”，比特币的矿工要参与挖矿需要先购买矿机，Casper则要先抵押以太币到系统中；比特币的矿工如果不按规则挖矿，则会损失电费以及可能的挖矿收益，而Casper中，不守规则的惩罚更为严重，除了失去挖矿收益，还要销毁“矿机”：抵押的以太币会被系统没收！</p>
+<h2 id="有向无环图-DAG"><a href="#有向无环图-DAG" class="headerlink" title="有向无环图 DAG"></a>有向无环图 DAG</h2><p>DAG则采用异步机制替代链式检查点的同步策略，在优秀的软件实现中如果能够有效控制网络风暴带来的带宽需求指数增加，其不失为一种对最终一致性场景有较好应用前景的算法。但是DAG的局限性也极为明显，其体系无法被利用在需要进行同步操作或一致性要求较高的操作中（例如支付结算等）。</p>
+<p>第一次提出DAG跟区块链结合是在Nxt社区，可以发现DAG最初出现就是为了解决区块链的效率问题。比特币的效率一直比较低，基于工作量证明共识下的出块机制是一个原因，由于链式的存储结构，整个网络中同时只能有一条链，导致出块无法并发执行。社区有人提出DAG的拓扑结构来存储区块，这个时候更多还是类似侧链的解决思路，不同的链条存储不同类型的交易，这样降低出现双花的可能，在之后某个节点需要合并的时候，几个分支再归并到一个区块。</p>
+<h2 id="共识规则和软分叉"><a href="#共识规则和软分叉" class="headerlink" title="共识规则和软分叉"></a>共识规则和软分叉</h2><p>共识规则决定着每个交易或每个区块的有效性。比特币网络上的每个用户和矿工都遵守着同一套共识规则，代表着他们都愿意接受和同意一个账本。</p>
+<p>当大多数用户和/或矿工决定采用更严格的共识规则时，软分叉就可能出现，这使一些以前有效的交易/区块将变为无效，而不是相反。如果大多数人执行新的规则的话，其他任何违规分叉（统计上）都不会在工作量证明方面赶上新的更严格的共识分叉。遵守旧规则的少数人将始终遵循更长，更严格的分叉，使得网络上的每个人都会最终接受和同意一个账本。</p>
+<p>关于分叉的更多知识，我觉得<a href="http://me.tryblockchain.org/blockchain-dpos-bm-eos.html" target="_blank" rel="noopener">DPOS共识算法-by BM</a>这篇文档讲得挺好的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>共识算法的知识很多这里就不做更多地说明了。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98#%E5%AF%A6%E7%94%A8%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%AE%B9%E9%8C%AF" target="_blank" rel="noopener">拜占庭将军问题</a><br><a href="https://www.jianshu.com/p/1e2acd3cbd9f" target="_blank" rel="noopener">实用拜占庭容错算法PBFT</a><br><a href="https://www.jianshu.com/p/fb5edf031afd" target="_blank" rel="noopener">区块链核心技术：拜占庭共识算法之PBFT</a><br><a href="http://www.chidaolian.com/article-680-1" target="_blank" rel="noopener">案例分析软分叉的艺术——政策规则保护</a><br><a href="http://8btc.com/thread-40113-1-1.html" target="_blank" rel="noopener">以太坊紫皮书（中文版）</a><br><a href="https://blog.csdn.net/lsttoy/article/details/61624287" target="_blank" rel="noopener">[区块链]共识算法（POW,POS,DPOS,PBFT）介绍和心得</a><br><a href="http://8btc.com/thread-35475-1-1.html" target="_blank" rel="noopener">以太坊共识协议Casper原理是怎样的？</a><br><a href="http://chainx.org/news/index/detail/id/14.html" target="_blank" rel="noopener">拜占庭容错(BFT)算法介绍</a><br><a href="http://www.btc38.com/others/other_all/49.html" target="_blank" rel="noopener">加密的钱包如何获得POS利息</a><br><a href="http://www.btc38.com/altcoin/general/47.html" target="_blank" rel="noopener">深度教程：POS和POW全解析</a><br><a href="http://www.chidaolian.com/article-828-8" target="_blank" rel="noopener">盘点区块链共识机制——论PoW，PoS，DPos和DAG的优缺点对比分析</a><br><a href="https://www.7234.cn/dag/36392" target="_blank" rel="noopener">DAG也许是真正的区块链3.0</a><br><a href="http://me.tryblockchain.org/blockchain-dpos-bm-eos.html" target="_blank" rel="noopener">DPOS共识算法-by BM</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/23/算法/Raft算法简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2228,1018 +2406,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/17/blockchain/bitcoin脚本解析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/17/blockchain/bitcoin脚本解析/" itemprop="url">bitcoin脚本解析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T00:08:08+08:00">2018-03-17</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。</p>
-<p>在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public enum ScriptType &#123;</span><br><span class="line">    NO_TYPE,</span><br><span class="line">    P2PKH,</span><br><span class="line">    PUB_KEY,</span><br><span class="line">    P2SH</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>再看一下脚本的验证类型吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum VerifyFlag &#123;</span><br><span class="line">    P2SH, // Enable BIP16-style subscript evaluation.</span><br><span class="line">    STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.</span><br><span class="line">    DERSIG, // Passing a non-strict-DER signature to a checksig operation causes script failure (softfork safe, BIP66 rule 1)</span><br><span class="line">    LOW_S, // Passing a non-strict-DER signature or one with S &gt; order/2 to a checksig operation causes script failure</span><br><span class="line">    NULLDUMMY, // Verify dummy stack item consumed by CHECKMULTISIG is of zero-length.</span><br><span class="line">    SIGPUSHONLY, // Using a non-push operator in the scriptSig causes script failure (softfork safe, BIP62 rule 2).</span><br><span class="line">    MINIMALDATA, // Require minimal encodings for all push operations</span><br><span class="line">    DISCOURAGE_UPGRADABLE_NOPS, // Discourage use of NOPs reserved for upgrades (NOP1-10)</span><br><span class="line">    CLEANSTACK, // Require that only a single stack element remains after evaluation.</span><br><span class="line">    CHECKLOCKTIMEVERIFY, // Enable CHECKLOCKTIMEVERIFY operation</span><br><span class="line">    CHECKSEQUENCEVERIFY // Enable CHECKSEQUENCEVERIFY operation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="命令简介"><a href="#命令简介" class="headerlink" title="命令简介"></a>命令简介</h2><h3 id="常数"><a href="#常数" class="headerlink" title="常数"></a>常数</h3><p>当我们说脚本的时候，经常省略了这些把数字压入堆栈的关键字。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_0,OP_FALSE</td>
-<td>0</td>
-<td>0×00</td>
-<td>无</td>
-<td>空</td>
-<td>一个字节空串被推到堆栈中(并非no-op操作，有一个元素压入堆栈)</td>
-</tr>
-<tr>
-<td>N/A</td>
-<td>1-75</td>
-<td>0×01-0x4b</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下一个操作码字节是要被压入堆栈的数据</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA1</td>
-<td>76</td>
-<td>0x4c</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下一字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA2</td>
-<td>77</td>
-<td>0x4d</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下两个字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_PUSHDATA4</td>
-<td>78</td>
-<td>0x4e</td>
-<td>(特殊)</td>
-<td>数据</td>
-<td>下四个字节是要被压入堆栈的数据的长度</td>
-</tr>
-<tr>
-<td>OP_1NEGATE</td>
-<td>79</td>
-<td>0x4f</td>
-<td>无</td>
-<td>-1</td>
-<td>数字-1被压入堆栈</td>
-</tr>
-<tr>
-<td>OP_1,OP_TRUE</td>
-<td>81</td>
-<td>0×51</td>
-<td>无</td>
-<td>1</td>
-<td>数字1被压入堆栈</td>
-</tr>
-<tr>
-<td>OP_2-OP_16</td>
-<td>82-96</td>
-<td>0×52-0×60</td>
-<td>无</td>
-<td>2-16</td>
-<td>与关键名相对应的数字被压入堆栈</td>
-</tr>
-</tbody>
-</table>
-<h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_NOP</td>
-<td>97</td>
-<td>0×61</td>
-<td>无</td>
-<td>无</td>
-<td>无任何操作</td>
-</tr>
-<tr>
-<td>OP_IF</td>
-<td>99</td>
-<td>0×63</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>–</td>
-<td>如果栈项元素值不为0，语句将被执行，栈项元素值被删除。</td>
-</tr>
-<tr>
-<td>OP_NOTIF</td>
-<td>100</td>
-<td>0×64</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>如果栈项元素值为0，语句将被执行，栈项元素值被删除。</td>
-</tr>
-<tr>
-<td>OP_ELSE</td>
-<td>103</td>
-<td>0×67</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>如果前述的OP_IF或 OP_NOTIF或OP_ELSE 未被执行，这些语句就会被执行；如果前述的OP_IF或 OP_NOTIF或OP_ELSE被执行，这些语句就不会被执行</td>
-</tr>
-<tr>
-<td>OP_ENDIF</td>
-<td>104</td>
-<td>0×68</td>
-<td><expression> if [statements] [else [statements]]* endif</expression></td>
-<td>—</td>
-<td>结束if/else语言块</td>
-</tr>
-<tr>
-<td>OP_VERIFY</td>
-<td>105</td>
-<td>0×69</td>
-<td>True / false</td>
-<td>无 / False</td>
-<td>如果栈项元素值非真，则标记交易无效。True会被删除，False不会被删除。</td>
-</tr>
-<tr>
-<td>OP_RETURN</td>
-<td>106</td>
-<td>0x6a</td>
-<td>无</td>
-<td>无</td>
-<td>标记交易无效</td>
-</tr>
-</tbody>
-</table>
-<h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_TOALTSTACK</td>
-<td>107</td>
-<td>0x6b</td>
-<td>x1</td>
-<td>(alt)x1</td>
-<td>把输入压入辅堆栈的项部，从主堆栈删除。</td>
-</tr>
-<tr>
-<td>OP_FROMALTSTACK</td>
-<td>108</td>
-<td>0x6c</td>
-<td>(alt)x1</td>
-<td>x1</td>
-<td>把输入压入主堆栈的项部，从辅堆栈删除。</td>
-</tr>
-<tr>
-<td>OP_IFDUP</td>
-<td>115</td>
-<td>0×73</td>
-<td>x</td>
-<td>x / x x</td>
-<td>如果栈项元素值不为0，复制该元素值</td>
-</tr>
-<tr>
-<td>OP_DEPTH</td>
-<td>116</td>
-<td>0×74</td>
-<td>无</td>
-<td>&lt;堆栈大小&gt;</td>
-<td>把堆栈元素个数压入堆栈</td>
-</tr>
-<tr>
-<td>OP_DROP</td>
-<td>117</td>
-<td>0×75</td>
-<td>x</td>
-<td>无</td>
-<td>删除栈顶元素</td>
-</tr>
-<tr>
-<td>OP_DUP</td>
-<td>118</td>
-<td>0×76</td>
-<td>x</td>
-<td>x x</td>
-<td>复制栈顶元素</td>
-</tr>
-<tr>
-<td>OP_NIP</td>
-<td>119</td>
-<td>0×77</td>
-<td>x1 x2</td>
-<td>x2</td>
-<td>删除栈顶的下一个元素</td>
-</tr>
-<tr>
-<td>OP_OVER</td>
-<td>120</td>
-<td>0×78</td>
-<td>x1 x2</td>
-<td>x1 x2 x1</td>
-<td>复制栈顶的下一个元素到栈顶</td>
-</tr>
-<tr>
-<td>OP_PICK</td>
-<td>121</td>
-<td>0×79</td>
-<td>xn … x2 x1 x0 <n></n></td>
-<td>xn … x2 x1 x0 xn</td>
-<td>把堆栈的第n个元素拷贝到栈顶</td>
-</tr>
-<tr>
-<td>OP_ROLL</td>
-<td>122</td>
-<td>0x7a</td>
-<td>xn … x2 x1 x0 <n></n></td>
-<td>… x2 x1 x0 xn</td>
-<td>把堆栈的第n个元素移动到栈顶</td>
-</tr>
-<tr>
-<td>OP_ROT</td>
-<td>123</td>
-<td>0x7b</td>
-<td>x1 x2 x3</td>
-<td>x2 x3 x1</td>
-<td>栈顶的三个元素向左翻转</td>
-</tr>
-<tr>
-<td>OP_SWAP</td>
-<td>124</td>
-<td>0x7c</td>
-<td>x1 x2</td>
-<td>x2 x1</td>
-<td>栈顶的两个元素交换</td>
-</tr>
-<tr>
-<td>OP_TUCK</td>
-<td>125</td>
-<td>0x7d</td>
-<td>x1 x2</td>
-<td>x2 x1 x2</td>
-<td>把栈顶元素拷贝并插入到栈顶下一个元素之后。注意：原文为“插入到栈顶下一个元素之前”，可能有误，翻译时改为“之后”</td>
-</tr>
-<tr>
-<td>OP_2DROP</td>
-<td>109</td>
-<td>0x6d</td>
-<td>x1 x2</td>
-<td>无</td>
-<td>删除栈顶两个元素</td>
-</tr>
-<tr>
-<td>OP_2DUP</td>
-<td>110</td>
-<td>0x6e</td>
-<td>x1 x2</td>
-<td>x1 x2 x1 x2</td>
-<td>复制栈顶两个元素</td>
-</tr>
-<tr>
-<td>OP_3DUP</td>
-<td>111</td>
-<td>0x6f</td>
-<td>x1 x2 x3</td>
-<td>x1 x2 x3 x1 x2 x3</td>
-<td>复制栈顶三个元素</td>
-</tr>
-<tr>
-<td>OP_2OVER</td>
-<td>112</td>
-<td>0×70</td>
-<td>x1 x2 x3 x4</td>
-<td>x1 x2 x3 x4 x1 x2</td>
-<td>把栈底的两个元素拷贝到栈顶</td>
-</tr>
-<tr>
-<td>OP_2ROT</td>
-<td>113</td>
-<td>0×71</td>
-<td>x1 x2 x3 x4 x5 x6</td>
-<td>x3 x4 x5 x6 x1 x2</td>
-<td>以一对元素为单位，向左翻转。注意：原文大意“把第五和第六元素移动到栈顶”，明显有误</td>
-</tr>
-<tr>
-<td>OP_2SWAP</td>
-<td>114</td>
-<td>0×72</td>
-<td>x1 x2 x3 x4    x3 x4</td>
-<td>x1 x2</td>
-<td>以一对元素为单位，交换栈顶的两对元素的位置。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_CAT</td>
-<td>126</td>
-<td>0x7e</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>连接两个字符串，已禁用</td>
-</tr>
-<tr>
-<td>OP_SUBSTR</td>
-<td>127</td>
-<td>0x7f</td>
-<td>in begin size</td>
-<td>out</td>
-<td>返回字符串的一部分，已禁用</td>
-</tr>
-<tr>
-<td>OP_LEFT</td>
-<td>128</td>
-<td>0×80</td>
-<td>in size</td>
-<td>out</td>
-<td>在一个字符串中保留左边指定长度的子串，已禁用</td>
-</tr>
-<tr>
-<td>OP_RIGHT</td>
-<td>129</td>
-<td>0×81</td>
-<td>in size</td>
-<td>out</td>
-<td>在一个字符串中保留右边指定长度的子串，已禁用</td>
-</tr>
-<tr>
-<td>OP_SIZE</td>
-<td>130</td>
-<td>0×82</td>
-<td>in</td>
-<td>in size</td>
-<td>把栈顶元素的字符串长度压入堆栈(无需弹出元素)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="位逻辑"><a href="#位逻辑" class="headerlink" title="位逻辑"></a>位逻辑</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_INVERT</td>
-<td>131</td>
-<td>0×83</td>
-<td>in</td>
-<td>out</td>
-<td>所有输入的位取反，已禁用.</td>
-</tr>
-<tr>
-<td>OP_AND</td>
-<td>132</td>
-<td>0×84</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的所有位进行布尔与运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_OR</td>
-<td>133</td>
-<td>0×85</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的每一位进行布尔或运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_XOR</td>
-<td>134</td>
-<td>0×86</td>
-<td>x1 x2</td>
-<td>out</td>
-<td>对输入的每一位进行布尔异或运算，已禁用</td>
-</tr>
-<tr>
-<td>OP_EQUAL</td>
-<td>135</td>
-<td>0×87</td>
-<td>x1 x2</td>
-<td>True / false</td>
-<td>如果输入的两个数相等，返回1，否则返回0。</td>
-</tr>
-<tr>
-<td>OP_EQUALVERIFY</td>
-<td>136</td>
-<td>0×88</td>
-<td>x1 x2</td>
-<td>True / false</td>
-<td>与OP_EQUAL一样，之后运行OP_VERIFY 。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="算术逻辑"><a href="#算术逻辑" class="headerlink" title="算术逻辑"></a>算术逻辑</h3><p>注意：算术逻辑的输入限于有符号32位长整数，但输出有可能会溢出。</p>
-<p>如果任何命令的输入值长度超过4字节，脚本必须中止和失败返回。如果标记为已禁用的操作码出现在交易中，也必须终止和失败返回</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_1ADD</td>
-<td>139</td>
-<td>0x8b</td>
-<td>in</td>
-<td>out</td>
-<td>输入值加1</td>
-</tr>
-<tr>
-<td>OP_1SUB</td>
-<td>140</td>
-<td>0x8c</td>
-<td>in</td>
-<td>out</td>
-<td>输入值减1</td>
-</tr>
-<tr>
-<td>OP_2MUL</td>
-<td>141</td>
-<td>0x8d</td>
-<td>in</td>
-<td>out</td>
-<td>输入值乘2，已禁用</td>
-</tr>
-<tr>
-<td>OP_2DIV</td>
-<td>142</td>
-<td>0x8e</td>
-<td>in</td>
-<td>out</td>
-<td>输入值除2，已禁用</td>
-</tr>
-<tr>
-<td>OP_NEGATE</td>
-<td>143</td>
-<td>0x8f</td>
-<td>in</td>
-<td>out</td>
-<td>输入值符号取反</td>
-</tr>
-<tr>
-<td>OP_ABS</td>
-<td>144</td>
-<td>0×90</td>
-<td>in</td>
-<td>out</td>
-<td>输入值符号取正</td>
-</tr>
-<tr>
-<td>OP_NOT</td>
-<td>145</td>
-<td>0×91</td>
-<td>in</td>
-<td>out</td>
-<td>如果输入值为0或1，则输出1或0；否则输出0。I</td>
-</tr>
-<tr>
-<td>OP_0NOTEQUAL</td>
-<td>146</td>
-<td>0×92</td>
-<td>in</td>
-<td>out</td>
-<td>输入值为0输出0；否则输出1。</td>
-</tr>
-<tr>
-<td>OP_ADD</td>
-<td>147</td>
-<td>0×93</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a+b</td>
-</tr>
-<tr>
-<td>OP_SUB</td>
-<td>148</td>
-<td>0×94</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a-b</td>
-</tr>
-<tr>
-<td>OP_MUL</td>
-<td>149</td>
-<td>0×95</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a*b，已禁用</td>
-</tr>
-<tr>
-<td>OP_DIV</td>
-<td>150</td>
-<td>0×96</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a/b, 已禁用</td>
-</tr>
-<tr>
-<td>OP_MOD</td>
-<td>151</td>
-<td>0×97</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a/b的余数，已禁用</td>
-</tr>
-<tr>
-<td>OP_LSHIFT</td>
-<td>152</td>
-<td>0×98</td>
-<td>a b</td>
-<td>out</td>
-<td>把a向左移动b位，保留符号，已禁用</td>
-</tr>
-<tr>
-<td>OP_RSHIFT</td>
-<td>153</td>
-<td>0×99</td>
-<td>a b</td>
-<td>out</td>
-<td>把a向右移动b位，保留符号，已禁用</td>
-</tr>
-<tr>
-<td>OP_BOOLAND</td>
-<td>154</td>
-<td>0x9a</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a和b都不为0，输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_BOOLOR</td>
-<td>155</td>
-<td>0x9b</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a或b不为0，输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_NUMEQUAL</td>
-<td>156</td>
-<td>0x9c</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a=b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_NUMEQUALVERIFY</td>
-<td>157</td>
-<td>0x9d</td>
-<td>a b</td>
-<td>out</td>
-<td>与OP_NUMEQUAL一样，之后要运行OP_VERIFY</td>
-</tr>
-<tr>
-<td>OP_NUMNOTEQUAL</td>
-<td>158</td>
-<td>0x9e</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a!=b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_LESSTHAN</td>
-<td>159</td>
-<td>0x9f</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&lt;b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_GREATERTHAN</td>
-<td>160</td>
-<td>0xa0</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&gt;b则输出1，否则输出0。</td>
-</tr>
-<tr>
-<td>OP_LESSTHANOREQUAL</td>
-<td>161</td>
-<td>0xa1</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&lt;=b则输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_GREATERTHANOREQUAL</td>
-<td>162</td>
-<td>0xa2</td>
-<td>a b</td>
-<td>out</td>
-<td>如果a&gt;=b则输出1，否则输出0</td>
-</tr>
-<tr>
-<td>OP_MIN</td>
-<td>163</td>
-<td>0xa3</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a,b中的最小值</td>
-</tr>
-<tr>
-<td>OP_MAX</td>
-<td>164</td>
-<td>0xa4</td>
-<td>a b</td>
-<td>out</td>
-<td>输出a,b中的最大值</td>
-</tr>
-<tr>
-<td>OP_WITHIN</td>
-<td>165</td>
-<td>0xa5</td>
-<td>x min max</td>
-<td>out</td>
-<td>如果x在min和max之间，则输出1，否则输出</td>
-</tr>
-</tbody>
-</table>
-<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>输入</th>
-<th>输出</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_RIPEMD160</td>
-<td>166</td>
-<td>0xa6</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用RIPEMD-160算法HASH</td>
-</tr>
-<tr>
-<td>OP_SHA1</td>
-<td>167</td>
-<td>0xa7</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-1算法HASH.</td>
-</tr>
-<tr>
-<td>OP_SHA256</td>
-<td>168</td>
-<td>0xa8</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-256算法HASH.</td>
-</tr>
-<tr>
-<td>OP_HASH160</td>
-<td>169</td>
-<td>0xa9</td>
-<td>in</td>
-<td>hash</td>
-<td>输入被HASH两次，先用 SHA-256，再用 RIPEMD-160.</td>
-</tr>
-<tr>
-<td>OP_HASH256</td>
-<td>170</td>
-<td>0xaa</td>
-<td>in</td>
-<td>hash</td>
-<td>输入用SHA-256算法HASH两次.</td>
-</tr>
-<tr>
-<td>OP_CODESEPARATOR</td>
-<td>171</td>
-<td>0xab</td>
-<td>无</td>
-<td>无</td>
-<td>所有签名检查只需匹配最近一次执行的OP_CODESEPARATOR 操作数据的签名即可。</td>
-</tr>
-<tr>
-<td>OP_CHECKSIG</td>
-<td>172</td>
-<td>0xac</td>
-<td>sig pubkey</td>
-<td>True / false</td>
-<td>全部交易的输出、输入和脚本(从最近执行的OP_CODESEPARATOR操作到最)都被HASH，OP_CHECKSIG使用的签名必须是该HASH值和公钥的有效签名，如果是真则返回1，否则返回0。</td>
-</tr>
-<tr>
-<td>OP_CHECKSIGVERIFY</td>
-<td>173</td>
-<td>0xad</td>
-<td>sig pubkey</td>
-<td>True / false</td>
-<td>与OP_CHECKSIG一样，但之后执行 OP_VERIFY</td>
-</tr>
-<tr>
-<td>OP_CHECKMULTISIG</td>
-<td>174</td>
-<td>0xae</td>
-<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 <number of="" public="" keys=""></number></number></td>
-<td>True / False</td>
-<td>对于每个签名和公钥对，OP_CHECKSIG 都会被执行，如果公钥列得比签名多，一些公钥/签名对会失败。所有的签名要与公钥匹配。如果所有签名有效，输出1，否则返回0。因为存在BUG，一个未使用的外部值会从堆栈中删除。</td>
-</tr>
-<tr>
-<td>OP_CHECKMULTISIGVERIFY</td>
-<td>175</td>
-<td>0xaf</td>
-<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 … <number of="" public="" keys=""></number></number></td>
-<td>True / False</td>
-<td>与 OP_CHECKMULTISIG,一样，但是之后运行 OP_VERIFY。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="伪关键字"><a href="#伪关键字" class="headerlink" title="伪关键字"></a>伪关键字</h3><p>这些关键字仅供内部使用，用辅助进行交易匹配，如果使用在实际的交易中则是无效的。</p>
-<table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_PUBKEYHASH</td>
-<td>253</td>
-<td>0xfd</td>
-<td>表示公钥用OP_HASH160操作码HASH</td>
-</tr>
-<tr>
-<td>OP_PUBKEY</td>
-<td>254</td>
-<td>0xfe</td>
-<td>表示与OP_CHECKSIG.兼容的一个公钥</td>
-</tr>
-<tr>
-<td>OP_INVALIDOPCODE</td>
-<td>255</td>
-<td>0xff</td>
-<td>匹配任何未指定的操作码</td>
-</tr>
-</tbody>
-</table>
-<h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><table>
-<thead>
-<tr>
-<th>关键字</th>
-<th>操作码</th>
-<th>十六进制</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OP_RESERVED</td>
-<td>80</td>
-<td>0×50</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VER</td>
-<td>98</td>
-<td>0×62</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VERIF</td>
-<td>101</td>
-<td>0×65</td>
-<td>交易无效，即使发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_VERNOTIF</td>
-<td>102</td>
-<td>0×66</td>
-<td>交易无效，即使发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_RESERVED1</td>
-<td>137</td>
-<td>0×89</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_RESERVED2</td>
-<td>138</td>
-<td>0x8a</td>
-<td>交易无效，除非发生在未执行的OP_IF 分支</td>
-</tr>
-<tr>
-<td>OP_NOP1-OP_NOP10</td>
-<td>176-185</td>
-<td>0xb0-0xb9</td>
-<td>这些关键字被忽略</td>
-</tr>
-</tbody>
-</table>
-<h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p>
-<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png" alt=""></p>
-<p>这里面的实现其实比较简单，没有什么特别需要说明的。</p>
-<p>我们大概解释这里面的类的含义：</p>
-<ol>
-<li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li>
-<li>ScriptError是脚本所有的错误集</li>
-<li>ScriptException是关于脚本的所有异常</li>
-<li>ScriptChunk是脚本的每个命令的抽象</li>
-<li>ScriptOpCodes是存放脚本命令的集合和编码</li>
-<li>TransactionSignature是交易的签名</li>
-<li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li>
-<li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li>
-</ol>
-<p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p>
-<h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">第四章 密钥和地址</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html" target="_blank" rel="noopener">第六章 交易</a><br><a href="https://en.bitcoin.it/wiki/Script" target="_blank" rel="noopener">Script</a><br><a href="http://www.8btc.com/bitcoin_scripts" target="_blank" rel="noopener">比特币脚本</a><br><a href="http://www.8btc.com/understand-bitcoin-script" target="_blank" rel="noopener">理解比特币脚本</a><br><a href="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash" target="_blank" rel="noopener">Working with contracts</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3291,7 +2457,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -276,6 +276,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity编译器使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/08/blockchain/solidity编译器使用/" itemprop="url">solidity编译器使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-08T11:45:19+08:00">2018-04-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="使用命令行编译器"><a href="#使用命令行编译器" class="headerlink" title="使用命令行编译器"></a>使用命令行编译器</h2><p><b style="color:#6ab0de">注意：本篇不适用于<a href="https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html#solcjs" target="_blank" rel="noopener">solcjs</a>。</b></p>
+<p>Solidity库的构建目标之一是solidity<code>solc</code>命令行编译器。使用<code>solc --help</code>为您提供了所有选项的解释。编译器可以生成各种输出，范围从简单的二进制文件和汇编到抽象语法树（解析树），以估计gas的使用情况。如果你只想编译一个文件，你可以运行<code>solc --bin sourceFile.sol</code>，它会打印出二进制信息。在部署合约之前，在使用<code>solc --optimize --bin sourceFile.sol</code>编译时激活优化器。如果您想获得一些更高级的<code>solc</code>输出变体，最好告诉它使用<code>solc -o outputDirectory --bin --ast --asm sourceFile.sol</code>将所有内容输出到单独使用的文件中。</p>
+<p>命令行编译器将读取自动从文件系统中导入的文件，但也可以使用以下<code>prefix=path</code>的方式提供路径重定向：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">solc github.com/ethereum/dapp-bin/=/usr/local/lib/dapp-bin/ =/usr/local/lib/fallback file.sol</span><br></pre></td></tr></table></figure></p>
+<p>这实质上指示编译器来搜索任何以<code>github.com/ethereum/dapp-bin/</code>开始的东西，可以在<code>/usr/local/lib/dapp-bin</code>目录下找，如果没有找到该文件，它会在<code>/usr/local/lib/fallback</code>（空格前缀始终匹配）下继续搜索。<code>solc</code>将不会从位于重映射目标之外和显式指定的源文件所在目录之外的文件系统读取文件，因此<code>import &quot;/etc/passwd&quot;;</code>只有在添加为重映射<code>=/</code>时才会起作用。</p>
+<p>如果由于重映射而存在多个匹配，则选择具有最长公共前缀的那个匹配。(这个类似于java的双亲委派模型了)</p>
+<p>出于安全原因，编译器限制了它可以访问的目录。在命令行中指定的源文件的路径（及其子目录）和通过重映射定义的路径可用于导入语句，但其他所有内容都被拒绝。额外的路径（及其子目录）可以通过<code>--allow-paths /sample/path,/another/sample/path</code>切换。</p>
+<p>如果您的合约使用<a href="https://solidity.readthedocs.io/en/v0.4.21/contracts.html#libraries" target="_blank" rel="noopener">库</a>，您会注意到该字节码包含表单<code>__LibraryName______</code>的子字符串。您可以将<code>solc</code>用作链接器，这意味着它将在这些位置为您插入库地址.</p>
+<p>无论是添加<code>--libraries &quot;Math:0x12345678901234567890 Heap:0xabcdef0123456&quot;</code>到您的命令提供的每个库地址或是储存在一个文件中的字符串（每行一个库），并运行<code>--libraries fileName</code>。</p>
+<p>如果<code>solc</code>使用该选项<code>--link</code>调用，所有在上面提到的<code>__LibraryName____</code>-格式输入文件将被解释为未链接的二进制文件（十六进制编码），并就地链接（如果输入从stdin读取，写入stdout）。在这种情况下，所有的选项除了<code>--libraries</code>将被忽略（包括<code>-o</code>）。</p>
+<p>如果<code>solc</code>使用该选项调用<code>--standard-json</code>，则会在标准输入上使用JSON输入（如下所述），并在标准输出上返回JSON输出。</p>
+<h2 id="编译器输入和输出JSON描述"><a href="#编译器输入和输出JSON描述" class="headerlink" title="编译器输入和输出JSON描述"></a>编译器输入和输出JSON描述</h2><p>这些JSON格式由编译器API使用，也可以通过<code>solc</code>。这些可能会发生变化，有些字段是可选的（如上所述），但其目的仅在于进行向后兼容的更改。</p>
+<p>编译器API需要JSON格式的输入，并以JSON格式的输出编译结果。</p>
+<p><b style="color:blue">注释当然是不允许的，这里仅用于解释目的。</b></p>
+<h3 id="输入说明"><a href="#输入说明" class="headerlink" title="输入说明"></a>输入说明</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  // Required: 源码的语言, 比如&quot;Solidity&quot;, &quot;serpent&quot;, &quot;lll&quot;, &quot;assembly&quot;, etc.</span><br><span class="line">  language: &quot;Solidity&quot;,</span><br><span class="line">  // Required</span><br><span class="line">  sources:</span><br><span class="line">  &#123;</span><br><span class="line">    // 这里的keys是源文件的“global”名称，</span><br><span class="line">    // 导入可以通过重新映射使用其他文件（参见下文）。</span><br><span class="line">    &quot;myFile.sol&quot;:</span><br><span class="line">    &#123;</span><br><span class="line">      // Optional: 源文件的keccak256散列值，它用于验证通过URL导入的检索内容。</span><br><span class="line">      &quot;keccak256&quot;: &quot;0x123...&quot;,</span><br><span class="line">      // Required（除非使用“content”，见下文）：源文件的URL。</span><br><span class="line">      // URL应该以下面的顺序被导入，并且需要使用keccak256散列检查结果（如果可用）。如果哈希值不匹配或者没有任何一个URL导致成功，则应该引发错误。</span><br><span class="line">      &quot;urls&quot;:</span><br><span class="line">      [</span><br><span class="line">        &quot;bzzr://56ab...&quot;,</span><br><span class="line">        &quot;ipfs://Qma...&quot;,</span><br><span class="line">        &quot;file:///tmp/path/to/file.sol&quot;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mortal&quot;:</span><br><span class="line">    &#123;</span><br><span class="line">      // Optional: 源文件的keccak256 hash</span><br><span class="line">      &quot;keccak256&quot;: &quot;0x234...&quot;,</span><br><span class="line">      // Required(除非urls被使用)：源文件的文字内容</span><br><span class="line">      &quot;content&quot;: &quot;contract mortal is owned &#123; function kill() &#123; if (msg.sender == owner) selfdestruct(owner); &#125; &#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  // Optional</span><br><span class="line">  settings:</span><br><span class="line">  &#123;</span><br><span class="line">    // Optional: Sorted list of remappings</span><br><span class="line">    remappings: [ &quot;:g/dir&quot; ],</span><br><span class="line">    // Optional: 优化器设置 (enabled的默认值是false)</span><br><span class="line">    optimizer: &#123;</span><br><span class="line">      enabled: true,</span><br><span class="line">      runs: 500</span><br><span class="line">    &#125;,</span><br><span class="line">    evmVersion: &quot;byzantium&quot;, // Version of the EVM to compile for. Affects type checking and code generation. Can be homestead, tangerineWhistle, spuriousDragon, byzantium or constantinople</span><br><span class="line">    // Metadata settings (optional)</span><br><span class="line">    metadata: &#123;</span><br><span class="line">      // Use only literal content and not URLs (false by default)</span><br><span class="line">      useLiteralContent: true</span><br><span class="line">    &#125;,</span><br><span class="line">    // Addresses of the libraries. If not all libraries are given here, it can result in unlinked objects whose output data is different.</span><br><span class="line">    libraries: &#123;</span><br><span class="line">      // The top level key is the the name of the source file where the library is used.</span><br><span class="line">      // If remappings are used, this source file should match the global path after remappings were applied.</span><br><span class="line">      // If this key is an empty string, that refers to a global level.</span><br><span class="line">      &quot;myFile.sol&quot;: &#123;</span><br><span class="line">        &quot;MyLib&quot;: &quot;0x123123...&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // The following can be used to select desired outputs.</span><br><span class="line">    // If this field is omitted, then the compiler loads and does type checking, but will not generate any outputs apart from errors.</span><br><span class="line">    // The first level key is the file name and the second is the contract name, where empty contract name refers to the file itself,</span><br><span class="line">    // while the star refers to all of the contracts.</span><br><span class="line">    //</span><br><span class="line">    // The available output types are as follows:</span><br><span class="line">    //   abi - ABI</span><br><span class="line">    //   ast - AST of all source files</span><br><span class="line">    //   legacyAST - legacy AST of all source files</span><br><span class="line">    //   devdoc - Developer documentation (natspec)</span><br><span class="line">    //   userdoc - User documentation (natspec)</span><br><span class="line">    //   metadata - Metadata</span><br><span class="line">    //   ir - New assembly format before desugaring</span><br><span class="line">    //   evm.assembly - New assembly format after desugaring</span><br><span class="line">    //   evm.legacyAssembly - Old-style assembly format in JSON</span><br><span class="line">    //   evm.bytecode.object - Bytecode object</span><br><span class="line">    //   evm.bytecode.opcodes - Opcodes list</span><br><span class="line">    //   evm.bytecode.sourceMap - Source mapping (useful for debugging)</span><br><span class="line">    //   evm.bytecode.linkReferences - Link references (if unlinked object)</span><br><span class="line">    //   evm.deployedBytecode* - Deployed bytecode (has the same options as evm.bytecode)</span><br><span class="line">    //   evm.methodIdentifiers - The list of function hashes</span><br><span class="line">    //   evm.gasEstimates - Function gas estimates</span><br><span class="line">    //   ewasm.wast - eWASM S-expressions format (not supported atm)</span><br><span class="line">    //   ewasm.wasm - eWASM binary format (not supported atm)</span><br><span class="line">    //</span><br><span class="line">    // Note that using a using `evm`, `evm.bytecode`, `ewasm`, etc. will select every</span><br><span class="line">    // target part of that output. Additionally, `*` can be used as a wildcard to request everything.</span><br><span class="line">    //</span><br><span class="line">    outputSelection: &#123;</span><br><span class="line">      // Enable the metadata and bytecode outputs of every single contract.</span><br><span class="line">      &quot;*&quot;: &#123;</span><br><span class="line">        &quot;*&quot;: [ &quot;metadata&quot;, &quot;evm.bytecode&quot; ]</span><br><span class="line">      &#125;,</span><br><span class="line">      // Enable the abi and opcodes output of MyContract defined in file def.</span><br><span class="line">      &quot;def&quot;: &#123;</span><br><span class="line">        &quot;MyContract&quot;: [ &quot;abi&quot;, &quot;evm.bytecode.opcodes&quot; ]</span><br><span class="line">      &#125;,</span><br><span class="line">      // Enable the source map output of every single contract.</span><br><span class="line">      &quot;*&quot;: &#123;</span><br><span class="line">        &quot;*&quot;: [ &quot;evm.bytecode.sourceMap&quot; ]</span><br><span class="line">      &#125;,</span><br><span class="line">      // Enable the legacy AST output of every single file.</span><br><span class="line">      &quot;*&quot;: &#123;</span><br><span class="line">        &quot;&quot;: [ &quot;legacyAST&quot; ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="输出说明"><a href="#输出说明" class="headerlink" title="输出说明"></a>输出说明</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  // Optional: not present if no errors/warnings were encountered</span><br><span class="line">  errors: [</span><br><span class="line">    &#123;</span><br><span class="line">      // Optional: Location within the source file.</span><br><span class="line">      sourceLocation: &#123;</span><br><span class="line">        file: &quot;sourceFile.sol&quot;,</span><br><span class="line">        start: 0,</span><br><span class="line">        end: 100</span><br><span class="line">      ],</span><br><span class="line">      // Mandatory: Error type, such as &quot;TypeError&quot;, &quot;InternalCompilerError&quot;, &quot;Exception&quot;, etc.</span><br><span class="line">      // See below for complete list of types.</span><br><span class="line">      type: &quot;TypeError&quot;,</span><br><span class="line">      // Mandatory: Component where the error originated, such as &quot;general&quot;, &quot;ewasm&quot;, etc.</span><br><span class="line">      component: &quot;general&quot;,</span><br><span class="line">      // Mandatory (&quot;error&quot; or &quot;warning&quot;)</span><br><span class="line">      severity: &quot;error&quot;,</span><br><span class="line">      // Mandatory</span><br><span class="line">      message: &quot;Invalid keyword&quot;</span><br><span class="line">      // Optional: the message formatted with source location</span><br><span class="line">      formattedMessage: &quot;sourceFile.sol:100: Invalid keyword&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  // This contains the file-level outputs. In can be limited/filtered by the outputSelection settings.</span><br><span class="line">  sources: &#123;</span><br><span class="line">    &quot;sourceFile.sol&quot;: &#123;</span><br><span class="line">      // Identifier (used in source maps)</span><br><span class="line">      id: 1,</span><br><span class="line">      // The AST object</span><br><span class="line">      ast: &#123;&#125;,</span><br><span class="line">      // The legacy AST object</span><br><span class="line">      legacyAST: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  // This contains the contract-level outputs. It can be limited/filtered by the outputSelection settings.</span><br><span class="line">  contracts: &#123;</span><br><span class="line">    &quot;sourceFile.sol&quot;: &#123;</span><br><span class="line">      // If the language used has no contract names, this field should equal to an empty string.</span><br><span class="line">      &quot;ContractName&quot;: &#123;</span><br><span class="line">        // The Ethereum Contract ABI. If empty, it is represented as an empty array.</span><br><span class="line">        // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI</span><br><span class="line">        abi: [],</span><br><span class="line">        // See the Metadata Output documentation (serialised JSON string)</span><br><span class="line">        metadata: &quot;&#123;...&#125;&quot;,</span><br><span class="line">        // User documentation (natspec)</span><br><span class="line">        userdoc: &#123;&#125;,</span><br><span class="line">        // Developer documentation (natspec)</span><br><span class="line">        devdoc: &#123;&#125;,</span><br><span class="line">        // Intermediate representation (string)</span><br><span class="line">        ir: &quot;&quot;,</span><br><span class="line">        // EVM-related outputs</span><br><span class="line">        evm: &#123;</span><br><span class="line">          // Assembly (string)</span><br><span class="line">          assembly: &quot;&quot;,</span><br><span class="line">          // Old-style assembly (object)</span><br><span class="line">          legacyAssembly: &#123;&#125;,</span><br><span class="line">          // Bytecode and related details.</span><br><span class="line">          bytecode: &#123;</span><br><span class="line">            // The bytecode as a hex string.</span><br><span class="line">            object: &quot;00fe&quot;,</span><br><span class="line">            // Opcodes list (string)</span><br><span class="line">            opcodes: &quot;&quot;,</span><br><span class="line">            // The source mapping as a string. See the source mapping definition.</span><br><span class="line">            sourceMap: &quot;&quot;,</span><br><span class="line">            // If given, this is an unlinked object.</span><br><span class="line">            linkReferences: &#123;</span><br><span class="line">              &quot;libraryFile.sol&quot;: &#123;</span><br><span class="line">                // Byte offsets into the bytecode. Linking replaces the 20 bytes located there.</span><br><span class="line">                &quot;Library1&quot;: [</span><br><span class="line">                  &#123; start: 0, length: 20 &#125;,</span><br><span class="line">                  &#123; start: 200, length: 20 &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          // The same layout as above.</span><br><span class="line">          deployedBytecode: &#123; &#125;,</span><br><span class="line">          // The list of function hashes</span><br><span class="line">          methodIdentifiers: &#123;</span><br><span class="line">            &quot;delegate(address)&quot;: &quot;5c19a95c&quot;</span><br><span class="line">          &#125;,</span><br><span class="line">          // Function gas estimates</span><br><span class="line">          gasEstimates: &#123;</span><br><span class="line">            creation: &#123;</span><br><span class="line">              codeDepositCost: &quot;420000&quot;,</span><br><span class="line">              executionCost: &quot;infinite&quot;,</span><br><span class="line">              totalCost: &quot;infinite&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            external: &#123;</span><br><span class="line">              &quot;delegate(address)&quot;: &quot;25000&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            internal: &#123;</span><br><span class="line">              &quot;heavyLifting()&quot;: &quot;infinite&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        // eWASM related outputs</span><br><span class="line">        ewasm: &#123;</span><br><span class="line">          // S-expressions format</span><br><span class="line">          wast: &quot;&quot;,</span><br><span class="line">          // Binary format (hex string)</span><br><span class="line">          wasm: &quot;&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="错误类型"><a href="#错误类型" class="headerlink" title="错误类型"></a>错误类型</h3><ol>
+<li>JSONError：JSON输入不符合所需格式，例如，输入不是JSON对象，不支持该语言等。</li>
+<li>IOError：IO和导入处理错误，例如在提供的源中无法解析的URL或散列不匹配。</li>
+<li>ParserError：源代码不符合语言规则。</li>
+<li>DocstringParsingError：注释块中的NatSpec标签无法解析。</li>
+<li>SyntaxError：语法错误，例如continue在for循环外部使用。</li>
+<li>DeclarationError：无效的，无法解析的或冲突的标识符名称。例如Identifier not found</li>
+<li>TypeError：类型系统内出错，例如无效类型转换，无效分配等。</li>
+<li>UnimplementedFeatureError：编译器不支持该功能，但预计将在未来的版本中受支持。</li>
+<li>InternalCompilerError：在编译器中触发的内部错误 - 这应该被报告为一个问题。</li>
+<li>Exception：编译期间未知失败 - 应将此报告为问题。</li>
+<li>CompilerError：编译器堆栈的使用无效 - 这应该被报告为一个问题。</li>
+<li>FatalError：致命错误未正确处理 - 应将此报告为问题。</li>
+<li>Warning：警告，并没有停止编译，但应尽可能处理。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity安全考虑/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3185,172 +3370,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/什么是Secp256k1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/28/blockchain/什么是Secp256k1/" itemprop="url">什么是Secp256k1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T20:53:47+08:00">2018-03-28</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本文的阅读需要理解椭圆曲线，了解相关知识请查看我之前的博客文档。</p>
-<p><b style="color:red">secp256k1是指比特币中使用的ECDSA曲线的参数</b>，并且在高效密码学标准（SEC）（Certicom Research，<a href="http://www.secg.org/sec2-v2.pdf）中进行了定义。" target="_blank" rel="noopener">http://www.secg.org/sec2-v2.pdf）中进行了定义。</a></p>
-<p>在比特币开始流行之前，secp256k1几乎从未使用过，但由于其几个不错的属性，它现在越来越受欢迎。大多数常用曲线具有随机结构，但secp256k1是以特殊的非随机方式构建的，可以实现特别高效的计算。<b style="color:red">因此，如果实施得到充分优化，它通常比其他曲线快30％以上</b>。<b style="color:blue">另外，与流行的NIST曲线不同，secp256k1的常量是以可预测的方式选择的，这大大降低了曲线创建者在曲线中插入任何后门的可能性。</b></p>
-<p>下面看一下这里面的函数图：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/Secp256k1%E5%87%BD%E6%95%B0%E5%9B%BE.png?raw=true" alt=""></p>
-<p><b style="color:blue">Secp256k1是secp256k1椭圆曲线y<sup>2</sup> = x<sup>3</sup> + 7在实数上的图形。请注意，因为secp256k1实际上是在字段Z<sub>p</sub>上定义的，所以它的图形实际上看起来像是随机分散的点，而不是像图中这样是连续的点。</b></p>
-<h2 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h2><p>从标准摘录：</p>
-<p>与Koblitz曲线secp256k1相关联的F<sub>p</sub>上的椭圆曲线域参数由单元T=（p，a，b，G，n，h）指定，其中有限域F<sub>p</sub>由下式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p = FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F</span><br><span class="line">= 2256 - 232 - 29 - 28 - 27 - 26 - 24 - 1</span><br></pre></td></tr></table></figure></p>
-<p>F<sub>p</sub>上的曲线E：y<sup>2</sup> = x<sup>3</sup> + ax + b由下式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000</span><br><span class="line">b = 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000007</span><br></pre></td></tr></table></figure></p>
-<p>压缩形式的基点G是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G = 02 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798</span><br></pre></td></tr></table></figure></p>
-<p>而在未压缩的形式是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G = 04 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8</span><br></pre></td></tr></table></figure></p>
-<p>最后，G的循环因子n(就是指nG=G)和辅因子h如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">n = FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141</span><br><span class="line">h = 01</span><br></pre></td></tr></table></figure></p>
-<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><ul>
-<li>secp256k1具有特征p，它的素数域定义为ℤ<sub>p</sub>。常用的一些其他曲线具有特征2，并且在二进制伽罗瓦(Galois)域GF(2<sup>n</sup>)上定义，但secp256k1不是其中之一。</li>
-<li>因为一个常数为零，曲线方程中<code>ax</code>项始终为零，因此曲线方程变为y<sup>2</sup> = x<sup>3</sup> + 7。</li>
-</ul>
-<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><p><a href="https://bitcoin.stackexchange.com/questions/21907/what-does-the-curve-used-in-bitcoin-secp256k1-look-like" target="_blank" rel="noopener">secp256k1是什么（Pieter Wuille的比特币堆栈交换答案）</a></p>
-<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><a href="https://en.bitcoin.it/wiki/Secp256k1" target="_blank" rel="noopener">Secp256k1</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3402,7 +3421,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
