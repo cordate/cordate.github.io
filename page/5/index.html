@@ -276,6 +276,224 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/19/blockchain/比特币地址和脚本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/19/blockchain/比特币地址和脚本/" itemprop="url">比特币地址和脚本</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T20:37:58+08:00">2018-03-19</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这两天由于要做多签名的钱包的问题，所以一直在关注比特币钱包的知识，当我看到bitcoinj里面的知识时，发现了ScriptBuilder的类，也发现了bitcoinj文档中有提到怎么使用多签名的钱包，这里就简单带过吧，今天的主题还是要说明钱包的地址和脚本的一些知识。</p>
+<h2 id="地址"><a href="#地址" class="headerlink" title="地址"></a>地址</h2><p>首先关于钱包地址大概有以下几种：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">版本前缀（hex）</th>
+<th style="text-align:center">Base58结果的前缀</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">传统bitcoin地址</td>
+<td style="text-align:center">0x00</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">P2SH</td>
+<td style="text-align:center">0x05</td>
+<td style="text-align:center">3</td>
+</tr>
+<tr>
+<td style="text-align:center">比特币测试网络地址</td>
+<td style="text-align:center">0x6F</td>
+<td style="text-align:center">m或者n</td>
+</tr>
+<tr>
+<td style="text-align:center">私钥WIF</td>
+<td style="text-align:center">0x80</td>
+<td style="text-align:center">5、K、L</td>
+</tr>
+<tr>
+<td style="text-align:center">BIP-38编码私钥</td>
+<td style="text-align:center">0x0142</td>
+<td style="text-align:center">6P</td>
+</tr>
+<tr>
+<td style="text-align:center">BIP-32编码私钥</td>
+<td style="text-align:center">0x0488B21E</td>
+<td style="text-align:center">xpub</td>
+</tr>
+</tbody>
+</table>
+<p>其实地址的类型和交易的解锁也是有很大的相关关系的。<b style="color:blue">如果你创造了一种新的地址类型，并配置了相关的加密和解密脚本，那么这个地址是可以工作的，只是没有钱包支持，你需要提供能够利用这种地址类型，发送解密和加密脚本的客户端，这样你的地址就可以生效了，当然你也要兼容其他类型，如果发送的地址类型是其他的，那你的输出脚本要按照对应地址类型的要求来才行</b>。</p>
+<p>比特币地址的生成规则如下：</p>
+<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E4%BC%A0%E7%BB%9F%E6%AF%94%E7%89%B9%E5%B8%81%E5%9C%B0%E5%9D%80%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.png" alt=""></p>
+<h2 id="传统的比特币地址脚本P2PKH"><a href="#传统的比特币地址脚本P2PKH" class="headerlink" title="传统的比特币地址脚本P2PKH"></a>传统的比特币地址脚本P2PKH</h2><p>对于比特币脚本的语言介绍这里不提太多，比特币脚本其实就是一种基于堆栈的脚本语言，堆栈是一个非常简单的数据结构，可以被视为一叠卡片。栈允许两个操作：push和pop（推送和弹出）。</p>
+<p>对于解锁脚本大概是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_DUP OP_HASH160 &lt;Cafe Public Key Hash&gt; OP_EQUALVERIFY OP_CHECKSIG</span><br></pre></td></tr></table></figure></p>
+<p>前面输出的锁定脚本是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sig&gt; &lt;pubk&gt;</span><br></pre></td></tr></table></figure></p>
+<p>那么整体的脚本是这样的：<br><img src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/p2pkh%E8%84%9A%E6%9C%AC%E5%9B%BE%E7%A4%BA.png?raw=true" alt=""></p>
+<h2 id="P2SH"><a href="#P2SH" class="headerlink" title="P2SH"></a>P2SH</h2><p>Gavin Andresen在bip16提出一种P2SH(pay to Script Hash)方法，主要目的有两个，一是容许发送者构造丰富的交易类型，二是将字节从A-&gt;B的output转移到B-&gt;C的input(A-&gt;B的output script中将是固定长度)。</p>
+<p>对于解锁的脚本是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OP_HASH256 6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000 OP_EQUAL</span><br></pre></td></tr></table></figure></p>
+<p>我们可以理解成解数学中的难题，hash(x) = 6fe28c0ab6f1b372c1a6 我们只是提供一个x满足这个条件，就可以证明我可以花费这笔钱了。这里<code>6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000</code>不是简单的一个数字的hash，而是一段script的hash(简称redeemScript), <b style="color:red">我们可以理解成只要你提供了一段script，它的二进制hash和目标匹配，那么你就可以花费这笔钱了，注意这里是前端脚本执行的输出是x就行了。</b>.</p>
+<p><b style="color:red">请注意，虽然这样的交易很有趣，但它们并不安全，因为它们不包含任何签名，因此任何试图花费它们的交易都可以用将资金发送到其他地方，用不同的交易来替代</b>。</p>
+<h3 id="P2SH地址生成"><a href="#P2SH地址生成" class="headerlink" title="P2SH地址生成"></a>P2SH地址生成</h3><p>可以使用 go-bitcoin-multisig 生成，<a href="https://github.com/soroushjp/go-bitcoin-multisig" target="_blank" rel="noopener">Github地址</a>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig keys --count 3 --concise</span><br></pre></td></tr></table></figure></p>
+<p>生成结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">--------------</span><br><span class="line">KEY #1  </span><br><span class="line">Private key:  </span><br><span class="line">5JruagvxNLXTnkksyLMfgFgf3CagJ3Ekxu5oGxpTm5mPfTAPez3  </span><br><span class="line">Public key hex:  </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1JzVFZSN1kxGLTHG41EVvY5gHxLAX7q1Rh  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #2  </span><br><span class="line">Private key:  </span><br><span class="line">5JX3qAwDEEaapvLXRfbXRMSiyRgRSW9WjgxeyJQWwBugbudCwsk  </span><br><span class="line">Public key hex:  </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">14JfSvgEq8A8S7qcvxeaSCxhn1u1L71vo4  </span><br><span class="line">--------------</span><br><span class="line">--------------</span><br><span class="line">KEY #3  </span><br><span class="line">Private key:  </span><br><span class="line">5JjHVMwJdjPEPQhq34WMUhzLcEd4SD7HgZktEh8WHstWcCLRceV  </span><br><span class="line">Public key hex:  </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83  </span><br><span class="line">Public Bitcoin address:  </span><br><span class="line">1Kyy7pxzSKG75L9HhahRZgYoer9FePZL4R  </span><br><span class="line">--------------</span><br></pre></td></tr></table></figure></p>
+<p>接着我们取出里面所有的Public key（hex格式）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Key A: </span><br><span class="line">04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd </span><br><span class="line">Key B: </span><br><span class="line">046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187 </span><br><span class="line">Key C: </span><br><span class="line">0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
+<p>然后就可以使用这三组Public key组合起来（A,B,C）进行多重签名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go-bitcoin-multisig address --m 2 --n 3 --public-keys 04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd,046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187,0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83</span><br></pre></td></tr></table></figure></p>
+<p>接着就生成了P2SH地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">---------------------</span><br><span class="line">Your *P2SH ADDRESS* is:  </span><br><span class="line">347N1Thc213QqfYCz3PZkjoJpNv5b14kBd  </span><br><span class="line">Give this to sender funding multisig address with Bitcoin.  </span><br><span class="line">---------------------</span><br><span class="line">---------------------</span><br><span class="line">Your *REDEEM SCRIPT* is:  </span><br><span class="line">524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e8353ae  </span><br><span class="line">Keep private and provide this to redeem multisig balance later.  </span><br><span class="line">---------------------</span><br></pre></td></tr></table></figure></p>
+<h2 id="多重签名地址"><a href="#多重签名地址" class="headerlink" title="多重签名地址"></a>多重签名地址</h2><p>在bitcoin bips历史上先有M-of-N Transaction(bip-11),然后才有Pay To Script Hash(bip-16)(简称P2SH). 按照这个顺序，其实比特币中实现多重签名有两种方法：</p>
+<h3 id="原始的方法-bip-11"><a href="#原始的方法-bip-11" class="headerlink" title="原始的方法(bip-11)"></a>原始的方法(bip-11)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptPubKey : m &#123;pubkey&#125;...&#123;pubkey&#125; n OP_CHECKMULTISIG</span><br><span class="line">scriptSig : OP_0 ...signatures...</span><br></pre></td></tr></table></figure>
+<p>可以查看一下实例：<a href="https://blockchain.info/tx/09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790" target="_blank" rel="noopener">09dd94f2c85262173da87a745a459007bb1eed6eeb6bfa238a0cd91a16cf7790</a></p>
+<h3 id="用P2SH来实现"><a href="#用P2SH来实现" class="headerlink" title="用P2SH来实现"></a>用P2SH来实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scriptSig: [signature] &#123;[pubkey] OP_CHECKSIG&#125;</span><br><span class="line">scriptPubKey: OP_HASH160 [20-byte-hash of &#123;[pubkey] OP_CHECKSIG&#125; ] OP_EQUAL</span><br></pre></td></tr></table></figure>
+<p>这里{[pubkey] OP_CHECKSIG}就是我们提到redeemScript代码. 实例：<a href="https://blockchain.info/tx/3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac" target="_blank" rel="noopener">3c9018e8d5615c306d72397f8f5eef44308c98fb576a88e030c25456b4f3a7ac</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>首先P2SH和MultiSig是完全不同两码事，很多文章将P2SH表述成MultiSig，这是不恰当的。只不过现在可以用P2SH来实现MultiSig。</li>
+<li>比特币的关键是认证，刚开始中本聪提供用私钥认证，后来人发明了用hash(redeemScript)认证.</li>
+<li>P2SH丰富了交易类型，简单易扩展</li>
+</ol>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://8btc.com/thread-23440-1-1.html" target="_blank" rel="noopener">http://8btc.com/thread-23440-1-1.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/18/blockchain/以太坊智能合同搭建简易指南/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2709,171 +2927,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/用户中心再思考/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/系统设计/用户中心再思考/" itemprop="url">用户中心再思考</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T16:02:20+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在之前写的一篇文章中，我们提到了用户中心的设计，但是我们没有提及如何定位用户中心，以及如何使用用户中心，接下来我们就简要讨论一下这个用户中心的事情。</p>
-<h3 id="用户中心定位"><a href="#用户中心定位" class="headerlink" title="用户中心定位"></a>用户中心定位</h3><p>用户中心应该是独立于系统而存在的，是基础服务的抽象，也就是说用户中心中不应该出现业务的影子，更不应该出现特制的一些东西。用户中心应该是一种服务，这种服务不对外，只针对系统，所以它的服务对象是后端的各个系统，不会直接面向用户。</p>
-<p>当然如果你做成面向用户的一些接口的话也是可以实现的，但是这样做就打破了系统的边界和统一的API服务，因为我们觉得，一个系统不能跨系统请求，除非是基础的服务。一个系统需要其他的数据，也应该由本系统提供，本系统调用基础的服务，而不是基础服务直接对外。当然关于这个问题，还是有很多值得思考的地方，以后我们在实践的过程中应该还会去考虑这些问题。因为我们还要不停地去确定我们的系统边界的问题。</p>
-<h3 id="用户中心颗粒度"><a href="#用户中心颗粒度" class="headerlink" title="用户中心颗粒度"></a>用户中心颗粒度</h3><p>用户中心是一个组系统还是一个系统，我们在具体实施的过程中遇到了这样的问题。其实这个命题不是很准确，我觉得用户中心怎么实现都是可以的，关键你是采用什么样的思想去实现，还有可能就是非技术因素的限制。</p>
-<p>比如我们觉得用户中心包含多个方面，一是SSO，二是Oauth等等，当然最后一定用户信息模块的维护（这个狭义的用户中心）等。因为我们觉得这个更符合微服务话的思想。这个是一个比较理想的实现方式，而实际的实现可能并不是这样的。</p>
-<p>真实的情况我们可能将上面所有的系统融合到一个系统里面去，形成了一个广义的用户中心，或者说是SSO式的用户中心。上面的狭义用户中心的设计会遇到下面这些问题：</p>
-<ul>
-<li>实现比较复杂（开发难度有点高）</li>
-<li>需要处理服务调用间的异常情况</li>
-<li>需要运维支持，可能带来很多沟通成本</li>
-<li>分散的系统也许不是那么安全可靠</li>
-</ul>
-<p>这些缺点的反面就是广义用户中心的优点。只要单台机器，部署简单，省去不少与运维的沟通成本。</p>
-<p>所以用户中心的颗粒度问题要视具体的实现情况来看。可以根据自己的需要进一步拆分系统。</p>
-<h3 id="用户中心设计注意事项"><a href="#用户中心设计注意事项" class="headerlink" title="用户中心设计注意事项"></a>用户中心设计注意事项</h3><p>我与团队在进行上述问题的讨论过程中，又发现了用户中心设计的一些注意事项，或者说我们不得不面对和考量的一些问题。</p>
-<ul>
-<li>用户中心应该保存哪些用户资料信息</li>
-<li>每个系统要求用户中心修改资料，用户中心如何防止有冲突的修改情况。（当然我们每个系统都有user表，如果想特制化，可以利用自己本地的user表，用户中心只是一些基础默认信息，但是有些系统直接使用的，这样还是会存在用户中心资料的修改冲突。）</li>
-<li>信息修改需不需要对外（我们一致认为基础服务不能对外，因为一旦对外，这些基础服务可能就变成了一个业务系统。）</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总之在用户中心的设计过程中，我们会面对很多的问题，在系统成熟之前，我们可能还要面临更多的设计问题，还要做出更多的思考和总结。</p>
-<p>一个关于系统拆分的问题，原来我们一直在拆分系统，变成了几大块，但是我们发现后来好像有点迷失了，因为我们不知道，系统在哪里？因为我们拆出来的系统好像都是基础模块，而忘记了我们其实是在做一个系统，没有系统来耦合调用这些模块，那我们做的这些基础系统有什么存在的价值。</p>
-<p>而且基础服务的设计也是基于当前的业务，所以很多的时候，我们也许很难真正实现独立的基础服务，有些基础服务就是会和业务耦合，那么我们该如何进行处理呢？耦合可以分为：代码耦合，逻辑耦合和数据耦合（比如数据库的表设计）。如何进行高度解耦也是基础服务设计必不可少的一个考虑因素。</p>
-<p>一个用户中心系统的设计问题，为我们带来了更多的思考，以后我们会单独写一篇文章来专门讨论如何进行系统拆分的问题。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2925,7 +2978,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">91</span>
+                    <span class="site-state-item-count">92</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3161,7 +3214,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">87</span>
+                      
+                    
+                    <span class="site-state-item-count">88</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
