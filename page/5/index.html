@@ -276,6 +276,214 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/21/java/Java中volatile解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/21/java/Java中volatile解析/" itemprop="url">Java中volatile解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-21T15:44:05+08:00">2018-03-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/base/" itemprop="url" rel="index"><span itemprop="name">base</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这几天又想起volatile的知识，我只是知道是为了可见性，多拷贝导致的不一致性，别的好像想不起来了，所以今天就来深入了解一下，免得忘记（网上的文章真长，有比要吗？）。</p>
+<h2 id="计算机内存模型"><a href="#计算机内存模型" class="headerlink" title="计算机内存模型"></a>计算机内存模型</h2><p>这个是计算机体系结构的相关知识，计算机的数据存储大概是这样的。 CPU-&gt;寄存器-&gt;高速缓存块（cache）【可能不进cache】-&gt; 主存（内存）。所以操作一个对象的时候，可能就有存储多拷贝而引起的数据可见性的问题（多线程的情况下）。硬件上解决的话就是总线锁进行处理。</p>
+<p>对于操作系统还存储内核空间和用户空间的数据拷贝的问题。</p>
+<h2 id="并发三个概念"><a href="#并发三个概念" class="headerlink" title="并发三个概念"></a>并发三个概念</h2><p>在并发编程中，我们通常会遇到以下三个问题：原子性问题，可见性问题，有序性问题。</p>
+<h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>多步操作完成一件事的时候才会出现的问题，大多数的操作都是多步完成的。</p>
+<h3 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h3><p>多拷贝操作（并发计算等）进行数据回写的时候可能出现的问题。</p>
+<h3 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h3><p>一般来说指令在CPU中是顺序执行的，但是CPU有时会进行指令重排序，但是保证不会影响执行的结果，但是会影响逻辑结果。</p>
+<h3 id="指令重排序的危害"><a href="#指令重排序的危害" class="headerlink" title="指令重排序的危害"></a>指令重排序的危害</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//线程1:</span><br><span class="line">context = loadContext();   //语句1</span><br><span class="line">inited = true;             //语句2</span><br><span class="line"> </span><br><span class="line">//线程2:</span><br><span class="line">while(!inited )&#123;</span><br><span class="line">  sleep()</span><br><span class="line">&#125;</span><br><span class="line">doSomethingwithconfig(context);</span><br></pre></td></tr></table></figure>
+<p>在上面这个例子中，如果线程1执行时语句1和语句2进行了对换，那么当线程2利用inited判断上下文是否被加载成功的时候可能会被误判，这是很危险的。</p>
+<h2 id="Java的内存模型"><a href="#Java的内存模型" class="headerlink" title="Java的内存模型"></a>Java的内存模型</h2><p>基于栈帧的结构每个Java线程都有自己的工作内存。线程对变量的所有操作都必须在工作内存中进行，而不能直接对主存进行操作。并且每个线程不能访问其他线程的工作内存。</p>
+<p>那么来看看java中对并发的处理情况：</p>
+<h3 id="原子性-1"><a href="#原子性-1" class="headerlink" title="原子性"></a>原子性</h3><p>请分析以下哪些操作是原子性操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x = 10;         //语句1</span><br><span class="line">y = x;         //语句2</span><br><span class="line">x++;           //语句3</span><br><span class="line">x = x + 1;     //语句4</span><br></pre></td></tr></table></figure></p>
+<p>咋一看，有些朋友可能会说上面的4个语句中的操作都是原子性操作。其实只有语句1是原子性操作，其他三个语句都不是原子性操作。</p>
+<ul>
+<li>语句1是直接将数值10赋值给x，也就是说线程执行这个语句的会直接将数值10写入到工作内存中。</li>
+<li>语句2实际上包含2个操作，它先要去读取x的值，再将x的值写入工作内存，虽然读取x的值以及 将x的值写入工作内存 这2个操作都是原子性操作，但是合起来就不是原子性操作了。</li>
+<li>语句3与4，x++和 x = x+1包括3个操作：读取x的值，进行加1操作，写入新的值。</li>
+</ul>
+<p>所以上面4个语句只有语句1的操作具备原子性。</p>
+<p><b style="color:red">不过这里有一点需要注意：在32位平台下，对64位数据的读取和赋值是需要通过两个操作来完成的，不能保证其原子性。但是好像在最新的JDK中，JVM已经保证对64位数据的读取和赋值也是原子性操作了。</b></p>
+<p><b style="color:red">从上面可以看出，Java内存模型只保证了基本读取和赋值是原子性操作，如果要实现更大范围操作的原子性，可以通过synchronized和Lock来实现。由于synchronized和Lock能够保证任一时刻只有一个线程执行该代码块，那么自然就不存在原子性问题了，从而保证了原子性。</b></p>
+<h3 id="可见性-1"><a href="#可见性-1" class="headerlink" title="可见性"></a>可见性</h3><p>对于可见性，Java提供了volatile关键字来保证可见性。</p>
+<p><b style="color:red">另外，通过synchronized和Lock也能够保证可见性，synchronized和Lock能保证同一时刻只有一个线程获取锁然后执行同步代码，并且在释放锁之前会将对变量的修改刷新到主存当中。因此可以保证可见性。</b></p>
+<h3 id="有序性-1"><a href="#有序性-1" class="headerlink" title="有序性"></a>有序性</h3><p><b style="color:blue">在Java内存模型中，允许编译器和处理器对指令进行重排序，但是重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。</b></p>
+<p><b style="color:red">在Java里面，可以通过volatile关键字来保证一定的“有序性”（具体原理在下一节讲述）。另外可以通过synchronized和Lock来保证有序性，很显然，synchronized和Lock保证每个时刻是有一个线程执行同步代码，相当于是让线程顺序执行同步代码，自然就保证了有序性。</b></p>
+<p><b style="color:red">另外，Java内存模型具备一些先天的“有序性”，即不需要通过任何手段就能够得到保证的有序性，这个通常也称为 happens-before 原则。如果两个操作的执行次序无法从happens-before原则推导出来，那么它们就不能保证它们的有序性，虚拟机可以随意地对它们进行重排序。</b></p>
+<p>下面就来具体介绍下happens-before原则（先行发生原则）：</p>
+<ul>
+<li>程序次序规则：一个线程内，按照代码顺序，书写在前面的操作先行发生于书写在后面的操作</li>
+<li>锁定规则：一个unLock操作先行发生于后面对同一个锁的lock操作</li>
+<li>volatile变量规则：对一个变量的写操作先行发生于后面对这个变量的读操作</li>
+<li>传递规则：如果操作A先行发生于操作B，而操作B又先行发生于操作C，则可以得出操作A先行发生于操作C</li>
+<li>线程启动规则：Thread对象的start()方法先行发生于此线程的每个一个动作</li>
+<li>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生</li>
+<li>线程终结规则：线程中所有的操作都先行发生于线程的终止检测，我们可以通过Thread.join()方法结束、Thread.isAlive()的返回值手段检测到线程已经终止执行</li>
+<li>对象终结规则：一个对象的初始化完成先行发生于他的finalize()方法的开始</li>
+</ul>
+<h2 id="volatile特性"><a href="#volatile特性" class="headerlink" title="volatile特性"></a>volatile特性</h2><h3 id="volatile关键字的两层语义"><a href="#volatile关键字的两层语义" class="headerlink" title="volatile关键字的两层语义"></a>volatile关键字的两层语义</h3><p>1）保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。</p>
+<p>2）禁止进行指令重排序。</p>
+<h3 id="volatile保证原子性吗？"><a href="#volatile保证原子性吗？" class="headerlink" title="volatile保证原子性吗？"></a>volatile保证原子性吗？</h3><p>不能保证，只能保证线程下次读取的值是最新的。类似于乐观锁而已。</p>
+<h3 id="volatile能保证有序性吗？"><a href="#volatile能保证有序性吗？" class="headerlink" title="volatile能保证有序性吗？"></a>volatile能保证有序性吗？</h3><p>在前面提到volatile关键字能禁止指令重排序，所以volatile能在一定程度上保证有序性。</p>
+<p>volatile关键字禁止指令重排序有两层意思：</p>
+<ol>
+<li><b style="color:red">当程序执行到volatile变量的读操作或者写操作时，在其前面的操作的更改肯定全部已经进行，且结果已经对后面的操作可见；在其后面的操作肯定还没有进行；</b></li>
+<li>在进行指令优化时，不能将在对volatile变量访问的语句放在其后面执行，也不能把volatile变量后面的语句放到其前面执行。</li>
+</ol>
+<h3 id="volatile的原理和实现机制"><a href="#volatile的原理和实现机制" class="headerlink" title="volatile的原理和实现机制"></a>volatile的原理和实现机制</h3><p><b style="color:red">观察加入volatile关键字和没有加入volatile关键字时所生成的汇编代码发现，加入volatile关键字时，会多出一个lock前缀指令(一种新的学习方法！)</b></p>
+<p>lock前缀指令实际上相当于一个内存屏障（也成内存栅栏），内存屏障会提供3个功能：</p>
+<ol>
+<li>它确保指令重排序时不会把其后面的指令排到内存屏障之前的位置，也不会把前面的指令排到内存屏障的后面；即在执行到内存屏障这句指令时，在它前面的操作已经全部完成；</li>
+<li>它会强制将对缓存的修改操作立即写入主存；</li>
+<li>如果是写操作，它会导致其他CPU中对应的缓存行无效。</li>
+</ol>
+<h2 id="使用volatile关键字的场景"><a href="#使用volatile关键字的场景" class="headerlink" title="使用volatile关键字的场景"></a>使用volatile关键字的场景</h2><p>通常来说，使用volatile必须具备以下2个条件：</p>
+<ol>
+<li>对变量的写操作不依赖于当前值</li>
+<li>该变量没有包含在具有其他变量的不变式中</li>
+</ol>
+<p>实际上，这些条件表明，可以被写入 volatile 变量的这些有效值独立于任何程序的状态，包括变量的当前状态。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.cnblogs.com/dolphin0520/p/3920373.html" target="_blank" rel="noopener">Java并发编程：volatile关键字解析</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2785,173 +2993,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/数字的压缩存储/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/算法/数字的压缩存储/" itemprop="url">数字的压缩存储</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T21:25:52+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在学习比特币的知识，突然发现一个compact合适，然后又想起了以太坊的RLP编码的问题，想着想着，就想着数据是如何压缩存储的。于是上网搜索一下，发现了thift序列化的压缩实现。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不管怎么说技术的本质就是数字，再复杂的东西也只是数字累积起来的。在计算机中数据的存储采用补码的方式，当然也有反码的概念，这里就不多说了。我们下面所说的算法就是指zigzag算法。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>一般来说数据的存储如果遇到1这样的数据还用4个字节的存储是不是很浪费空间，<code>00000000 00000000 00000001</code>有那么多的0是多余的，那么我们可以选择不存储。最后放在一个字节中去存储就会变成<code>00000001</code>,这样就省了不少的空间。</p>
-<h2 id="负数"><a href="#负数" class="headerlink" title="负数"></a>负数</h2><p>可是遇到-1会怎么样呢？(-1)<sub>10</sub> = (11111111 11111111 11111111 11111111)<sub>补</sub>，前面全是1，那怎么处理呢？</p>
-<p>zigzag给出了一个很巧的方法：我们之前讲补码讲过，补码的第一位是符号位，他阻碍了我们对于前导0的压缩，那么，我们就把这个符号位放到补码的最后，其他位整体前移一位：</p>
-<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub></p>
-<p>但是即使这样，也是很难压缩的，因为数字绝对值越小，他所含的前导1越多。于是，这个算法就把负数的所有数据位按位求反，符号位保持不变，得到了这样的整数：</p>
-<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000000<font color="red">1</font>)<sub>zigzag</sub></p>
-<p>这样就出现了很多的0，但是如果都是1的话好像也没啥问题，对负数就去1呗。这里还是以去0为主。</p>
-<h2 id="再看整数"><a href="#再看整数" class="headerlink" title="再看整数"></a>再看整数</h2><p>(1)<sub>10</sub> = (<font color="red">0</font>0000000 00000000 00000000 00000001)<sub>补</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>zigzag</sub></p>
-<h2 id="整型值与zigzag值转化"><a href="#整型值与zigzag值转化" class="headerlink" title="整型值与zigzag值转化"></a>整型值与zigzag值转化</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int int_to_zigzag(int n) &#123;</span><br><span class="line">    return (n &lt;&lt;1) ^ (n &gt;&gt;31);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int zigzag_to_int(int n) &#123;</span><br><span class="line">    return (((unsignedint)n) &gt;&gt;1) ^ -(n &amp; 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int write_to_buffer(int zz, byte* buf, int size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    for (int i =0; i &lt; size; i++) &#123;</span><br><span class="line">        if ((zz &amp; (~0x7f)) ==0) &#123;</span><br><span class="line">            buf[i] = (byte)zz;</span><br><span class="line">            ret = i + 1;</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // 第八位补一个1</span><br><span class="line">            buf[i] = (byte)((zz &amp;0x7f) |0x80);</span><br><span class="line">            // 换下一个七位，继续进行测试。</span><br><span class="line">            zz = ((unsignedint)zz)&gt;&gt;7;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里 (~0x7f)<sub>16</sub> = (11111111 11111111 11111111 10000000)<sub>补</sub>. 他的作用就是看除开最后七位后，还有没有信息。这个看起来不是很直观，还是举一个例子吧：</p>
-<p>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub></p>
-<p>这个数的转换经过下面几个步骤：</p>
-<ol>
-<li>与(~0x7f)做与操作的结果，高位还有信息，所以，我们把低7位取出来，并在倒数第八位上补一个1(0x80)：<b style="color:red">1</b>1001111</li>
-<li>将这个数右移七位：(00000000 00000000 00000000 00001111)<sub>zigzag</sub></li>
-<li>重复1，但是检测出高位都是0，设置数据为：00001111</li>
-</ol>
-<p>这个时候我们可以最终得出如下的结果：<br>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub> = [<b style="color:red">1</b>1001111, 00001111]<sub>压缩后</sub></p>
-<p><b style="color:red">注意：这里每个字节的第一位都是有意义的，如果我们读一个数，只要发现每个字节的第八位是0，就代表这个数字读取就结束了；但是如果是1的话，就只能向下读。这里要注意一旦数据比较大，32位的数据可能就变成40位了，但是这样的数据特别大的时候才会出现。</b></p>
-<h2 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int read_from_buffer(byte* buf,intmax_size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    int offset =0;</span><br><span class="line"></span><br><span class="line">    for (int i =0; i &lt; max_size; i++, offset +=7) &#123;</span><br><span class="line">        byte n = buf[i];</span><br><span class="line"></span><br><span class="line">        if ((n &amp;0x80) !=0x80) &#123;</span><br><span class="line">            ret |= (n &lt;&lt;offset);</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            ret |= ((n &amp;0x7f) &lt;&lt; offset);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个就是上面操作的逆过程而已。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个设计的比较巧妙，利用高位来标记，的确可以省不少的空间。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://mp.weixin.qq.com/s?__biz=MzA3MDExNzcyNA==&amp;mid=2650392086&amp;idx=1&amp;sn=6a2ecfe2548f121a4726d03bf23f4478&amp;scene=0#wechat_redirect" target="_blank" rel="noopener">小而巧的数字压缩算法：zigzag</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3003,7 +3044,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-count">95</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3058,7 +3099,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">21</span>
+                      
+                    
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -3251,7 +3294,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">90</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">92</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

@@ -276,6 +276,173 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/数字的压缩存储/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/数字的压缩存储/" itemprop="url">数字的压缩存储</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T21:25:52+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近在学习比特币的知识，突然发现一个compact合适，然后又想起了以太坊的RLP编码的问题，想着想着，就想着数据是如何压缩存储的。于是上网搜索一下，发现了thift序列化的压缩实现。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不管怎么说技术的本质就是数字，再复杂的东西也只是数字累积起来的。在计算机中数据的存储采用补码的方式，当然也有反码的概念，这里就不多说了。我们下面所说的算法就是指zigzag算法。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>一般来说数据的存储如果遇到1这样的数据还用4个字节的存储是不是很浪费空间，<code>00000000 00000000 00000001</code>有那么多的0是多余的，那么我们可以选择不存储。最后放在一个字节中去存储就会变成<code>00000001</code>,这样就省了不少的空间。</p>
+<h2 id="负数"><a href="#负数" class="headerlink" title="负数"></a>负数</h2><p>可是遇到-1会怎么样呢？(-1)<sub>10</sub> = (11111111 11111111 11111111 11111111)<sub>补</sub>，前面全是1，那怎么处理呢？</p>
+<p>zigzag给出了一个很巧的方法：我们之前讲补码讲过，补码的第一位是符号位，他阻碍了我们对于前导0的压缩，那么，我们就把这个符号位放到补码的最后，其他位整体前移一位：</p>
+<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub></p>
+<p>但是即使这样，也是很难压缩的，因为数字绝对值越小，他所含的前导1越多。于是，这个算法就把负数的所有数据位按位求反，符号位保持不变，得到了这样的整数：</p>
+<p>(-1)<sub>10</sub> = (<font color="red">1</font>1111111 11111111 11111111 11111111)<sub>补</sub> = (11111111 11111111 11111111 1111111<font color="red">1</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000000<font color="red">1</font>)<sub>zigzag</sub></p>
+<p>这样就出现了很多的0，但是如果都是1的话好像也没啥问题，对负数就去1呗。这里还是以去0为主。</p>
+<h2 id="再看整数"><a href="#再看整数" class="headerlink" title="再看整数"></a>再看整数</h2><p>(1)<sub>10</sub> = (<font color="red">0</font>0000000 00000000 00000000 00000001)<sub>补</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>符号后移</sub> = (00000000 00000000 00000000 0000001<font color="red">0</font>)<sub>zigzag</sub></p>
+<h2 id="整型值与zigzag值转化"><a href="#整型值与zigzag值转化" class="headerlink" title="整型值与zigzag值转化"></a>整型值与zigzag值转化</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int int_to_zigzag(int n) &#123;</span><br><span class="line">    return (n &lt;&lt;1) ^ (n &gt;&gt;31);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int zigzag_to_int(int n) &#123;</span><br><span class="line">    return (((unsignedint)n) &gt;&gt;1) ^ -(n &amp; 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int write_to_buffer(int zz, byte* buf, int size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    for (int i =0; i &lt; size; i++) &#123;</span><br><span class="line">        if ((zz &amp; (~0x7f)) ==0) &#123;</span><br><span class="line">            buf[i] = (byte)zz;</span><br><span class="line">            ret = i + 1;</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // 第八位补一个1</span><br><span class="line">            buf[i] = (byte)((zz &amp;0x7f) |0x80);</span><br><span class="line">            // 换下一个七位，继续进行测试。</span><br><span class="line">            zz = ((unsignedint)zz)&gt;&gt;7;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里 (~0x7f)<sub>16</sub> = (11111111 11111111 11111111 10000000)<sub>补</sub>. 他的作用就是看除开最后七位后，还有没有信息。这个看起来不是很直观，还是举一个例子吧：</p>
+<p>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub></p>
+<p>这个数的转换经过下面几个步骤：</p>
+<ol>
+<li>与(~0x7f)做与操作的结果，高位还有信息，所以，我们把低7位取出来，并在倒数第八位上补一个1(0x80)：<b style="color:red">1</b>1001111</li>
+<li>将这个数右移七位：(00000000 00000000 00000000 00001111)<sub>zigzag</sub></li>
+<li>重复1，但是检测出高位都是0，设置数据为：00001111</li>
+</ol>
+<p>这个时候我们可以最终得出如下的结果：<br>(-1000)<sub>10</sub> = (11111111 11111111 11111100 00011000)<sub>补</sub> = (00000000 00000000 00000111 11001111)<sub>zigzag</sub> = [<b style="color:red">1</b>1001111, 00001111]<sub>压缩后</sub></p>
+<p><b style="color:red">注意：这里每个字节的第一位都是有意义的，如果我们读一个数，只要发现每个字节的第八位是0，就代表这个数字读取就结束了；但是如果是1的话，就只能向下读。这里要注意一旦数据比较大，32位的数据可能就变成40位了，但是这样的数据特别大的时候才会出现。</b></p>
+<h2 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">int read_from_buffer(byte* buf,intmax_size) &#123;</span><br><span class="line">    int ret =0;</span><br><span class="line">    int offset =0;</span><br><span class="line"></span><br><span class="line">    for (int i =0; i &lt; max_size; i++, offset +=7) &#123;</span><br><span class="line">        byte n = buf[i];</span><br><span class="line"></span><br><span class="line">        if ((n &amp;0x80) !=0x80) &#123;</span><br><span class="line">            ret |= (n &lt;&lt;offset);</span><br><span class="line">            break;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            ret |= ((n &amp;0x7f) &lt;&lt; offset);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个就是上面操作的逆过程而已。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个设计的比较巧妙，利用高位来标记，的确可以省不少的空间。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://mp.weixin.qq.com/s?__biz=MzA3MDExNzcyNA==&amp;mid=2650392086&amp;idx=1&amp;sn=6a2ecfe2548f121a4726d03bf23f4478&amp;scene=0#wechat_redirect" target="_blank" rel="noopener">小而巧的数字压缩算法：zigzag</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/blockchain/比特币的compact格式说明/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1861,183 +2028,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/P2P平台流水冲回与资金介入调整的问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/系统设计/P2P平台流水冲回与资金介入调整的问题/" itemprop="url">P2P平台流水冲回与资金介入调整的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:22:25+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><b style="color:blue"><br>最近我们系统在上线的时候，发现了一个错误，提现成功的回调有异步和同步两个过程，然后我们都处理了，结果导致用户的账户金额被扣了两次，无奈第三方支付渠道有问题，我们也没办法进行解决。然后我就在想我们要去处理冲回的问题。也许还有人工介入账户调整的问题。我们引入流水表的设计，但是这个流水是否应该可改，我觉得是可以变动的。</b></p>
-<p><b style="color:red">因为我们前期的思考都是针对系统阶段的设计，或者都是正常的系统设计思维，但是我们没有察觉到如果出现异常应该怎么处理。在对应的财务系统中一般出现异常都是要进行相应地冲回处理，处理完之后，系统也就恢复正常了。但是这个里面其实没那么简单。我们有很多需要考虑的问题：</b></p>
-<ul>
-<li>级联业务的处理流程</li>
-<li>账户平衡的维持</li>
-<li>操作记录的记录，以及能够识别哪些调整是有风险的。</li>
-<li>冲回流水该以什么样的名义记录。</li>
-<li>系统应该如何处理和展示冲回流水。</li>
-<li>系统异常我们的应急机制是什么？</li>
-</ul>
-<p>下面我们来讨论一下。</p>
-<h2 id="冲回策略"><a href="#冲回策略" class="headerlink" title="冲回策略"></a>冲回策略</h2><p>其实吧，这里面应该是有多种情况的处理的。一个考虑点是账户平衡；一是错误的处理流没有破坏账户平衡；二是处理的处理流破坏了账务平衡，比如说漏调整了一个账户。另一个方面是级联问题；一是错误的处理流程是单独的，不会影响其他的业务流水；二是错误的处理流水关联了其他处理流水，这样会是一个灾难性的后果；还有一个方便就是涉及的调整量的问题，一是调整量巨大很耗时，几乎不能这么操作；二是数据量还行勉强操作；三是波及的量不是很大，比如说只是一个用户，那么这个可以直接调整。</p>
-<h3 id="调整数据量的问题"><a href="#调整数据量的问题" class="headerlink" title="调整数据量的问题"></a>调整数据量的问题</h3><p>正常情况下这个问题应该是不存在的，这个问题其实有两个层次的方面。一方面是波及的业务多，这个是我们没有办法的事情，但是这个问题可能只是影响了一个人，理论上问题不大；另一方面是波及的人特别多，这时候来处理可能就比较棘手，而且用户的体验应该也会变差。最恐怖的就是两者都有吧，涉及的业务流巨大，而且还波及了一大波用户甚至所有用户，这个时候我们就比较麻烦了。</p>
-<p>波及多个用户这个是正常情况，因为大家都在用，相同的错误多处出现是正常的情况，所以波及多个用户是很正常的现象。重点是我们要防止级联故障，但是这个只能说靠测试团队的测试。但说实话，我们现在的测试团队，并没有深入测试过里面的流水金额是否严格准确。所以一定要将具有级联业务流水的地方，进行严格的测试才能发布到线上的，否则就会出现大面积的数据调整问题。</p>
-<h3 id="级联业务流水"><a href="#级联业务流水" class="headerlink" title="级联业务流水"></a>级联业务流水</h3><p>对于级联业务流水，我的团队成员曾提出只调整总的业务流水，而不去理会下层数量巨大的子流水。其实这种方式是可以解决问题，但是这样怎么进行对账？而且本来账户平衡态会被打破，所以这种方式其实不是很好。但是如果说，子账户的调整放到后面去调整这个还是可以接受的。</p>
-<p>总之对于级联流水的冲回确实会涉及到大面积的数据更改和数据插入操作。所以最好在代码质量上就杜绝这个问题，但是如何杜绝需要严格的测试验收流程。目前的我们可能还做不到这点。</p>
-<h3 id="账户平衡"><a href="#账户平衡" class="headerlink" title="账户平衡"></a>账户平衡</h3><p>不管是冲回还是人工手工调额，最后账户要回归到平衡的状态中。维持账户平衡是我们系统不得不去处理的一个流程。所以接下来我们不得不想办法去维护我们的账户平衡，并做相应的检查，判断用户的行为是非法调整。</p>
-<p>但是由于我们系统还没有引入真正的公司账户，所以现在整个系统很难说能保证账户平衡。只能通过各种资金的进入记录去搜查。日后这块的缺漏也需要补上。</p>
-<p>另外还需要DBA介入维护，将旧数据同步成新的数据结构版本。这个后期的事情，今天的主题不是这个。</p>
-<h3 id="如何调整"><a href="#如何调整" class="headerlink" title="如何调整"></a>如何调整</h3><p>综上，我们的调整策略有多种。针对级联账户要一次调整多个账户。大数据量要想办法处理。</p>
-<p>真正的还是回归账户调整的具体措施上，这个要分情况来看：</p>
-<ul>
-<li>调整资金的流入和流出。这个就是人工的操作，请注意这个部分的操作比较单一，一般不影响其他流水。而且正常来说，这还是一种正常的业务，比如为一个人提款，为一个充值，别人走的可能是线上操作。而且操作完成后一般没有账户平衡问题的。</li>
-<li>流水错误，账户平衡。这里的处理方式有两种，一种是根据流水增加调整流水，另一种是，直接建一笔流水冲回当前流水，然后再建立正确的流水进行处理，这两种方式各有好处，至于选用哪种方式，需要看具体的业务要求了。不过第二种看起来比较繁琐，却是最明确的调整方式了。第一种看起来简单，但是容易出错。需要计算差值。</li>
-<li>流水错误，账户不平衡。这个也要分情况看待了，可能是一个金额没调，也可能是多个账户调错了，还有可能是调整的账户错了。不管哪种情况，我们也可以根据之前的策略，先冲回在新建，这种方式也是可以解决问题的。直接进行调整也是可以的办法。</li>
-</ul>
-<p>从上面我们可以看出主要的调整策略还是两种，一种是直接建立调整的流水让账户直接回归正常状态。二是先冲回错误流水，使账户回归正常状态，然后再建立一笔新的流水以恢复账户的金额准确性，并且恢复当时的处理业务。</p>
-<h2 id="操作预警"><a href="#操作预警" class="headerlink" title="操作预警"></a>操作预警</h2><p>这个主要还是根据账户的平衡性进行预判，如果出现不正常的状态就进行示警性的提示，让用户注意到自己操作的危险性。</p>
-<p>还有就是根据产生的错误流水进行调整，判断调整是否正确，否则不让调整。这样做的好处就是防止人工误操作，流水是我们的调整依据。</p>
-<p>但是不要从整体账户的平衡去判断，而是根据那笔流水的性质，从业务平衡上去判断。因为错误的流水是多笔，调整一笔任然是不平衡的。多级账户比较麻烦，要从下面一层一层改。否则不好判断的。</p>
-<h2 id="记录操作日志"><a href="#记录操作日志" class="headerlink" title="记录操作日志"></a>记录操作日志</h2><p>作为一个管理系统，谁在这个系统中做了什么操作还是需要记录下来，这样也是为了后期便于查账什么的。</p>
-<h2 id="调整流水名义"><a href="#调整流水名义" class="headerlink" title="调整流水名义"></a>调整流水名义</h2><p>调整的流水应该还是与具体的业务有关，因为我们一般是根据业务流水进行调整。如果是直接调整账户，这其实是新的业务类型了。</p>
-<h2 id="显示的问题"><a href="#显示的问题" class="headerlink" title="显示的问题"></a>显示的问题</h2><p>其实从显示的角度来说，我们应该采用先冲回在建一笔的操作，我们新建调整记录表，在这张表里面，我们可以记录这三张表的调整关系。同时也在原流水和冲回流水中加上标记，记为非展示流水，新的流水记为展示流水，这样比较明晰。所以，我比较推崇先冲回再新建的方式。</p>
-<p>另外冲回的流水是否需要向用户展示，这也是一个要充分考虑的问题。</p>
-<p>因为我们现在是通过业务类型向用户展示数据，但是一旦我们有其他的流水类型也调整了相应账户的流水，那么问题来了，这些流水可能展示不出来，用户看到的流水是有问题的。所以我们必须维护一张展示型流水的表，一是为了汇集各种流水，二是为了屏蔽流水表底层的实现逻辑。底层流水按照既定的方式进行累加，展示的流水可根据需要接受需要展示的流水，一旦涉及用户账户的流水就插入到展示流水里面去，这样两级流水业务拆分，一切都是那么地自然。逻辑处理起来也比较方便。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是自我的实践总结，或许在以后的过程中会有新的理解。主要提到了流水的冲回和信息的展示问题。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2089,7 +2079,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-count">95</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2144,7 +2134,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">21</span>
+                      
+                    
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2337,7 +2329,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">90</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">92</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
