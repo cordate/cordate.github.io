@@ -276,6 +276,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/blockchain/以太坊ERC20-token标准/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/27/blockchain/以太坊ERC20-token标准/" itemprop="url">以太坊ERC20 token标准</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T13:48:28+08:00">2018-02-27</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于原文请参考以太坊官网的wiki进行学习，这里只是列出一些基础知识供大家学习。</p>
+<h2 id="ERC20令牌标准接口"><a href="#ERC20令牌标准接口" class="headerlink" title="ERC20令牌标准接口"></a>ERC20令牌标准接口</h2><p>以下是一个接口合同，声明所需的功能和事件以符合ERC20标准：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">// ERC Token Standard #20 Interface</span><br><span class="line">// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md</span><br><span class="line">// ----------------------------------------------------------------------------</span><br><span class="line">contract ERC20Interface &#123;</span><br><span class="line">    function totalSupply() public constant returns (uint);</span><br><span class="line">    function balanceOf(address tokenOwner) public constant returns (uint balance);</span><br><span class="line">    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);</span><br><span class="line">    function transfer(address to, uint tokens) public returns (bool success);</span><br><span class="line">    function approve(address spender, uint tokens) public returns (bool success);</span><br><span class="line">    function transferFrom(address from, address to, uint tokens) public returns (bool success);</span><br><span class="line"></span><br><span class="line">    event Transfer(address indexed from, address indexed to, uint tokens);</span><br><span class="line">    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以太坊区块链上的大部分主要代币均符合ERC20标准。GNT Golem Network Token是唯一部分兼容erc20的代币，因为它不执行approve、allowance以及transferFrom功能和Approval事件。</p>
+<p>一些令牌包括描述令牌合同的更多信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string public constant name = &quot;Token Name&quot;;</span><br><span class="line">string public constant symbol = &quot;SYM&quot;;</span><br><span class="line">uint8 public constant decimals = 18;  // 18 is the most common number of decimal places</span><br></pre></td></tr></table></figure></p>
+<p>在这个标准中我们要指明我们的代币信息，和一些通用的调用接口信息。</p>
+<h2 id="代用合同如何工作？"><a href="#代用合同如何工作？" class="headerlink" title="代用合同如何工作？"></a>代用合同如何工作？</h2><p>以下是令牌合同的一个片段，用于演示令牌合约如何维护以太坊帐户的令牌余额：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">contract TokenContractFragment &#123;</span><br><span class="line"> </span><br><span class="line">    // Balances for each account</span><br><span class="line">    mapping(address =&gt; uint256) balances;</span><br><span class="line"></span><br><span class="line">    // Owner of account approves the transfer of an amount to another account</span><br><span class="line">    mapping(address =&gt; mapping (address =&gt; uint256)) allowed;</span><br><span class="line"> </span><br><span class="line">    // Get the token balance for account `tokenOwner`</span><br><span class="line">    function balanceOf(address tokenOwner) public constant returns (uint balance) &#123;</span><br><span class="line">        return balances[tokenOwner];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Transfer the balance from owner&apos;s account to another account</span><br><span class="line">    function transfer(address to, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        balances[msg.sender] = balances[msg.sender].sub(tokens);</span><br><span class="line">        balances[to] = balances[to].add(tokens);</span><br><span class="line">        Transfer(msg.sender, to, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Send `tokens` amount of tokens from address `from` to address `to`</span><br><span class="line">    // The transferFrom method is used for a withdraw workflow, allowing contracts to send</span><br><span class="line">    // tokens on your behalf, for example to &quot;deposit&quot; to a contract address and/or to charge</span><br><span class="line">    // fees in sub-currencies; the command should fail unless the _from account has</span><br><span class="line">    // deliberately authorized the sender of the message via some mechanism; we propose</span><br><span class="line">    // these standardized APIs for approval:</span><br><span class="line">    function transferFrom(address from, address to, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        balances[from] = balances[from].sub(tokens);</span><br><span class="line">        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);</span><br><span class="line">        balances[to] = balances[to].add(tokens);</span><br><span class="line">        Transfer(from, to, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    // Allow `spender` to withdraw from your account, multiple times, up to the `tokens` amount.</span><br><span class="line">    // If this function is called again it overwrites the current allowance with _value.</span><br><span class="line">    function approve(address spender, uint tokens) public returns (bool success) &#123;</span><br><span class="line">        allowed[msg.sender][spender] = tokens;</span><br><span class="line">        Approval(msg.sender, spender, tokens);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>基于ERC20的货币更容易互换，并且能够在Dapps上相同的工作。</p>
+<p>新的标准可以让token更兼容，允许其他功能，包括投票标记化。操作更像一个投票操作</p>
+<p>Token的持有人可以完全控制资产，遵守ERC20的token可以跟踪任何人在任何时间拥有多少token.基于eth合约的子货币，所以容易实施。只能自己去转让。</p>
+<p>标准化非常有利，也就意味着这些资产可以用于不同的平台和项目，否则只能用在特定的场合。</p>
+<h2 id="接口文档说明"><a href="#接口文档说明" class="headerlink" title="接口文档说明"></a>接口文档说明</h2><h3 id="代币账户查询-balanceOf"><a href="#代币账户查询-balanceOf" class="headerlink" title="代币账户查询 balanceOf"></a>代币账户查询 balanceOf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tokenContract.balanceOf(0x1111111111111111111111111111111111111111) will return 100</span><br><span class="line">tokenContract.balanceOf(0x2222222222222222222222222222222222222222) will return 200</span><br></pre></td></tr></table></figure>
+<h3 id="转移Token余额transfer"><a href="#转移Token余额transfer" class="headerlink" title="转移Token余额transfer"></a>转移Token余额transfer</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tokenContract.transfer(0x2222222222222222222222222222222222222222, 10)</span><br></pre></td></tr></table></figure>
+<h3 id="从token余额批准和转移-approve"><a href="#从token余额批准和转移-approve" class="headerlink" title="从token余额批准和转移 approve"></a>从token余额批准和转移 approve</h3><p>其实就是中转一下，类似于淘宝先付款再确认收货。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/diandianxiyu_geek/article/details/78082551" target="_blank" rel="noopener">【Ethereum】以太坊ERC20 Token标准完整说明</a><br><a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard" target="_blank" rel="noopener">ERC20 Token Standard</a><br><a href="https://medium.com/hackoin-taiwan/ethereum-erc20-token-standard-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E4%BB%A3%E5%B9%A3%E6%A8%99%E6%BA%96%E4%BB%8B%E7%B4%B9-b7bc58171021" target="_blank" rel="noopener">Ethereum ERC20 Token Standard 以太坊代幣標準介紹</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/MySQL网络协议分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -663,7 +825,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">92</span>
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -901,7 +1063,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">88</span>
+                      
+                    
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

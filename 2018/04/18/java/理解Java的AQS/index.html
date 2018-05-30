@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="一提到java的锁机制，大家都会想到AQS（AbstractQueuedSynchronizer），意思就是抽象的同步队列，感觉就是使用队列来进行同步操作而已。（Java8版本） AbstractOwnableSynchronizerAbstractQueuedSynchronizer是继承自AbstractOwnableSynchronizer。1234567891011121314151617">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-18T07:24:42.000Z">
+<meta property="og:updated_time" content="2018-05-30T07:32:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="理解Java的AQS">
 <meta name="twitter:description" content="一提到java的锁机制，大家都会想到AQS（AbstractQueuedSynchronizer），意思就是抽象的同步队列，感觉就是使用队列来进行同步操作而已。（Java8版本） AbstractOwnableSynchronizerAbstractQueuedSynchronizer是继承自AbstractOwnableSynchronizer。1234567891011121314151617">
@@ -368,7 +368,7 @@
 <p><b style="color:red">首先这是一个双向链表，从这里我们可以看出AQS的功能可以分为两类：独占功能和共享功能</b>。另外，排队的节点有5中状态，就是<code>waitStatus</code>的值，Node需要记录排队的线程和下一个等待的节点（线程）。</p>
 <p>## </p>
 <p>未完待续！！！！！</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://ifeve.com/introduce-abstractqueuedsynchronizer/" target="_blank" rel="noopener">AbstractQueuedSynchronizer的介绍和原理分析</a><br><a href="http://blog.onlycatch.com/post/java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E4%BB%A5%E5%8F%8A%E7%BA%BF%E7%A8%8B%E6%A0%88%E5%88%86%E6%9E%90" target="_blank" rel="noopener">java中线程的状态以及线程栈分析</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://ifeve.com/introduce-abstractqueuedsynchronizer/" target="_blank" rel="noopener">AbstractQueuedSynchronizer的介绍和原理分析</a><br><a href="http://blog.onlycatch.com/post/java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E4%BB%A5%E5%8F%8A%E7%BA%BF%E7%A8%8B%E6%A0%88%E5%88%86%E6%9E%90" target="_blank" rel="noopener">java中线程的状态以及线程栈分析</a><br><a href="http://www.infoq.com/cn/articles/java8-abstractqueuedsynchronizer" target="_blank" rel="noopener">深度解析Java 8：AbstractQueuedSynchronizer的实现分析（下）</a><br><a href="http://www.infoq.com/cn/articles/jdk1.8-abstractqueuedsynchronizer" target="_blank" rel="noopener">深度解析Java 8：JDK1.8 AbstractQueuedSynchronizer的实现分析（上）</a></p>
 
       
     </div>
@@ -492,7 +492,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">92</span>
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -730,7 +730,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">88</span>
+                      
+                    
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

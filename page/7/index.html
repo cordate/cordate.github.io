@@ -276,6 +276,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/债权打包资金选取策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/14/算法/债权打包资金选取策略/" itemprop="url">债权打包资金选取策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T14:57:20+08:00">2018-03-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我现在有个需求就是，在一些定额的债权订单中，进行打包，需要从这些不同额的债权中打出比如100w、1000w等各种金额不等的债权。其实一开始想这个问题的时候我也没啥思路，网上也没有看到比较好的解决思路，最后明白有这个时间，不如自己写代码来进行实现。</p>
+<h2 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h2><p>债权的选取具有一定的规律性，越老的订单需要先打包。所以在一些特殊情况下，一些策略的实现也是要做必要的调整。</p>
+<p>如果无法配平，我的策略就是打包超过，然后人工剔除，也可以人工选择加入一笔债权。这当然是弥补措施不是我们解决问题之道。</p>
+<h2 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h2><p>我实现的那一版的思路是一定有一个调整额，而之前也有考虑过配平，这就类似于之前写的关于散标匹配的算法。因为在我看来金额固定的情况下，可以选取一个调整额，然后每笔债权留单，最后利用留下来的单子进行配平即可。</p>
+<p>最后我选取了一个阈值，然后按照这种思路实现了我们的打包策略，由于债权分布良好，所以我一直在想，如果金额不定的话，我们如何进行适配。</p>
+<p>这个当然就是后面的思考了。我后来想到的思路是阈值通过金额的最小公倍数进行计算，然后到了调整的阈值时，进行配平。留单的策略就是最小公倍数除以金额，得到的就是要留该金额多少单。这种方式最大的问题就是如果金额非常散，那么可能一开始就没有单子被选中，一直处于留单状态，这对我们的系统没有好处，可以设置最大的阈值，但是这样就解决不了我们的问题。如果说留单成功了，那么下面就是类似求24点的问题了。</p>
+<p>之前我们提到了散标匹配的算法，所以你应该明白这里也可以使用递归的方式进行债券的选取，但是可能不太适合老的优先原则。我觉得还是使用留单的技术，先用老的单子填补阈值开外的空间。等达到阈值的时候，再利用递归的方式，填补阈值进行配平。</p>
+<h2 id="递归的方式"><a href="#递归的方式" class="headerlink" title="递归的方式"></a>递归的方式</h2><p>如果需要进行配平，基本上就是在最后的时候进行简单配平，或者使用递归的思想进行实现，比如果100w的包，先按照规则将可能即将失效的先放进去90w或者多一些，然后统计剩余的债权量，通过递归回溯的方式去配平最后的10w左右的量。因为债权基本都是500-2000，以500递增的倍数，所以可以进行计数统计，配平的时候再去取债权。因为我们关注的是数字本身而不是债权。关心债权的原因是，要不最旧的先打进去。</p>
+<p><b style="color:red">这种递归我称为计数式的递归使用。</b></p>
+<h2 id="债权预热"><a href="#债权预热" class="headerlink" title="债权预热"></a>债权预热</h2><p>基本上对方要债权包都是整数的，所以可以在债权进入的时候，按1w先打个小包，之后打包的时候，直接按时间选择一定的数量就可以了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>具体实现代码就不写了，这涉及到公司的机密，还有就是代码太长，一大堆异常情况的判断不太适合在这里贴出来。总之思想就是这样的，结合具体的业务场景进行细节的拆分，你总能得到你想要的那个解决方案。这就是我们不得不处理的事情，发现并解决问题。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/最近24小时热点问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1874,195 +2026,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java中双端队列/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/07/java/Java中双端队列/" itemprop="url">Java中双向队列Deque</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T19:31:34+08:00">2018-03-07</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天来简单研究一下双向队列的实现。以前用C语言实现的时候，我最喜欢使用链表的方式进行实现。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>双向队列在java中的接口规范是Deque。我们先来看一下继承的结构。（这里漏画了Deque是继承Queue，Queue继承Collection）</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/deque%E7%B1%BB%E5%9B%BE.png?raw=true" alt=""></p>
-<p>再来看一下Deque里面定义的一些方法：</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/Deque%E6%96%B9%E6%B3%95.png?raw=true" alt=""></p>
-<p>这里面需要分两个维度去看，一个是Queue里面的方法，二是queue加入的方法。这里我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><p>这个估计没啥可讲的，因为之前我在<a href="/2018/03/03/java/java中list学习/">java中list学习</a> 这篇博客中已经有过详细的介绍了。</p>
-<h2 id="ArrayDeque"><a href="#ArrayDeque" class="headerlink" title="ArrayDeque"></a>ArrayDeque</h2><h3 id="大概思路"><a href="#大概思路" class="headerlink" title="大概思路"></a>大概思路</h3><p>对于数组实现的Deque来说，数据结构上比较简单，只需要一个存储数据的数组以及头尾两个索引即可。由于数组是固定长度的，所以很容易就得到数组的头和尾，那么对于数组的操作只需要移动头和尾的索引即可。</p>
-<p>特别说明的是ArrayDeque并不是一个固定大小的队列，每次队列满了以后就将队列容量扩大一倍（doubleCapacity()），因此加入一个元素总是能成功，而且也不会抛出一个异常。也就是说ArrayDeque是一个没有容量限制的队列。</p>
-<h3 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h3><p>先看一下继承结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayDeque&lt;E&gt; extends AbstractCollection&lt;E&gt;</span><br><span class="line">                           implements Deque&lt;E&gt;, Cloneable, Serializable</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public ArrayDeque() &#123;</span><br><span class="line">    // 默认初始化16个</span><br><span class="line">    elements = (E[]) new Object[16];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(int numElements) &#123;</span><br><span class="line">    allocateElements(numElements);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public ArrayDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    allocateElements(c.size());</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void allocateElements(int numElements) &#123;</span><br><span class="line">    int initialCapacity = MIN_INITIAL_CAPACITY;</span><br><span class="line">    // Find the best power of two to hold elements.</span><br><span class="line">    // Tests &quot;&lt;=&quot; because arrays aren&apos;t kept full.</span><br><span class="line">    if (numElements &gt;= initialCapacity) &#123;</span><br><span class="line">        initialCapacity = numElements;</span><br><span class="line">        // 如果不是2的倍数，就进行修正</span><br><span class="line">        // 根据所给的数组长度，得到一个比该长度大的最小的2^p的真实长度，并建立真实长度的空数组</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  1);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  2);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  4);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt;  8);</span><br><span class="line">        initialCapacity |= (initialCapacity &gt;&gt;&gt; 16);</span><br><span class="line">        initialCapacity++;</span><br><span class="line"></span><br><span class="line">        if (initialCapacity &lt; 0)   // Too many elements, must back off</span><br><span class="line">            initialCapacity &gt;&gt;&gt;= 1;// Good luck allocating 2 ^ 30 elements</span><br><span class="line">    &#125;</span><br><span class="line">    elements = (E[]) new Object[initialCapacity];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>从上面的代码看，ArrayDeque默认初始化16个；你可以指定大小，但是会被修正成大过initialCapacity的最小2的n次方的值。</p>
-<h3 id="添加的操作"><a href="#添加的操作" class="headerlink" title="添加的操作"></a>添加的操作</h3><p>我们看一下添加的函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">public void addFirst(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">    elements[head = (head - 1) &amp; (elements.length - 1)] = e;</span><br><span class="line">    // 如果队列满了就进行扩容处理</span><br><span class="line">    if (head == tail)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void addLast(E e) &#123;</span><br><span class="line">    if (e == null)</span><br><span class="line">        throw new NullPointerException()</span><br><span class="line">    // tail指向的地方是没有值得的</span><br><span class="line">    elements[tail] = e;</span><br><span class="line">    // 避免tail+1越界，&amp;操作之后就不用对长度进行取余，主要还是因为2的指数倍</span><br><span class="line">    if ( (tail = (tail + 1) &amp; (elements.length - 1)) == head)</span><br><span class="line">        doubleCapacity();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* Double the capacity of this deque.  Call only when full, i.e.,</span><br><span class="line">* when head and tail have wrapped around to become equal.</span><br><span class="line">*</span><br><span class="line">* 当队列首尾指向同一个引用时，扩充队列的容量为原来的两倍，并对元素重新定位到新数组中</span><br><span class="line">*/</span><br><span class="line">private void doubleCapacity() &#123;</span><br><span class="line">    assert head == tail;// tail=head代表数组满了，一开始tail与head一定不相交，一旦相交就要扩容。</span><br><span class="line">    int p = head;</span><br><span class="line">    int n = elements.length;</span><br><span class="line">    int r = n - p; // number of elements to the right of p</span><br><span class="line">    // 容量增一倍</span><br><span class="line">    int newCapacity = n &lt;&lt; 1;</span><br><span class="line">    if (newCapacity &lt; 0)</span><br><span class="line">        throw new IllegalStateException(&quot;Sorry, deque too big&quot;);</span><br><span class="line">    Object[] a = new Object[newCapacity];</span><br><span class="line">    // 拷贝数组head右边的元素，放到新数组的0开始，长度是r</span><br><span class="line">    // 这里注意，tail&lt;head的情况，不过这边都可以处理（主要还是因为满了的话tail一般都是小于head的）</span><br><span class="line">    System.arraycopy(elements, p, a, 0, r);</span><br><span class="line">    // 将左侧元素，复制到后面，这个时候head就是0了</span><br><span class="line">    System.arraycopy(elements, 0, a, r, p);</span><br><span class="line">    elements = (E[])a;</span><br><span class="line">    head = 0;</span><br><span class="line">    // tail为n，是因为队列满了</span><br><span class="line">    tail = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">我们可以看出，tail==head就是队列满了，(head+1)&amp;(length-1)==tail就是队列空掉的条件。一旦队列满了就会立即扩容，方式就是双倍扩容。</b></p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>其他的方法就不用说了，即使不知道也大概明白思路。对于出队，当然要检查队列是不是空的，如果是空的就不用处理了（或者返回null），感觉还是要看一下源码确认一下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public E pollFirst() &#123;</span><br><span class="line">    int h = head;</span><br><span class="line">    E result = elements[h]; // Element is null if deque empty</span><br><span class="line">    // 如果取得值为空，就表示队列空了</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 如果有值就移除</span><br><span class="line">    elements[h] = null;     // Must null out slot</span><br><span class="line">    // 重新设置head</span><br><span class="line">    head = (h + 1) &amp; (elements.length - 1);</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E pollLast() &#123;</span><br><span class="line">    // tail向后移，防止出现负数</span><br><span class="line">    int t = (tail - 1) &amp; (elements.length - 1);</span><br><span class="line">    E result = elements[t];</span><br><span class="line">    // 如果为null啥都不做</span><br><span class="line">    if (result == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 不为null，移除。tail后移</span><br><span class="line">    elements[t] = null;</span><br><span class="line">    tail = t;</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总的感觉这个类的实现，还是比较简单的，比较容易理解。</p>
-<h2 id="双向并发阻塞队列-LinkedBlockingDeque"><a href="#双向并发阻塞队列-LinkedBlockingDeque" class="headerlink" title="双向并发阻塞队列 LinkedBlockingDeque"></a>双向并发阻塞队列 LinkedBlockingDeque</h2><p>LinkedBlockingDeque是双向链表实现的双向并发阻塞队列。该阻塞队列同时支持FIFO和FILO两种操作方式，即可以从队列的头和尾同时操作(插入/删除)；并且，该阻塞队列是支持线程安全。</p>
-<p>此外，LinkedBlockingDeque还是可选容量的(防止过度膨胀)，即可以指定队列的容量。如果不指定，默认容量大小等于Integer.MAX_VALUE。</p>
-<p><img src="https://github.com/gavin-account/blog-pics/blob/master/java/LinkedBlockingDeque%E7%9A%84%E5%8E%9F%E7%90%86%E5%9B%BE.jpg?raw=true" alt=""></p>
-<h3 id="继承结构-1"><a href="#继承结构-1" class="headerlink" title="继承结构"></a>继承结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedBlockingDeque&lt;E&gt;</span><br><span class="line">    extends AbstractQueue&lt;E&gt;</span><br><span class="line">    implements BlockingDeque&lt;E&gt;,  java.io.Serializable &#123;</span><br></pre></td></tr></table></figure>
-<p>LinkedBlockingDeque继承于AbstractQueue，它本质上是一个支持FIFO和FILO的双向的队列。AbstractQueue只是基础的Queue的实现而已。</p>
-<p>LinkedBlockingDeque实现了BlockingDeque接口，它支持多线程并发。当多线程竞争同一个资源时，某线程获取到该资源之后，其它线程需要阻塞等待。</p>
-<h3 id="属性一探"><a href="#属性一探" class="headerlink" title="属性一探"></a>属性一探</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">transient Node&lt;E&gt; first;</span><br><span class="line">transient Node&lt;E&gt; last;</span><br><span class="line">private transient int count;</span><br><span class="line">private final int capacity;</span><br><span class="line">final ReentrantLock lock = new ReentrantLock();</span><br><span class="line">// 等待takes操作的Condition</span><br><span class="line">private final Condition notEmpty = lock.newCondition();</span><br><span class="line">// 等待puts操作的Condition</span><br><span class="line">private final Condition notFull = lock.newCondition();</span><br></pre></td></tr></table></figure>
-<p>lock是控制对LinkedBlockingDeque的互斥锁，当多个线程竞争同时访问LinkedBlockingDeque时，某线程获取到了互斥锁lock，其它线程则需要阻塞等待，直到该线程释放lock，其它线程才有机会获取lock从而获取cpu执行权。</p>
-<p>notEmpty和notFull分别是“非空条件”和“未满条件”。通过它们能够更加细腻进行并发控制。</p>
-<p><b style="color:blue">若某线程(线程A)要取出数据时，队列正好为空，则该线程会执行notEmpty.await()进行等待；当其它某个线程(线程B)向队列中插入了数据之后，会调用notEmpty.signal()唤醒“notEmpty上的等待线程”。此时，线程A会被唤醒从而得以继续运行。 此外，线程A在执行取操作前，会获取takeLock，在取操作执行完毕再释放takeLock。</b><br><b style="color:blue">若某线程(线程H)要插入数据时，队列已满，则该线程会它执行notFull.await()进行等待；当其它某个线程(线程I)取出数据之后，会调用notFull.signal()唤醒“notFull上的等待线程”。此时，线程H就会被唤醒从而得以继续运行。 此外，线程H在执行插入操作前，会获取putLock，在插入操作执行完毕才释放putLock。</b></p>
-<p>这里看一下Node链表的结构吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// Deque里面的Node的class定义，这是一个链表结构</span><br><span class="line">static final class Node&lt;E&gt; &#123;</span><br><span class="line">    E item;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(E x) &#123;</span><br><span class="line">        item = x;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h3><p>其他构造函数就不看了，主要来看一下这个构造函数，加入元素的时候使用了锁。<b style="color:red">注意这个初始化元素使用的是尾部插入法</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public LinkedBlockingDeque(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    this(Integer.MAX_VALUE);</span><br><span class="line">    // 取得lock</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 从未竞争过，但是对于可视性来说是必要</span><br><span class="line">    lock.lock(); // Never contended, but necessary for visibility</span><br><span class="line">    try &#123;</span><br><span class="line">        for (E e : c) &#123;</span><br><span class="line">            if (e == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">            // 逐条加入</span><br><span class="line">            if (!linkLast(new Node&lt;E&gt;(e)))</span><br><span class="line">                throw new IllegalStateException(&quot;Deque full&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">本来再想锁的粒度问题，我想如果linkLast这个函数也加了锁，不就有问题了吗，查了这个函数发现是私有方法，没有加锁，没毛病。加锁的实现和功能的实现是分离，这个也是常规的做法。</b></p>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>这里面设计几个方面：</p>
-<ol>
-<li>队列先加锁</li>
-<li>执行插入</li>
-<li>通知所有阻塞监听队列内容的线程</li>
-<li>释放放锁</li>
-</ol>
-<p>这里我们只是举个例子，不进行源代码的深入分析, 下面的源码就是对上面过程的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    return offerLast(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean offerLast(E e) &#123;</span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    // 新建节点</span><br><span class="line">    Node&lt;E&gt; node = new Node&lt;E&gt;(e);</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        // 将“新节点”添加到双向链表的末尾</span><br><span class="line">        return linkLast(node);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private boolean linkLast(Node&lt;E&gt; node) &#123;</span><br><span class="line">    // 如果“双向链表的节点数量” &gt; “容量”，则返回false，表示插入失败。</span><br><span class="line">    if (count &gt;= capacity)</span><br><span class="line">        return false;</span><br><span class="line">    // 将“node添加到链表末尾”，并设置node为新的尾节点</span><br><span class="line">    Node&lt;E&gt; l = last;</span><br><span class="line">    node.prev = l;</span><br><span class="line">    last = node;</span><br><span class="line">    if (first == null)</span><br><span class="line">        first = node;</span><br><span class="line">    else</span><br><span class="line">        l.next = node;</span><br><span class="line">    // 将“节点数量”+1</span><br><span class="line">    ++count;</span><br><span class="line">    // 插入节点之后，唤醒notEmpty上的等待线程。</span><br><span class="line">    notEmpty.signal();</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="删除获取"><a href="#删除获取" class="headerlink" title="删除获取"></a>删除获取</h3><p>获取方式有3种：</p>
-<ul>
-<li>一种是取数据不删除数据</li>
-<li>取数据移除数据并不阻塞，没有返回null即可</li>
-<li>取数据移除数据并没有会阻塞等待</li>
-</ul>
-<p>刚才提到通知的问题，我们在线程池中也大概了解到阻塞队列，取消息的时候会阻塞，那么我们就来看看这个阻塞是如何实现的。下面是take的实现，属于第三种。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">public E take() throws InterruptedException &#123;</span><br><span class="line">    return takeFirst();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public E takeFirst() throws InterruptedException &#123;</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    // 获取锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        E x;</span><br><span class="line">        // 若“队列为空”，则一直等待。否则，通过unlinkFirst()删除第一个节点。</span><br><span class="line">        while ( (x = unlinkFirst()) == null)</span><br><span class="line">            notEmpty.await();</span><br><span class="line">        return x;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        // 释放锁</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private E unlinkFirst() &#123;</span><br><span class="line">    // assert lock.isHeldByCurrentThread();</span><br><span class="line">    Node&lt;E&gt; f = first;</span><br><span class="line">    if (f == null)</span><br><span class="line">        return null;</span><br><span class="line">    // 删除并更新“第一个节点”</span><br><span class="line">    Node&lt;E&gt; n = f.next;</span><br><span class="line">    E item = f.item;</span><br><span class="line">    f.item = null;</span><br><span class="line">    f.next = f; // help GC</span><br><span class="line">    first = n;</span><br><span class="line">    if (n == null)</span><br><span class="line">        last = null;</span><br><span class="line">    else</span><br><span class="line">        n.prev = null;</span><br><span class="line">    // 将“节点数量”-1</span><br><span class="line">    --count;</span><br><span class="line">    // 删除节点之后，唤醒notFull上的等待线程。</span><br><span class="line">    notFull.signal();</span><br><span class="line">    return item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">在takeFirst方法中，我们发现notEmpty.await();阻塞等待，但是注意这里的lock.lock();你可能认为发生了死锁，其实并没有，这就是Lock，condition的组合使用，Condition是基于Lock生成的对象，notEmpty.await();是会释放lock锁的，被唤醒继续执行的时候会重新尝试获取lock锁，只是这个被封装了一下，变得不那么清除了而已。</b></p>
-<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p><b style="color:blue">这部分的知识就不用说了，使用了内部的迭代器。内部类的迭代器遍历有一个好处就是没有Collection的传入，也可复用外部类的方法。总之呢，就是利用了内部类的机制，做自己想做的事情，这种设计思路，我们也可以使用，一定要活学活用。</b>这个迭代器比别的多了缓存的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">private abstract class AbstractItr implements Iterator&lt;E&gt; &#123;</span><br><span class="line">    // next是下一次调用next()会返回的节点。</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    // nextItem是next()返回节点对应的数据。</span><br><span class="line">    E nextItem;</span><br><span class="line">    // 上一次next()返回的节点。</span><br><span class="line">    private Node&lt;E&gt; lastRet;</span><br><span class="line">    // 返回第一个节点</span><br><span class="line">    abstract Node&lt;E&gt; firstNode();</span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    abstract Node&lt;E&gt; nextNode(Node&lt;E&gt; n);</span><br><span class="line"></span><br><span class="line">    AbstractItr() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        // 获取“LinkedBlockingDeque的互斥锁”</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // 获取“双向队列”的表头</span><br><span class="line">            next = firstNode();</span><br><span class="line">            // 获取表头对应的数据</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // 释放“LinkedBlockingDeque的互斥锁”</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取n的后继节点</span><br><span class="line">    private Node&lt;E&gt; succ(Node&lt;E&gt; n) &#123;</span><br><span class="line">        // Chains of deleted nodes ending in null or self-links</span><br><span class="line">        // are possible if multiple interior nodes are removed.</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            Node&lt;E&gt; s = nextNode(n);</span><br><span class="line">            if (s == null)</span><br><span class="line">                return null;</span><br><span class="line">            else if (s.item != null)</span><br><span class="line">                return s;</span><br><span class="line">            else if (s == n)</span><br><span class="line">                return firstNode();</span><br><span class="line">            else</span><br><span class="line">                n = s;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 更新next和nextItem。</span><br><span class="line">    void advance() &#123;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            // assert next != null;</span><br><span class="line">            next = succ(next);</span><br><span class="line">            nextItem = (next == null) ? null : next.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回“下一个节点是否为null”</span><br><span class="line">    public boolean hasNext() &#123;</span><br><span class="line">        return next != null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回下一个节点</span><br><span class="line">    public E next() &#123;</span><br><span class="line">        if (next == null)</span><br><span class="line">            throw new NoSuchElementException();</span><br><span class="line">        lastRet = next;</span><br><span class="line">        E x = nextItem;</span><br><span class="line">        advance();</span><br><span class="line">        return x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 删除下一个节点</span><br><span class="line">    public void remove() &#123;</span><br><span class="line">        Node&lt;E&gt; n = lastRet;</span><br><span class="line">        if (n == null)</span><br><span class="line">            throw new IllegalStateException();</span><br><span class="line">        lastRet = null;</span><br><span class="line">        final ReentrantLock lock = LinkedBlockingDeque.this.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (n.item != null)</span><br><span class="line">                unlink(n);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>关于双向队列的知识就是这么多了，其实底层还是那样，要么是数组实现，要么是链表实现。但是在实现的过程确实有比较巧妙的设计。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.cnblogs.com/skywang12345/p/3503480.html" target="_blank" rel="noopener">Java多线程系列–“JUC集合”09之 LinkedBlockingDeque</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2114,7 +2077,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">92</span>
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2352,7 +2315,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">88</span>
+                      
+                    
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
