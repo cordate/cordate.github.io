@@ -276,6 +276,181 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java引用Reference学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/07/java/Java引用Reference学习/" itemprop="url">Java引用Reference学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-07T10:40:05+08:00">2018-03-07</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近在看一些数据结构的源码的时候发现了Reference这个类，突然就想起来关于Java引用的知识，并不了解里面真实的知识，今天就来深入源码来好好学习一番。所有的源码都在java.lang.ref包下面。注意体会里面的设计模式，多想想总有收获。</p>
+<h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p><b style="color:red">Java引用体系中我们最熟悉的就是强引用类型，如 A a= new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</b></p>
+<p><b style="color:blue">除了强引用外，Java还引入了SoftReference，WeakReference，PhantomReference，FinalReference.Java额外引入这个四种类型引用主要目的是在jvm 在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</b></p>
+<h2 id="对象可达性判断"><a href="#对象可达性判断" class="headerlink" title="对象可达性判断"></a>对象可达性判断</h2><p>垃圾回收时会依据两个原则来判断对象的可达性：</p>
+<ul>
+<li>单一路径中，以最弱的引用为准</li>
+<li>多路径中，以最强的引用为准</li>
+</ul>
+<h2 id="ReferenceQueue-amp-Reference"><a href="#ReferenceQueue-amp-Reference" class="headerlink" title="ReferenceQueue &amp; Reference"></a>ReferenceQueue &amp; Reference</h2><p>Reference作为SoftReference，WeakReference，PhantomReference，FinalReference这几个引用类型的父类。主要有两个字段referent、queue，一个是指所引用的对象，一个是与之对应的ReferenceQueue。Reference类有个构造函数 <code>Reference(T referent, ReferenceQueue&lt;? super T&gt; queue)</code>，可以通过该构造函数传入与Reference相伴的ReferenceQueue。</p>
+<p>ReferenceQueue本身提供队列的功能，有入队(enqueue)和出队(poll,remove,其中remove阻塞等待提取队列元素)。<b style="color:red">ReferenceQueue对象本身保存了一个Reference类型的head节点，Reference封装了next字段，这样就是可以组成一个单向链表。这种元素包含Queue的方式，确实</b>同时ReferenceQueue提供了两个静态字段NULL，ENQUEUED. Null是内部定义的一个空类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">static ReferenceQueue&lt;Object&gt; NULL = new Null&lt;&gt;();</span><br><span class="line">static ReferenceQueue&lt;Object&gt; ENQUEUED = new Null&lt;&gt;();</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">这两个字段的主要功能：NULL是当我们构造Reference实例时queue传入null时，会默认使用NULL，这样在enqueue时判断queue是否为NULL,如果为NULL直接返回，入队失败。ENQUEUED的作用是防止重复入队，reference后会把其queue字段赋值为ENQUEUED,当再次入队时会直接返回失败。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">boolean enqueue(Reference&lt;? extends T&gt; r) &#123; /* Called only by Reference class */</span><br><span class="line">    synchronized (r) &#123;</span><br><span class="line">        // 如果已经enqueue了，就不需要再做</span><br><span class="line">        if (r.queue == ENQUEUED) return false;</span><br><span class="line">        synchronized (lock) &#123;</span><br><span class="line">            // 设置ENQUEUE</span><br><span class="line">            r.queue = ENQUEUED;</span><br><span class="line">            // 没有设置head的话，r开始为链表的头元素，否则就是头结点的插入</span><br><span class="line">            r.next = (head == null) ? r : head;</span><br><span class="line">            head = r;</span><br><span class="line">            // queue长度+1；</span><br><span class="line">            queueLength++;</span><br><span class="line">            if (r instanceof FinalReference) &#123;</span><br><span class="line">                // 如果是FinalReference的话，VM里面的计数+1</span><br><span class="line">                sun.misc.VM.addFinalRefCount(1);</span><br><span class="line">            &#125;</span><br><span class="line">            // 通知所有的lock.wait，这个是Reference里面的线程ReferenceHandler调用</span><br><span class="line">            lock.notifyAll();</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们来看看Reference的线程组，wait和notify调用的实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">private static class ReferenceHandler extends Thread &#123;</span><br><span class="line">    // 加入某个线程组里面去，取个名字</span><br><span class="line">    ReferenceHandler(ThreadGroup g, String name) &#123;</span><br><span class="line">        super(g, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void run() &#123;</span><br><span class="line">        for (;;) &#123;</span><br><span class="line"></span><br><span class="line">            Reference r;</span><br><span class="line">            synchronized (lock) &#123;</span><br><span class="line">                if (pending != null) &#123;</span><br><span class="line">                    r = pending;</span><br><span class="line">                    Reference rn = r.next;</span><br><span class="line">                    pending = (rn == r) ? null : rn;</span><br><span class="line">                    r.next = r;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        // 否则就进行阻塞等待，是在ReferenceQueue中调用的notify方法</span><br><span class="line">                        lock.wait();</span><br><span class="line">                    &#125; catch (InterruptedException x) &#123; &#125;</span><br><span class="line">                    continue;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Fast path for cleaners</span><br><span class="line">            // 如果Reference实现了Cleaner接口，那么就调用clean方法来获取我们想要的值</span><br><span class="line">            // 做一些清理操作。这个类在dt.jar中实现的。</span><br><span class="line">            if (r instanceof Cleaner) &#123;</span><br><span class="line">                ((Cleaner)r).clean();</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            ReferenceQueue q = r.queue;</span><br><span class="line">            // 将ReferenceQueue加入到Queue中</span><br><span class="line">            if (q != ReferenceQueue.NULL) q.enqueue(r);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">Reference与ReferenceQueue之间是如何工作的呢？Reference里有个静态字段pending，同时还通过静态代码块启动了Reference-handler thread。当一个Reference的referent被回收时，垃圾回收器会把reference添加到pending这个链表里，然后Reference-handler thread不断的读取pending中的reference，把它加入到对应的ReferenceQueue中。我们可以通过下面代码块来进行把SoftReference，WeakReference，PhantomReference与ReferenceQueue联合使用来验证这个机制。为了确保SoftReference在每次gc后，其引用的referent都被回收，我们需要加入-XX:SoftRefLRUPolicyMSPerMB=0参数，这个原理下文中会在讲。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 为了确保System.gc()后,SoftReference引用的referent被回收需要加入下面的参数</span><br><span class="line"> * -XX:SoftRefLRUPolicyMSPerMB=0</span><br><span class="line"> */</span><br><span class="line">public class ReferenceTest &#123;</span><br><span class="line">    private static List&lt;Reference&gt; roots = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        ReferenceQueue rq = new ReferenceQueue();</span><br><span class="line"></span><br><span class="line">        new Thread(new Runnable() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                int i=0;</span><br><span class="line">                while (true) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        // 这个是只读取pending里面的值</span><br><span class="line">                        Reference r = rq.remove();</span><br><span class="line">                        System.out.println(“reference:”+r);</span><br><span class="line">                        //为null说明referent被回收</span><br><span class="line">                        System.out.println( “get:”+r.get());</span><br><span class="line">                        i++;</span><br><span class="line">                        System.out.println( “queue remove num:”+i);</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        for(int i=0;i&lt;100000;i++) &#123;</span><br><span class="line">            byte[] a = new byte[1024*1024];</span><br><span class="line">            // 分别验证SoftReference,WeakReference,PhantomReference</span><br><span class="line">            Reference r = new SoftReference(a, rq);</span><br><span class="line">            //Reference r = new WeakReference(a, rq);</span><br><span class="line">            //Reference r = new PhantomReference(a, rq);</span><br><span class="line">            roots.add(r);</span><br><span class="line">            System.gc();</span><br><span class="line"></span><br><span class="line">            System.out.println(“produce”+i);</span><br><span class="line">            TimeUnit.MILLISECONDS.sleep(100);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过jstack命令可以看到对应的Reference Handler thread<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">“Reference Handler” #2 daemon prio=10 os_prio=31 tid=0x00007f8fb2836800 nid=0x2e03 in Object.wait() [0x000070000082b000]</span><br><span class="line">   java.lang.Thread.State: WAITING (on object monitor)</span><br><span class="line">        at java.lang.Object.wait(Native Method)</span><br><span class="line">        – waiting on &lt;0x0000000740008878&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.Object.wait(Object.java:502)</span><br><span class="line">        at java.lang.ref.Reference.tryHandlePending(Reference.java:191)</span><br><span class="line">        – locked &lt;0x0000000740008878&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">当reference与referenQueue联合使用的主要作用就是当reference指向的referent回收时(或者要被回收 如下文要讲的Finalizer)，提供一种通知机制，通过queue取到这些reference，来做额外的处理工作。当然，如果我们不需要这种通知机制，我们就不用传入额外的queue,默认使用NULL queue就会入队失败。</b></p>
+<h2 id="SoftReference"><a href="#SoftReference" class="headerlink" title="SoftReference"></a>SoftReference</h2><p>如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可用来实现内存敏感的高速缓存。 <b style="color:red">JVM不仅仅只会考虑当前内存情况，还会考虑软引用所指向的referent最近使用情况和创建时间来综合决定是否回收该referent。这部分需要考虑Hotspot的源码</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str=new String(&quot;abc&quot;);                                     // 强引用  </span><br><span class="line">SoftReference&lt;String&gt; softRef=new SoftReference&lt;String&gt;(str);     // 软引用</span><br></pre></td></tr></table></figure></p>
+<p>SoftReference的源代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class SoftReference&lt;T&gt; extends Reference&lt;T&gt; &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 时间戳时钟，垃圾回收机制更新</span><br><span class="line">     */</span><br><span class="line">    static private long clock;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用getter的时候会进行更新。当soft引用被声明时，VM使用这个字段，但是这个不是要求</span><br><span class="line">     */</span><br><span class="line">    private long timestamp;</span><br><span class="line"></span><br><span class="line">    public SoftReference(T referent) &#123;</span><br><span class="line">        super(referent);</span><br><span class="line">        this.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public SoftReference(T referent, ReferenceQueue&lt;? super T&gt; q) &#123;</span><br><span class="line">        super(referent, q);</span><br><span class="line">        this.timestamp = clock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用的时候计数</span><br><span class="line">     */</span><br><span class="line">    public T get() &#123;</span><br><span class="line">        T o = super.get();</span><br><span class="line">        if (o != null &amp;&amp; this.timestamp != clock)</span><br><span class="line">            this.timestamp = clock;</span><br><span class="line">        return o;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">这里需要特别注意的是：如果错误地使用了软引用，可能会引起频繁的gc，这个是大家都不想见到的，所以使用的时候还是需要注意一下。</b></p>
+<h2 id="弱引用（WeakReference）"><a href="#弱引用（WeakReference）" class="headerlink" title="弱引用（WeakReference）"></a>弱引用（WeakReference）</h2><p><b style="color:red">弱引用与软引用的区别在于：只具有弱引用的对象拥有更短暂的生命周期。在垃圾回收器线程扫描它所管辖的内存区域的过程中，一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。不过，由于垃圾回收器是一个优先级很低的线程，因此不一定会很快发现那些只具有弱引用的对象。相比SoftReference来说，WeakReference对JVM GC几乎是没有影响的。</b></p>
+<p><b style="color:red">弱引用可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。</b></p>
+<p>其实任何一个引用都可以与ReferenceQueue关联。</p>
+<h2 id="虚引用（PhantomReference）"><a href="#虚引用（PhantomReference）" class="headerlink" title="虚引用（PhantomReference）"></a>虚引用（PhantomReference）</h2><p><b style="color:red">“虚引用”顾名思义，就是形同虚设，与其他几种引用都不同，虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。</b></p>
+<p><b style="color:red">虚引用主要用来跟踪对象被垃圾回收器回收的活动。虚引用与软引用和弱引用的一个区别在于：虚引用必须和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之 关联的引用队列中。</b></p>
+<h2 id="强引用（StrongReference）"><a href="#强引用（StrongReference）" class="headerlink" title="强引用（StrongReference）"></a>强引用（StrongReference）</h2><p>就是我们平时的new，强引用是使用最普遍的引用。如果一个对象具有强引用，那垃圾回收器绝不会回收它。</p>
+<h2 id="FinalReference"><a href="#FinalReference" class="headerlink" title="FinalReference"></a>FinalReference</h2><p><b style="color:red">FinalReference 引用类型主要是为虚拟机提供的，提供 对象被gc前需要执行finalize方法的对象 的机制。</b></p>
+<p>FinalReference 很简单就是extend Reference类，没有做其他逻辑，只是把访问权限改为package,因此我们是无法直接使用的。Finalizer类是我们要讲的重点，它继承了FinalReference，并且是final 类型的。Finalize实现很简单，也是利用上面我们讲的ReferenceQueue VS Reference机制。</p>
+<h3 id="FinalizerThread"><a href="#FinalizerThread" class="headerlink" title="FinalizerThread"></a>FinalizerThread</h3><p><b style="color:red">Finalizer静态代码块里启动了一个deamon线程，我们通过jstack命令查看线程时，总会看到一个Finalizer线程，就是这个原因:</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">    * 启动一个FinalizerThread线程</span><br><span class="line">    */</span><br><span class="line">static &#123;</span><br><span class="line">    ThreadGroup tg = Thread.currentThread().getThreadGroup();</span><br><span class="line">    for (ThreadGroup tgn = tg;</span><br><span class="line">            tgn != null;</span><br><span class="line">            tg = tgn, tgn = tg.getParent());</span><br><span class="line">    Thread finalizer = new FinalizerThread(tg);</span><br><span class="line">    // 执行权限稍微低一些</span><br><span class="line">    finalizer.setPriority(Thread.MAX_PRIORITY - 2);</span><br><span class="line">    finalizer.setDaemon(true);</span><br><span class="line">    finalizer.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>FinalizerThread run方法是不断的从queue中去取Finalizer类型的reference，然后执行runFinalizer释放方。我们来看一下这个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private void runFinalizer() &#123;</span><br><span class="line">    synchronized (this) &#123;</span><br><span class="line">        // 如果已经执行过Finalized方法，返回</span><br><span class="line">        if (hasBeenFinalized()) return;</span><br><span class="line">        remove();</span><br><span class="line">    &#125;</span><br><span class="line">    try &#123;</span><br><span class="line">        Object finalizee = this.get();</span><br><span class="line">        if (finalizee != null &amp;&amp; !(finalizee instanceof java.lang.Enum)) &#123;</span><br><span class="line">            // 调用finalizee方法</span><br><span class="line">            invokeFinalizeMethod(finalizee);</span><br><span class="line">            /* Clear stack slot containing this variable, to decrease</span><br><span class="line">                the chances of false retention with a conservative GC */</span><br><span class="line">            finalizee = null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (Throwable x) &#123; &#125;</span><br><span class="line">    super.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">可以看出如果finalize方法中抛出异常会被直接吃掉</b></p>
+<h3 id="如何使用Finalizer"><a href="#如何使用Finalizer" class="headerlink" title="如何使用Finalizer"></a>如何使用Finalizer</h3><p><b style="color:red">只要类覆写了Object 上的finalize方法，方法体非空。那么这个类的实例都会被Finalizer引用类型引用的。下文中我们简称Finalizer 型的referent为finalizee。</b></p>
+<p>Finalizer的构造函数是private的，也就是不能通过new 来生成一个Fianlizer reference。只能通过静态的register方法来生成。同时Finalizer有个静态字段unfinalized，维护了一个未执行finalize方法的reference列表，在构造函数中通过add()方法把Finalizer引用本身加入到unfinalized列表中，同时关联finalizee和queue,实现通知机制。维护静态字段unfinalized的目的是为了一直保持对未未执行finalize方法的reference的强引用，防止被gc回收掉。</p>
+<p>那么register是被VM何时调用的呢？JVM通过VM参数 RegisterFinalizersAtInit 的值来确定何时调用register，RegisterFinalizersAtInit默认为true,则会在构造函数返回之前调用。</p>
+<h3 id="何时入queue"><a href="#何时入queue" class="headerlink" title="何时入queue"></a>何时入queue</h3><p>当一个finalizee 只剩Finalizer引用，没有其他引用时，需要被回收了，GC就会把该finalizee对应的reference放到Finalizer的refereneQueue中,等待FinalizerThread来执行finalizee的finalize方法，然后finalizee对象才能被GC回收。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.androidstar.cn/java%E5%AD%A6%E4%B9%A0%E6%95%99%E7%A8%8B%E4%B9%8Breference%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">java学习教程之Reference详解</a><br><a href="http://blog.csdn.net/mazhimazh/article/details/19752475" target="_blank" rel="noopener">Java 7之基础 - 强引用、弱引用、软引用、虚引用</a><br><a href="http://blog.csdn.net/u010412719/article/details/52035792" target="_blank" rel="noopener">《Java源码分析》：ReferenceQueue、Reference及其子类</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/深入理解System类及系统启动/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1883,184 +2058,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/sun-misc-Unsafe的学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/05/java/sun-misc-Unsafe的学习/" itemprop="url">sun.misc.Unsafe的学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T01:21:48+08:00">2018-03-05</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>以下sun.misc.Unsafe源码和demo基于jdk1.7；JUC的包中很多都使用了这个类的实例，这里我们需要进一步深入的学习。</p>
-<p>这个类的实现方法很多都是native的，所以研究起来并不容易，需要了解动态链接库做的一些事情，这里我就不深入研究了，源码是网上找的，不知道对不对，提供一种研究思路吧，所以这篇博文也就是简单地了解一下，日后可以根据具体的情况深入研究一下。</p>
-<h2 id="Unsafe类的作用"><a href="#Unsafe类的作用" class="headerlink" title="Unsafe类的作用"></a>Unsafe类的作用</h2><p>可以用来在任意内存地址位置处读写数据，可见，对于普通用户来说，使用起来还是比较危险的；</p>
-<p>另外，还支持一些CAS原子操作；</p>
-<h2 id="获取Unsafe对象"><a href="#获取Unsafe对象" class="headerlink" title="获取Unsafe对象"></a>获取Unsafe对象</h2><p>遗憾的是，Unsafe对象不能直接通过new Unsafe()或调用Unsafe.getUnsafe()获取，原因如下：</p>
-<ul>
-<li><p>不能直接new Unsafe()，原因是Unsafe被设计成单例模式，构造方法是私有的；</p>
-</li>
-<li><p>不能通过调用Unsafe.getUnsafe()获取，因为getUnsafe被设计成只能从引导类加载器（bootstrap class loader）加载，从getUnsafe的源码中也可以看出来，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@CallerSensitive</span><br><span class="line">public static Unsafe getUnsafe() &#123;</span><br><span class="line">    //得到调用该方法的Class对象</span><br><span class="line">    Class cc = Reflection.getCallerClass();</span><br><span class="line">    //判断调用该方法的类是否是引导类加载器（bootstrap class loader）</span><br><span class="line">    //如果不是的话，比如由AppClassLoader调用该方法，则抛出SecurityException异常</span><br><span class="line">    if (cc.getClassLoader() != null)</span><br><span class="line">        throw new SecurityException(&quot;Unsafe&quot;);</span><br><span class="line">    //返回单例对象</span><br><span class="line">    return theUnsafe;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>虽然我们不能通过以上方法得到Unsafe对象，但得Unsafe类中有个私有的静态全局属性theUnsafe（Unsafe实例对象），通过反射，可以获取到该成员属性theUnsafe对应的Field对象，并将其设置为可访问，从而得到theUnsafe具体对象，如下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line">        System.out.println(unsafe);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Unsafe类中的API"><a href="#Unsafe类中的API" class="headerlink" title="Unsafe类中的API"></a>Unsafe类中的API</h2><p>本地方法，功能是生成一个对象实例，但是不会运行该对象的构造方法；由于natUnsafe.cc版本较老，没找到对应的c++实现；<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/** Allocate an instance but do not run any constructor. Initializes the class if it has not yet been. */</span><br><span class="line">    public native Object allocateInstance(Class cls)</span><br><span class="line">        throws InstantiationException;</span><br></pre></td></tr></table></figure></p>
-<p>例子，利用Unsafe的allocateInstance方法，在未调用构造方法的情况下生成了对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">class User &#123;</span><br><span class="line">    private String name = &quot;&quot;;</span><br><span class="line">    private int age = 0;</span><br><span class="line"></span><br><span class="line">    public User() &#123;</span><br><span class="line">        this.name = &quot;test&quot;;</span><br><span class="line">        this.age = 22;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return name + &quot;: &quot; + age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line"></span><br><span class="line">        User user = (User) unsafe.allocateInstance(User.class);</span><br><span class="line">        System.out.println(user); //dont invoke constructor, print null: 0</span><br><span class="line">        </span><br><span class="line">        User userFromNormal = new User();</span><br><span class="line">        System.out.println(userFromNormal); //print test: 22</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:blue">objectFieldOffset方法，返回成员属性在内存中的地址相对于对象内存地址的偏移量</b><br>比较简单，就是返回成员属性内存地址相对于对象内存地址的偏移量，通过该方法可以计算一个对象在内存中的空间大小，方法是通过反射得到它的所有Field(包括父类继承得到的)，找出Field中偏移量最大值，然后对该最大偏移值填充字节数即为对象大小；</p>
-<p>关于该方法的使用例子可以看下面的修改内存数据的例子；</p>
-<p><b style="color:blue">putLong，putInt，putDouble，putChar，putObject等方法，直接修改内存数据（可以越过访问权限）</b><br>这里，还有put对应的get方法，很简单就是直接读取内存地址处的数据，不做举例；</p>
-<p> 我们可以举个putLong(Object, long, long)方法详细看下其具体实现，其它的类似，先看Java的源码，没啥好看的，就声明了一个native本地方法：</p>
-<p>三个参数说明下：</p>
-<p>Object o//对象引用<br>long offset//对象内存地址的偏移量<br>long x//写入的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public native void    putLong(Object o, long offset, long x);</span><br></pre></td></tr></table></figure></p>
-<p>还是看下natUnsafe.cc中的c++实现吧，很简单，就是计算要写入数据的内存地址，然后写入数据，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void sun::misc::Unsafe::putLong (jobject obj, jlong offset, jlong value)</span><br><span class="line">&#123;</span><br><span class="line">  jlong *addr = (jlong *) ((char *) obj + offset);//计算要修改的数据的内存地址=对象地址+成员属性地址偏移量</span><br><span class="line">  spinlock lock;//自旋锁，通过循环来获取锁， i386处理器需要加锁访问64位数据，如果是int，则不需要改行代码</span><br><span class="line">  *addr = value;//往该内存地址位置直接写入数据</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如下例子，即使User类的成员属性是私有的且没有提供对外的public方法，我们还是可以直接在它们的内存地址位置处写入数据，并成功；<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package concurrency;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line">import sun.misc.Unsafe;</span><br><span class="line">import sun.reflect.Reflection;</span><br><span class="line"></span><br><span class="line">class User &#123;</span><br><span class="line">    private String name = &quot;test&quot;; </span><br><span class="line">    private long id = 1;</span><br><span class="line">    private int age = 2;</span><br><span class="line">    private double height = 1.72;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return name + &quot;,&quot; + id + &quot;,&quot; + age + &quot;,&quot; + height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException,</span><br><span class="line">            SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        // 通过反射得到theUnsafe对应的Field对象</span><br><span class="line">        Field field = Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">        // 设置该Field为可访问</span><br><span class="line">        field.setAccessible(true);</span><br><span class="line">        // 通过Field得到该Field对应的具体对象，传入null是因为该Field为static的</span><br><span class="line">        Unsafe unsafe = (Unsafe) field.get(null);</span><br><span class="line"></span><br><span class="line">        User user = new User();</span><br><span class="line">        System.out.println(user); //打印test,1,2,1.72</span><br><span class="line">        </span><br><span class="line">        Class userClass = user.getClass();</span><br><span class="line">        Field name = userClass.getDeclaredField(&quot;name&quot;);</span><br><span class="line">        Field id = userClass.getDeclaredField(&quot;id&quot;);</span><br><span class="line">        Field age = userClass.getDeclaredField(&quot;age&quot;);</span><br><span class="line">        Field height = userClass.getDeclaredField(&quot;height&quot;);</span><br><span class="line">        //直接往内存地址写数据</span><br><span class="line">        unsafe.putObject(user, unsafe.objectFieldOffset(name), &quot;midified-name&quot;);</span><br><span class="line">        unsafe.putLong(user, unsafe.objectFieldOffset(id),100l);</span><br><span class="line">        unsafe.putInt(user, unsafe.objectFieldOffset(age), 101);</span><br><span class="line">        unsafe.putDouble(user, unsafe.objectFieldOffset(height), 100.1);</span><br><span class="line">        </span><br><span class="line">        System.out.println(user);//打印midified-name,100,101,100.1</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:blue">copyMemory、freeMemory</b><br>copyMemory：内存数据拷贝</p>
-<p>freeMemory：用于释放allocateMemory和reallocateMemory申请的内存</p>
-<p><b style="color:blue">CAS操作的方法，compareAndSwapInt，compareAndSwapLong等</b><br>看下natUnsafe.cc中的c++实现吧，加深理解，其实就是将内存值与预期值作比较，判断是否相等，相等的话，写入数据，不相等不做操作，返回旧数据；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">static inline bool</span><br><span class="line">compareAndSwap (volatile jint *addr, jint old, jint new_val)</span><br><span class="line">&#123;</span><br><span class="line">  jboolean result = false;</span><br><span class="line">  spinlock lock;</span><br><span class="line">  if ((result = (*addr == old)))</span><br><span class="line">    *addr = new_val;</span><br><span class="line">  return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* compareAndSwapObject(Object var1, long var2, Object var3, Object var4)</span><br><span class="line">* var1 操作的对象</span><br><span class="line">* var2 操作的对象属性偏移</span><br><span class="line">* var3 var2与var3比较，相等才更新</span><br><span class="line">* var4 更新值</span><br><span class="line">*/</span><br><span class="line">return UNSAFE.compareAndSwapObject(this, nextOffset, cmp, val)</span><br></pre></td></tr></table></figure>
-<p>J.U.C里原子类就是基于以上CAS操作实现的；</p>
-<p><b style="color:blue">getLongVolatile/putLongVolatile等等方法</b><br>这类方法使用volatile语义去存取数据，我的理解就是各个线程不缓存数据，直接在内存中读取数据；</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.wowotech.net/kernel_synchronization/spinlock.html" target="_blank" rel="noopener">Linux内核同步机制之（四）：spin lock</a><br><a href="http://ifeve.com/sun-misc-unsafe/" target="_blank" rel="noopener">并发编程网Java Magic. Part 4: sun.misc.Unsafe</a><br><a href="https://www.cnblogs.com/chenpi/p/5389254.html" target="_blank" rel="noopener">原文：sun.misc.Unsafe的理解</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2107,7 +2109,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">90</span>
+                    <span class="site-state-item-count">91</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2341,7 +2343,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">86</span>
+                      
+                    
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

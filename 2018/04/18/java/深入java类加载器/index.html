@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="概要对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。  启动类加载器(Bootstrap ClassLoader)：这个类加载器使用C++语言实现，并非C">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-04-18T11:29:38.000Z">
+<meta property="og:updated_time" content="2018-04-18T11:31:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入java类加载器">
 <meta name="twitter:description" content="概要对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。  启动类加载器(Bootstrap ClassLoader)：这个类加载器使用C++语言实现，并非C">
@@ -381,7 +381,7 @@
 <p>有趣发现这里也有模板方法模式，如果你想前后处理一些事情，可以重写preDefineClass、postDefineClass这两个方法，但是注意原来的方法时private的，你无法调用super里面的方法，这会带来很多的问题。</p>
 <p>当然defineClass本省就是一个重载方法，所以详细的信息请查看源码，这里就不多说明了，其实用到才关注，一般的时候是不用管的。</p>
 <h2 id="resolveClass方法"><a href="#resolveClass方法" class="headerlink" title="resolveClass方法"></a>resolveClass方法</h2><p>resolveClass 此方法负责完成Class对象的链接，如果链接过，则直接返回。</p>
-<h2 id="findLibrary-loadLiberay"><a href="#findLibrary-loadLiberay" class="headerlink" title="findLibrary/loadLiberay"></a>findLibrary/loadLiberay</h2><p>这两个方法其实是为了加载动态链接库使用的，以前我也分析过里面的代码，有些影响，这里就不做更多的解释了。</p>
+<h2 id="findLibrary-loadLiberay"><a href="#findLibrary-loadLiberay" class="headerlink" title="findLibrary/loadLiberay"></a>findLibrary/loadLiberay</h2><p>这两个方法其实是为了加载动态链接库使用的，以前我也分析过里面的代码，有些印象，这里就不做更多的解释了。</p>
 
       
     </div>
@@ -424,6 +424,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/18/java/理解Java的AQS/" rel="prev" title="理解Java的AQS">
+                理解Java的AQS <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -501,7 +505,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">90</span>
+                    <span class="site-state-item-count">91</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -735,7 +739,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">86</span>
+                      
+                    
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
