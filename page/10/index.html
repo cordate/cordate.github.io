@@ -276,6 +276,151 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/28/syslib/mmap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/28/syslib/mmap/" itemprop="url">mmap</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-28T11:21:10+08:00">2018-02-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/操作系统扩展/" itemprop="url" rel="index"><span itemprop="name">操作系统扩展</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在计算机中，mmap(2)是符合POSIX标准的Unix 系统调用，可将文件或设备映射到内存中。它是内存映射文件 I/O的一种方法。它自然地实现了需求分页，因为文件内容最初不是从磁盘读取的，根本不使用物理RAM。在访问特定位置后，实际从磁盘读取数据的操作将以“懒惰”方式执行。在不再需要存储器之后，munmap(2)指向它的指针很重要。保护信息可以使用管理mprotect(2)，特殊处理可以使用强制执行madvise(2)。</p>
+<p>个人的理解就是，直接跳过操作系统的内核空间，直接在你的进程内存空间映射到文件系统，这样就可已省去用户空间到内核空间的拷贝操作，可以多进程共同访问文件，但是会出现一些并发同步修改等问题。</p>
+<p>详细的说明见引文，里面已经有很好的说明了。</p>
+<h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#_label0" target="_blank" rel="noopener">认真分析mmap：是什么 为什么 怎么用</a><br><a href="http://man7.org/linux/man-pages/man2/mmap.2.html" target="_blank" rel="noopener">Linux &gt; man-pages</a><br><a href="http://akaedu.github.io/book/ch28s08.html" target="_blank" rel="noopener">mmap</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/02/27/database/Mycat简介/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1164,7 +1309,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">95</span>
+                    <span class="site-state-item-count">96</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
