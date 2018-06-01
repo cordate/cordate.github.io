@@ -276,6 +276,237 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/01/blockchain/corda/Cordapp基础知识/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/01/blockchain/corda/Cordapp基础知识/" itemprop="url">Cordapp基础知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-01T10:17:22+08:00">2018-06-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>CorDapps（Corda分布式应用程序）是在Corda平台上运行的分布式应用程序。CorDapp的目标是允许节点就分类账更新达成一致。他们通过定义Corda节点所有者可以通过RPC调用调用的流程来实现此目标：</p>
+<p><img src="https://docs.corda.net/releases/release-V3.1/_images/node-diagram.png" alt=""></p>
+<p>Cordapps由以下关键组件组成：</p>
+<ul>
+<li>状态： 达成协议的事实</li>
+<li>合约： 定义构成有效分类账更新的内容</li>
+<li>服务： 在节点内提供长寿命的工具</li>
+<li>序列化白名单： 限制节点从网络线路接收的类型</li>
+</ul>
+<p>每个Cordapp安装在单节点级别，而不是网络本身。例如，节点所有者可以选择安装Bond Trading CorDapp，并具有以下组件：</p>
+<ul>
+<li><code>BondState</code>: 用来代表债券，作为账本上的事实</li>
+<li><code>BondContract</code>: 用来管理账本有效更新包括<code>BondState</code>状态</li>
+<li>三个流程：<ul>
+<li><code>IssueBondFlow</code>: 允许新的<code>BondState</code>状态发布到账本上</li>
+<li><code>TradeBondFlow</code>: 允许存在的<code>BondState</code>状态在账本上进行买进和卖出。</li>
+<li><code>ExitBondFlow</code>: 允许存在的<code>BondState</code>状态从账本上退出</li>
+</ul>
+</li>
+</ul>
+<p>安装此CorDapp后，节点所有者将能够使用CorDapp定义的流程来允许与发行，出售，购买和退出债券有关的分类帐更新。</p>
+<h2 id="编写一个CorDapp"><a href="#编写一个CorDapp" class="headerlink" title="编写一个CorDapp"></a>编写一个CorDapp</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p>每个CorDapp组件都采用JVM类的形式，该JVM类子类或实现Corda库类型：</p>
+<ul>
+<li>流程子类<code>FlowLogic</code></li>
+<li>状态实现 <code>ContractState</code></li>
+<li>合约实现 <code>Contract</code></li>
+<li>服务子类 <code>SingletonSerializationToken</code></li>
+<li>序列化白名单实现：<code>SerializationWhitelist</code></li>
+</ul>
+<h3 id="Web内容和RPC客户端"><a href="#Web内容和RPC客户端" class="headerlink" title="Web内容和RPC客户端"></a>Web内容和RPC客户端</h3><p>出于测试目的，CorDapps还可能包括：</p>
+<ul>
+<li>API和静态网页内容：由Corda内置的网络服务器提供。这个网络服务器不是生产就绪的，只能用于测试目的</li>
+<li>RPC客户端：这些程序可以自动执行通过RPC与节点进行交互的过程</li>
+</ul>
+<p>在生产环境中，应该使用生产就绪的网络服务器，这些文件应该移到不同的模块或项目中，以便在构建时不会膨胀CorDapp。</p>
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><p>您应该将项目的结构基于Java或Kotlin模板：</p>
+<ul>
+<li><a href="https://github.com/corda/cordapp-template-java" target="_blank" rel="noopener">Java模板CorDapp</a></li>
+<li><a href="https://github.com/corda/cordapp-template-kotlin" target="_blank" rel="noopener">Kotlin模板CorDapp</a></li>
+</ul>
+<p>该项目应该分为两个模块：</p>
+<ul>
+<li><code>cordapp-contracts-states</code>包含合约和状态等类的模块，将作为流程的一部分通过线路发送</li>
+<li><code>cordapp</code>含有剩余的类模块</li>
+</ul>
+<p>每个模块将被编译到它自己的CorDapp中。当节点同意分类帐更新时，这可以最小化必须通过网络发送的JAR的大小。</p>
+<h3 id="模块1-cordapp-contracts-states"><a href="#模块1-cordapp-contracts-states" class="headerlink" title="模块1 - cordapp-contracts-states"></a>模块1 - cordapp-contracts-states</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└── main</span><br><span class="line">    └── java</span><br><span class="line">        └── com</span><br><span class="line">            └── template</span><br><span class="line">                ├── TemplateContract.java</span><br><span class="line">                └── TemplateState.java</span><br></pre></td></tr></table></figure>
+<h3 id="模块2-cordapp"><a href="#模块2-cordapp" class="headerlink" title="模块2 - cordapp"></a>模块2 - cordapp</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── main</span><br><span class="line">│   ├── java</span><br><span class="line">│   │   └── com</span><br><span class="line">│   │       └── template</span><br><span class="line">│   │           ├── TemplateApi.java</span><br><span class="line">│   │           ├── TemplateClient.java</span><br><span class="line">│   │           ├── TemplateFlow.java</span><br><span class="line">│   │           ├── TemplateSerializationWhitelist.java</span><br><span class="line">│   │           └── TemplateWebPlugin.java</span><br><span class="line">│   └── resources</span><br><span class="line">│       ├── META-INF</span><br><span class="line">│       │   └── services</span><br><span class="line">│       │       ├── net.corda.core.serialization.SerializationWhitelist</span><br><span class="line">│       │       └── net.corda.webserver.services.WebServerPluginRegistry</span><br><span class="line">│       ├── certificates</span><br><span class="line">│       └── templateWeb</span><br><span class="line">├── test</span><br><span class="line">│   └── java</span><br><span class="line">│       └── com</span><br><span class="line">│           └── template</span><br><span class="line">│               ├── ContractTests.java</span><br><span class="line">│               ├── FlowTests.java</span><br><span class="line">│               └── NodeDriver.java</span><br><span class="line">└── integrationTest</span><br><span class="line">    └── java</span><br><span class="line">        └── com</span><br><span class="line">            └── template</span><br><span class="line">                └── DriverBasedTest.java</span><br></pre></td></tr></table></figure>
+<p>这里面需要注意的是<code>test</code>是包含示例单元测试，以及用于从IntelliJ运行CorDapp的节点驱动程序. <code>integrationTest</code>是包含一个示例集成测试。这里需要注意两者的区别。</p>
+<p>在<code>main</code>中，有以下的几个目录：</p>
+<ul>
+<li><code>resources/META-INF/services</code> 包含CorDapp的序列化白名单和网页插件的注册管理机构</li>
+<li><code>resources/certificates</code> 包含用于测试目的的虚拟证书</li>
+<li><code>resources/templateWeb</code> 包含一个虚拟的前端</li>
+<li><code>java</code>（或<code>kotlin</code>在Kotlin模板中），其中包括我们的CorDapp的源代码</li>
+</ul>
+<p>我们的CorDapp的源代码分解如下：</p>
+<ul>
+<li><code>TemplateFlow.java</code>，其中包含一个虚拟<code>FlowLogic</code>子类</li>
+<li><code>TemplateState.java</code>，其中包含一个虚拟<code>ContractState</code>实现</li>
+<li><code>TemplateContract.java</code>，其中包含一个虚拟<code>Contract</code>实现</li>
+<li><code>TemplateSerializationWhitelist.java</code>，其中包含一个虚拟<code>SerializationWhitelist</code>实现</li>
+</ul>
+<p>在开发你的CorDapp时，你应该首先修改这些类来定义你的CorDapp的组件。一个单一的CorDapp可以定义多个流程，状态和合同。</p>
+<p><b style="color:red">该模板还包含一个Web API和RPC客户端：</b></p>
+<ul>
+<li><code>TemplateApi.java</code></li>
+<li><code>TemplateClient.java</code></li>
+<li><code>TemplateWebPlugin.java</code></li>
+</ul>
+<p>这些用于测试目的，并将在生产CorDapp中删除。</p>
+<h3 id="学习的资源"><a href="#学习的资源" class="headerlink" title="学习的资源"></a>学习的资源</h3><p>在编写CorDapp时，您应该查阅以下资源：</p>
+<ul>
+<li><a href="https://docs.corda.net/releases/release-V3.1/getting-set-up.html" target="_blank" rel="noopener">快速设置</a>来设置你的开发环境</li>
+<li>你好，世界！教程来编写你的第一个CorDapp</li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/cordapp-build-systems.html" target="_blank" rel="noopener">构建一个CorDapp</a>来构建和运行您的CorDapp</li>
+<li>该API文档阅读有关开发CorDapps可用的API<ul>
+<li>还有一个<a href="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html" target="_blank" rel="noopener">cheatsheet</a>重新说明关键类型</li>
+</ul>
+</li>
+<li>该<a href="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html" target="_blank" rel="noopener">流程指南</a>看如何执行常见任务流的代码示例</li>
+<li><a href="https://www.corda.net/samples/" target="_blank" rel="noopener">CorDapps实例程序</a>显示Corda功能的各个部分</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/31/blockchain/corda/Corda基础学习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3129,206 +3360,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/12/编译原理/LLVM简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/12/编译原理/LLVM简介/" itemprop="url">LLVM简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T15:28:52+08:00">2018-04-12</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编译原理/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是LLVM"><a href="#什么是LLVM" class="headerlink" title="什么是LLVM"></a>什么是LLVM</h2><p>官方的解释是：LLVM可以被看作是一系列的编译器和工具链技术的集合，而且它们是模块化并且是可重用的。官方网站是：<a href="http://llvm.org/" target="_blank" rel="noopener">http://llvm.org/</a> 。 不过从名称上看像一个虚拟机，然而与虚拟机没有一点关系，LLVM是这个项目的名称而已。</p>
-<p>LLVM最初是伊利诺伊大学的一个研究项目，其目标是提供一种现代的，基于<a href="https://zh.wikipedia.org/wiki/%E9%9D%99%E6%80%81%E5%8D%95%E8%B5%8B%E5%80%BC%E5%BD%A2%E5%BC%8F" target="_blank" rel="noopener">SSA</a>（static single assignment form，静态单赋值形式）的编译策略，能够支持任意编程语言的静态和动态编译。 从那时起，LLVM已经发展成为一个由多个子项目组成的综合项目，其中许多子项目正在各种商业和开源项目的生产中使用，并且被广泛用于学术研究。 LLVM项目中的代码遵循“UIUC”BSD-Style许可证.</p>
-<p>LLVM的主要子项目有：</p>
-<ol>
-<li>LLVM核心库提供了一个独立于现代的源和目标的<a href="http://llvm.org/docs/Passes.html" target="_blank" rel="noopener">优化器</a>，以及支持许多流行CPU的<a href="http://llvm.org/docs/CodeGenerator.html" target="_blank" rel="noopener">代码生成</a>（以及一些不太常见的CPU）。这些库是围绕一个<a href="http://llvm.org/docs/LangRef.html" target="_blank" rel="noopener">良好规范</a>的代码表示而建立的，称为LLVM<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E9%96%93%E8%AA%9E%E8%A8%80" target="_blank" rel="noopener">中间语言</a>（“LLVM IR”）。 LLVM Core库有<a href="http://llvm.org/docs/" target="_blank" rel="noopener">详细的文档</a>，并且<a href="http://llvm.org/docs/tutorial/" target="_blank" rel="noopener">使用LLVM用作优化器和代码生成器</a>，将使你特别容易地将创建自己的语言（或移植现有的编译器）。</li>
-<li><a href="http://clang.llvm.org/" target="_blank" rel="noopener">Clang</a>是一种“LLVM原生”的C/C++/Objective-C编译器，它旨在提供惊人的快速编译（例如，在编译调试配置中编译Objective-C代码时<a href="http://clang.llvm.org/features.html#performance" target="_blank" rel="noopener">比GCC快大约3倍</a>），非常有用的<a href="http://clang.llvm.org/diagnostics.html" target="_blank" rel="noopener">错误和警告消息</a>，为构建优秀的源代码级工具提供了一个平台。<a href="http://clang-analyzer.llvm.org/" target="_blank" rel="noopener">Clang静态分析器</a>是一个可以自动发现代码中的错误的工具，并且它是使用Clang前端作为库来解析C/C++代码的工具。</li>
-<li><a href="http://lldb.llvm.org/" target="_blank" rel="noopener">LLDB</a>项目建立在由LLVM和Clang提供的库上，以提供一个出色的本地调试器。 它使用Clang AST和表达式解析器，LLVM JIT，LLVM反汇编器等，以便提供“正常工作”的体验。 在加载符号时，它比GDB更快速，内存效率更高。</li>
-<li><a href="http://libcxx.llvm.org/" target="_blank" rel="noopener">libc++</a>和<a href="http://libcxxabi.llvm.org/" target="_blank" rel="noopener">libc++ ABI</a>项目提供了C++标准库的标准一致性和高性能实现，包括对C++11的全面支持。</li>
-<li><a href="http://compiler-rt.llvm.org/" target="_blank" rel="noopener">编译器rt</a>项目提供高级优化的低级代码生成器支持例程的实现，例如<code>“__fixunsdfdi”</code>以及当目标没有执行核心IR操作的短序列本机指令时生成的其他调用。 它还为动态测试工具（如<a href="http://clang.llvm.org/docs/AddressSanitizer.html" target="_blank" rel="noopener">AddressSanitizer</a>，<a href="http://clang.llvm.org/docs/ThreadSanitizer.html" target="_blank" rel="noopener">ThreadSanitizer</a>，<a href="http://clang.llvm.org/docs/MemorySanitizer.html" target="_blank" rel="noopener">MemorySanitizer</a>和<a href="http://clang.llvm.org/docs/DataFlowSanitizer.html" target="_blank" rel="noopener">DataFlowSanitizer</a>）提供了运行时库的实现。</li>
-<li><a href="http://openmp.llvm.org/" target="_blank" rel="noopener">OpenMP</a>子项目提供<a href="http://www.openmp.org/" target="_blank" rel="noopener">OpenMP</a> Runtime，以便与Clang中的OpenMP实现一起使用。</li>
-<li><a href="http://polly.llvm.org/" target="_blank" rel="noopener">polly</a>项目实现了一套缓存局部优化以及使用多面体模型的自动并行和向量化。</li>
-<li><a href="http://libclc.llvm.org/" target="_blank" rel="noopener">libclc</a>项目旨在实现OpenCL标准库。</li>
-<li><a href="http://klee.llvm.org/" target="_blank" rel="noopener">klee</a>项目实现了一个“符号虚拟机”，它使用定理证明器来尝试评估程序中的所有动态路径，以努力寻找错误并证明函数的属性。 klee的一个主要特点是它可以在检测到错误的情况下生成一个测试用例。</li>
-<li><a href="http://safecode.cs.illinois.edu/" target="_blank" rel="noopener">SAFECode</a>项目是用于C/C++程序的内存安全编译器。它使用运行时检查代码来检测运行时的内存安全错误（例如，缓冲区溢出）。它可以用来保护软件免受安全攻击，也可以用作Valgrind之类的内存安全错误调试工具。</li>
-<li><a href="http://lld.llvm.org/" target="_blank" rel="noopener">lld</a>项目旨在成为clang/llvm的内置链接器。目前，clang必须调用系统链接器来生成可执行文件。</li>
-</ol>
-<p>除了LLVM的官方子项目之外，还有各种各样<a href="http://llvm.org/ProjectsWithLLVM/" target="_blank" rel="noopener">使用LLVM组件执行各种任务的其他项目</a>。 通过这些外部项目，您可以使用LLVM编译Ruby，Python，Haskell，Java，D，PHP，Pure，Lua和一些其他语言。 LLVM的一个主要优势是其多功能性，灵活性和可重用性，这就是为什么它被用于如此广泛的各种不同任务的原因：从Lua等嵌入式语言的轻量级JIT编译到编译Fortran代码以实现大规模超级电脑。</p>
-<p>和其他所有事情一样，LLVM拥有广泛而友好的社区，他们对构建优秀的底层工具感兴趣。如果您有兴趣参与，首先要浏览<a href="http://blog.llvm.org/" target="_blank" rel="noopener">LLVM博客</a>并注册<a href="http://lists.llvm.org/mailman/listinfo/llvm-dev" target="_blank" rel="noopener">LLVM Developer邮件列表</a>。 有关如何发送补丁程序，获取提交权限以及版权和许可证主题的信息，请参阅<a href="http://llvm.org/docs/DeveloperPolicy.html" target="_blank" rel="noopener">LLVM开发者规则</a>。</p>
-<h2 id="关于LLVM"><a href="#关于LLVM" class="headerlink" title="关于LLVM"></a><b style="color:red">关于LLVM</b></h2><p><b style="color:green">看上面的说明可能有点懵，但其实就是LLVM定义了一种<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E9%96%93%E8%AA%9E%E8%A8%80" target="_blank" rel="noopener">中间语言</a>或称<a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E4%B8%AD%E9%97%B4%E8%AF%AD%E8%A8%80" target="_blank" rel="noopener">通用中间语言</a>,提供了丰富的中间码(IR),这样就为我们创建自己的语言提供了极大的便利，其实就是感觉自己用IR去生成自己的命令，类似于CPU中的微指令了。另外就是将自己的语言转成对应的LLVM IR，那么就可以直接使用LLVM子项目中的JIT，这样你就不用自己写虚拟机了，的确是带来了极大的遍历。</b></p>
-<p><b style="color:blue">再比如像solidity这样的语言需要运行在以太坊的CPP节点，Go节点，Parity的Scala节点，这样的话我们要写很多的编译器和虚拟机，但是有了LLVM后，一切都不用担心了，实现起来还是比较靠谱的，不是吗？</b></p>
-<p><b style="color:green">另外通过LLVM我们可以实现不同语言之间的互转，比如C++代码转成node代码。中间只要通过LLVM就可以了。以前不明白微软怎么支持多种语言实现在win10上安装，现在终于有思路了，只是微软要写多种编译器，可能这个过程比较难吧，他们放弃了。还有就比如以太坊的<a href="https://github.com/ethereum/solc-bin" target="_blank" rel="noopener">solc-bin</a>里面有用的文件只有一个7M多的js文件，而且还是压缩的，从ReadMe中我们可以发现，这个项目中的文件都是通过emscripten生成的；而emscripten是将LLVM中间语言转化为node代码，一切已然明了。</b></p>
-<p><b style="color:blue">所以我觉得学习LLVM语言还是很有必要的过程，应该深入去学习一下。</b></p>
-<h2 id="关于emscripten"><a href="#关于emscripten" class="headerlink" title="关于emscripten"></a>关于emscripten</h2><p>这是一个很棒的项目，将LLVM中间语言转化为node的代码。更多的东西就不用多介绍了，也不进行深入地学习了，这要精通node的编译器和语法知识才行，我就读读Readme、WIKI和api文档就好了。下面列一下学习的资料吧！<br><a href="https://github.com/kripken/emscripten" target="_blank" rel="noopener">官方github项目</a><br><a href="https://github.com/kripken/emscripten/wiki" target="_blank" rel="noopener">Emscripten Wiki</a><br><a href="http://kripken.github.io/emscripten-site/index.html" target="_blank" rel="noopener">Emscripten 文档</a></p>
-<h2 id="LLVM的命令指南"><a href="#LLVM的命令指南" class="headerlink" title="LLVM的命令指南"></a>LLVM的命令指南</h2><p>以下文档是所有LLVM工具的命令描述。 这些页面描述如何使用LLVM命令以及它们的选项。 请注意，这些页面没有描述所有工具可用的所有选项。 要获得完整列表，请将–help（常规选项）或–help-hidden（常规和调试选项）参数传递给您感兴趣的工具。</p>
-<h3 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h3><ul>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-as.html" target="_blank" rel="noopener">llvm-as - LLVM汇编程序</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-dis.html" target="_blank" rel="noopener">llvm-dis - LLVM反汇编程序</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/opt.html" target="_blank" rel="noopener">opt - LLVM优化器</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llc.html" target="_blank" rel="noopener">llc - LLVM静态编译器</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/lli.html" target="_blank" rel="noopener">lli - 直接从LLVM位码执行程序</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-link.html" target="_blank" rel="noopener">llvm-link - LLVM位码链接器</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-ar.html" target="_blank" rel="noopener">llvm-ar - LLVM归档打包 archiver</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-lib.html" target="_blank" rel="noopener">llvm-lib - LLVM lib.exe lib.exe兼容库工具</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-nm.html" target="_blank" rel="noopener">llvm-nm - 列出LLVM位码和目标文件的符号表</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-config.html" target="_blank" rel="noopener">llvm-config - 打印LLVM编译选项</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-diff.html" target="_blank" rel="noopener">llvm-diff - LLVM结构差异</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-cov.html" target="_blank" rel="noopener">llvm-cov - 发布覆盖信息</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-profdata.html" target="_blank" rel="noopener">llvm-profdata - 配置数据工具</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-stress.html" target="_blank" rel="noopener">llvm-stress - 生成随机的.ll文件</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-symbolizer.html" target="_blank" rel="noopener">llvm-symbolizer - 将地址转换为源代码位置</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-dwarfdump.html" target="_blank" rel="noopener">llvm-dwarfdump - 转储并验证DWARF调试信息</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/dsymutil.html" target="_blank" rel="noopener">dsymutil - 处理归档的DWARF调试符号文件</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-mca.html" target="_blank" rel="noopener">llvm-mca - LLVM机器代码分析器</a></li>
-</ul>
-<h3 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a>调试工具</h3><ul>
-<li><a href="http://llvm.org/docs/CommandGuide/bugpoint.html" target="_blank" rel="noopener">bugpoint - 自动测试案例缩减工具</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-extract.html" target="_blank" rel="noopener">llvm-extract - 从LLVM模块中提取函数</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-bcanalyzer.html" target="_blank" rel="noopener">llvm-bcanalyzer - LLVM位码分析器</a></li>
-</ul>
-<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><ul>
-<li><a href="http://llvm.org/docs/CommandGuide/FileCheck.html" target="_blank" rel="noopener">FileCheck - 灵活的模式匹配文件验证器</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/tblgen.html" target="_blank" rel="noopener">tblgen - 目标描述到C ++代码生成器</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/lit.html" target="_blank" rel="noopener">lit - LLVM综合测试仪</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-build.html" target="_blank" rel="noopener">llvm-build - LLVM项目构建实用程序</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-exegesis.html" target="_blank" rel="noopener">llvm-exegesis - LLVM机器指令基准</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-pdbutil.html" target="_blank" rel="noopener">llvm-pdbutil - PDB文件取证和诊断</a></li>
-<li><a href="http://llvm.org/docs/CommandGuide/llvm-readobj.html" target="_blank" rel="noopener">llvm-readobj - LLVM对象读取器</a></li>
-</ul>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://llvm.org/" target="_blank" rel="noopener">The LLVM Compiler Infrastructure</a><br><a href="http://llvm.org/docs/CommandGuide/" target="_blank" rel="noopener">LLVM Command Guide</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8232943" target="_blank" rel="noopener"> LLVM每日谈之七 Clang</a><br><a href="https://blog.csdn.net/snsn1984/article/details/8593380" target="_blank" rel="noopener">七天LLVM零基础入门（Linux版本）——第一天</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3380,7 +3411,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">96</span>
+                    <span class="site-state-item-count">97</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

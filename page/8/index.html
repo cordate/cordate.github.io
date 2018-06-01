@@ -276,6 +276,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/12/blockchain/以太坊智能合约部署调用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/12/blockchain/以太坊智能合约部署调用/" itemprop="url">以太坊智能合约部署调用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T20:43:17+08:00">2018-03-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>之前一直在学习以太坊的知识，后来停了两周，于是让下面两个人帮忙学习一下。之前我在学习的时候，成功地发布了智能合约，但是在调用的时候出现了问题，没有调用成功。下面来总结一下智能合约的知识，加上一些自我的理解，只是理解，因为这种新技术，还是需要研究完源码之后才能最终确定。之前看过精通比特币，叹为观止，也在研究bitcoinj的源码，但是有些吃力，有时间还是要继续。</p>
+<h2 id="什么是智能合约"><a href="#什么是智能合约" class="headerlink" title="什么是智能合约"></a>什么是智能合约</h2><p>这个就不做更多的解释了，人类社会一切皆以信用为准。传统方式解决信用问题一般都是法律合同、进行公证、背书、押金等等手段，但是这些问题解决了吗？还是没有，社会的信用问题还是存在，老赖也是比比皆是。于是就有了用代码来代替合同，来重构信用的问题。因为代码是死的，没有情感，也没有人情，就是一个冰冷、严肃的法官。任何在这里只会得到公正的判决，没有同情分，没有金权交易。</p>
+<p>也许是自欺欺人，这种东西被金融参与后，就不再那么单纯，从而成了一种金融噱头，开始在市场中疯狂割韭菜。这就是我们说的代币，以及基于代币衍生出的各种情怀。</p>
+<p>OK，这就是智能合约。良好的愿景，只是还在天上飘！</p>
+<h2 id="solidity"><a href="#solidity" class="headerlink" title="solidity"></a>solidity</h2><p>这是以太坊的智能合约语言，你要说它最像语言中的哪种，我觉得它跟Go走得近。这也难怪，搞了一个ABI格式，这个ABI格式就是合约的解析结果，主要是方法相关的数据。我用node.js编译了一个合约，我们来看一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">[ &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;vote&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;proposals&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;chairperson&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;delegate&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;winningProposal&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: false,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;giveRightToVote&apos;,</span><br><span class="line">    outputs: [],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [Object],</span><br><span class="line">    name: &apos;voters&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; constant: true,</span><br><span class="line">    inputs: [],</span><br><span class="line">    name: &apos;winnerName&apos;,</span><br><span class="line">    outputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;view&apos;,</span><br><span class="line">    type: &apos;function&apos; &#125;,</span><br><span class="line">  &#123; inputs: [Object],</span><br><span class="line">    payable: false,</span><br><span class="line">    stateMutability: &apos;nonpayable&apos;,</span><br><span class="line">    type: &apos;constructor&apos; &#125; ] &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个由于是node的输出，所以会出现Object的对象，以太坊系统在启动的时候会attach一个js console。所以我们node使用web3连上去，会有和节点类似的js console。至于怎么做的，我想大家都明白，我也没研究这么深，这里面的知识太多了，还是需要去研究源码才行，目前我只研究到启动中如何加载账户的地方。</p>
+<p>那么如何理解这个ABI呢？网络中的协议，只要符合这个ABI规范，那么你可以使用说有的语言去调用智能合约，你调用的就是这个ABI里面定义的一个方法。这就是我对ABI最直观的认识。</p>
+<h2 id="如何发布智能合约"><a href="#如何发布智能合约" class="headerlink" title="如何发布智能合约"></a>如何发布智能合约</h2><p>我是利用官方的web3进行调用的，当然官方提供了很多其他语言的实现，但是有些操作麻烦。但是web3的调用方式是最直接的，因为，你可以使用node，随心所欲地进行变量的输出，有交互式shell。有时直接node运行一个命令，有时进入node shell，import一个模块，做一些基础的工作，然后自己直接shell操作，可方便了。这样我可以自己进行web3命令的进一步封装。超赞。</p>
+<p>我是使用solc这个npm库，进行编译的，所以需要首先<code>npm install -g solc</code>进行安装。然后写了一个file模块遍历指定目录下的所有<code>*.solc</code>结尾的文件，读取内容（不要担心文件太大，内存放不下，怎么可能？智能合约没多大，大了就是程序员有问题）。为了使用配置，所以又引入yml文件解析模块，进行配置参数的读取。build模块负责链接节点进行web3链接和合约的编译。deploy模块负责解锁地址，发布合约，提供发布回调记录合约地址、交易hash。</p>
+<h3 id="合约编译"><a href="#合约编译" class="headerlink" title="合约编译"></a>合约编译</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// find solidity文件，并读取内容进行编译</span><br><span class="line">var input = &#123;&#125;;</span><br><span class="line">new fileUtils(conf.build.dir, (filePath, data) =&gt; &#123;</span><br><span class="line">    input[filePath] = data;</span><br><span class="line">&#125;).listAllSync();</span><br><span class="line"></span><br><span class="line">// compile all contracts</span><br><span class="line">let compiledContract = solc.compile(&#123; sources: input &#125;, 1);</span><br><span class="line">// 取得合约的ABI</span><br><span class="line">let abi = compiledContract.contracts[conf.build.contract].interface;</span><br><span class="line">// 合约的二进制代码</span><br><span class="line">let bytecode = compiledContract.contracts[conf.build.contract].bytecode;</span><br><span class="line">// hex start with 0x</span><br><span class="line">bytecode = bytecode.startsWith(&apos;0x&apos;) ? bytecode : &apos;0x&apos;.concat(bytecode);</span><br><span class="line">// 取得合约类型（其实就是compiledContract.contracts[conf.build.contract]）</span><br><span class="line">let MyContract = web3.eth.contract(JSON.parse(abi));</span><br></pre></td></tr></table></figure>
+<p>这就是build的大致内容，这个合约其实就是ABI的抽象。下面看一下deploy的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">deploy() &#123;</span><br><span class="line">    this.unlockAccount();</span><br><span class="line"></span><br><span class="line">    this.demoContract = this.MyContract.new(67,&quot;gavin&quot;, &quot;wybert&quot;, &quot;jacket&quot;, &#123;</span><br><span class="line">        data: this.bytecode,</span><br><span class="line">        from: this.sendAddress,</span><br><span class="line">        gas: 4692000</span><br><span class="line">    &#125;, (err, myContract) =&gt; &#123;</span><br><span class="line">        if (!err) &#123;</span><br><span class="line">            console.log(&quot;合约发布成功！&quot;);</span><br><span class="line">            if (!myContract.address) &#123;</span><br><span class="line">                console.log(&quot;合约发布交易hash：&quot;, myContract.transactionHash);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                console.log(&quot;合约发布成功后地址：&quot;, myContract.address);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            console.log(&quot;合约发布失败：&quot;, err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    console.log(&quot;发布的智能合约：&quot;, this.demoContract);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">unlockAccount() &#123;</span><br><span class="line">    return web3.personal.unlockAccount(this.sendAddress, this.password);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里是先解锁节点中第一个地址，然后使用第一个地址去调用发布合约。注意这个地址是我搭建一个以太坊私有集群，所以这段代码这样写是没有问题。但是一般为了安全，节点中没有账户的，所以这段代码或许不是那么实用。如果是这种情况，我们该如何处理呢？由于实践起来比较麻烦，这里我就不写代码，进行试验了。</p>
+<p>在web3中有sendRawTransaction的方法，还有一个sign方法，一个是用于发送原始的交易信息，一个是用于对数据进行签名。有了这两个方法之后，我们就再也不用去理会节点了，节点就是一个广播器而已，不需要存放账户。需要的时候我们自己会进行签名。</p>
+<h3 id="合约调用"><a href="#合约调用" class="headerlink" title="合约调用"></a>合约调用</h3><p>协议写好了，那么如何进行智能合约的调用呢？这里还是用到ABI。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 通过ABI找到Contract类</span><br><span class="line">let MyContract = web3.eth.contract(JSON.parse(abi));</span><br><span class="line">// 利用地址进行实例化</span><br><span class="line">let myContract = MyContract.at(&quot;0x26f3476d4e84d44d1c8c159cbe06fed55c3cfbe8&quot;);</span><br><span class="line">// 解锁账户</span><br><span class="line">web3.personal.unlockAccount(web3.eth.accounts[0], this.password);</span><br><span class="line">// 发起调用，方法为proposals， 参数为0</span><br><span class="line">myContract.proposals.sendTransaction(0 ,&#123;from: web3.eth.accounts[0]&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>注意所有的调用我都是在node console下进行的。上面只是简化的代码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; s.proposals.sendTransaction(900000, &#123;from: build.web3.eth.accounts[0]&#125;)</span><br><span class="line">&apos;0x68aaa4ee619f3940a31080fc17d5fa47bde4d5851dd4846f0d6d7bc0b79d3519&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在学习这种分布式的系统的时候，其实你可以认为这就是分布式的系统。唯一的区别就是，这些系统是一样的，也许你会说怎么可能一样，我说一样的意思它们遵守着相同的协议，这些协议才是区块链的精髓，学习什么其他的东西其实是舍近求远，但是区块链协议的介绍，官网文档却没怎么见到，所以很奇怪。难道是怕被超越？这就不清楚了。</p>
+<p><b style="color:red">不管是node客户端，ruby客户端还是python、java等，都是协议的提现。现在感觉他们只是调用节点的客户端，但其实里面包含了大量的以太坊官方协议，所以要想学好区块链，直接去看这些协议，然后加上p2p网络，区块处理，分叉处理等等，这就是一个小型的区块链节点了。但是有一点，缺少服务的协议，因为每个节点即是客户节点也是服务节点。</b></p>
+<p><b style="color:red">而智能合约，语言层面的接口就是ABI，调用协议就是以太坊的底层协议而已。</b></p>
+<p><b style="color:red">关于java客户端的实现，其实以太坊提供了，合约到java代码的转换，其实你可以认为，生成的java代码就是智能合约接口的代理实现类而已。</b>以下是命令的简单示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./solc/solc.exe contract/library/MintableToken.sol --bin --abi --optimize -o ./contract/library/</span><br><span class="line">./web3j/bin/web3j solidity generate ./contract/library/MintableToken.bin ./contract/library/MintableToken.abi -o ../java/ -p com.mo9.smartcontract.d_library</span><br></pre></td></tr></table></figure>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://bitshuo.com/topic/594a8c228e822fcb444317ec" target="_blank" rel="noopener">【连载】以太坊源码分析（3）深入解析ABI</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/09/linux/Linux网络配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2128,170 +2297,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/Java的SPI机制/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/06/java/Java的SPI机制/" itemprop="url">Java的SPI机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-06T11:31:56+08:00">2018-03-06</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/jdk/" itemprop="url" rel="index"><span itemprop="name">jdk</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>之前在看Dubbo的源码的时候，也发现了一个ServiceLoader，当然现在我已经忘记了Dubbo的源码，但是无所谓基础的思想还是记得的。这次再看完System的源码的时候，一路研究发现了ServiceLoader这个类，瞬间想起了了SPI的机制，所以今天就专门写一下记录一下。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SPI的全名为Service Provider Interface.普通开发人员可能不熟悉，因为这个是针对厂商或者插件的。在java.util.ServiceLoader的文档里有比较详细的介绍。究其思想，其实是和”Callback”差不多。“Callback”的思想是在我们调用API的时候，我们可以自己写一段逻辑代码，传入到API里面，API内部在合适的时候会调用它，从而实现某种程度的“定制”。</p>
-<p>典型的是Collections.sort（List<t> list,Comparator&lt;? super T&gt; c）这个方法，它的第二个参数是一个实现Comparator接口的实例。我们可以根据自己的排序规则写一个类，实现此接口，传入此方法，那么这个方法就会根据我们的规则对list进行排序。</t></p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>下面来看看Java中SPI的实现机制。<b style="color:red">客户把自己的排序规则写成一个类，并且打包成Jar文件，这个Jar文件里面必须有META-INF目录，其下又有services目录，其下有一个文本文件，文件名即为接口的全名：java.util.Comparator。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--META-INF</span><br><span class="line">  --services</span><br><span class="line">    --java.util.Comparator</span><br></pre></td></tr></table></figure></p>
-<p>文件的内容只有一行即可，当然多行也行的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.company1.ComparatorProvider</span><br></pre></td></tr></table></figure></p>
-<p>下面我们看一下，代码的实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package com.company1;  </span><br><span class="line">import java.util.Comparator;  </span><br><span class="line">import com.mycompany.myapp.MyItem;  </span><br><span class="line">public class ComparatorProvider implements Comparator&lt;MyItem&gt;&#123;  </span><br><span class="line">    @Override  </span><br><span class="line">    public int compare(MyItem o1, MyItem o2) &#123;  </span><br><span class="line">                //依据name排序    </span><br><span class="line">        return o1.getName().compareTo(o2.getName());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">// 编译打包后，把它放到你的主程序的class path里。下面是你的主程序：  </span><br><span class="line">//从class path中所有Jar的META-INF目录中搜索，找到合适的类并加载。 </span><br><span class="line"></span><br><span class="line">private static ServiceLoader&lt;Comparator&gt; serviceLoader  </span><br><span class="line">    = ServiceLoader.load(Comparator.class);  </span><br><span class="line">      </span><br><span class="line">    public static void main(String[] args)  </span><br><span class="line">    &#123;  </span><br><span class="line">        List&lt;MyItem&gt; myList = new ArrayList&lt;MyItem&gt;();  </span><br><span class="line">        myList.add(new MyItem(2,&quot;c&quot;,&quot;hhh&quot;));  </span><br><span class="line">        myList.add(new MyItem(3,&quot;k&quot;,&quot;ooo&quot;));  </span><br><span class="line">        myList.add(new MyItem(4,&quot;d&quot;,&quot;ppp&quot;));  </span><br><span class="line">        myList.add(new MyItem(5,&quot;b&quot;,&quot;ggg&quot;));  </span><br><span class="line">          </span><br><span class="line">        showList(myList);  </span><br><span class="line">          </span><br><span class="line">        Collections.sort(myList, getCompartor());  </span><br><span class="line">          </span><br><span class="line">        showList(myList);      </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)  </span><br><span class="line">    private static Comparator&lt;MyItem&gt; getCompartor() &#123;  </span><br><span class="line">          </span><br><span class="line">        for(Comparator service : serviceLoader) &#123;  </span><br><span class="line">           return (Comparator&lt;MyItem&gt;)service;  </span><br><span class="line">        &#125;  </span><br><span class="line">                 </span><br><span class="line">        return null;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>java spi就是提供这样的一个机制：为某个接口寻找服务实现的机制。有点类似IOC的思想，就是将装配的控制权移到程序之外，在模块化设计中这个机制尤其重要。我们来看一下ServiceLoader的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br></pre></td><td class="code"><pre><span class="line">package java.util;</span><br><span class="line"></span><br><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStream;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.net.URL;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.Enumeration;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.NoSuchElementException;</span><br><span class="line"></span><br><span class="line">public final class ServiceLoader&lt;S&gt;</span><br><span class="line">    implements Iterable&lt;S&gt;</span><br><span class="line">&#123;</span><br><span class="line">    // Service的接口，前缀：META-INF/services/</span><br><span class="line">    private static final String PREFIX = &quot;META-INF/services/&quot;;</span><br><span class="line"></span><br><span class="line">    // The class or interface representing the service being loaded</span><br><span class="line">    // 类或者接口代表服务被加载</span><br><span class="line">    private Class&lt;S&gt; service;</span><br><span class="line"></span><br><span class="line">    // The class loader used to locate, load, and instantiate providers</span><br><span class="line">    // 类加载器</span><br><span class="line">    private ClassLoader loader;</span><br><span class="line"></span><br><span class="line">    // Cached providers, in instantiation order</span><br><span class="line">    // 缓存的提供者，按照实例化顺序</span><br><span class="line">    private LinkedHashMap&lt;String,S&gt; providers = new LinkedHashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    // The current lazy-lookup iterator</span><br><span class="line">    // 懒得迭代器</span><br><span class="line">    private LazyIterator lookupIterator;</span><br><span class="line"></span><br><span class="line">    public void reload() &#123;</span><br><span class="line">        // 先清空提供队列</span><br><span class="line">        providers.clear();</span><br><span class="line">        // 迭代访问，后面再看</span><br><span class="line">        lookupIterator = new LazyIterator(service, loader);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private ServiceLoader(Class&lt;S&gt; svc, ClassLoader cl) &#123;</span><br><span class="line">        // 类名</span><br><span class="line">        service = svc;</span><br><span class="line">        // 类加载器</span><br><span class="line">        loader = cl;</span><br><span class="line">        reload();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void fail(Class service, String msg, Throwable cause)</span><br><span class="line">        throws ServiceConfigurationError</span><br><span class="line">    &#123;</span><br><span class="line">        // 出现服务配置问题</span><br><span class="line">        throw new ServiceConfigurationError(service.getName() + &quot;: &quot; + msg,</span><br><span class="line">                                            cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void fail(Class service, String msg)</span><br><span class="line">        throws ServiceConfigurationError</span><br><span class="line">    &#123;</span><br><span class="line">        throw new ServiceConfigurationError(service.getName() + &quot;: &quot; + msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void fail(Class service, URL u, int line, String msg)</span><br><span class="line">        throws ServiceConfigurationError</span><br><span class="line">    &#123;</span><br><span class="line">        fail(service, u + &quot;:&quot; + line + &quot;: &quot; + msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 从给的配置文件中解析单行，添加行上的名称到name列表里面去</span><br><span class="line">    private int parseLine(Class service, URL u, BufferedReader r, int lc,</span><br><span class="line">                          List&lt;String&gt; names)</span><br><span class="line">        throws IOException, ServiceConfigurationError</span><br><span class="line">    &#123;</span><br><span class="line">        String ln = r.readLine();</span><br><span class="line">        if (ln == null) &#123;</span><br><span class="line">            return -1;</span><br><span class="line">        &#125;</span><br><span class="line">        // #号搜索，#号是注释</span><br><span class="line">        int ci = ln.indexOf(&apos;#&apos;);</span><br><span class="line">        if (ci &gt;= 0) ln = ln.substring(0, ci);</span><br><span class="line">        ln = ln.trim();</span><br><span class="line">        int n = ln.length();</span><br><span class="line">        if (n != 0) &#123;</span><br><span class="line">            if ((ln.indexOf(&apos; &apos;) &gt;= 0) || (ln.indexOf(&apos;\t&apos;) &gt;= 0))</span><br><span class="line">                fail(service, u, lc, &quot;Illegal configuration-file syntax&quot;);</span><br><span class="line">            int cp = ln.codePointAt(0);</span><br><span class="line">            if (!Character.isJavaIdentifierStart(cp))</span><br><span class="line">                fail(service, u, lc, &quot;Illegal provider-class name: &quot; + ln);</span><br><span class="line">            for (int i = Character.charCount(cp); i &lt; n; i += Character.charCount(cp)) &#123;</span><br><span class="line">                cp = ln.codePointAt(i);</span><br><span class="line">                if (!Character.isJavaIdentifierPart(cp) &amp;&amp; (cp != &apos;.&apos;))</span><br><span class="line">                    fail(service, u, lc, &quot;Illegal provider-class name: &quot; + ln);</span><br><span class="line">            &#125;</span><br><span class="line">            if (!providers.containsKey(ln) &amp;&amp; !names.contains(ln))</span><br><span class="line">                names.add(ln);</span><br><span class="line">        &#125;</span><br><span class="line">        return lc + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Iterator&lt;String&gt; parse(Class service, URL u)</span><br><span class="line">        throws ServiceConfigurationError</span><br><span class="line">    &#123;</span><br><span class="line">        InputStream in = null;</span><br><span class="line">        BufferedReader r = null;</span><br><span class="line">        ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span><br><span class="line">        try &#123;</span><br><span class="line">            // 从url中获取URL</span><br><span class="line">            in = u.openStream();</span><br><span class="line">            // 包装一下输入流</span><br><span class="line">            r = new BufferedReader(new InputStreamReader(in, &quot;utf-8&quot;));</span><br><span class="line">            int lc = 1;</span><br><span class="line">            while ((lc = parseLine(service, u, r, lc, names)) &gt;= 0);// 逐行解析，这个语句很有趣</span><br><span class="line">        &#125; catch (IOException x) &#123;</span><br><span class="line">            fail(service, &quot;Error reading configuration file&quot;, x);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                if (r != null) r.close();</span><br><span class="line">                if (in != null) in.close();</span><br><span class="line">            &#125; catch (IOException y) &#123;</span><br><span class="line">                fail(service, &quot;Error closing configuration file&quot;, y);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return names.iterator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private class LazyIterator</span><br><span class="line">        implements Iterator&lt;S&gt;</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        Class&lt;S&gt; service;    // 服务类</span><br><span class="line">        ClassLoader loader;  // 类加载器</span><br><span class="line">        Enumeration&lt;URL&gt; configs = null; // URL配置迭代</span><br><span class="line">        Iterator&lt;String&gt; pending = null; // pending状态迭代</span><br><span class="line">        String nextName = null; // 下一个名字</span><br><span class="line"></span><br><span class="line">        private LazyIterator(Class&lt;S&gt; service, ClassLoader loader) &#123;</span><br><span class="line">            this.service = service;</span><br><span class="line">            this.loader = loader;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public boolean hasNext() &#123;</span><br><span class="line">            if (nextName != null) &#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            if (configs == null) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    // 得到fullName</span><br><span class="line">                    String fullName = PREFIX + service.getName();</span><br><span class="line">                    if (loader == null) // 加载文件</span><br><span class="line">                        configs = ClassLoader.getSystemResources(fullName);</span><br><span class="line">                    else // 当前类加载器加载文件</span><br><span class="line">                        configs = loader.getResources(fullName);</span><br><span class="line">                &#125; catch (IOException x) &#123;</span><br><span class="line">                    fail(service, &quot;Error locating configuration files&quot;, x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            while ((pending == null) || !pending.hasNext()) &#123;</span><br><span class="line">                if (!configs.hasMoreElements()) &#123;</span><br><span class="line">                    return false;</span><br><span class="line">                &#125;</span><br><span class="line">                pending = parse(service, configs.nextElement());</span><br><span class="line">            &#125;</span><br><span class="line">            nextName = pending.next();</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public S next() &#123;</span><br><span class="line">            if (!hasNext()) &#123;</span><br><span class="line">                throw new NoSuchElementException();</span><br><span class="line">            &#125;</span><br><span class="line">            String cn = nextName;</span><br><span class="line">            nextName = null;</span><br><span class="line">            Class&lt;?&gt; c = null;</span><br><span class="line">            try &#123;</span><br><span class="line">                c = Class.forName(cn, false, loader);</span><br><span class="line">            &#125; catch (ClassNotFoundException x) &#123;</span><br><span class="line">                fail(service,</span><br><span class="line">                     &quot;Provider &quot; + cn + &quot; not found&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            if (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">                fail(service,</span><br><span class="line">                     &quot;Provider &quot; + cn  + &quot; not a subtype&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            try &#123;</span><br><span class="line">                S p = service.cast(c.newInstance());</span><br><span class="line">                providers.put(cn, p);</span><br><span class="line">                return p;</span><br><span class="line">            &#125; catch (Throwable x) &#123;</span><br><span class="line">                fail(service,</span><br><span class="line">                     &quot;Provider &quot; + cn + &quot; could not be instantiated: &quot; + x,</span><br><span class="line">                     x);</span><br><span class="line">            &#125;</span><br><span class="line">            throw new Error();          // This cannot happen</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void remove() &#123;</span><br><span class="line">            throw new UnsupportedOperationException();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Iterator&lt;S&gt; iterator() &#123;</span><br><span class="line">        // 默认的实现类</span><br><span class="line">        return new Iterator&lt;S&gt;() &#123;</span><br><span class="line"></span><br><span class="line">            Iterator&lt;Map.Entry&lt;String,S&gt;&gt; knownProviders</span><br><span class="line">                = providers.entrySet().iterator();</span><br><span class="line"></span><br><span class="line">            public boolean hasNext() &#123;</span><br><span class="line">                if (knownProviders.hasNext())</span><br><span class="line">                    return true;</span><br><span class="line">                return lookupIterator.hasNext();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            public S next() &#123;</span><br><span class="line">                if (knownProviders.hasNext())</span><br><span class="line">                    return knownProviders.next().getValue();</span><br><span class="line">                return lookupIterator.next();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            public void remove() &#123;</span><br><span class="line">                throw new UnsupportedOperationException();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service,</span><br><span class="line">                                            ClassLoader loader)</span><br><span class="line">    &#123;</span><br><span class="line">        // 内部类的初始化，单例模式的instance方法</span><br><span class="line">        return new ServiceLoader&lt;&gt;(service, loader);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) &#123;</span><br><span class="line">        // 使用默认的类加载器</span><br><span class="line">        ClassLoader cl = Thread.currentThread().getContextClassLoader();</span><br><span class="line">        return ServiceLoader.load(service, cl);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; ServiceLoader&lt;S&gt; loadInstalled(Class&lt;S&gt; service) &#123;</span><br><span class="line">        ClassLoader cl = ClassLoader.getSystemClassLoader();</span><br><span class="line">        ClassLoader prev = null;</span><br><span class="line">        // 一直加载到系统类加载器</span><br><span class="line">        while (cl != null) &#123;</span><br><span class="line">            prev = cl;</span><br><span class="line">            cl = cl.getParent();</span><br><span class="line">        &#125;</span><br><span class="line">        return ServiceLoader.load(service, prev);</span><br><span class="line">    &#125;</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;java.util.ServiceLoader[&quot; + service.getName() + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red"><br>调用的方式：load(单例)-&gt;构造方法-&gt;reload()-&gt;LazyIterator实例化构造函数</b><br><b style="color:red">当然到这里，ServiceLoader类就实例化完毕了。使用的时候是通过迭代器访问，实例化ServiceLoader并没有读取文件，LazyIterator是一种懒的加载机制，我们看一下里面的迭代方法。或者直接使用里面的iterator方法的默认构造器。<br>如果想知道ServiceLoader类是如何加载服务的，可以查看LazyIterator的hasNext方法就明白了。好了大致的原理就是这样的，活用了内部类机制和迭代器模式。LazyIterator中hasNext负责找文件，next方法负责加载类并进行实例化，很棒的处理方式。<br></b></p>
-<h2 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h2><h3 id="1-common-logging"><a href="#1-common-logging" class="headerlink" title="1.common-logging"></a>1.common-logging</h3><p>apache最早提供的日志的门面接口。只有接口，没有实现。具体方案由各提供商实现，发现日志提供商是通过扫描 META-INF/services/org.apache.commons.logging.LogFactory配置文件，通过读取该文件的内容找到日志提工商实现类。<b style="color:red">只要我们的日志实现里包含了这个文件，并在文件里制定 LogFactory工厂接口的实现类即可。</b></p>
-<h3 id="jdbc"><a href="#jdbc" class="headerlink" title="jdbc"></a>jdbc</h3><p>jdbc4.0以前，开发人员还需要基于Class.forName(“xxx”)的方式来装载驱动，jdbc4也基于spi的机制来发现驱动提供商了，可以通过META-INF/services/java.sql.Driver文件里指定实现类的方式来暴露驱动提供者。</p>
-<h3 id="Nio中Selector查找"><a href="#Nio中Selector查找" class="headerlink" title="Nio中Selector查找"></a>Nio中Selector查找</h3><p>我们可以看到Selector类中open的实现，发现它是通过SelectorProvider去查找相应的实现的，这个SelectorProvider查找实现并实例化只有3种方式：</p>
-<ul>
-<li>属性传入实现类的名称</li>
-<li>ServiceLoader进行加载</li>
-<li>默认的实现类。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2343,7 +2348,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">96</span>
+                    <span class="site-state-item-count">97</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
