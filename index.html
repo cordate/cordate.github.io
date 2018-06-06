@@ -566,6 +566,91 @@
 </ul>
 <p><b style="color:#6ab0de"><code>net.corda</code>名称空间中包含<code>.internal</code>或<code>net.corda.node</code>仅供内部使用的任何软件包内的代码。未来版本将拒绝任何CorDapps使用这些包中的类型。</b></p>
 <h3 id="DoNotImplement-注解"><a href="#DoNotImplement-注解" class="headerlink" title="@DoNotImplement 注解"></a><code>@DoNotImplement</code> 注解</h3><p>Corda API中的某些接口和抽象类已被标注为@DoNotImplement。虽然我们承诺不删除或修改任何这些类的现有功能，但注释是我们可能需要在将来版本的Corda中扩展它们的警告。因此，Cordapp开发人员应该“按原样”使用这些类，而不是试图扩展或实现它们中的任何一个。</p>
+<h2 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Corda普遍使用一种自定义形式的安全二进制序列化。这样做的目的是：</p>
+<ul>
+<li>希望有一个模式（schema）描述与实际数据一起被序列化的内容<ul>
+<li>版本控制（以前的序列化数据也能被识别）</li>
+<li>为了更容易编写泛型代码，例如可以导航序列化数据形式的用户接口。</li>
+<li>支持跨平台（非JVM）交互，其中类文件的格式不容易解释。</li>
+</ul>
+</li>
+<li>希望使用独立于平台并且不受第三方库升级等影响的文档化和静态线路格式。</li>
+<li>希望支持开放式多态，其中超类的子类的数量可以随时间扩展并且子类不需要在模式中预先定义。这是很多Corda概念的关键，例如状态。</li>
+<li>通过支持的构造函数构造反序列化对象来提高安全性，而不是直接将数据插入到其字段中，而没有机会验证一致性或拦截尝试操纵假定的不变量。</li>
+<li>二进制格式比数字签名更适用于基于文本的格式，因为修改语法的范围要小得多，而不是语义。</li>
+</ul>
+<h3 id="白名单"><a href="#白名单" class="headerlink" title="白名单"></a>白名单</h3><p>经典的Java序列化，JVM类路径上的任何类都可以反序列化。通过利用类路径上的大量第三方库作为JVM应用程序依赖关系和精心设计的反序列字节流的一部分，这已被证明是漏洞利用和漏洞的来源。在Corda中，我们通过坚持每个对象的类属于允许的类的白名单中，阻止任何类被反序列化（并在序列化过程中主动）。</p>
+<p>类通过三种机制之一进入白名单：</p>
+<ul>
+<li>通过<code>@CordaSerializable</code>注解。这个注解可能存在接口和超类的注解上。</li>
+<li>通过实现<code>SerializationWhitelist</code>接口并指定白名单类别的列表。</li>
+<li>通过内置的Corda白名单（见<code>DefaultWhitelist</code>类）。虽然这不是用户可编辑的，但它列出了为方便您而列入白名单的常见JDK类。</li>
+</ul>
+<p>注解的方式是加入白名单的首选方式。<a href="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html" target="_blank" rel="noopener">Using the client RPC API</a>是一个实例。</p>
+<h3 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a>AMQP</h3><p>目前，基于Kryo的格式仍然被客户端和服务器端的RPC框架所使用。但是，计划很快RPC框架将转向AMQP框架。</p>
+<p>将序列化方案分离到不同的上下文中使我们能够为该上下文使用最合适的框架，而不是试图强制采取一刀切的方法。Kryo更适合于程序堆栈框架的序列化，因为它比我们的AMQP框架在构建和序列化方面更加灵活。但是，这种灵活性使得安全性变得异常困难。相反，我们的AMQP框架允许我们专注于可以推理的安全框架，从而使安全性更低，安全漏洞更少。</p>
+<h3 id="核心类型"><a href="#核心类型" class="headerlink" title="核心类型"></a>核心类型</h3><p>本节介绍AMQP序列化格式支持的类和接口。</p>
+<ul>
+<li>集合类型</li>
+<li>JVM原始类型</li>
+<li>数组</li>
+<li>JDK类型：支持的类型可以查阅原文</li>
+<li>第三方的类型</li>
+<li>Corda类型：<code>@CordaSerializable</code>注解的类和接口</li>
+</ul>
+<h3 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h3><p>您自己的类型必须遵守以下支持的规则：</p>
+<h4 id="类"><a href="#类" class="headerlink" title="类"></a>类</h4><h5 id="一般规则"><a href="#一般规则" class="headerlink" title="一般规则"></a>一般规则</h5><ol>
+<li>该类必须使用包含在<code>.class</code>文件中的参数名称进行编译。这是Kotlin中的默认设置，但必须使用<code>javac</code>的<code>-parameters</code>命令行选项打开。</li>
+<li>这个类必须要用<code>@CordaSerializable</code>注解</li>
+<li>必须支持构造函数参数，getter和setter的声明类型，并且在使用泛型时，泛型参数必须是受支持的类型，开放式通配符（*）或有界通配符，该通配符目前被扩展为开放式通配符</li>
+<li>任何超类都必须遵守相同的规则，但可以是抽象的</li>
+<li>对象引用循环不受支持，因此对象无法直接或间接引用自身</li>
+</ol>
+<h4 id="构造函数实例化"><a href="#构造函数实例化" class="headerlink" title="构造函数实例化"></a>构造函数实例化</h4><p>Corda的AMQP序列化框架实例化对象的主要方式是通过指定的构造函数。这用于首先确定对象的哪些属性将被序列化，然后在反序列化时用于使用序列化值实例化对象。</p>
+<p>建议Corda中的可序列化对象遵守以下规则，因为它们允许不可变状态对象被反序列化：</p>
+<ol>
+<li>一个Java Bean getter，用于构造函数中的每个属性，并具有表单的名称<code>getX</code>。</li>
+<li>一个构造函数，它采用您希望以序列化形式记录的所有属性。这是序列化框架重建类的一个实例所必需的.</li>
+<li>如果提供了多个构造函数，则序列化框架需要知道使用哪一个。<code>@ConstructorForDeserialization</code> 注释可以被用来指示哪一个。对于没有<code>@ConstructorForDeserialization</code>注解的Kotlin类，将选择主构造函数</li>
+</ol>
+<h4 id="Setter实例化"><a href="#Setter实例化" class="headerlink" title="Setter实例化"></a>Setter实例化</h4><p>作为基于构造函数初始化的替代，Corda还可以通过检查类中存在的getter和setter方法来确定对象的重要元素。如果一个类只有一个默认的构造函数和属性，那么可序列化的属性将由该属性的getter和setter的存在来确定，这些属性都是公开可见的（即该类遵守可变JavaBean 的经典成语）。</p>
+<p>在反序列化中，首先会创建一个默认实例，然后调用该对象以使用正确的值填充它。</p>
+<h4 id="无法访问的私有属性"><a href="#无法访问的私有属性" class="headerlink" title="无法访问的私有属性"></a>无法访问的私有属性</h4><p>虽然Corda AMQP序列化框架支持私有对象属性，但没有可公开访问的getter方法，但强烈建议不要使用此开发习惯用法。</p>
+<h4 id="不匹配的类属性-构造函数参数"><a href="#不匹配的类属性-构造函数参数" class="headerlink" title="不匹配的类属性/构造函数参数"></a>不匹配的类属性/构造函数参数</h4><p>考虑一个例子，您希望确保类型为某种形式容器的类的属性总是按照某些特定条件进行排序，但您希望保持该类的不变性。</p>
+<h4 id="可变容器"><a href="#可变容器" class="headerlink" title="可变容器"></a>可变容器</h4><p>因为Java从根本上不提供可以确定类的可变性的机制，所以这给序列化框架带来了问题。当用容器属性（列表，地图等）重新构建对象时，我们必须选择是创建可变对象还是不可变对象。考虑到这些限制，我们决定保留不可变对象的不变性更好，而不是强制推断不可变对象的可变性。</p>
+<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><p>所有的枚举都支持，只要它们被<code>@CordaSerializable</code>注解。Corda支持枚举类型版本的互操作性。这允许这样的类型随时间改变而不破坏反向（或向前）兼容性。<a href="https://docs.corda.net/releases/release-V3.1/serialization-enum-evolution.html" target="_blank" rel="noopener">Enum Evolution</a>讨论了这样做的规则和机制。</p>
+<h4 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h4><p>以下规则适用于受支持的<code>Throwable</code>实现。</p>
+<ol>
+<li>如果你希望你的异常是可序列化和安全传输的，它应该继承自<code>CordaException</code>或者<code>CordaRuntimeException</code></li>
+<li>如果不是，该<code>Throwable</code>遗嘱将反序列化为一个<code>CordaRuntimeException</code>包含其中的原件的详细信息 <code>Throwable</code>，包括原始的类名称<code>Throwable</code></li>
+</ol>
+<h4 id="Kotlin对象"><a href="#Kotlin对象" class="headerlink" title="Kotlin对象"></a>Kotlin对象</h4><p>略</p>
+<h3 id="类合成"><a href="#类合成" class="headerlink" title="类合成"></a>类合成</h3><p>Corda序列化支持在反序列化时从提供的模式动态合成类，而不在类路径中存在支持类。在通用代码可能希望能够对反序列化的数据，在JVM上运行的脚本语言以及确保不在类路径上的类可以反序列化而不加载潜在的恶意代码的情况下，这可能是有用的。</p>
+<p>未来可能的增强包括：</p>
+<ol>
+<li>Java单例支持。我们将添加支持以识别单身人士的类别，并确定负责返回单身人士实例的静态方法</li>
+<li>实例内化支持。我们将添加对确定应根据实例映射解析的类的支持，以避免创建许多相同（类似于String.intern()）的重复实例，</li>
+</ol>
+<h3 id="类型演变"><a href="#类型演变" class="headerlink" title="类型演变"></a>类型演变</h3><p>类型演化是类可以随时间改变的机制，但仍然可以在所有类型的版本中保持序列化和反序列化。这确保了一个对象的序列化，它具有旧类型的“看起来像”类可以被反序列化的版本以及实例化类的当前状态的版本。</p>
+<p>更多细节可以在<a href="https://docs.corda.net/releases/release-V3.1/serialization-default-evolution.html" target="_blank" rel="noopener">Default Class Evolution</a>中找到。</p>
+<h2 id="安全的编码准则"><a href="#安全的编码准则" class="headerlink" title="安全的编码准则"></a>安全的编码准则</h2><p>该平台通过默认设计确保安全。不幸的是，该平台无法防止各种安全错误。本文档描述了在编写应用程序以阻止各种攻击时需要考虑的问题。尽管假设没有合理的交易对手试图用流程级别的攻击来颠覆您的交易可能会很诱人，但是依靠信任来提高软件安全性会使您很难在稍后想要快速添加对手方并且没有广泛审查的情况下扩展您的业务。</p>
+<h3 id="流动"><a href="#流动" class="headerlink" title="流动"></a>流动</h3><p><a href="https://docs.corda.net/releases/release-V3.1/flow-state-machines.html" target="_blank" rel="noopener">编写流程</a>是您的应用程序与网络上的其他各方进行通信的方式。因此，它们是恶意数据进入您应用程序的典型切入点，必须小心处理。</p>
+<p>这些<code>receive</code>方法返回包装在<code>UntrustworthyData&lt;T&gt;</code>标记类型中的数据。这种类型不会添加任何功能，它只是提醒您正确验证从网络获得的所有内容。请记住，另一方可能没有运行您提供的用于参与流程的代码：他们被允许执行任何操作！需要注意的事项：</p>
+<ul>
+<li>例如，如果您建议为资产交易价值100美元的现金状态，并且签署的交易从另一方返回，则该交易与流程中较早建立或建议的部分交易不匹配，您必须检查它指向您实际请求的状态。否则，攻击者可以让你签署一项交易，如果他们知道一个ID的话，那么这笔交易将花费更多的时间给你。</li>
+<li>一个不正确类型的交易。有两种交易类型：普通和公证变更。如果您希望获得一种类型，但获得另一种类型，则可能会发现自己签署了一项交易，将您的资产转移到敌对公证人的控制之下。</li>
+<li>交易中各状态的意外更改。如果您有权访问所有需要的数据，则可以重新运行构建器逻辑并对结果状态进行比较，以确保它符合您的预期。例如，如果构建下一个状态所需的数据对双方都可用，则计算您想要相互同意的交易的函数可以在实现流程的两端的两个类之间共享。</li>
+</ul>
+<p>主题应该清楚：签名是一项非常敏感的操作，因此您需要确保您知道您要签名的是什么，并且输出没有任何变化！一旦您通过交易向交易对手提供了您的签名，就不再有任何事情可以阻止他们将其交付给分类账。</p>
+<h3 id="合约"><a href="#合约" class="headerlink" title="合约"></a>合约</h3><p>合同是JVM沙箱内的任意函数，因此它们有很大的自由度。需要注意的事项：</p>
+<ul>
+<li>当前状态转换不应允许的状态更改。你会想要检查没有领域正在改变，除了预期的领域！</li>
+<li>意外捕获并丢弃可能由验证逻辑抛出的异常。</li>
+<li>如果您不知道其他合约是做什么或可能做什么，则通过虚拟方法调用其他合约。</li>
+</ul>
+<h2 id="流程cookbook"><a href="#流程cookbook" class="headerlink" title="流程cookbook"></a>流程cookbook</h2><p><a href="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html" target="_blank" rel="noopener">该流程</a>展示了如何在Java和Kotlin中使用Corda的API。</p>
+<h2 id="备忘单"><a href="#备忘单" class="headerlink" title="备忘单"></a>备忘单</h2><p><a href="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html" target="_blank" rel="noopener">这个网页</a>是Corda知识的备忘单。</p>
+<h2 id="Cordapp示例"><a href="#Cordapp示例" class="headerlink" title="Cordapp示例"></a>Cordapp示例</h2><p><a href="https://docs.corda.net/releases/release-V3.1/building-a-cordapp-samples.html" target="_blank" rel="noopener">CorDapp samples</a></p>
 
           
         
