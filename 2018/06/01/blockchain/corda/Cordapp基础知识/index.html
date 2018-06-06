@@ -112,7 +112,7 @@
 <meta property="og:description" content="概述CorDapps（Corda分布式应用程序）是在Corda平台上运行的分布式应用程序。CorDapp的目标是允许节点就分类账更新达成一致。他们通过定义Corda节点所有者可以通过RPC调用调用的流程来实现此目标：  Cordapps由以下关键组件组成：  状态： 达成协议的事实 合约： 定义构成有效分类账更新的内容 服务： 在节点内提供长寿命的工具 序列化白名单： 限制节点从网络线路接收的类型">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://docs.corda.net/releases/release-V3.1/_images/node-diagram.png">
-<meta property="og:updated_time" content="2018-06-01T05:34:32.000Z">
+<meta property="og:updated_time" content="2018-06-06T06:47:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Cordapp基础知识">
 <meta name="twitter:description" content="概述CorDapps（Corda分布式应用程序）是在Corda平台上运行的分布式应用程序。CorDapp的目标是允许节点就分类账更新达成一致。他们通过定义Corda节点所有者可以通过RPC调用调用的流程来实现此目标：  Cordapps由以下关键组件组成：  状态： 达成协议的事实 合约： 定义构成有效分类账更新的内容 服务： 在节点内提供长寿命的工具 序列化白名单： 限制节点从网络线路接收的类型">
@@ -453,6 +453,118 @@
 <li>该<a href="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html" target="_blank" rel="noopener">流程指南</a>看如何执行常见任务流的代码示例</li>
 <li><a href="https://www.corda.net/samples/" target="_blank" rel="noopener">CorDapps实例程序</a>显示Corda功能的各个部分</li>
 </ul>
+<h2 id="构建一个Cordapp"><a href="#构建一个Cordapp" class="headerlink" title="构建一个Cordapp"></a>构建一个Cordapp</h2><h3 id="CorDapp格式"><a href="#CorDapp格式" class="headerlink" title="CorDapp格式"></a>CorDapp格式</h3><p>Cordapp是一个semi-fat的jar包，它包含除 Corda核心库和其它依赖的任何其他CorDapps 之外的所有CorDapp依赖项。</p>
+<h3 id="构建工具"><a href="#构建工具" class="headerlink" title="构建工具"></a>构建工具</h3><p>在下面的说明中，我们假设你正在使用<code>gradle</code>和<code>cordformation</code>插件来构建你的CorDapp。</p>
+<h3 id="设置依赖关系"><a href="#设置依赖关系" class="headerlink" title="设置依赖关系"></a>设置依赖关系</h3><h4 id="选择你的Corda，Quasar和Kotlin版本"><a href="#选择你的Corda，Quasar和Kotlin版本" class="headerlink" title="选择你的Corda，Quasar和Kotlin版本"></a>选择你的Corda，Quasar和Kotlin版本</h4><p>CorDapp的build.gradle文件中使用了几个变量来定义用于构建您的CorDapp的版本：</p>
+<ul>
+<li><code>ext.corda_release_version</code> 定义了Corda的版本</li>
+<li><code>ext.corda_gradle_plugins_version</code> 定义了Corda Gradle插件的版本</li>
+<li><code>ext.quasar_version</code> 定义了Quasar的版本</li>
+<li><code>ext.kotlin_version</code> 定义Kotlin的版本（如果使用Kotlin编写您的CorDapp）</li>
+</ul>
+<h4 id="Corda依赖"><a href="#Corda依赖" class="headerlink" title="Corda依赖"></a>Corda依赖</h4><p><code>cordformation</code>和<code>cordapp</code>插件添加了两个新的gradle这个配置：</p>
+<ul>
+<li><code>cordaCompile</code>，这扩展了 <code>compile</code></li>
+<li><code>cordaRuntime</code>，这扩展了 <code>runtime</code></li>
+</ul>
+<p><code>cordaCompile</code>和<code>cordaRuntime</code>指出不应包含在CorDapp JAR中的依赖关系。这些配置应该用于任何Corda依赖（例如corda-core，corda-node），以防止依赖包含两次（一次在CorDapp JAR中，一次在Corda JAR中）。</p>
+<p>要针对Corda构建，您必须将以下内容添加到您的build.gradle文件中：</p>
+<p>Cordapp插件应该适用于任何将要构建cordapp的项目，并且cordformation插件应该适用于希望在本地创建小型测试网络的项目。</p>
+<p>这样做后，确保： net.corda:corda:$corda_release_version被定义为cordaRuntime依赖项，并且所有其他net.corda编译依赖项（例如，net.corda：corda-core：$ corda_release_version）被设置为cordaCompile依赖项。</p>
+<p>您可能还想添加：</p>
+<ul>
+<li><code>net.corda:corda-test-utils:$corda_release_version</code>作为<code>testCompile</code>依赖项，以便使用Corda的测试框架</li>
+<li><code>net.corda:corda-webserver:$corda_release_version</code>作为<code>cordaRuntime</code>依赖项，以便使用Corda的内置开发Web服务器</li>
+</ul>
+<h4 id="依赖其他CorDapps"><a href="#依赖其他CorDapps" class="headerlink" title="依赖其他CorDapps"></a>依赖其他CorDapps</h4><p>您的CorDapp也可能依赖于另一个CorDapp中定义的类，例如状态，合约和流程。有两种方法可以在CorDapp的build.gradle文件中添加另一个CorDapp作为依赖项：</p>
+<ul>
+<li><code>cordapp project(&quot;:another-cordapp&quot;)</code>（如果在同一个项目中的模块中定义了另一个CorDapp，则使用此方法）</li>
+<li><code>cordapp &quot;net.corda:another-cordapp:1.0&quot;</code> （否则使用这个）</li>
+</ul>
+<p>该cordappgradle这个配置有两个目的：</p>
+<ul>
+<li>当使用<code>cordformation</code> Gradle插件时，<code>cordapp</code>配置表明该JAR应该作为CorDapp包含在您的节点中</li>
+<li>当使用<code>cordapp</code> Gradle插件时，<code>cordapp</code>配置可防止CorDapp JAR中包含依赖项</li>
+</ul>
+<p>请注意，<code>cordformation</code>和<code>cordapp</code> Gradle插件可以一起使用。</p>
+<h4 id="其他依赖关系"><a href="#其他依赖关系" class="headerlink" title="其他依赖关系"></a>其他依赖关系</h4><p>如果您的CorDapps有任何额外的外部依赖关系，可以像Gradle中的正常Kotlin / Java依赖关系那样指定它们。看下面的例子，特别是<code>apache-commons</code>包含。</p>
+<p>有关管理依赖关系的更多信息，请参阅<a href="https://docs.gradle.org/current/userguide/dependency_management.html" target="_blank" rel="noopener">Gradle文档</a>。</p>
+<p>以下是CorDapp的Gradle依赖关系块的示例：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    <span class="comment">// Corda integration dependencies</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-core:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-finance:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-jackson:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-rpc:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-node-api:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-webserver-impl:$corda_release_version"</span></span><br><span class="line">    cordaRuntime <span class="string">"net.corda:corda:$corda_release_version"</span></span><br><span class="line">    cordaRuntime <span class="string">"net.corda:corda-webserver:$corda_release_version"</span></span><br><span class="line">    testCompile <span class="string">"net.corda:corda-test-utils:$corda_release_version"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Corda Plugins: dependent flows and services</span></span><br><span class="line">    <span class="comment">// Identifying a CorDapp by its module in the same project.</span></span><br><span class="line">    cordapp <span class="keyword">project</span>(<span class="string">":cordapp-contracts-states"</span>)</span><br><span class="line">    <span class="comment">// Identifying a CorDapp by its fully-qualified name.</span></span><br><span class="line">    cordapp <span class="string">"net.corda:bank-of-corda-demo:1.0"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some other dependencies</span></span><br><span class="line">    <span class="keyword">compile</span> <span class="string">"org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"</span></span><br><span class="line">    testCompile <span class="string">"org.jetbrains.kotlin:kotlin-test:$kotlin_version"</span></span><br><span class="line">    testCompile <span class="string">"junit:junit:$junit_version"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">compile</span> <span class="string">"org.apache.commons:commons-lang3:3.6"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="创建CorDapp-Jar"><a href="#创建CorDapp-Jar" class="headerlink" title="创建CorDapp Jar"></a>创建CorDapp Jar</h3><p>一旦您的依赖关系设置正确，您可以使用gradle <code>jar</code>任务来构建您的CorDapp JAR ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; gradlew jar</span><br></pre></td></tr></table></figure></p>
+<p>CorDapp JAR将被输出到<code>build/libs</code>文件夹。</p>
+<h3 id="安装CorDapp-JAR"><a href="#安装CorDapp-JAR" class="headerlink" title="安装CorDapp JAR"></a>安装CorDapp JAR</h3><p>在安装CorDapp之前，您必须创建一个或多个节点来安装它。有关说明，请参阅<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">本地创建节点</a>。</p>
+<p>在运行时，节点将加载其<code>cordapps</code>文件夹中存在的任何CorDapps 。因此，为了在节点上安装CorDapp，必须将CorDapp JAR添加到该<code>&lt;node_dir&gt;/cordapps/</code>文件夹中，其中node_dir是存储节点的JAR和配置文件的文件夹。</p>
+<h2 id="通过master分支编译"><a href="#通过master分支编译" class="headerlink" title="通过master分支编译"></a>通过master分支编译</h2><p>针对最新的Corda稳定版本开发CorDapps是明智的。但是，如果您使用的是最新功能，或者正在测试主代码库上的PR，则可能需要针对不稳定的Master分支进行构建。</p>
+<h2 id="Corda-Api"><a href="#Corda-Api" class="headerlink" title="Corda Api"></a>Corda Api</h2><p>以下是用于开发CorDapps的核心API：</p>
+<ul>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-states.html" target="_blank" rel="noopener">API：状态 States</a>  <a href="http://cncorda.com/doc/apis/api-states/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-persistence.html" target="_blank" rel="noopener">API：持久化 Persistence</a>  <a href="http://cncorda.com/doc/apis/api-persistence/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-contracts.html" target="_blank" rel="noopener">API：合约 Contracts</a>  <a href="http://cncorda.com/doc/apis/api-contracts/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html" target="_blank" rel="noopener">API：合约约束 Contract Constraints</a>  <a href="http://cncorda.com/doc/apis/api-contract-constrains/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-vault-query.html" target="_blank" rel="noopener">API：Vault查询</a>  <a href="https://docs.corda.net/releases/release-V3.1/api-vault-query.html" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-transactions.html" target="_blank" rel="noopener">API：交易 Transaction</a>  <a href="http://cncorda.com/doc/apis/api-transactions/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-flows.html" target="_blank" rel="noopener">API：流程 Flows</a>  <a href="http://cncorda.com/doc/apis/api-flows/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-identity.html" target="_blank" rel="noopener">API：身份 Identity</a>  <a href="http://cncorda.com/doc/apis/api-identity/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-service-hub.html" target="_blank" rel="noopener">API：ServiceHub</a> <a href="http://cncorda.com/doc/apis/api-servicehub/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-rpc.html" target="_blank" rel="noopener">API：RPC操作 RPC operations</a> <a href="http://cncorda.com/doc/apis/api-rpc-operations/" target="_blank" rel="noopener">中文</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-core-types.html" target="_blank" rel="noopener">API：核心类型</a></li>
+<li><a href="https://docs.corda.net/releases/release-V3.1/api-testing.html#flow-testing" target="_blank" rel="noopener">API：测试 Testing</a></li>
+</ul>
+<h3 id="内部API和稳定性保证"><a href="#内部API和稳定性保证" class="headerlink" title="内部API和稳定性保证"></a>内部API和稳定性保证</h3><p>Corda 3.0提供稳定的wire协议并支持数据库升级。因此，您应该能够将持久数据从3.0迁移到未来版本。但是，在我们开始提供ABI稳定性之前，有必要针对未来版本的API重新编译应用程序。</p>
+<p>此外，请注意，Corda 3.0版本已经过基本级别的安全审核，为确保节点安全得到维护，应遵循以下最佳做法：</p>
+<ul>
+<li>应该使用安全密码生成器创建RPC用户、数据库连接和shell用户的凭证，最好从节点主机的命令行创建。</li>
+<li>绝不应使用默认或开发模式凭证部署节点。</li>
+<li>Corda节点应该使用其中一个受支持的数据库平台，而不是仅用于开发目的的默认H2数据库。Postgres是一个支持的平台。</li>
+<li>应该在安全的网络（如DMZ）内操作节点，将入站和出站流量限制为仅需要的端口（就是限定端口做一些事）。具体而言，节点运营商应该致力于允许从互联网上访问点对点流量。RPC和数据库连接应该仅限于内部。</li>
+<li>节点Web服务器模块已弃用，因此不应将其部署到生产环境中，因为它不是与Corda节点相同的安全标准。</li>
+</ul>
+<p>可以从Java 9 Jigsaw模块中获得Corda工件。从<code>module-info.java</code>中可以引用其中一个模块，例如<code>requires net.corda.core;</code>。</p>
+<h3 id="Corda稳定的模块"><a href="#Corda稳定的模块" class="headerlink" title="Corda稳定的模块"></a>Corda稳定的模块</h3><p>以下模块具有稳定的API，我们承诺不会在以下版本中中断，除非出于安全原因需要进行不兼容的更改：</p>
+<ul>
+<li>核心（net.corda.core）：核心Corda函数库，如加密函数、Corda构建模块的类型：状态，合约，交易，附件等，以及用于节点和协议的一些接口</li>
+<li>客户端RPC（net.corda.client.rpc）：客户端RPC</li>
+<li>客户端Jackson（net.corda.client.jackson）：对客户端应用程序的JSON支持</li>
+<li>测试实用程序（net.corda.testing.core）：通用测试实用程序</li>
+<li>测试节点驱动程序（net.corda.testing.node，net.corda.testing.driver）：测试实用程序以编程方式运行节点</li>
+<li>Http Test Utils（net.corda.testing.http）：一组用于制作HttpCalls的实用程序，旨在演示和测试。</li>
+<li>DSL Test Utils（net.corda.testing.dsl）：用于测试目的的用于构建伪交易（与有线协议不同）的简单DSL。</li>
+<li>虚拟合约 Dummy Contracts（net.corda.testing.contracts）：用于测试目的的虚拟状态和合约</li>
+<li>模拟服务 Mock Services（net.corda.testing.services）：用于测试目的的模拟服务实现</li>
+</ul>
+<h3 id="Corda孵化模块"><a href="#Corda孵化模块" class="headerlink" title="Corda孵化模块"></a>Corda孵化模块</h3><p>以下模块还没有完全稳定的API，但我们会尽最大努力最大限度地减少开发人员使用它们的中断，直到我们能够将其应用到公共API中：</p>
+<ul>
+<li>net.corda.confidential.identities：实验性支持分类账上的机密身份</li>
+<li>net.corda.finance：一系列基本合同（及相关模式）和协议，如抽象可替代资产，现金，义务和商业票据</li>
+<li>net.corda.client.jfx：支持Java FX UI</li>
+<li>net.corda.client.mock：客户端模拟实用程序</li>
+<li>Cordformation：Gradle集成插件</li>
+</ul>
+<h3 id="Corda不稳定模块"><a href="#Corda不稳定模块" class="headerlink" title="Corda不稳定模块"></a>Corda不稳定模块</h3><p>以下模块可用，但我们不承诺任何意义上的稳定性或延续性：</p>
+<ul>
+<li>net.corda.buildSrc：必要的gradle插件来构建Corda</li>
+<li>net.corda.node：Corda节点的核心代码（例如节点驱动程序，节点服务，消息传递，持久性）</li>
+<li>net.corda.node.api：节点和客户端模块之间共享的数据结构，例如通过RPC发送的类型</li>
+<li>net.corda.samples.network.visualiser：一个网络可视化工具，它使用仿真来显示Corda网络上节点之间的交互和消息</li>
+<li>net.corda.samples.demos.attachment：演示如何使用附件从一个节点发送一个事务到另一个节点，并且接收节点访问附件</li>
+<li>net.corda.samples.demos.bankofcorda：模拟资产发行机构的角色（例如中央银行的现金）</li>
+<li>net.corda.samples.demos.irs：展示两家银行之间的利率互换协议</li>
+<li>net.corda.samples.demos.notary：一个节点获得多个事务的简单演示，由分布式（Raft或BFT SMaRt）公证人公证</li>
+<li>net.corda.samples.demos.simmvaluation：SIMM评估和分布式账本协议的演示</li>
+<li>net.corda.samples.demos.trader：演示了四个节点：公证人，现金发行人（Corda银行）和两个彼此进行交易的人，用现金交换商业票据</li>
+<li>net.corda.node.smoke.test.utils：测试烟雾测试实用程序</li>
+<li>net.corda.node.test.common：通用测试功能</li>
+<li>net.corda.tools.demobench：一个GUI工具，允许在本地运行Corda节点进行演示</li>
+<li>net.corda.tools.explorer：Corda的GUI前端</li>
+<li>net.corda.tools.graphs：用于推断项目依赖性的实用程序</li>
+<li>net.corda.tools.loadtest：Corda负载测试</li>
+<li>net.corda.verifier：允许节点外交易验证，允许验证水平扩展</li>
+<li>net.corda.webserver：是一个用于导出HTTP端点的CorDapps的servlet容器。该服务器是节点的RPC客户端</li>
+<li>net.corda.sandbox-creator：沙箱实用程序</li>
+<li>net.corda.quasar.hook：代理钩入Quasar并提供类型排除列表</li>
+</ul>
+<p><b style="color:#6ab0de"><code>net.corda</code>名称空间中包含<code>.internal</code>或<code>net.corda.node</code>仅供内部使用的任何软件包内的代码。未来版本将拒绝任何CorDapps使用这些包中的类型。</b></p>
+<h3 id="DoNotImplement-注解"><a href="#DoNotImplement-注解" class="headerlink" title="@DoNotImplement 注解"></a><code>@DoNotImplement</code> 注解</h3><p>Corda API中的某些接口和抽象类已被标注为@DoNotImplement。虽然我们承诺不删除或修改任何这些类的现有功能，但注释是我们可能需要在将来版本的Corda中扩展它们的警告。因此，Cordapp开发人员应该“按原样”使用这些类，而不是试图扩展或实现它们中的任何一个。</p>
 
       
     </div>
@@ -864,7 +976,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写一个CorDapp"><span class="nav-number">2.</span> <span class="nav-text">编写一个CorDapp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述-1"><span class="nav-number">2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web内容和RPC客户端"><span class="nav-number">2.2.</span> <span class="nav-text">Web内容和RPC客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目结构"><span class="nav-number">2.3.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块1-cordapp-contracts-states"><span class="nav-number">2.4.</span> <span class="nav-text">模块1 - cordapp-contracts-states</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块2-cordapp"><span class="nav-number">2.5.</span> <span class="nav-text">模块2 - cordapp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习的资源"><span class="nav-number">2.6.</span> <span class="nav-text">学习的资源</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写一个CorDapp"><span class="nav-number">2.</span> <span class="nav-text">编写一个CorDapp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述-1"><span class="nav-number">2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web内容和RPC客户端"><span class="nav-number">2.2.</span> <span class="nav-text">Web内容和RPC客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目结构"><span class="nav-number">2.3.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块1-cordapp-contracts-states"><span class="nav-number">2.4.</span> <span class="nav-text">模块1 - cordapp-contracts-states</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块2-cordapp"><span class="nav-number">2.5.</span> <span class="nav-text">模块2 - cordapp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习的资源"><span class="nav-number">2.6.</span> <span class="nav-text">学习的资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建一个Cordapp"><span class="nav-number">3.</span> <span class="nav-text">构建一个Cordapp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CorDapp格式"><span class="nav-number">3.1.</span> <span class="nav-text">CorDapp格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建工具"><span class="nav-number">3.2.</span> <span class="nav-text">构建工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置依赖关系"><span class="nav-number">3.3.</span> <span class="nav-text">设置依赖关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#选择你的Corda，Quasar和Kotlin版本"><span class="nav-number">3.3.1.</span> <span class="nav-text">选择你的Corda，Quasar和Kotlin版本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Corda依赖"><span class="nav-number">3.3.2.</span> <span class="nav-text">Corda依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#依赖其他CorDapps"><span class="nav-number">3.3.3.</span> <span class="nav-text">依赖其他CorDapps</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他依赖关系"><span class="nav-number">3.3.4.</span> <span class="nav-text">其他依赖关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建CorDapp-Jar"><span class="nav-number">3.4.</span> <span class="nav-text">创建CorDapp Jar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装CorDapp-JAR"><span class="nav-number">3.5.</span> <span class="nav-text">安装CorDapp JAR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过master分支编译"><span class="nav-number">4.</span> <span class="nav-text">通过master分支编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Corda-Api"><span class="nav-number">5.</span> <span class="nav-text">Corda Api</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内部API和稳定性保证"><span class="nav-number">5.1.</span> <span class="nav-text">内部API和稳定性保证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Corda稳定的模块"><span class="nav-number">5.2.</span> <span class="nav-text">Corda稳定的模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Corda孵化模块"><span class="nav-number">5.3.</span> <span class="nav-text">Corda孵化模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Corda不稳定模块"><span class="nav-number">5.4.</span> <span class="nav-text">Corda不稳定模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DoNotImplement-注解"><span class="nav-number">5.5.</span> <span class="nav-text">@DoNotImplement 注解</span></a></li></ol></li></ol></div>
             
 
           </div>
