@@ -276,6 +276,407 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/blockchain/corda/Corda-networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/07/blockchain/corda/Corda-networks/" itemprop="url">Corda networks</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-07T15:47:02+08:00">2018-06-07</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="设置Corda网络"><a href="#设置Corda网络" class="headerlink" title="设置Corda网络"></a>设置Corda网络</h2><p>Corda网络由多台运行节点的机器组成。这些节点使用持久协议进行通信，以创建和验证交易。</p>
+<p>这种节点可能具有三种更广泛的功能类别。这些功能块是作为服务提供的，一个节点可以运行其中几个。</p>
+<ul>
+<li>公证人：运行公证服务见证人状态的节点花费并最终决定交易是否是双重花费</li>
+<li>Oracle：通过提供影响交易有效性的事实将账本与外部世界链接起来的网络服务</li>
+<li>常规节点：所有节点都有一个Vault，并且可能开始与其他节点，公证人和神谕（Oracle）进行通信的协议，并发展他们的私人分类账</li>
+</ul>
+<h3 id="建立你自己的网络"><a href="#建立你自己的网络" class="headerlink" title="建立你自己的网络"></a>建立你自己的网络</h3><h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>给定Corda网络中的每个节点都必须具有由网络根CA签署的身份证书。有关更多信息，请参阅<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>。</p>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>节点可以通过在节点的目录中添加/编辑<code>node.conf</code>进行配置。有关详情请参阅<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>。</p>
+<p>一个示例配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">myLegalName : &quot;O=Bank A,L=London,C=GB&quot;</span><br><span class="line">keyStorePassword : &quot;cordacadevpass&quot;</span><br><span class="line">trustStorePassword : &quot;trustpass&quot;</span><br><span class="line">dataSourceProperties : &#123;</span><br><span class="line">    dataSourceClassName : org.h2.jdbcx.JdbcDataSource</span><br><span class="line">    &quot;dataSource.url&quot; : &quot;jdbc:h2:file:&quot;$&#123;baseDirectory&#125;&quot;/persistence&quot;</span><br><span class="line">    &quot;dataSource.user&quot; : sa</span><br><span class="line">    &quot;dataSource.password&quot; : &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line">p2pAddress : &quot;my-corda-node:10002&quot;</span><br><span class="line">rpcSettings = &#123;</span><br><span class="line">    useSsl = false</span><br><span class="line">    standAloneBroker = false</span><br><span class="line">    address : &quot;my-corda-node:10003&quot;</span><br><span class="line">    adminAddress : &quot;my-corda-node:10004&quot;</span><br><span class="line">&#125;</span><br><span class="line">webAddress : &quot;localhost:10004&quot;</span><br><span class="line">rpcUsers : [</span><br><span class="line">    &#123; username=user1, password=letmein, permissions=[ StartFlow.net.corda.protocols.CashProtocol ] &#125;</span><br><span class="line">]</span><br><span class="line">devMode : true</span><br></pre></td></tr></table></figure></p>
+<p>有关网络配置的最重要的配置是：</p>
+<ul>
+<li><code>p2pAddress</code>：这指定了Artemis将与其他节点进行消息传递绑定的主机和端口。需要注意的是绑定的地址将不是<code>my-corda-node</code>，而是<code>::</code>（所有网络接口上的所有地址）。指定的主机名是必须由网络中的其他节点在外部解析的主机名。在上述配置中，这是VPN中机器的可解析名称。</li>
+<li><code>rpcAddress</code>：Artemis将为RPC调用绑定的地址。</li>
+<li><code>webAddress</code>：网络服务器应该绑定的地址。需要注意的是端口必须是来自截然不同p2pAddress并且rpcAddress如果他们是在同一台机器上。</li>
+</ul>
+<h4 id="引导网络"><a href="#引导网络" class="headerlink" title="引导网络"></a>引导网络</h4><p>节点使用网络图互相看到。这是一个静态签名的节点信息文件的集合，每个节点在网络中都有一个文件。大多数生产部署将通过HTTP使用高度可用，安全的网络映射分布。</p>
+<p>对于节点（至少最初）驻留在同一个文件系统中的测试部署，可以将这些节点信息文件直接放置在节点的<code>additional-node-infos</code>目录中，节点将从该目录中选择并将它们存储在本地网络映射缓存中。节点在启动时生成自己的节点信息文件。</p>
+<p>除了网络映射之外，网络中的所有节点都必须使用相同的一组网络参数。这些是一组保证节点间互操作性的常量。HTTP网络图分发节点自动下载的网络参数。在没有这个的情况下，网络参数必须在本地生成。这可以通过网络引导程序完成。这是一个工具，用于扫描公共目录中的所有节点配置，以生成复制到节点目录的网络参数文件。它还将每个节点的节点信息文件复制到每个其他节点，以便它们可以互相交换。</p>
+<p>引导程序工具可以从<a href="http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar" target="_blank" rel="noopener">http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar</a> 下载，其中<code>X</code>是主要的Corda版本，并且<code>Y</code>是次要的Corda版本。</p>
+<p>要使用它，请为要创建的每个节点创建一个包含<code>node.conf</code>文件的目录。然后运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar network-bootstrapper.jar &lt;nodes-root-dir&gt;</span><br></pre></td></tr></table></figure></p>
+<p>例如，在包含这些文件的目录上运行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├──notary.conf //公证人的node.conf文件</span><br><span class="line">├──partya.conf // Party A的node.conf文件</span><br><span class="line">└──partyb.conf //乙方的node.conf文件</span><br></pre></td></tr></table></figure></p>
+<p>会生成包含三个节点的目录：公证人，partya和partyb。</p>
+<p>该工具仅引导网络。如果新节点需要加入网络，或者现有节点已经改变节点信息中的某些内容，例如P2P地址，它就不能动态更新。为此，新的节点信息文件将需要放置在其他节点的<code>additional-node-infos</code>目录中。一个简单的方法是使用rsync。但是，如果事先知道节点集合，最终节点文件夹可以在引导程序中预生成并且只在需要时启动。</p>
+<h4 id="白名单合同"><a href="#白名单合同" class="headerlink" title="白名单合同"></a>白名单合同</h4><p>如果您想创建区域白名单（请参阅<a href="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html" target="_blank" rel="noopener">API：合同约束</a>），则可以传入CorDapp jar列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar network-bootstrapper.jar &lt;nodes-root-dir&gt; &lt;path-to-first-corDapp&gt; &lt;path-to-second-corDapp&gt; ..</span><br></pre></td></tr></table></figure></p>
+<p>CorDapp jars将被散列并扫描Contract类。默认情况下，该工具将生成一个名为<code>whitelist.txt</code>包含每个包含该jar散列项的合约的条目的文件。</p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net.corda.finance.contracts.asset.Obligation：decd098666b9657314870e192ced0c3519c2c9d395507a238338f8d003929de8</span><br><span class="line">net.corda.finance.contracts.asset.Cash:decd098666b9657314870e192ced0c3519c2c9d395507a238338f8d003929de9</span><br></pre></td></tr></table></figure></p>
+<p>这些将被添加到<code>NetworkParameters.whitelistedContractImplementations</code>。请参阅<a href="https://docs.corda.net/releases/release-V3.1/network-map.html" target="_blank" rel="noopener">网络映射</a>。</p>
+<p>这意味着默认情况下，网络引导程序工具会将所有通过的CorDapps中的所有合约列入白名单。</p>
+<p>如果根目录中有一个文件<code>whitelist.txt</code>，工具会将新的jar散列或合约附加到它。</p>
+<p>区域操作员将维护这个白名单文件，并使用该工具将新版本的CorDapps添加到它。</p>
+<p>警告:</p>
+<ul>
+<li>区域操作员必须确保该文件仅被附加。</li>
+<li>如果操作员从列表中删除哈希值，则指向该版本的所有交易将突然失败约束验证，并且整个链会受到影响。</li>
+<li>如果合同从白名单中删除，那么从此时开始创建的所有状态将受到HashAttachmentConstraint约束。</li>
+</ul>
+<p>注意：在未来的版本中，我们将提供维护合约白名单的防篡改方式。</p>
+<p>对于约束的细粒度控制，如果多个合约存在于同一个jar中，则该工具从另一个文件中读取： <code>exclude_whitelist.txt</code>，其中包含不应列入白名单的合约列表，因此默认为严格限制： <code>HashAttachmentConstraint</code></p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net.corda.finance.contracts.asset.Cash</span><br><span class="line">net.corda.finance.contracts.asset.CommercialPaper</span><br></pre></td></tr></table></figure></p>
+<h4 id="启动节点"><a href="#启动节点" class="headerlink" title="启动节点"></a>启动节点</h4><p>您现在可以按任何顺序启动节点。您应该看到一条横幅，一些日志行，并最终显示该节点已完全启动。<code>Node started up and registered</code></p>
+<p>在流程管理方面，没有规定的方法。您可以手动启动jars，也可以使用systemd。</p>
+<h4 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h4><p>只有少数重要的线条打印在控制台上。有关详细信息/诊断问题，请检查日志。</p>
+<p>日志记录是标准的log4j2，可以进行相应配置。日志默认被重定向到<code>NODE_DIRECTORY/logs/</code>中的文件。</p>
+<h4 id="连接到节点"><a href="#连接到节点" class="headerlink" title="连接到节点"></a>连接到节点</h4><p>一旦节点启动成功，您可以连接到它作为客户端来启动协议/查询状态等。根据您的网络设置，您可能需要通过管道远程执行此操作。</p>
+<p>请参阅<a href="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html" target="_blank" rel="noopener">使用客户端RPC API</a>了解如何建立RPC链接。</p>
+<p>旁注：客户始终与具有单一身份的单个节点相关联，该身份只能看到其分类账的一部分。</p>
+<h2 id="网络许可"><a href="#网络许可" class="headerlink" title="网络许可"></a>网络许可</h2><p>Corda网络获得许可。要连接到网络，节点需要在其<code>&lt;workspace&gt;/certificates/</code>文件夹中有三个密钥库 ：</p>
+<ul>
+<li><code>truststore.jks</code>，它存储可信的公钥和证书（在我们的例子中是网络根CA的证书）</li>
+<li><code>nodekeystore.jks</code>，它存储节点的身份密钥对和证书</li>
+<li><code>sslkeystore.jks</code>，它存储节点的TLS密钥对和证书</li>
+</ul>
+<p><b style="color:red">生产部署需要安全的证书颁发机构。大多数生产部署将使用现有的证书颁发机构或使用将在未来几个月内提供的软件构建一个。在此之前，以下文档可用于创建您自己的认证中心。</b></p>
+<p>注意: 如果您正在查找有关如何连接到现有兼容区域的信息，请转至章节：<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html#connecting-to-a-compatibility-zone" target="_blank" rel="noopener">连接到兼容区域</a></p>
+<h3 id="证书层级"><a href="#证书层级" class="headerlink" title="证书层级"></a>证书层级</h3><p>Corda网络有四种类型的证书颁发机构（CA）：</p>
+<ul>
+<li>根CA网络</li>
+<li><b style="color:red">门卫CA</b><ul>
+<li><b style="color:red">使用门卫CA代替根网络CA进行日常密钥签名以降低根网络CA的私钥被泄露的风险</b></li>
+</ul>
+</li>
+<li>节点自己的CA<ul>
+<li>每个节点在发布用于签署其身份密钥和TLS证书的子证书时充当自己的CA.</li>
+</ul>
+</li>
+<li>合法身份的CA<ul>
+<li>除签署交易外，Node的着名合法身份也可以颁发机密合法身份证书</li>
+</ul>
+</li>
+</ul>
+<p>以下约束也是强制性的：</p>
+<ul>
+<li>门卫证书由网络根发出，证书不包含扩展名</li>
+<li><b style="color:red">知名服务身份证书由具有门卫证书的实体颁发</b></li>
+<li>节点CA证书由具有门卫证书的实体颁发</li>
+<li>众所周知的合法身份/TLS证书由标记为节点CA的证书颁发</li>
+<li>保密合法身份证书由标记为众所周知的合法身份的证书颁发</li>
+<li>Party的证书被标记为知名身份或机密身份</li>
+<li>高于门卫/网络map的证书结构有意保留，因为它们与身份服务无关，因此在这些证书上实施特定结构没有优势。证书层次结构一致性检查是必需的，因为节点可以颁发自己的证书，并可以在证书上设置自己的角色标志，验证这些证书是否与证书层次结构设计一致，这一点很重要。作为副作用，这也作为对颁发证书的二级深度限制.</li>
+</ul>
+<p>所有证书必须与自定义角色扩展一起发布（见下文）。</p>
+<p>我们可以将权限结构可视化如下：<br><img src="https://docs.corda.net/releases/release-V3.1/_images/certificate_structure.png" alt=""></p>
+<h3 id="密钥对和证书格式"><a href="#密钥对和证书格式" class="headerlink" title="密钥对和证书格式"></a>密钥对和证书格式</h3><p>您可以使用任何标准关键工具或Corda<code>X509Utilities</code>（使用Bouncy Castle）来创建所需的公钥/私钥对和证书。密钥对和证书应遵守以下限制：</p>
+<ul>
+<li>证书必须遵循X.509标准<ul>
+<li>我们推荐X.509 v3用于向前兼容</li>
+</ul>
+</li>
+<li>TLS证书必须遵循TLS v1.2标准</li>
+<li>根网络CA，门卫CA和节点CA密钥以及节点TLS密钥必须遵循以下方案之一：<ul>
+<li>ECDSA使用NIST P-256曲线（secp256r1）</li>
+<li>具有3072位密钥大小的RSA</li>
+</ul>
+</li>
+</ul>
+<h3 id="证书角色扩展"><a href="#证书角色扩展" class="headerlink" title="证书角色扩展"></a>证书角色扩展</h3><p>Corda证书具有自定义的X.509 v3扩展名，用于指定证书所涉及的角色。该扩展具有OID <code>1.3.6.1.4.1.50530.1.1</code>并且不重要，因此Corda节点之外的实现可以安全地忽略它。该扩展包含一个ASN.1整数，用于标识证书的身份类型：</p>
+<ol>
+<li>门卫 doorman</li>
+<li>网络map （Network Map）</li>
+<li>服务标识 Service identity（目前仅用作分布式公证中的共享标识）</li>
+<li>节点证书颁发机构 Node certificate authority （从中发布TLS和知名身份证书）</li>
+<li>传输层安全 Transport layer security</li>
+<li>众所周知的合法身份 Well-known legal identity</li>
+<li>保密的法律身份 Confidential legal identity</li>
+</ol>
+<p>在典型的安装中，节点管理员不需要知道这些。但是，当节点证书由外部工具（例如组织内部署的现有PKI解决方案）管理时，了解这些约束非常重要。</p>
+<p>证书路径验证被扩展，以便证书必须包含扩展名（如果扩展名存在于发行者的证书中）。</p>
+<h3 id="创建根和门卫CA"><a href="#创建根和门卫CA" class="headerlink" title="创建根和门卫CA"></a>创建根和门卫CA</h3><h4 id="创建根网络CA的密钥库（keyStore）和信任库（trustStore）"><a href="#创建根网络CA的密钥库（keyStore）和信任库（trustStore）" class="headerlink" title="创建根网络CA的密钥库（keyStore）和信任库（trustStore）"></a>创建根网络CA的密钥库（keyStore）和信任库（trustStore）</h4><ol>
+<li>创建一个新的密钥对<ul>
+<li>这将用作根网络CA的密钥对</li>
+</ul>
+</li>
+<li>为密钥对创建一个自签名证书。基本约束扩展必须设置为true<ul>
+<li>这将被用作根网络CA的证书</li>
+</ul>
+</li>
+<li>创建一个新的密钥库，并将根网络CA的密钥对和证书存储在其中以供以后使用<ul>
+<li>此根密钥库将被根网络CA用于签署门卫CA的证书</li>
+</ul>
+</li>
+<li>使用别名<code>cordarootca</code>创建一个名为<code>truststore.jks</code>并存储根网络CA证书的新Java密钥库<ul>
+<li>随后必须将该密钥库供应给各个节点，以便它们可以将其存储在其<code>certificates</code>文件夹中</li>
+</ul>
+</li>
+</ol>
+<p><b style="color:Red">警告: 根网络CA的私钥应该受到保护并保持安全。</b></p>
+<h4 id="创建门卫CA的密钥库"><a href="#创建门卫CA的密钥库" class="headerlink" title="创建门卫CA的密钥库"></a>创建门卫CA的密钥库</h4><ol>
+<li>创建一个新的密钥对<ul>
+<li>这将被用作门卫CA的密钥对</li>
+</ul>
+</li>
+<li>获取使用根网络CA密钥签名的密钥对的证书。基本约束扩展必须设置为true<ul>
+<li>这将被用作门卫CA的证书</li>
+</ul>
+</li>
+<li>创建一个新的密钥库，并将门卫CA的密钥对和证书链（即门卫CA证书和根网络CA证书）存储在其中以备后用<ul>
+<li>这个密钥库将被门卫CA用来签署节点的身份证书</li>
+</ul>
+</li>
+</ol>
+<h3 id="创建节点CA密钥库和TLS密钥库"><a href="#创建节点CA密钥库和TLS密钥库" class="headerlink" title="创建节点CA密钥库和TLS密钥库"></a>创建节点CA密钥库和TLS密钥库</h3><h4 id="创建节点CA密钥库"><a href="#创建节点CA密钥库" class="headerlink" title="创建节点CA密钥库"></a>创建节点CA密钥库</h4><ol>
+<li>对于每个节点，创建一个新的密钥对</li>
+<li>获取使用门卫CA密钥签名的密钥对的证书。基本约束扩展必须设置为true</li>
+<li>使用别名<code>cordaclientca</code>创建一个名为<code>nodekeystore.jks</code>并存储密钥对的新Java密钥库<ul>
+<li>节点将在本地存储此密钥库以签署其身份密钥和匿名密钥</li>
+</ul>
+</li>
+</ol>
+<h4 id="创建节点TLS密钥库"><a href="#创建节点TLS密钥库" class="headerlink" title="创建节点TLS密钥库"></a>创建节点TLS密钥库</h4><ol>
+<li>对于每个节点，创建一个新的密钥对</li>
+<li>为使用节点CA密钥签名的密钥对创建证书。基本约束扩展必须设置为 false</li>
+<li>使用别名<code>cordaclienttls</code>创建一个名为<code>sslkeystore.jks</code>并存储密钥和证书的新Java密钥库<ul>
+<li>节点将在本地存储此密钥库以签署其TLS证书</li>
+</ul>
+</li>
+</ol>
+<h3 id="在节点上安装证书"><a href="#在节点上安装证书" class="headerlink" title="在节点上安装证书"></a>在节点上安装证书</h3><p>对于每个节点，将以下文件复制到节点的证书目录（<code>&lt;workspace&gt;/certificates/</code>）中：</p>
+<ol>
+<li>节点的nodekeystore.jks密钥库</li>
+<li>节点的sslkeystore.jks密钥库</li>
+<li>根网络CA的truststore.jks密钥库</li>
+</ol>
+<h3 id="连接到兼容区域"><a href="#连接到兼容区域" class="headerlink" title="连接到兼容区域"></a>连接到兼容区域</h3><p><b style="color:red">要连接到兼容区域，您需要提交证书签名请求（CSR）以获取该区域的有效标识，从而向其证书签名授权（门卫）注册。</b></p>
+<p>在您注册之前，您必须首先收到包含来自区域操作员的根证书的信任存储文件。然后运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar corda.jar --initial-registration --network-root-truststore-password &lt;trust store password&gt;</span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，它会期望信任存储文件位于该位置<code>certificates/network-root-truststore.jks</code>。这可以用附加<code>--network-root-truststore</code>标志覆盖。</p>
+<p>将根据从节点配置中获取的节点信息创建证书签名请求。生成请求需要来自节点配置文件的以下信息。</p>
+<ul>
+<li>myLegalName：    您公司的法定名称为X.500字符串。X.500允许区分具有相同名称的实体，因为合法名称在网络上必须是唯一的。如果另一个节点已经被许可使用该名称，则许可服务器将自动拒绝该请求。如果违反合法名称规则，请求也将被拒绝，请参阅<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming" target="_blank" rel="noopener">节点命名</a>以获取更多信息。</li>
+<li>电子邮件地址：    例如“<a href="mailto:admin@company.com" target="_blank" rel="noopener">admin@company.com</a>“</li>
+<li>DEVMODE：    必须设置为false</li>
+<li>compatibilityZoneURL：<br>Corda兼容区域网络管理服务根URL。<br>由Corda节点生成的一对新的私钥和公钥将用于创建请求。<br>该实用程序将向门卫服务器提交请求并定期轮询结果以检索证书。一旦请求被批准并且从服务器下载证书，节点将使用证书和生成的私钥创建密钥库和信任库。</li>
+</ul>
+<p>注意: 如果批准过程花费的时间比预期的长，您可以随时退出。请求过程将在重新启动时恢复。</p>
+<p>只有在节点首次连接到网络或证书过期时，才需要此过程。</p>
+<h2 id="Network-Map"><a href="#Network-Map" class="headerlink" title="Network Map"></a>Network Map</h2><p>网络map是已签名的NodeInfo对象的集合。每个NodeInfo都由其节点签名代表，因此不能被篡改。它在兼容区域中形成一组可达节点。节点可以从两个来源接收这些对象：</p>
+<ul>
+<li>一个讲述简单的基于HTTP的协议的网络映射服务器。</li>
+<li>节点的目录中的<code>additional-node-infos</code>目录。</li>
+</ul>
+<p>网络映射服务器还分配参数文件，该参数文件为所有节点需要同意保持同步的各种设置定义值。</p>
+<p>注意:在Corda 3中没有提供HTTP网络映射服务器的实现。这是因为兼容性区域管理其成员资格（数据库，票务工作流程，HSM硬件等）的细节预计会因运营商而异，所以我们提供了一个简单的基于REST的协议，用于上载/下载NodeInfos并管理网络参数。未来版本的Corda可能会为运行测试区提供一个简单的“存根”实现。在Corda 3中，运行测试网络的正确方法是通过您自己的机制分发相关文件。我们提供了一个工具来自动完成这项任务的大部分（见下文）。</p>
+<h3 id="HTTP网络map协议"><a href="#HTTP网络map协议" class="headerlink" title="HTTP网络map协议"></a>HTTP网络map协议</h3><p>如果节点配置了<code>compatibilityZoneURL</code>配置，那么它首先将其自己的签名上传<code>NodeInfo</code> 到服务器（<b style="color:Red">并且每次启动时都会更改</b>），然后继续下载整个网络map。网络map由一个<code>NodeInfo</code>哈希列表组成。节点定期轮询网络映射（基于HTTP缓存有效头），并且下载和缓存任何新条目。不再存在的条目将从节点的缓存中删除。</p>
+<p>网络地图服务的一组REST端点如下。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">请求方法</th>
+<th style="text-align:center">路径</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">POST</td>
+<td style="text-align:center">/network-map/publish</td>
+<td style="text-align:center">让节点将其签名NodeInfo对象上传到网络地图。</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td style="text-align:center">/network-map/ack-parameters</td>
+<td style="text-align:center">为了节点操作员确认网络图，新参数被接受以供将来更新。</td>
+</tr>
+<tr>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">/network-map</td>
+<td style="text-align:center">检索当前签名的网络地图对象。整个对象用附加的网络映射证书进行签名。</td>
+</tr>
+<tr>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">/network-map/node-info/{hash}</td>
+<td style="text-align:center">检索NodeInfo网络地图对象中指定的签名。</td>
+</tr>
+<tr>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">/network-map/network-parameters/{hash}</td>
+<td style="text-align:center">检索签名的网络参数（见下文）。整个对象用附加的网络映射证书进行签名。</td>
+</tr>
+</tbody>
+</table>
+<p>HTTP用于网络map服务，而不是Corda自己的基于AMQP的对等消息传递协议，以便将服务器置于缓存内容交付网络后面，如Cloudflare，Akamai，Amazon Cloudfront等。通过使用工业HTTP缓存网络，map服务器可以更有效地屏蔽DoS攻击。另外，对于分发很少变化的小文件的情况，HTTP是一个很好理解和优化的协议。Corda自己的协议设计用于使用签名的二进制消息分离为并行和嵌套流的身份验证身份之间的复杂多方会话，这对于网络映射分发不是必需的。</p>
+<h3 id="additional-node-infos目录"><a href="#additional-node-infos目录" class="headerlink" title="additional-node-infos目录"></a><code>additional-node-infos</code>目录</h3><p>除了HTTP网络map服务外，或者如果节点没有连接到一个节点，节点将轮询位于其基本目录中的<code>additional-node-infos</code>目录的内容。预计每个文件都是网络地图服务发布的相同签名<code>NodeInfo</code>对象。这些会自动添加到节点的缓存中，并可用于补充或替换HTTP网络图。如果同一节点通过这两种机制进行广告，则采用最新的节点。</p>
+<p>启动时，节点会生成自己的签名节点信息文件，格式的文件名nodeInfo-${hash}。它也可以使用–just-generate-node-info命令行标志生成而不需要启动节点。要创建一个没有HTTP网络映射服务的简单网络，只需将该文件放置在该网络中每个节点的<code>additional-node-infos</code>目录中即可。例如，一个简单的方法是使用rsync。</p>
+<p>通常，测试网络具有提前知晓的结构。为了创建这样的网络，我们提供了一个 <code>network-bootstrapper</code>工具。如果给定网络中每台机器的IP地址/域名，此工具会预先生成节点配置目录。生成的节点目录包含网络中每个其他节点的NodeInfos以及网络参数文件和身份证书。生成的节点不需要一次全部在线 - 一个未与之交互的离线节点不会以任何方式影响网络。因此，像这样生成的测试集群可以按照您可能需要的最大大小来确定大小，然后根据需要进行放大和缩小。</p>
+<p>更多信息可以在<a href="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html" target="_blank" rel="noopener">设置Corda网络</a>中找到。</p>
+<h3 id="网络参数"><a href="#网络参数" class="headerlink" title="网络参数"></a>网络参数</h3><p>网络参数是一组值，参与该区域的每个节点需要达成一致并用于正确互操作。它们可以被认为是Corda部署的各个方面的封装，理性人可能会不同意。虽然其他区块链/DLT系统通常需要源代码fork以改变各种常量（如加密货币中的硬币总数，使用的端口号等），但在Corda中，我们将这些决策重构为单独的文件，并允许“区域运营商”对其进行决策。操作员签署一个包含这些值的数据结构，并将它们与网络map一起分发。提供工具以获得用户选择同意新版本参数的权限，并确保每个人同时切换到它们。</p>
+<p>如果节点正在使用HTTP网络map服务，那么在首次启动时，它将下载已签名的网络参数，将其缓存在<code>network-parameters</code>文件中并将其应用到节点上。</p>
+<p>警告: 如果<code>network-parameters</code>文件发生更改并且不再与网络map服务所发布的内容相匹配，则该节点将自动关闭。解决方法是删除不正确的文件并重新启动节点，以便可以再次下载参数。</p>
+<p>如果节点没有使用HTTP网络map服务，那么预计签名文件是通过其他方式提供的。对于这种情况，网络引导程序工具除了生成网络参数文件之外，还会将节点信息文件分发到节点目录。</p>
+<p>当前的一组网络参数：</p>
+<ul>
+<li>minimumPlatformVersion：节点必须运行的最低平台版本。低于此值的任何节点都不会启动。</li>
+<li>notaries：    在兼容区域中允许的公证人的身份和验证类型（验证或不验证）的列表。</li>
+<li>maxMessageSize：    （目前这被忽略，但它将在未来的版本中发布。）</li>
+<li>maxTransactionSize：交易的最大允许字节数。这是交易对象及其附件的大小。</li>
+<li>modifiedTime：    网络参数上次由兼容性区域运算符修改的时间。</li>
+<li>epoch：    网络参数的版本号。从1开始，只要有任何参数改变，它就会一直增加。</li>
+<li>whitelistedContractImplementations：合同代码的白名单版本列表。对于每个合同类，都有包含该合同的已批准CorDapp jar版本的散列列表。点击此处了解更多关于区域限制的信息<a href="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html" target="_blank" rel="noopener">API：合同限制</a></li>
+</ul>
+<p>更多参数将在未来版本中添加，以管理诸如允许的端口号，节点在从区域被逐出之前可以离线多久，区域成员是否需要IPv6连接，所需的加密算法和部署时间表（例如用于后期量子密码学），与SGX有关的参数等等。</p>
+<h3 id="网络参数更新过程"><a href="#网络参数更新过程" class="headerlink" title="网络参数更新过程"></a>网络参数更新过程</h3><p>如果需要更改网络参数，Corda区域操作员将开始更新过程。有很多原因可能导致这一决定：例如，添加公证人，设置添加的新字段以实现平滑的网络互操作性，或者需要更改现有的兼容性常量。</p>
+<p>注意: 未来版本可能支持分阶段推出网络参数更改的概念。</p>
+<p>要同步兼容区域中的所有节点以使用新的一组网络参数，将提供两种RPC方法。该流程需要人员交互和对变更的批准，因此节点操作员可以在同意之前查看差异。</p>
+<p>当更新即将发生时，网络map服务开始用通常的网络map数据通告附加信息。它包括新的网络参数哈希，更改说明和更新截止日期。节点向网络映射服务器查询新的一组参数。</p>
+<p>新的参数集被公布的事实显示在节点日志中，并带有“下载的新网络参数”消息，并且通过RPC连接的程序可以通过使用该<code>CordaRPCOps.networkParametersFeed</code>方法接收<code>ParametersUpdateInfo</code>。通常，区域操作员还会通过电子邮件向节点操作员发送电子邮件，让他们了解即将发生的更改的详细信息，以及理由，如何提交对象，截止日期等。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Data class containing information about the scheduled network parameters update. The info is emitted every time node</span></span><br><span class="line"><span class="comment"> * receives network map with [ParametersUpdate] which wasn't seen before. For more information see: [CordaRPCOps.networkParametersFeed] and [CordaRPCOps.acceptNewNetworkParameters].</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@property</span> hash new [NetworkParameters] hash</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@property</span> parameters new [NetworkParameters] data structure</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@property</span> description description of the update</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@property</span> updateDeadline deadline for accepting this update using [CordaRPCOps.acceptNewNetworkParameters]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ParametersUpdateInfo</span></span>(</span><br><span class="line">        <span class="keyword">val</span> hash: SecureHash,</span><br><span class="line">        <span class="keyword">val</span> parameters: NetworkParameters,</span><br><span class="line">        <span class="keyword">val</span> description: String,</span><br><span class="line">        <span class="keyword">val</span> updateDeadline: Instant</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>节点管理员可以检查更改并决定是否要接受它。在更新截止日期之前应该进行批准。在截止日期前不批准的节点可能会被区域运营商从网络地图中删除，但这是由运营商决定的决定。例如，运营商也可能会选择更改截止日期。</p>
+<p>如果网络运营商开始通告一组不同的新参数，那么该新的组将覆盖前一组。只有最新的更新才能被接受。</p>
+<p>要将参数批准发送回区域操作员， 必须使用更新来调用RPC方法<code>fun acceptNewNetworkParameters(parametersHash: SecureHash)</code>。请注意，批准不能撤消。您可以通过Corda shell执行<code>parametersHash</code>操作（请参阅Shell）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run acceptNewNetworkParameters parametersHash: &quot;ba19fc1b9e9c1c7cbea712efda5f78b53ae4e5d123c89d02c9da44ec50e9c17d&quot;</span><br></pre></td></tr></table></figure></p>
+<p>如果管理员不接受更新，则下一次该节点在截止日期后轮询网络映射，则通告的网络参数将为更新后的网络参数。前一组参数将不再有效。此时节点将自动关闭，并要求节点操作员再次将其恢复。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>随着Corda平台的不断发展和新功能的增加，拥有版本控制系统变得非常重要，它允许用户轻松比较版本并了解可用功能。每个Corda发行版都使用标准的语义版本方案<code>major.minor.patch</code>。这在公开域中发布时非常有用，但对于在平台上工作的开发人员不友好。它首先必须被解析，然后他们有三个独立的部分来确定API差异。发布版本仍然有用，节点发送的每个MQ消息都将其附加到标题属性<code>release-version</code>以进行调试。</p>
+<p>使用单个增量整数值来表示Corda平台的API版本（称为平台版本）要容易得多。它类似于Android的API级别。它从1开始，每增加一个版本，就会增加1，这会改变整个平台上任何公开暴露的API。这包括节点本身的公共API，RPC系统，消息传递，序列化等。API始终保持向后兼容性，并且使用弃用从旧API迁移。在极少数情况下，API可能不得不被删除，例如由于安全问题。平台版本和发布版本之间没有任何关系 - 主要，次要或补丁值的更改可能会或可能不会增加平台版本。</p>
+<p>平台版本是节点<code>NodeInfo</code>对象的一部分，可以从中获得<code>ServiceHub</code>。这使得CorDapp能够找出正在运行的版本并确定是否有可用的功能。当一个节点向网络映射服务注册时，它将使用该节点的平台版本来强制执行网络的最低​​版本要求。</p>
+<p>注意: 未来版本可能会引入目标平台版本的概念，这与Android的<code>targetSdkVersion</code>类似，并且会为平台行为发生变化的情况提供维护行为兼容性的手段。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2779,175 +3180,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/18/java/深入java类加载器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/18/java/深入java类加载器/" itemprop="url">深入java类加载器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-18T17:41:35+08:00">2018-04-18</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/jdk/" itemprop="url" rel="index"><span itemprop="name">jdk</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>对于java的类加载机制，我想大家一定都知道双亲委派模型和JDK类中的加载器。主要有Bootstrap ClassLoader、Extension ClassLoader、Application ClassLoader和User Defined ClassLoader。这些基础知识就不多说了。</p>
-<ul>
-<li>启动类加载器(Bootstrap ClassLoader)：<br>这个类加载器使用C++语言实现，并非ClassLoader的子类。主要负责加载存放在<code>JAVA_HOME/jre/lib/rt.jar</code>里面所有的class文件，或者被<code>-Xbootclasspath</code>参数所指定路径中以rt.jar命名的文件。</li>
-<li>扩展类加载器(Extension ClassLoader)：<br>这个加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载<code>JAVA_HOME/lib/ext</code>目录中的，或者被<code>java.ext.dirs</code>系统变量所指定的路径中的所有类库。</li>
-<li>应用程序类加载器(Application ClassLoader)：<br>这个加载器由sun.misc.Launcher$AppClassLoader实现，它负责加载<code>classpath</code>对应的jar及目录。一般情况下这个就是程序中默认的类加载器。</li>
-<li>自定义类加载器(User Defined ClassLoader)：<br>开发人员继承ClassLoader抽象类自行实现的类加载器，基于自行开发的ClassLoader可用于并非加载classpath中(例如从网络上下载的jar或二进制字节码)、还可以在加载class文件之前做些小动作 如：加密等。</li>
-</ul>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>类加载器(ClassLoader)用来加载 class字节码到 Java 虚拟机中，并转换成 java.lang.Class 类的一个实例。当然class字节码的来源可能有多种，一种就是自己拼写class文件的内容。</p>
-<p>Java中如何比较两个类相等呢？这里所指的“相等”包括代表类的Class对象的equal方法、isAssignableFrom()、isInstance()方法及instance关键字返回的结果。</p>
-<p>其实在Java中，一个类是否是相同的，主要取决于类加载器和包名+类名，只有以上条件都满足了，我们才说这两个类是相等的。我并没有在class文件中发现equals方法，这说明类加载的去重完全是在definedClass方法中，调用了底层的一些C代码实现的。也就是说，我们无法自己实例化一个Class实例，这需要JVM底层帮我们处理，每个Class实例的去重，完全是JVM的底层代码帮忙处理的。但是我们可以在class类中发现一个ClassLoader类的成员。</p>
-<h2 id="ParallelLoaders"><a href="#ParallelLoaders" class="headerlink" title="ParallelLoaders"></a>ParallelLoaders</h2><p>这是ClassLoader里面的一个内部类，用来封装一组并行能力的加载器类型。这个一般是用不到的，有兴趣可以先看一下。但是需要知道ClassLoader是支持并行加载的。</p>
-<h2 id="类加载过程与双亲委派"><a href="#类加载过程与双亲委派" class="headerlink" title="类加载过程与双亲委派"></a>类加载过程与双亲委派</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">&#123;</span><br><span class="line">    synchronized (getClassLoadingLock(name)) &#123; // 获得要用的锁</span><br><span class="line">        // First, check if the class has already been loaded</span><br><span class="line">        Class&lt;?&gt; c = findLoadedClass(name); // 检查这个类有没有被加载</span><br><span class="line">        if (c == null) &#123;</span><br><span class="line">            long t0 = System.nanoTime(); // 时间</span><br><span class="line">            try &#123;</span><br><span class="line">                if (parent != null) &#123; // 如果父类加载器，就用父类加载器加载</span><br><span class="line">                    c = parent.loadClass(name, false);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    // 默认的父类加载器是启动类加载器</span><br><span class="line">                    c = findBootstrapClassOrNull(name);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                // ClassNotFoundException thrown if class not found</span><br><span class="line">                // from the non-null parent class loader</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (c == null) &#123; // 如果最终没有加载到这个类</span><br><span class="line">                // If still not found, then invoke findClass in order</span><br><span class="line">                // to find the class.</span><br><span class="line">                long t1 = System.nanoTime(); // 取得系统时间</span><br><span class="line">                c = findClass(name); // 如果没有父类加载器就自己加载</span><br><span class="line"></span><br><span class="line">                // this is the defining class loader; record the stats</span><br><span class="line">                sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (resolve) &#123;</span><br><span class="line">            resolveClass(c);</span><br><span class="line">        &#125;</span><br><span class="line">        return c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码很清楚，就不用过多解释了。双亲委派不是基于继承实现的，而是基于组合的方式实现的，默认使用启动类加载器作为父类加载器。如果类加器的父类加载器没有帮助我们加载到相应的类，那么就会调用findClass这个方法，所以为啥我们定义类加载器的时候需要重写findClass方法的原因就在这里。</p>
-<p>默认的findClass实现是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line">    throw new ClassNotFoundException(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>可以发现，如果加载不了类就抛异常，我们进行重写的时候，也应该注意这点（这是典型的模板方法模式）。</p>
-<p>其次我们发现loadClass不是final方法，也就是说我们可以打破双亲委派的模型，直接使用自己的类加载器，但这样会出现无法使用系统类的问题了，这个只是我的猜测，但是如果我想ClassLoader中会不会相应的信息，也许需要以后研究JVM底层的时候，才会有答案了。</p>
-<h2 id="重写findClass"><a href="#重写findClass" class="headerlink" title="重写findClass"></a>重写findClass</h2><p>我们可以发现重写findClass完全达不到自己生成Class的目的。然后你会发现defineClass也是返回Class类型的，所以我们需要在方法中调用这个方法进行相应的处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len,</span><br><span class="line">                                         ProtectionDomain protectionDomain)</span><br><span class="line">        throws ClassFormatError</span><br><span class="line">&#123;</span><br><span class="line">    protectionDomain = preDefineClass(name, protectionDomain);</span><br><span class="line">    // 从codeSource中获取类所在文件路径</span><br><span class="line">    String source = defineClassSourceLocation(protectionDomain);</span><br><span class="line">    Class&lt;?&gt; c = defineClass1(name, b, off, len, protectionDomain, source);</span><br><span class="line">    postDefineClass(c, protectionDomain);</span><br><span class="line">    return c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>有趣发现这里也有模板方法模式，如果你想前后处理一些事情，可以重写preDefineClass、postDefineClass这两个方法，但是注意原来的方法时private的，你无法调用super里面的方法，这会带来很多的问题。</p>
-<p>当然defineClass本省就是一个重载方法，所以详细的信息请查看源码，这里就不多说明了，其实用到才关注，一般的时候是不用管的。</p>
-<h2 id="resolveClass方法"><a href="#resolveClass方法" class="headerlink" title="resolveClass方法"></a>resolveClass方法</h2><p>resolveClass 此方法负责完成Class对象的链接，如果链接过，则直接返回。</p>
-<h2 id="findLibrary-loadLiberay"><a href="#findLibrary-loadLiberay" class="headerlink" title="findLibrary/loadLiberay"></a>findLibrary/loadLiberay</h2><p>这两个方法其实是为了加载动态链接库使用的，以前我也分析过里面的代码，有些印象，这里就不做更多的解释了。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2999,7 +3231,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">99</span>
+                    <span class="site-state-item-count">100</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
