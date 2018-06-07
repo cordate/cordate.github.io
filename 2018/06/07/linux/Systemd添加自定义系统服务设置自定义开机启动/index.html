@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="systemd,rc.d,服务," />
+
+
+<meta name="description" content="服务权限systemd有系统和用户区分；系统（/user/lib/systemd/system/）、用户（/etc/lib/systemd/user/）.一般系统管理员手工创建的单元文件建议存放在/etc/systemd/system/目录下面。 创建服务文件一般是放在/etc/systemd/system/目录下面，命名都是xxx.service。123456789101112131415161">
+<meta name="keywords" content="systemd,rc.d,服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转】Systemd添加自定义系统服务设置自定义开机启动">
+<meta property="og:url" content="http://cordate.github.io/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="服务权限systemd有系统和用户区分；系统（/user/lib/systemd/system/）、用户（/etc/lib/systemd/user/）.一般系统管理员手工创建的单元文件建议存放在/etc/systemd/system/目录下面。 创建服务文件一般是放在/etc/systemd/system/目录下面，命名都是xxx.service。123456789101112131415161">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-07T03:05:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【转】Systemd添加自定义系统服务设置自定义开机启动">
+<meta name="twitter:description" content="服务权限systemd有系统和用户区分；系统（/user/lib/systemd/system/）、用户（/etc/lib/systemd/user/）.一般系统管理员手工创建的单元文件建议存放在/etc/systemd/system/目录下面。 创建服务文件一般是放在/etc/systemd/system/目录下面，命名都是xxx.service。123456789101112131415161">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>【转】Systemd添加自定义系统服务设置自定义开机启动 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【转】Systemd添加自定义系统服务设置自定义开机启动</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-07T10:35:10+08:00">2018-06-07</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="服务权限"><a href="#服务权限" class="headerlink" title="服务权限"></a>服务权限</h2><p>systemd有系统和用户区分；系统（<code>/user/lib/systemd/system/</code>）、用户（<code>/etc/lib/systemd/user/</code>）.一般系统管理员手工创建的单元文件建议存放在<code>/etc/systemd/system/</code>目录下面。</p>
+<h2 id="创建服务文件"><a href="#创建服务文件" class="headerlink" title="创建服务文件"></a>创建服务文件</h2><p>一般是放在<code>/etc/systemd/system/</code>目录下面，命名都是<code>xxx.service</code>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=nginx - high performance web server</span><br><span class="line">Documentation=http://nginx.org/en/docs/</span><br><span class="line">After=network.target remote-fs.target nss-lookup.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=forking</span><br><span class="line">User=kibana</span><br><span class="line">Group=kibana</span><br><span class="line">PIDFile=/run/nginx.pid</span><br><span class="line">EnvironmentFile=-/etc/default/kibana</span><br><span class="line">EnvironmentFile=-/etc/sysconfig/kibana</span><br><span class="line">ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf</span><br><span class="line">ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf</span><br><span class="line">ExecReload=/bin/kill -s HUP $MAINPID</span><br><span class="line">ExecStop=/bin/kill -s QUIT $MAINPID</span><br><span class="line">PrivateTmp=true</span><br><span class="line">Restart=always</span><br><span class="line">WorkingDirectory=/</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure></p>
+<p>下面是具体字段的说明：</p>
+<p><code>[Unit]</code>单元的说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">项目</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Description</td>
+<td style="text-align:center">服务的简单描述</td>
+</tr>
+<tr>
+<td style="text-align:center">Documentation</td>
+<td style="text-align:center">服务文档</td>
+</tr>
+<tr>
+<td style="text-align:center">Before、After</td>
+<td style="text-align:center">定义启动顺序。Before=xxx.service,代表本服务在xxx.service启动之前启动。After=xxx.service,代表本服务在xxx.service之后启动。</td>
+</tr>
+<tr>
+<td style="text-align:center">Requires</td>
+<td style="text-align:center">这个单元启动了，它需要的单元也会被启动；它需要的单元被停止了，这个单元也停止了。</td>
+</tr>
+<tr>
+<td style="text-align:center">Wants</td>
+<td style="text-align:center">推荐使用。这个单元启动了，它需要的单元也会被启动；它需要的单元被停止了，对本单元没有影响。</td>
+</tr>
+</tbody>
+</table>
+<p><code>[Service]</code>单元的说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">项目</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Type=simple（默认值）</td>
+<td style="text-align:center">systemd认为该服务将立即启动。服务进程不会fork。如果该服务要启动其他服务，不要使用此类型启动，除非该服务是socket激活型。</td>
+</tr>
+<tr>
+<td style="text-align:center">Type=forking</td>
+<td style="text-align:center">systemd认为当该服务进程fork，且父进程退出后服务启动成功。对于常规的守护进程（daemon），除非你确定此启动方式无法满足需求，使用此类型启动即可。使用此启动类型应同时指定 PIDFile=，以便systemd能够跟踪服务的主进程。</td>
+</tr>
+<tr>
+<td style="text-align:center">Type=oneshot</td>
+<td style="text-align:center">这一选项适用于只执行一项任务、随后立即退出的服务。可能需要同时设置 RemainAfterExit=yes 使得 systemd 在服务进程退出之后仍然认为服务处于激活状态。</td>
+</tr>
+<tr>
+<td style="text-align:center">Type=notify</td>
+<td style="text-align:center">与 Type=simple 相同，但约定服务会在就绪后向 systemd 发送一个信号。这一通知的实现由 libsystemd-daemon.so 提供。</td>
+</tr>
+<tr>
+<td style="text-align:center">Type=dbus</td>
+<td style="text-align:center">若以此方式启动，当指定的 BusName 出现在DBus系统总线上时，systemd认为服务就绪。</td>
+</tr>
+<tr>
+<td style="text-align:center">Type=idle</td>
+<td style="text-align:center">systemd会等待所有任务(Jobs)处理完成后，才开始执行idle类型的单元。除此之外，其他行为和Type=simple 类似。</td>
+</tr>
+<tr>
+<td style="text-align:center">PIDFile</td>
+<td style="text-align:center">pid文件路径</td>
+</tr>
+<tr>
+<td style="text-align:center">ExecStart</td>
+<td style="text-align:center">指定启动单元的命令或者脚本，ExecStartPre和ExecStartPost节指定在ExecStart之前或者之后用户自定义执行的脚本。Type=oneshot允许指定多个希望顺序执行的用户自定义命令。</td>
+</tr>
+<tr>
+<td style="text-align:center">ExecReload</td>
+<td style="text-align:center">指定单元停止时执行的命令或者脚本。</td>
+</tr>
+<tr>
+<td style="text-align:center">ExecStop</td>
+<td style="text-align:center">指定单元停止时执行的命令或者脚本。</td>
+</tr>
+<tr>
+<td style="text-align:center">PrivateTmp</td>
+<td style="text-align:center">True表示给服务分配独立的临时空间</td>
+</tr>
+<tr>
+<td style="text-align:center">Restart</td>
+<td style="text-align:center">这个选项如果被允许，服务重启的时候进程会退出，会通过systemctl命令执行清除并重启的操作。</td>
+</tr>
+<tr>
+<td style="text-align:center">RemainAfterExit</td>
+<td style="text-align:center">如果设置这个选择为真，服务会被认为是在激活状态，即使所以的进程已经退出，默认的值为假，这个选项只有在Type=oneshot时需要被配置。</td>
+</tr>
+</tbody>
+</table>
+<p><code>[Install]</code>单元的说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">项目</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Alias</td>
+<td style="text-align:center">为单元提供一个空间分离的附加名字。</td>
+</tr>
+<tr>
+<td style="text-align:center">RequiredBy</td>
+<td style="text-align:center">单元被允许运行需要的一系列依赖单元，RequiredBy列表从Require获得依赖信息。</td>
+</tr>
+<tr>
+<td style="text-align:center">WantBy</td>
+<td style="text-align:center">单元被允许运行需要的弱依赖性单元，Wantby从Want列表获得依赖信息。</td>
+</tr>
+<tr>
+<td style="text-align:center">Also</td>
+<td style="text-align:center">指出和单元一起安装或者被协助的单元。</td>
+</tr>
+<tr>
+<td style="text-align:center">DefaultInstance</td>
+<td style="text-align:center">实例单元的限制，这个选项指定如果单元被允许运行默认的实例。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="重载服务"><a href="#重载服务" class="headerlink" title="重载服务"></a>重载服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable nginx.service</span><br></pre></td></tr></table></figure>
+<p>就会在<code>/etc/systemd/system/multi-user.target.wants/</code>目录下新建一个<code>/usr/lib/systemd/system/nginx.service</code> 文件的链接。</p>
+<h2 id="操作服务"><a href="#操作服务" class="headerlink" title="操作服务"></a>操作服务</h2><h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl start nginx.service</span><br></pre></td></tr></table></figure>
+<h3 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo journalctl -f -u nginx.service</span><br></pre></td></tr></table></figure>
+<h3 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl restart nginx.service</span><br></pre></td></tr></table></figure>
+<h3 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl reload nginx.service</span><br></pre></td></tr></table></figure>
+<h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl stop nginx.service</span><br></pre></td></tr></table></figure>
+<h2 id="原创"><a href="#原创" class="headerlink" title="原创"></a>原创</h2><p><a href="http://blog.51cto.com/wjb10000/1788364" target="_blank" rel="noopener">systemd添加自定义系统服务设置自定义开机启动</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/systemd/" rel="tag"># systemd</a>
+          
+            <a href="/tags/rc-d/" rel="tag"># rc.d</a>
+          
+            <a href="/tags/服务/" rel="tag"># 服务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/06/blockchain/corda/Corda-Nodes/" rel="next" title="Corda Nodes">
+                <i class="fa fa-chevron-left"></i> Corda Nodes
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">99</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">95</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务权限"><span class="nav-number">1.</span> <span class="nav-text">服务权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建服务文件"><span class="nav-number">2.</span> <span class="nav-text">创建服务文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重载服务"><span class="nav-number">3.</span> <span class="nav-text">重载服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作服务"><span class="nav-number">4.</span> <span class="nav-text">操作服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动服务"><span class="nav-number">4.1.</span> <span class="nav-text">启动服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看日志"><span class="nav-number">4.2.</span> <span class="nav-text">查看日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启"><span class="nav-number">4.3.</span> <span class="nav-text">重启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重载"><span class="nav-number">4.4.</span> <span class="nav-text">重载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#停止"><span class="nav-number">4.5.</span> <span class="nav-text">停止</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原创"><span class="nav-number">5.</span> <span class="nav-text">原创</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

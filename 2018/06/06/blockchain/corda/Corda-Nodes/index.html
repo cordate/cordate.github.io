@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="corda,r3," />
+
+
+<meta name="description" content="创建本地节点每个Corda节点都有以下的结构12345678.├── certificates            // The node&amp;apos;s certificates├── corda-webserver.jar     // The built-in node webserver├── corda.jar               // The core Corda librar">
+<meta name="keywords" content="corda,r3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Corda Nodes">
+<meta property="og:url" content="http://cordate.github.io/2018/06/06/blockchain/corda/Corda-Nodes/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="创建本地节点每个Corda节点都有以下的结构12345678.├── certificates            // The node&amp;apos;s certificates├── corda-webserver.jar     // The built-in node webserver├── corda.jar               // The core Corda librar">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-06T12:40:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Corda Nodes">
+<meta name="twitter:description" content="创建本地节点每个Corda节点都有以下的结构12345678.├── certificates            // The node&amp;apos;s certificates├── corda-webserver.jar     // The built-in node webserver├── corda.jar               // The core Corda librar">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/06/06/blockchain/corda/Corda-Nodes/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Corda Nodes | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/06/blockchain/corda/Corda-Nodes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Corda Nodes</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-06T17:39:49+08:00">2018-06-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="创建本地节点"><a href="#创建本地节点" class="headerlink" title="创建本地节点"></a>创建本地节点</h2><p>每个Corda节点都有以下的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── certificates            // The node&apos;s certificates</span><br><span class="line">├── corda-webserver.jar     // The built-in node webserver</span><br><span class="line">├── corda.jar               // The core Corda libraries</span><br><span class="line">├── logs                    // The node logs</span><br><span class="line">├── node.conf               // The node&apos;s configuration files</span><br><span class="line">├── persistence.mv.db       // The node&apos;s database</span><br><span class="line">└── cordapps                // The CorDapps jars installed on the node</span><br></pre></td></tr></table></figure></p>
+<p>该节点通过编辑其<code>node.conf</code>文件进行配置。通过将CorDapp JAR放入该<code>cordapps</code>文件夹中来在节点上安装CorDapps 。</p>
+<p>在开发模式下（即何时<code>devMode = true</code>，请参阅<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>以获取更多信息）， 如果所需的密钥库不存在，则<code>certificates</code>目录中将填充预先配置的密钥库。这可以确保开发人员能够尽快获得节点的工作。但是，这些预配置的密钥库不安全。要了解更多信息，请参阅<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>。</p>
+<h2 id="节点命名"><a href="#节点命名" class="headerlink" title="节点命名"></a>节点命名</h2><p>节点的名称必须是有效的X.500专有名称。为了与其他实现（特别是TLS实现）兼容，我们将允许的X.500名称属性类型约束为X.509证书（在RFC 3280中指定）的最小支持集的子集以及locality属性：</p>
+<ul>
+<li>组织（O）</li>
+<li>州（ST）</li>
+<li>地点（L）</li>
+<li>国家（C）</li>
+<li>组织单元（OU）</li>
+<li>通用名称（CN）</li>
+</ul>
+<p>更多信息参考<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming" target="_blank" rel="noopener">这个网址</a>！</p>
+<h2 id="Cordform任务"><a href="#Cordform任务" class="headerlink" title="Cordform任务"></a>Cordform任务</h2><p>Corda提供了一个名为的gradle插件<code>Cordform</code>，允许您自动生成和配置一组用于测试和演示的节点。这是一个<code>Cordform</code>调用的示例任务<code>deployNodes</code>，它创建三个节点，在<a href="https://github.com/corda/cordapp-template-kotlin/blob/release-V3/build.gradle#L100" target="_blank" rel="noopener">Kotlin CorDapp模板</a>中定义：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    directory <span class="string">"./build/nodes"</span></span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Notary,L=London,C=GB"</span></span><br><span class="line">        <span class="comment">// The notary will offer a validating notary service.</span></span><br><span class="line">        notary = [validating : <span class="keyword">true</span>]</span><br><span class="line">        p2pPort  <span class="number">10002</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10003</span></span><br><span class="line">            adminPort <span class="number">10023</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// No webport property, so no webserver will be created.</span></span><br><span class="line">        h2Port   <span class="number">10004</span></span><br><span class="line">        <span class="comment">// Includes the corda-finance CorDapp on our node.</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyA,L=London,C=GB"</span></span><br><span class="line">        p2pPort  <span class="number">10005</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10006</span></span><br><span class="line">            adminPort <span class="number">10026</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10007</span></span><br><span class="line">        h2Port   <span class="number">10008</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 all RPC permissions.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"ALL"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        p2pPort  <span class="number">10009</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10010</span></span><br><span class="line">            adminPort <span class="number">10030</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10011</span></span><br><span class="line">        h2Port   <span class="number">10012</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>要将节点配置扩展到<code>deployNodes</code>任务中定义的属性之外，请使用<code>configFile</code>路径（相对或绝对）设置为其他配置文件的属性。根据node.conf，该文件应该遵循标准的<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>格式。该文件的属性将被附加到生成的节点配置中。通过<code>-PconfigFile</code>命令行选项运行Gradle任务时，也可以添加文件的路径。但是，相同的文件将应用于所有节点。在前面的示例<code>PartyB</code>节点之后，将有一个从文件添加的额外配置选项<code>none-b.conf</code>：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    [...]</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        [...]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">        configFile = <span class="string">"samples/trader-demo/src/main/resources/none-b.conf"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行此任务将在<code>build/nodes</code>文件夹中创建三个节点：</p>
+<ul>
+<li>一个<code>Notary</code>节点：<ul>
+<li>提供验证公证服务</li>
+<li>没有网络服务器（因为<code>webPort</code>没有定义）</li>
+<li>正在运行<code>corda-finance</code>CorDapp</li>
+</ul>
+</li>
+<li><code>PartyA</code>和<code>PartyB</code>节点：<ul>
+<li>不提供任何服务</li>
+<li>将有一个网络服务器（因为<code>webPort</code>已定义）</li>
+<li>正在运行<code>corda-finance</code> CorDapp</li>
+<li>有一个RPC用户，<code>user1</code>可以用来通过RPC登录到节点</li>
+</ul>
+</li>
+</ul>
+<p>此外，所有三个节点都将包含项目源文件夹中定义的所有CorDapps，即使这些CorDapps未列入每个节点的<code>cordapps</code>条目中。这意味着<code>deployNodes</code>，例如从模板CorDapp，运行任务会自动构建模板CorDapp并将其添加到每个节点。</p>
+<p><b style="color:red">您可以扩展<code>deployNodes</code>以生成其他节点。</b></p>
+<p>这<code>Dockerform</code>是一个<code>Cordform</code>的姐姐任务。它具有几乎相同的语法，并产生非常相似的结果 - 通过使用<code>docker-compose</code>增加一个额外的文件来增强节点的易用性。您可以在下面<code>IRS Demo&lt;https://github.com/corda/corda/blob/release-V3.0/samples/irs-demo/cordapp/build.gradle#L111&gt;</code> 的主Corda GitHub存储库的samples目录中找到示例任务：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> rpcUsersList = [</span><br><span class="line">    [<span class="string">'username'</span> : <span class="string">"user"</span>,</span><br><span class="line">     <span class="string">'password'</span> : <span class="string">"password"</span>,</span><br><span class="line">     <span class="string">'permissions'</span> : [</span><br><span class="line">             <span class="string">"StartFlow.net.corda.irs.flows.AutoOfferFlow\$Requester"</span>,</span><br><span class="line">             <span class="string">"StartFlow.net.corda.irs.flows.UpdateBusinessDayFlow\$Broadcast"</span>,</span><br><span class="line">             <span class="string">"StartFlow.net.corda.irs.api.NodeInterestRates\$UploadFixesFlow"</span>,</span><br><span class="line">             <span class="string">"InvokeRpc.vaultQueryBy"</span>,</span><br><span class="line">             <span class="string">"InvokeRpc.networkMapSnapshot"</span>,</span><br><span class="line">             <span class="string">"InvokeRpc.currentNodeTime"</span>,</span><br><span class="line">             <span class="string">"InvokeRpc.wellKnownPartyFromX500Name"</span></span><br><span class="line">     ]]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment">// (...)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">task</span> prepareDockerNodes(type: net.corda.plugins.Dockerform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line"></span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Notary Service,L=Zurich,C=CH"</span></span><br><span class="line">        notary = [validating : <span class="keyword">true</span>]</span><br><span class="line">        cordapps = [<span class="string">"$&#123;project("</span>:finance<span class="string">").group&#125;:finance:$corda_release_version"</span>]</span><br><span class="line">        rpcUsers = rpcUsersList</span><br><span class="line">        useTestClock <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Bank A,L=London,C=GB"</span></span><br><span class="line">        cordapps = [<span class="string">"$&#123;project("</span>:finance<span class="string">").group&#125;:finance:$corda_release_version"</span>]</span><br><span class="line">        rpcUsers = rpcUsersList</span><br><span class="line">        useTestClock <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Bank B,L=New York,C=US"</span></span><br><span class="line">        cordapps = [<span class="string">"$&#123;project("</span>:finance<span class="string">").group&#125;:finance:$corda_release_version"</span>]</span><br><span class="line">        rpcUsers = rpcUsersList</span><br><span class="line">        useTestClock <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Regulator,L=Moscow,C=RU"</span></span><br><span class="line">        cordapps = [<span class="string">"$&#123;project.group&#125;:finance:$corda_release_version"</span>]</span><br><span class="line">        rpcUsers = rpcUsersList</span><br><span class="line">        useTestClock <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>不需要指定端口，因为每个节点都是独立的容器，所以不会发生端口冲突。运行该任务将创建与“Cordform任务”中所述的相同的文件夹结构<code>Dockerfile</code>，并<code>docker-compose.yml</code>在每个节点目录中和<code>build/nodes</code>目录中添加一个附加文件夹结构。默认情况下，每个节点都公开端口<code>10003</code>，这是RPC连接的默认端口。</p>
+<p>要创建我们<code>deployNodes</code>任务中定义的节点，请在定义任务的项目根目录的终端窗口中运行以下命令<code>deployNodes</code>：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew deployNodes</span><br></pre></td></tr></table></figure></p>
+<p>这将在<code>build/nodes</code>文件夹中创建节点。将为该deployNodes任务中定义的每个节点生成一个节点文件夹，以及runnodes用于同时运行所有节点以进行测试和开发的shell脚本（或Windows上的批处理文件）。如果您对CorDapp源代码或deployNodes任务进行了任何更改，则需要重新运行该任务以查看更改才能生效。</p>
+<p>现在可以按照运行节点中的说明<a href="https://docs.corda.net/releases/release-V3.1/running-a-node.html" target="_blank" rel="noopener">运行节点</a>。</p>
+<h2 id="本地运行节点"><a href="#本地运行节点" class="headerlink" title="本地运行节点"></a>本地运行节点</h2><p>出于测试目的，本地运行Corda节点有几种方法。</p>
+<h3 id="一次启动所有节点"><a href="#一次启动所有节点" class="headerlink" title="一次启动所有节点"></a>一次启动所有节点</h3><p><code>runnodes</code>是一个shell脚本（或Windows上的批处理文件），<code>deployNodes</code>可以让您快速启动所有节点及其Web服务器。<code>runnodes</code>只能用于测试目的。</p>
+<p><code>runnodes</code>通过从项目的根目录运行以下命令来启动节点：命令：<code>build/nodes/runnodes</code>.</p>
+<p>如果<code>OutOfMemoryError</code>在与节点进行交互时收到异常，则需要增加可供其使用的Java堆内存量，这可以在单独运行时执行。</p>
+<h3 id="启动单个Corda节点"><a href="#启动单个Corda节点" class="headerlink" title="启动单个Corda节点"></a>启动单个Corda节点</h3><p>通过打开节点文件夹中的终端窗口并运行以下命令来运行节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar corda.jar</span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，节点将查找调用的配置文件<code>node.conf</code>和在当前工作目录中调用的CorDapps <code>cordapps</code>文件夹。您可以在命令行上覆盖配置文件和工作区路径（例如 <code>./corda.jar --config-file=test.conf --base-directory=/opt/corda/nodes/test</code>）。</p>
+<p>您可以使用<code>-Xmx</code>命令行参数来增加节点可用的Java堆内存量。例如，以下内容将以2048MB的堆大小运行节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx2048m -jar corda.jar</span><br></pre></td></tr></table></figure></p>
+<p>也可以通过在节点的文件夹中打开终端窗口并运行以下命令来运行节点的Web服务器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar corda-webserver.jar</span><br></pre></td></tr></table></figure></p>
+<h3 id="启动启用远程调试的节点"><a href="#启动启用远程调试的节点" class="headerlink" title="启动启用远程调试的节点"></a>启动启用远程调试的节点</h3><p><b style="color:red">要启用节点的远程调试，请从终端窗口运行以下命令：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Dcapsule.jvm.args=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005&quot; -jar corda.jar</span><br></pre></td></tr></table></figure></p>
+<p>该命令行将在端口5005上启动调试器并暂停进程，等待调试器附件。</p>
+<h2 id="部署节点"><a href="#部署节点" class="headerlink" title="部署节点"></a>部署节点</h2><p>这些说明适用于想要将Corda节点部署到服务器的人员，无论他们是按照<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">本地创建节点</a>中的指示信息开发并测试了CorDapp 还是正在部署第三方CorDapp。</p>
+<h3 id="Linux：作为系统服务安装并运行Corda"><a href="#Linux：作为系统服务安装并运行Corda" class="headerlink" title="Linux：作为系统服务安装并运行Corda"></a>Linux：作为系统服务安装并运行Corda</h3><p>我们建议创建系统服务来运行节点和可选的Web服务器。这提供日志记录和服务处理，并确保Corda服务在启动时运行。</p>
+<p>具体细节查看<a href="https://docs.corda.net/releases/release-V3.1/deploying-a-node.html" target="_blank" rel="noopener">这里</a>！</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/corda/" rel="tag"># corda</a>
+          
+            <a href="/tags/r3/" rel="tag"># r3</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/01/blockchain/corda/Cordapp基础知识/" rel="next" title="Cordapp基础知识">
+                <i class="fa fa-chevron-left"></i> Cordapp基础知识
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/" rel="prev" title="【转】Systemd添加自定义系统服务设置自定义开机启动">
+                【转】Systemd添加自定义系统服务设置自定义开机启动 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">99</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">95</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建本地节点"><span class="nav-number">1.</span> <span class="nav-text">创建本地节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#节点命名"><span class="nav-number">2.</span> <span class="nav-text">节点命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cordform任务"><span class="nav-number">3.</span> <span class="nav-text">Cordform任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地运行节点"><span class="nav-number">4.</span> <span class="nav-text">本地运行节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一次启动所有节点"><span class="nav-number">4.1.</span> <span class="nav-text">一次启动所有节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动单个Corda节点"><span class="nav-number">4.2.</span> <span class="nav-text">启动单个Corda节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动启用远程调试的节点"><span class="nav-number">4.3.</span> <span class="nav-text">启动启用远程调试的节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署节点"><span class="nav-number">5.</span> <span class="nav-text">部署节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux：作为系统服务安装并运行Corda"><span class="nav-number">5.1.</span> <span class="nav-text">Linux：作为系统服务安装并运行Corda</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
