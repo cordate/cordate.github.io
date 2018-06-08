@@ -276,6 +276,171 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/08/密码学/数字证书基础知识/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/08/密码学/数字证书基础知识/" itemprop="url">数字证书基础知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-08T10:29:18+08:00">2018-06-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/密码学/" itemprop="url" rel="index"><span itemprop="name">密码学</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于数字证书，一定会想起Https，其实Https是基于<a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">SSL/TLS</a>的。SSL/TLS其实不止可以用于HTTP，任何采用TCP协议的数据通信都可以采用SSL/TLS进行传输，比如FTP。只是就当前而言，SSL/TLS最为广泛的应用在于HTTPS。当然想起SSL，大家一定还会想起RSA，接着就是SSH了。</p>
+<h2 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h2><p>这里需要提到公私钥的密码体制了，这个网上的资料有很多就不多说明了。</p>
+<h2 id="关于HTTPS"><a href="#关于HTTPS" class="headerlink" title="关于HTTPS"></a>关于HTTPS</h2><p>其实客户机加密数据发送给服务器，由于只有服务器才有私钥，所以这个过程是没有任何问题的。但是反过来服务器加密数据发送给客户机，由于公钥是公开的这个过程就有问题了，因为大家都可以看到内容。</p>
+<p>另外如果有人冒充服务器，让用户替换了自己的公钥，这样也会遭受中间人攻击。所以用户也需要验证公钥是不是相应服务器的公钥，所以就出现了数据证书。</p>
+<p>服务器向客户端发送信息的时候要加上签名，还要加上数字证书，这样客户端既可以验证内容和公钥是否正确了。</p>
+<p>以上的过程只是用于服务器和客户端约定以后的通信加密密串，一旦约定成功就可以使用对称加密进行后续的通信了。<br>如下：</p>
+<ol>
+<li>client -&gt; server: 你好，以后使用这个密串通信吧！（公钥加密）</li>
+<li>server -&gt; client: 好的！（数字签名，证书）</li>
+</ol>
+<p>你看整个过程还是比较简洁的。</p>
+<h2 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h2><p>经过上面的说明之后，我们来理解什么是数字证书。数字证书就是对网站生成的公钥进行签名的第三方服务机构。证书里面包含：</p>
+<ul>
+<li>Issuer (证书的发布机构)</li>
+<li>Valid from , Valid to (证书的有效期)</li>
+<li>Public key (公钥)</li>
+<li>Subject (主题)： 这个证书是发布给谁的，或者说证书的所有者，一般是某个人或者某个公司名称、机构的名称、公司网站的网址等。 对于这里的证书来说，证书的所有者是Trustwave这个公司。</li>
+<li>Signature algorithm (签名所使用的算法)</li>
+<li>Thumbprint, Thumbprint algorithm (指纹以及指纹算法)</li>
+</ul>
+<p>当然这里我们不得不提到根证书，一般系统都是信任根证书，否则就不存在数字证书的合法性了。我们都知道CA机构是分层级的，包括根证书(Root Certificate)、中间证书(Intermediate Certificate)以及最底层的网站证书。其中根证书签署中间证书，中间证书在签署最底层的网站证书，由此组成一个证书链(Certificate Chain)。整个对证书的颁发、管理、认证组成了一整套基础设施——<a href="https://en.wikipedia.org/wiki/Public_key_infrastructure" target="_blank" rel="noopener">PKI</a>。</p>
+<p>其实这样的分层是通过公钥的嵌套签名实现的层级关系。</p>
+<h2 id="关于如何发布证书"><a href="#关于如何发布证书" class="headerlink" title="关于如何发布证书"></a>关于如何发布证书</h2><p>使用java的keytool工具可以生成相应的公私钥，还可以向CA机构购买证书服务。当然我们也可以自建自己的证书机构，只是不会有人承认而已，而且还要用户将我们的证书放入操作系统的信任列表中，这样实现起来比较麻烦。这里就不做更多说明了。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/davenkin/p/digital-certificate.html" target="_blank" rel="noopener">数字证书学习笔记</a><br><a href="http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="noopener">数字签名是什么？</a> 阮一峰的博客一般都是清晰好懂的。<br><a href="http://www.cnblogs.com/JeffreySun/archive/2010/06/24/1627247.html" target="_blank" rel="noopener">数字证书原理</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/blockchain/corda/Corda教程-hello world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3307,162 +3472,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/30/java/缓存行与计算机缓存结构/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/30/java/缓存行与计算机缓存结构/" itemprop="url">缓存行与计算机缓存结构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-30T15:18:20+08:00">2018-05-30</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/base/" itemprop="url" rel="index"><span itemprop="name">base</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近在读《深入理解Linux内核》读了不少关于计算机缓存的体系结构设计，这里就不做更多的说明，下面我们来看看这里面的知识吧！</p>
-<p>计算机分为多级缓存，但是主要的还是要从内存条说起。</p>
-<p>其实系统会在系统内存上单独开一片cache，而且这片的cache和普通的内存管理策略不同。这应该算是第一级缓存，但是这种提升不是很大。下面我们来讲高速缓存块cache。</p>
-<p>对于高速缓存块cache也是有多种分法。一是主板级别的高速cache，这种是多CPU共享的。再上面一层就是CPU专用的高速cache块了。再上一层就是每个CPU核共享的高速cache。再上面一层就是寄存器了。</p>
-<p>这就是背景知识。</p>
-<h2 id="缓存行"><a href="#缓存行" class="headerlink" title="缓存行"></a>缓存行</h2><p>高速缓存块不是按照每一个字节进行缓存，而是按照一个内存块进行缓存。可是一旦这块中任何一个内容改变，都会导致整个块的Refresh。</p>
-<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>这里主要是指程序的改进，比如说你定义一个对象。以前这个对象在一个缓存行中，但是对象中改变的字段就是一个两个频繁改变，这样每次refresh的块比较大。所以方法就是将可变的属性放入一个缓存块中，将不可变的放入另一个缓存块中，这样刷新的少了，速度自然提升了。这就是缓存块的具体说明，具体可以查看具体的引用。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://geek.csdn.net/news/detail/114619" target="_blank" rel="noopener">认识CPU Cache</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3514,7 +3523,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-count">102</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3571,7 +3580,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">22</span>
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -3774,7 +3785,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">95</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">97</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

@@ -276,6 +276,285 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity编码风格/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/08/blockchain/solidity编码风格/" itemprop="url">solidity编码风格</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-08T20:27:30+08:00">2018-04-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>本指南旨在为编写可靠性代码提供编码约定。本指南应该被认为是一个不断变化的规范，随着时间的推移会发生变化，因为找到有用的约定而旧的惯例已经过时。</p>
+<p>许多项目将实施他们自己的风格指南。在发生冲突时，项目特定的风格指南优先。</p>
+<p>该风格指南中的结构和许多建议均取自python的<a href="https://www.python.org/dev/peps/pep-0008/" target="_blank" rel="noopener">pep8风格指南</a>。</p>
+<p>本指南的目标不是编写可靠代码的正确方式或最佳方式。本指南的目标是一致性。来自python的<a href="https://www.python.org/dev/peps/pep-0008/#a-foolish-consistency-is-the-hobgoblin-of-little-minds" target="_blank" rel="noopener">pep8</a>的引用很好地捕捉了这个概念。</p>
+<p>风格指南是关于一致性的。与此风格指南的一致性非常重要。项目中的一致性更重要。一个模块或功能内的一致性是最重要的。但最重要的是：知道什么时候不一致 - 有时风格指南不适用。如有疑问，请使用您的最佳判断。看看其他例子，并决定什么看起来最好。不要犹豫，问！</p>
+<h2 id="代码布局"><a href="#代码布局" class="headerlink" title="代码布局"></a>代码布局</h2><h3 id="缩进"><a href="#缩进" class="headerlink" title="缩进"></a>缩进</h3><p>每个缩进级别使用4个空格。</p>
+<h3 id="Tabs或空格"><a href="#Tabs或空格" class="headerlink" title="Tabs或空格"></a>Tabs或空格</h3><p>空格是首选的缩进方法。</p>
+<p>应该避免混合tabs和空格。</p>
+<h3 id="空白行"><a href="#空白行" class="headerlink" title="空白行"></a>空白行</h3><p>顶层声明用两个空白行分隔。</p>
+<p>正确做法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract B &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示范<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">contract B &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在一个合同环绕函数声明中有一个空白行。在相关单行的组之间可以省略空行（例如抽象合约的存根函数）</p>
+<p>正确做法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    function spam() public;</span><br><span class="line">    function ham() public;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract B is A &#123;</span><br><span class="line">    function spam() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function ham() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示范<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    function spam() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    function ham() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="最大行的长度"><a href="#最大行的长度" class="headerlink" title="最大行的长度"></a>最大行的长度</h3><p>PEP 8建议的行保持在79（或99）字符，可帮助读者轻松解析代码。</p>
+<p>行包裹（看示例你就明白了）应符合以下准则：</p>
+<ol>
+<li>第一个参数不应该附在开头括号上。</li>
+<li>应该使用一个，并且只有一个缩进。</li>
+<li>每个参数都应该落在自己的位置上。</li>
+<li>终止元素<code>);</code>应该放在最后一行上。</li>
+</ol>
+<p>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">thisFunctionCallIsReallyLong(</span><br><span class="line">    longArgument1,</span><br><span class="line">    longArgument2,</span><br><span class="line">    longArgument3</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">thisFunctionCallIsReallyLong(longArgument1,</span><br><span class="line">                              longArgument2,</span><br><span class="line">                              longArgument3</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">thisFunctionCallIsReallyLong(longArgument1,</span><br><span class="line">    longArgument2,</span><br><span class="line">    longArgument3</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">thisFunctionCallIsReallyLong(</span><br><span class="line">    longArgument1, longArgument2,</span><br><span class="line">    longArgument3</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">thisFunctionCallIsReallyLong(</span><br><span class="line">longArgument1,</span><br><span class="line">longArgument2,</span><br><span class="line">longArgument3</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">thisFunctionCallIsReallyLong(</span><br><span class="line">    longArgument1,</span><br><span class="line">    longArgument2,</span><br><span class="line">    longArgument3);</span><br></pre></td></tr></table></figure></p>
+<p>赋值语句：<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">thisIsALongNestedMapping[being][set][to_some_value] = someFunction(</span><br><span class="line">    argument1,</span><br><span class="line">    argument2,</span><br><span class="line">    argument3,</span><br><span class="line">    argument4</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">thisIsALongNestedMapping[being][set][to_some_value] = someFunction(argument1,</span><br><span class="line">                                                                   argument2,</span><br><span class="line">                                                                   argument3,</span><br><span class="line">                                                                   argument4);</span><br></pre></td></tr></table></figure></p>
+<p>事件定义和事件触发器：<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">event LongAndLotsOfArgs(</span><br><span class="line">    adress sender,</span><br><span class="line">    adress recipient,</span><br><span class="line">    uint256 publicKey,</span><br><span class="line">    uint256 amount,</span><br><span class="line">    bytes32[] options</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">LongAndLotsOfArgs(</span><br><span class="line">    sender,</span><br><span class="line">    recipient,</span><br><span class="line">    publicKey,</span><br><span class="line">    amount,</span><br><span class="line">    options</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">event LongAndLotsOfArgs(adress sender,</span><br><span class="line">                        adress recipient,</span><br><span class="line">                        uint256 publicKey,</span><br><span class="line">                        uint256 amount,</span><br><span class="line">                        bytes32[] options);</span><br><span class="line"></span><br><span class="line">LongAndLotsOfArgs(sender,</span><br><span class="line">                  recipient,</span><br><span class="line">                  publicKey,</span><br><span class="line">                  amount,</span><br><span class="line">                  options);</span><br></pre></td></tr></table></figure></p>
+<h3 id="源文件编码"><a href="#源文件编码" class="headerlink" title="源文件编码"></a>源文件编码</h3><p>UTF-8 或者 ASCII编码是首选。</p>
+<h3 id="Imports语句"><a href="#Imports语句" class="headerlink" title="Imports语句"></a>Imports语句</h3><p>导入语句必须是文件的开头。</p>
+<p>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import &quot;owned&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract A &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract B is owned &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示范：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import &quot;owned&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract B is owned &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="函数的排序"><a href="#函数的排序" class="headerlink" title="函数的排序"></a>函数的排序</h3><p>排序有助于读者识别他们可以调用哪些函数，并更容易地找到构造函数和回退定义。</p>
+<p>函数应根据其可见性分组，并按照如下顺序排列：</p>
+<ul>
+<li>constructor</li>
+<li>fallback function (if exists)</li>
+<li>external</li>
+<li>public</li>
+<li>internal</li>
+<li>private</li>
+</ul>
+<p>在分组中，将<code>constant</code>函数放在最后。</p>
+<p>正确示范：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line">    function A() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // External functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // External functions that are constant</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Public functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Internal functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Private functions</span><br><span class="line">    // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示范：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">contract A &#123;</span><br><span class="line"></span><br><span class="line">    // External functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Private functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Public functions</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    function A() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function() public &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Internal functions</span><br><span class="line">    // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="表达式中的空白符"><a href="#表达式中的空白符" class="headerlink" title="表达式中的空白符"></a>表达式中的空白符</h3><p>在以下情况下避免无关的空白：</p>
+<p>立即在括号，括号或大括号内，除单行函数声明外。</p>
+<p>正确的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spam(ham[1], Coin(&#123;name: &quot;ham&quot;&#125;));</span><br></pre></td></tr></table></figure></p>
+<p>错误的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spam( ham[ 1 ], Coin( &#123; name: &quot;ham&quot; &#125; ) );</span><br></pre></td></tr></table></figure></p>
+<p>例外情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function singleLine() public &#123; spam(); &#125;</span><br></pre></td></tr></table></figure></p>
+<p>紧接在逗号,分号前面的空白符：<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function spam(uint i, Coin coin) public;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function spam(uint i , Coin coin) public ;</span><br></pre></td></tr></table></figure></p>
+<p>在任务或其他操作符周围的多个空间与另一个空间对齐：<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = 1;</span><br><span class="line">y = 2;</span><br><span class="line">long_variable = 3;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x             = 1;</span><br><span class="line">y             = 2;</span><br><span class="line">long_variable = 3;</span><br></pre></td></tr></table></figure></p>
+<p>不要在fallback函数中包含空格：<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function() public &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function () public &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="控制结构"><a href="#控制结构" class="headerlink" title="控制结构"></a>控制结构</h3><p>表示合同，库，函数和结构主体的大括号应该：</p>
+<ol>
+<li>与声明在同一行</li>
+<li>在声明开始的同一缩进级别自行关闭。</li>
+<li>开口支架应该由一个空间进行。</li>
+</ol>
+<p>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">contract Coin &#123;</span><br><span class="line">    struct Bank &#123;</span><br><span class="line">        address owner;</span><br><span class="line">        uint balance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">contract Coin</span><br><span class="line">&#123;</span><br><span class="line">    struct Bank &#123;</span><br><span class="line">        address owner;</span><br><span class="line">        uint balance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于if, else, while， for这些语句也是一样的。</p>
+<h3 id="函数声明"><a href="#函数声明" class="headerlink" title="函数声明"></a>函数声明</h3><p>对于简短的函数声明，建议将函数体的左大括号与函数声明保持在同一行。</p>
+<p>右大括号应该与函数声明的缩进级别相同。</p>
+<p>前面的大括号应该在前面有一个空格。</p>
+<p>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function increment(uint x) public pure returns (uint) &#123;</span><br><span class="line">    return x + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function increment(uint x) public pure onlyowner returns (uint) &#123;</span><br><span class="line">    return x + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function increment(uint x) public pure returns (uint)</span><br><span class="line">&#123;</span><br><span class="line">    return x + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function increment(uint x) public pure returns (uint)&#123;</span><br><span class="line">    return x + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function increment(uint x) public pure returns (uint) &#123;</span><br><span class="line">    return x + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">function increment(uint x) public pure returns (uint) &#123;</span><br><span class="line">    return x + 1;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>你应该明确标注所有函数的可见性，包括构造函数。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function explicitlyPublic(uint val) public &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function implicitlyPublic(uint val) &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>函数的可见性修饰符应位于任何自定义修饰符之前。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function kill() public onlyowner &#123;</span><br><span class="line">    selfdestruct(owner);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function kill() onlyowner public &#123;</span><br><span class="line">    selfdestruct(owner);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于长函数声明，建议将每个参数放在与函数体相同的缩进级别的自己的行上。 右括号和左括号应该放在它们自己的行上，以及与函数声明相同的缩进级别。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionHasLotsOfArguments(</span><br><span class="line">    address a,</span><br><span class="line">    address b,</span><br><span class="line">    address c,</span><br><span class="line">    address d,</span><br><span class="line">    address e,</span><br><span class="line">    address f</span><br><span class="line">)</span><br><span class="line">    public</span><br><span class="line">&#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionHasLotsOfArguments(address a, address b, address c,</span><br><span class="line">    address d, address e, address f) public &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function thisFunctionHasLotsOfArguments(address a,</span><br><span class="line">                                        address b,</span><br><span class="line">                                        address c,</span><br><span class="line">                                        address d,</span><br><span class="line">                                        address e,</span><br><span class="line">                                        address f) public &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function thisFunctionHasLotsOfArguments(</span><br><span class="line">    address a,</span><br><span class="line">    address b,</span><br><span class="line">    address c,</span><br><span class="line">    address d,</span><br><span class="line">    address e,</span><br><span class="line">    address f) public &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果一个长函数声明有修饰符，那么每个修饰符应该放在它自己的行中。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionNameIsReallyLong(address x, address y, address z)</span><br><span class="line">    public</span><br><span class="line">    onlyowner</span><br><span class="line">    priced</span><br><span class="line">    returns (address)</span><br><span class="line">&#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function thisFunctionNameIsReallyLong(</span><br><span class="line">    address x,</span><br><span class="line">    address y,</span><br><span class="line">    address z,</span><br><span class="line">)</span><br><span class="line">    public</span><br><span class="line">    onlyowner</span><br><span class="line">    priced</span><br><span class="line">    returns (address)</span><br><span class="line">&#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionNameIsReallyLong(address x, address y, address z)</span><br><span class="line">                                      public</span><br><span class="line">                                      onlyowner</span><br><span class="line">                                      priced</span><br><span class="line">                                      returns (address) &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function thisFunctionNameIsReallyLong(address x, address y, address z)</span><br><span class="line">    public onlyowner priced returns (address)</span><br><span class="line">&#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function thisFunctionNameIsReallyLong(address x, address y, address z)</span><br><span class="line">    public</span><br><span class="line">    onlyowner</span><br><span class="line">    priced</span><br><span class="line">    returns (address) &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>多行输出参数和返回语句应遵循建议用于包装“最大行长度”部分中找到的长行的相同样式。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionNameIsReallyLong(</span><br><span class="line">    address a,</span><br><span class="line">    address b,</span><br><span class="line">    address c</span><br><span class="line">)</span><br><span class="line">    public</span><br><span class="line">    returns (</span><br><span class="line">        address someAddressName,</span><br><span class="line">        uint256 LongArgument,</span><br><span class="line">        uint256 Argument</span><br><span class="line">    )</span><br><span class="line">&#123;</span><br><span class="line">    doSomething()</span><br><span class="line"></span><br><span class="line">    return (</span><br><span class="line">        veryLongReturnArg1,</span><br><span class="line">        veryLongReturnArg2,</span><br><span class="line">        veryLongReturnArg3</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function thisFunctionNameIsReallyLong(</span><br><span class="line">    address a,</span><br><span class="line">    address b,</span><br><span class="line">    address c</span><br><span class="line">)</span><br><span class="line">    public</span><br><span class="line">    returns (address someAddressName,</span><br><span class="line">             uint256 LongArgument,</span><br><span class="line">             uint256 Argument)</span><br><span class="line">&#123;</span><br><span class="line">    doSomething()</span><br><span class="line"></span><br><span class="line">    return (veryLongReturnArg1,</span><br><span class="line">            veryLongReturnArg1,</span><br><span class="line">            veryLongReturnArg1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于基础需要参数的继承合约的构造函数，如果函数声明很长或难以阅读，建议将基础构造函数以与修饰符相同的方式放到新行上。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">contract A is B, C, D &#123;</span><br><span class="line">    function A(uint param1, uint param2, uint param3, uint param4, uint param5)</span><br><span class="line">        B(param1)</span><br><span class="line">        C(param2, param3)</span><br><span class="line">        D(param4)</span><br><span class="line">        public</span><br><span class="line">    &#123;</span><br><span class="line">        // do something with param5</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">contract A is B, C, D &#123;</span><br><span class="line">    function A(uint param1, uint param2, uint param3, uint param4, uint param5)</span><br><span class="line">    B(param1)</span><br><span class="line">    C(param2, param3)</span><br><span class="line">    D(param4)</span><br><span class="line">    public</span><br><span class="line">    &#123;</span><br><span class="line">        // do something with param5</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract A is B, C, D &#123;</span><br><span class="line">    function A(uint param1, uint param2, uint param3, uint param4, uint param5)</span><br><span class="line">        B(param1)</span><br><span class="line">        C(param2, param3)</span><br><span class="line">        D(param4)</span><br><span class="line">        public &#123;</span><br><span class="line">        // do something with param5</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当用单个语句声明简短函数时，允许在一行中完成。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function shortFunction() public &#123; doSomething(); &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这些函数声明的准则旨在提高可读性。 作者应该使用他们的最佳判断，因为本指南并不试图涵盖函数声明的所有可能的排列。</p>
+<h3 id="Mappings"><a href="#Mappings" class="headerlink" title="Mappings"></a>Mappings</h3><p>待讨论</p>
+<h3 id="变量声明"><a href="#变量声明" class="headerlink" title="变量声明"></a>变量声明</h3><p>数组变量的声明在类型和括号之间不应该有空格。<br>正确示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uint[] x;</span><br></pre></td></tr></table></figure></p>
+<p>错误示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uint [] x;</span><br></pre></td></tr></table></figure></p>
+<h3 id="其他推荐"><a href="#其他推荐" class="headerlink" title="其他推荐"></a>其他推荐</h3><ul>
+<li>字符串应该用双引号而不是单引号引用。</li>
+<li>操作符左右都应该有空格，例如<code>x += 3 + 4;</code></li>
+<li>比其他优先级高的运算符可以排除周围的空白，以表示优先级。 这是为了提高复杂语句的可读性。 您应该始终在运算符的任一侧使用相同数量的空白：</li>
+</ul>
+<h2 id="命名约定"><a href="#命名约定" class="headerlink" title="命名约定"></a>命名约定</h2><p>命名约定在被广泛采用和使用时功能强大。 使用不同的约定可以传达重要的元信息，否则这些信息将不会立即可用。</p>
+<p>这里给出的命名建议旨在提高可读性，因此它们不是规则，而是试图帮助通过事物名称传达最多信息的指导原则。</p>
+<p>最后，代码库中的一致性应始终取代本文档中概述的任何约定。</p>
+<h3 id="命名风格"><a href="#命名风格" class="headerlink" title="命名风格"></a>命名风格</h3><p>防止混淆，以下名称将用于指代不同的命名风格。</p>
+<ul>
+<li><code>b</code> (single lowercase letter)</li>
+<li><code>B</code> (single uppercase letter)</li>
+<li><code>lowercase</code></li>
+<li><code>lower_case_with_underscores</code></li>
+<li><code>UPPERCASE</code></li>
+<li><code>UPPER_CASE_WITH_UNDERSCORES</code></li>
+<li><code>CapitalizedWords</code> (or CapWords)</li>
+<li><code>mixedCase</code> (differs from CapitalizedWords by initial lowercase character!)</li>
+<li><code>Capitalized_Words_With_Underscores</code></li>
+</ul>
+<h3 id="规避的命名"><a href="#规避的命名" class="headerlink" title="规避的命名"></a>规避的命名</h3><ul>
+<li><code>l</code> - Lowercase letter el</li>
+<li><code>O</code> - Uppercase letter oh</li>
+<li><code>I</code> - Uppercase letter eye</li>
+</ul>
+<p>切勿将任何这些用于单个字母的变量名称。 它们通常与数字1和零不可区分。</p>
+<h3 id="合约和库命名"><a href="#合约和库命名" class="headerlink" title="合约和库命名"></a>合约和库命名</h3><p>大写风格：<code>SimpleToken</code>, <code>SmartBank</code>, <code>CertificateHashRepository</code>, <code>Player</code></p>
+<h3 id="结构命名"><a href="#结构命名" class="headerlink" title="结构命名"></a>结构命名</h3><p>大写风格：<code>MyCoin</code>, <code>Position</code>, <code>PositionXY</code></p>
+<h3 id="事件命名"><a href="#事件命名" class="headerlink" title="事件命名"></a>事件命名</h3><p>大写风格：<code>Deposit</code>, <code>Transfer</code>, <code>Approval</code>, <code>BeforeTransfer</code>, <code>AfterTransfer</code></p>
+<h3 id="函数命名"><a href="#函数命名" class="headerlink" title="函数命名"></a>函数命名</h3><p>mixedCase：<code>getBalance</code>, <code>transfer</code>, <code>verifyOwner</code>, <code>addMember</code>, <code>changeOwner</code></p>
+<h3 id="函数参数命名"><a href="#函数参数命名" class="headerlink" title="函数参数命名"></a>函数参数命名</h3><p>mixedCase：<code>initialSupply</code>, <code>account</code>, <code>recipientAddress</code>, <code>senderAddress</code>, <code>newOwner</code></p>
+<h3 id="本地变量与状态变量"><a href="#本地变量与状态变量" class="headerlink" title="本地变量与状态变量"></a>本地变量与状态变量</h3><p>mixedCase：</p>
+<h3 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h3><p><code>MAX_BLOCKS</code></p>
+<h3 id="函数修饰符命名"><a href="#函数修饰符命名" class="headerlink" title="函数修饰符命名"></a>函数修饰符命名</h3><p>mixedCase：<code>onlyBy</code>, <code>onlyAfter</code>, <code>onlyDuringThePreSale</code>.</p>
+<h3 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h3><p>CapWords：<code>TokenGroup</code>, <code>Frame</code>, <code>HashStyle</code>, <code>CharacterLocation</code>.</p>
+<h3 id="避免命名冲突"><a href="#避免命名冲突" class="headerlink" title="避免命名冲突"></a>避免命名冲突</h3><p><code>single_trailing_underscore_</code></p>
+<p>当所需名称与内置名称或其他名称相冲突时，会提示此惯例。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/08/blockchain/solidity应用程序二进制接口规范（ABI）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3065,285 +3344,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/04/03/blockchain/solidity数据类型说明/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/03/blockchain/solidity数据类型说明/" itemprop="url">solidity数据类型说明</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T08:43:48+08:00">2018-04-03</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/solidity/" itemprop="url" rel="index"><span itemprop="name">solidity</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近一直在看区块链的英文文档，看起来很吃力，重点是特别容易遗忘，只能记一个大概比较痛苦，也许写文章是一个比较好的思路，可以强迫自己进行总结思考。但是最近发现写文章吧，很费时，一天也就只能看一篇（面试+项目上的事情很心烦），再加上区块链这样的技术比较新，有很大的概率会出现一些新的概念，导致一些单词不太好翻译（不像java的学习，现在资料满天飞），这给阅读带来极大的障碍。不管怎样还是坚持吧！</p>
-<p>今天来聊聊solidity的类型，网上看过很多资料不是翻译不好就是版本太旧，根本没法看。今天就针对官方的文档总结一下。</p>
-<p><b style="color:red">本文是基于solidity官方文档v0.4.21.</b></p>
-<h1 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h1><p>solidity是一种静态类型的语言，这意味着每个变量的类型（State和local）在编译时需要被指定。Solidity提供几个基本类型，这些类型可以组合为复杂的类型。</p>
-<p>另外，类型可以在包含运算符的表达式中相互交互。</p>
-<h2 id="值类型"><a href="#值类型" class="headerlink" title="值类型"></a>值类型</h2><p>下面的都是值类型，这些类型的变量永远是采用值传递。在复制和传给方法时，他们都是采用拷贝的方式。</p>
-<h3 id="Booleans"><a href="#Booleans" class="headerlink" title="Booleans"></a>Booleans</h3><p>bool：只有值true和false</p>
-<h3 id="Integers"><a href="#Integers" class="headerlink" title="Integers"></a>Integers</h3><p><code>int</code>/<code>uint</code>: 可变长度的有符号和无符号整数。关键字<code>uint8</code>到<code>uint256</code>，步长为8。相对的<code>int8</code>到<code>int256</code>。<code>uint</code>和<code>int</code>是<code>uint256</code>和<code>int256</code>的别名。</p>
-<p>除法总是截断（它只是编译为EVM的DIV操作码），但如果两个操作符都是Literals（或Literals表达式），它就不会截断。</p>
-<p>移位操作的结果是左操作数的类型(意思是y一直在右边，x一直在左边)。表达式<code>x &lt;&lt; y</code>相当于<code>x * 2 ** y</code>，<code>x &gt;&gt; y</code>相当于<code>x / 2 ** y</code>。 这意味着将负数符号转移。按负数移动会引发运行时异常。</p>
-<p><b style="color:red">由有符号整数类型负值的右移产生的结果与其他编程语言产生的结果不同。 在Solidity中，将右侧的地图向右移动，以便移位后的负值将舍入为零（截断）。 在其他编程语言中，负值的右移就像四舍五入的分割（朝向负无穷大）。</b></p>
-<h3 id="固定小数的数字"><a href="#固定小数的数字" class="headerlink" title="固定小数的数字"></a>固定小数的数字</h3><p><b style="color:blue">固定点数字尚未完全支持。 它们可以被声明，但不能被赋值或被分配。</b></p>
-<p><code>fixed / ufixed</code>：有符号和无符号的各种大小的定点数。 关键词<code>ufixedMxN</code>和<code>fixedMxN</code>，其中M表示类型所占的位数，N表示可用的小数点数。 M必须能被8整除，并从8到256位。 N必须介于0和80之间，包括0和80。 <code>ufixed</code>和<code>fixed</code>分别为<code>ufixed128x19</code>和<code>fixed128x19</code>的别名。</p>
-<h3 id="Address"><a href="#Address" class="headerlink" title="Address"></a>Address</h3><p>保存20个字节的值（以太坊地址的大小）。 地址类型也有成员，并作为所有合同的基础。</p>
-<p>操作： <code>&lt;=</code>, <code>&lt;</code>, <code>==</code>, <code>!=</code>, <code>&gt;=</code> and <code>&gt;</code></p>
-<p>地址的成员：</p>
-<h4 id="balance-和-transfer"><a href="#balance-和-transfer" class="headerlink" title="balance 和 transfer"></a>balance 和 transfer</h4><p>可以使用balance属性来获取账户余额。通过transfer方法发送以太币。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">address x = 0x123;</span><br><span class="line">address myAddress = this;</span><br><span class="line">if (x.balance &lt; 10 &amp;&amp; myAddress.balance &gt;= 10) x.transfer(10);</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:#6ab0de">如果x是合同地址，则其代码（更具体而言：其fallback方法，如果存在）将与transfer调用一起执行（这是EVM的限制，无法阻止）。 如果执行耗尽gas或以任何方式失败，则以太网币转移将被还原，并且当前合同将以异常停止。</b></p>
-<h4 id="send"><a href="#send" class="headerlink" title="send"></a>send</h4><p>send是transfer低级别的副本。如果执行失败，当前合同的执行不会以异常的方式停止，但是会返回false；注意send调用深度是1024.</p>
-<h4 id="call-callcode-delegatecall"><a href="#call-callcode-delegatecall" class="headerlink" title="call, callcode, delegatecall"></a>call, callcode, delegatecall</h4><p>此外，对于不符合ABI的合约接口，提供了函数call，它可以接受任意类型、任意数量的参数。 这些参数被填充到32个字节并连接。一个例外是第一个参数被编码为正好四个字节的情况。在这种情况下，它没有被填充以允许在这里使用方法签名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">address nameReg = 0x72ba7d8e73fe8eb666ea66babc8116a41bfb10e2;</span><br><span class="line">nameReg.call(&quot;register&quot;, &quot;MyName&quot;);</span><br><span class="line">nameReg.call(bytes4(keccak256(&quot;fun(uint256)&quot;)), a);</span><br></pre></td></tr></table></figure></p>
-<p>call返回一个布尔值，指示调用的函数是否终止（true）或导致EVM异常（false）。 无法访问返回的实际数据（为此，我们需要事先知道编码和大小）。</p>
-<p>我们可以通过<code>.gas()</code>来调整消耗的gas：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">namReg.call.gas(1000000)(&quot;register&quot;, &quot;MyName&quot;);</span><br></pre></td></tr></table></figure></p>
-<p>相似的，提供的以太币数量也可以被控制：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nameReg.call.value(1 ether)(&quot;register&quot;, &quot;MyName&quot;);</span><br></pre></td></tr></table></figure></p>
-<p>最后，这些修饰可以组合使用，循序无所谓的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nameReg.call.gas(1000000).value(1 ether)(&quot;register&quot;, &quot;MyName&quot;);</span><br></pre></td></tr></table></figure></p>
-<p>delegatecall可以以相同的方式使用，不同点在于只是使用了给定地址的代码，其他方面（storage、balance，……）都是从当前合约获取。delegatecall的目的是使用其他合约存储的library代码。用户必须确认storage的布局是适合双方合约delegatecall的。从Prior到homestead，只有名为<code>callcode</code>的有限变体可用，它不提供对原始合约<code>msg.sender</code>和<code>msg.value</code>值的访问。</p>
-<p><b style="color:#6ab0de">这三个函数调用，delegatecall和callcode都是非常低级的函数，只能作为最后的手段，因为它们会破坏Solidity的类型安全性。</b></p>
-<p><b style="color:#6ab0de"><code>.gas()</code>操作在这3个方法上都是可用的，<code>.value()方法不能在delegatecall上使用。</code></b></p>
-<p><b style="color:red">所有的合约都继承了address的成员，所以我们可以通过<code>this.balance</code>来获取当前合约的账户余额。</b></p>
-<p>callcode操作已被放弃，将来可能会被移除。</p>
-<p>所有这些功能都是低级功能，应小心使用。具体来说，任何未知的合约都可能是恶意的，如果你要调用它，你将控制权移交给那个可以反过来又回到你的合约中的合约，所以当你的合约call调用返回时，做好改变你的状态变量的准备。</p>
-<h3 id="固定大小的字节数组"><a href="#固定大小的字节数组" class="headerlink" title="固定大小的字节数组"></a>固定大小的字节数组</h3><p><code>bytes1</code>, <code>bytes2</code>, <code>bytes3</code>, …, <code>bytes32</code>. <code>byte</code> 是 <code>bytes1</code>的别名.</p>
-<h4 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h4><ul>
-<li>比较： &lt;=, &lt;, ==, !=, &gt;=, &gt; (evaluate to bool)</li>
-<li>位操作： &amp;, |, ^ (bitwise exclusive or), ~ (bitwise negation), &lt;&lt; (left shift), &gt;&gt; (right shift) </li>
-<li>索引访问</li>
-</ul>
-<h4 id="成员"><a href="#成员" class="headerlink" title="成员"></a>成员</h4><ul>
-<li>length：(只读）</li>
-</ul>
-<p><b style="color:#6ab0de"><code>byte[]</code>可能会浪费大量空间，31个字节；当向调用传递参数时，最好使用<code>bytes</code>.</b></p>
-<h3 id="动态大小的byte数组"><a href="#动态大小的byte数组" class="headerlink" title="动态大小的byte数组"></a>动态大小的byte数组</h3><ul>
-<li>bytes: 动态大小字节数据，查看<a href="http://solidity.readthedocs.io/zh/latest/types.html#arrays" target="_blank" rel="noopener">Arrays</a>。不是值类型。</li>
-<li>string: 动态大小的UTF-8编码字符串，查看<a href="http://solidity.readthedocs.io/zh/latest/types.html#arrays" target="_blank" rel="noopener">Arrays</a>。不是值类型。</li>
-</ul>
-<p>根据经验，对任意长度的原始字节数据使用字节，对任意长度的字符串（UTF-8）数据使用字符串。如果您可以将长度限制为特定数量的字节，则始终使用<code>bytes1</code>到<code>bytes32</code>中的一个，因为它们便宜得多。</p>
-<h3 id="地址文字"><a href="#地址文字" class="headerlink" title="地址文字"></a>地址文字</h3><p>通过地址校验测试的十六进制文字是地址类型，例如<code>0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF</code>。 长度在39到41位之间且未通过校验和测试的十六进制文字会产生警告，并被视为常规有理数字文字。</p>
-<h3 id="有理数和整数文字"><a href="#有理数和整数文字" class="headerlink" title="有理数和整数文字"></a>有理数和整数文字</h3><p>整数的是0-9的序列组成的，这被解读为数字。例如69. 八进制在solidity中是不存在的，所以前导的0是无效的。</p>
-<p>分数是通过<code>.</code>表示的，左或右至少有一个数字。例如<code>1.</code>,<code>.1</code>,<code>1.3</code>。</p>
-<p>科学记数法也支持，其中基数可以有分数，而指数则不可以。 例子包括<code>2e10</code>，<code>-2e10</code>，<code>2e-10</code>，<code>2.5e1</code>。</p>
-<p>数字文字表达式保持任意精度，直到它们被转换为非文字类型（即通过将它们与非文字表达式一起使用）。 这意味着计算不会溢出，并且不会在数字文字表达式中截断。例如<code>(2**800 + 1) - 2**800</code>导致常量1（类型uint8），尽管中间结果甚至不适合机器字大小。 此外，<code>.5 * 8</code>会导致整数<code>4</code>（<b style="color:red">尽管在它们之间使用了非整数</b>）。</p>
-<p>只要操作数是整数，任何可以应用于整数的运算符也可以应用于数字文字表达式。 如果两者中的任何一个都是小数，则位操作是不允许的，并且如果指数是分数（因为这可能导致非有理数），指数是不允许的。</p>
-<p><b style="color:red">对于每个有理数，Solidity都有一个数字字面类型。</b>整数文字和有理数字文字属于数字文字类型。 此外，所有数字文字表达式（即仅包含数字文字和运算符的表达式）属于数字文字类型。 所以数字文字表达式1 + 2和2 + 1对于有理数3都属于相同的数字文字类型。</p>
-<p><b style="color:#6ab0de">整数除法表达式在早前的版本中是截断的，但是现在将转化为一个有理数，比如<code>5/2</code>不再等于2，二是等于2.5.</b></p>
-<p><b style="color:blue">数字文字表达式只要与非文字表达式一起使用，就会转换为非文字类型。 尽管我们知道在以下示例中赋值给b的表达式的值计算为整数，但部分表达式2.5 + a没有类型检查，因此代码不会编译.</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint128 a = 1;</span><br><span class="line">uint128 b = 2.5 + a + 0.5;</span><br></pre></td></tr></table></figure></p>
-<h3 id="字符串文字"><a href="#字符串文字" class="headerlink" title="字符串文字"></a>字符串文字</h3><p>单引号或者双引号（”foo”或者’bar’）。它不需要像C中尾部放一个0.与整数文字一样，它们的类型可以变化，但如果它们适合字节和字符串，它们可以隐式转换为<code>bytes1</code>，…，<code>bytes32</code>。</p>
-<p>字符串文字也支持转义字符，例如<code>\n</code>, <code>\xNN</code>和<code>\uNNNN</code>。<code>\xNN</code>使用十六进制并插入适当类型。<code>\uNNNN</code>使用Unicode编码，插入以UTF-8序列。</p>
-<h3 id="十六进制文字"><a href="#十六进制文字" class="headerlink" title="十六进制文字"></a>十六进制文字</h3><p>以<code>hex</code>开头并且用单引号或者双引号包裹。它们的内容必须是十六进制字符串，它们的值将是这些值的二进制表示。</p>
-<p>十六进制文字的行为与字符串文字相似，并具有相同的可转换性限制。</p>
-<h3 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h3><p>枚举是在Solidity中创建用户定义类型的一种方法。 它们可以显式转换为所有整数类型，但是不允许隐式转换。 显式转换检查运行时的值范围，失败会导致异常。 枚举需要至少一个成员。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract test &#123;</span><br><span class="line">    enum ActionChoices &#123; GoLeft, GoRight, GoStraight, SitStill &#125;</span><br><span class="line">    ActionChoices choice;</span><br><span class="line">    ActionChoices constant defaultChoice = ActionChoices.GoStraight;</span><br><span class="line"></span><br><span class="line">    function setGoStraight() &#123;</span><br><span class="line">        choice = ActionChoices.GoStraight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Since enum types are not part of the ABI, the signature of &quot;getChoice&quot;</span><br><span class="line">    // will automatically be changed to &quot;getChoice() returns (uint8)&quot;</span><br><span class="line">    // for all matters external to Solidity. The integer type used is just</span><br><span class="line">    // large enough to hold all enum values, i.e. if you have more values,</span><br><span class="line">    // `uint16` will be used and so on.</span><br><span class="line">    function getChoice() returns (ActionChoices) &#123;</span><br><span class="line">        return choice;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function getDefaultChoice() returns (uint) &#123;</span><br><span class="line">        return uint(defaultChoice);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="方法类型（函数类型）"><a href="#方法类型（函数类型）" class="headerlink" title="方法类型（函数类型）"></a>方法类型（函数类型）</h2><p>函数类型是函数的类型。 函数类型的变量可以从函数中分配，而函数类型的函数参数可以用于将函数传递给函数调用并从函数调用返回函数。 函数类型有两种 - 内部和外部方法：</p>
-<p><b style="color:red">内部函数</b>只能在当前合约内（更具体地说，在当前代码单元内部，它还包含内部库函数和继承函数）内部调用，因为它们不能在当前合约的上下文之外执行。 调用内部函数是通过跳转到其入口标签来实现的，就像在内部调用当前合同的函数一样。</p>
-<p><b style="color:red">外部函数</b>由一个地址和一个函数签名组成，它们可以通过外部函数调用传递并返回。</p>
-<p>函数类型的标注如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function (&lt;parameter types&gt;) &#123;internal|external&#125; [pure|constant|view|payable] [returns (&lt;return types&gt;)]</span><br></pre></td></tr></table></figure></p>
-<p>与参数类型不同，返回类型不能为空 - 如果函数类型不应返回任何内容，则必须省略整个<code>returns (&lt;return types&gt;)</code>部分。</p>
-<p>默认情况下，函数类型是内部的，所以内部关键字可以省略。相比之下，合约函数本身在默认情况下是公共的，只有当用作类型的名称时，默认是内部的。</p>
-<p><b style="color:red">有两种方法可以访问当前合约中的函数：直接使用其名称f或使用this.f.前者将产生内部功能，后者则具有外部功能。</b></p>
-<p>如果函数类型变量未初始化，调用它将导致异常。如果您在使用delete之后调用某个函数，则会发生同样的情况。</p>
-<p>如果外部函数类型在Solidity上下文之外使用，则它们被视为函数类型，它将函数标识符后跟的地址一起编码为单个字节24类型。</p>
-<p>请注意，当前合约的公共方法既可以用作内部函数，也可以用作外部函数。要将f用作内部函数，只需使用f，如果要使用其外部窗体，请使用this.f.</p>
-<p>显示如何使用内部函数类型的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.5;</span><br><span class="line"></span><br><span class="line">library ArrayUtils &#123;</span><br><span class="line">  // internal functions can be used in internal library functions because</span><br><span class="line">  // they will be part of the same code context</span><br><span class="line">  function map(uint[] memory self, function (uint) returns (uint) f)</span><br><span class="line">    internal</span><br><span class="line">    returns (uint[] memory r)</span><br><span class="line">  &#123;</span><br><span class="line">    r = new uint[](self.length);</span><br><span class="line">    for (uint i = 0; i &lt; self.length; i++) &#123;</span><br><span class="line">      r[i] = f(self[i]);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  function reduce(</span><br><span class="line">    uint[] memory self,</span><br><span class="line">    function (uint, uint) returns (uint) f</span><br><span class="line">  )</span><br><span class="line">    internal</span><br><span class="line">    returns (uint r)</span><br><span class="line">  &#123;</span><br><span class="line">    r = self[0];</span><br><span class="line">    for (uint i = 1; i &lt; self.length; i++) &#123;</span><br><span class="line">      r = f(r, self[i]);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  function range(uint length) internal returns (uint[] memory r) &#123;</span><br><span class="line">    r = new uint[](length);</span><br><span class="line">    for (uint i = 0; i &lt; r.length; i++) &#123;</span><br><span class="line">      r[i] = i;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract Pyramid &#123;</span><br><span class="line">  using ArrayUtils for *;</span><br><span class="line">  function pyramid(uint l) returns (uint) &#123;</span><br><span class="line">    return ArrayUtils.range(l).map(square).reduce(sum);</span><br><span class="line">  &#125;</span><br><span class="line">  function square(uint x) internal returns (uint) &#123;</span><br><span class="line">    return x * x;</span><br><span class="line">  &#125;</span><br><span class="line">  function sum(uint x, uint y) internal returns (uint) &#123;</span><br><span class="line">    return x + y;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>另一个使用外部方法类型的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.11;</span><br><span class="line"></span><br><span class="line">contract Oracle &#123;</span><br><span class="line">  struct Request &#123;</span><br><span class="line">    bytes data;</span><br><span class="line">    function(bytes memory) external callback;</span><br><span class="line">  &#125;</span><br><span class="line">  Request[] requests;</span><br><span class="line">  event NewRequest(uint);</span><br><span class="line">  function query(bytes data, function(bytes memory) external callback) &#123;</span><br><span class="line">    requests.push(Request(data, callback));</span><br><span class="line">    NewRequest(requests.length - 1);</span><br><span class="line">  &#125;</span><br><span class="line">  function reply(uint requestID, bytes response) &#123;</span><br><span class="line">    // Here goes the check that the reply comes from a trusted source</span><br><span class="line">    requests[requestID].callback(response);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract OracleUser &#123;</span><br><span class="line">  Oracle constant oracle = Oracle(0x1234567); // known contract</span><br><span class="line">  function buySomething() &#123;</span><br><span class="line">    oracle.query(&quot;USD&quot;, this.oracleResponse);</span><br><span class="line">  &#125;</span><br><span class="line">  function oracleResponse(bytes response) &#123;</span><br><span class="line">    require(msg.sender == address(oracle));</span><br><span class="line">    // Use the data</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Lambda和内联函数计划加入，但是现在还不支持。</p>
-<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>复杂类型（即不总是适合256位的类型）必须比我们已经看到的值类型更仔细地处理。 由于复制它们可能相当昂贵，我们必须考虑是否要将它们存储在内存中（不是持久的）或存储器（存储状态变量的地方）。</p>
-<h3 id="数据位置"><a href="#数据位置" class="headerlink" title="数据位置"></a>数据位置</h3><p>每种复杂类型（即数组和结构）都有一个额外的注释，即“数据位置”，关于它是存储在内存还是storage中。根据上下文，总是有一个默认值，但可以通过将<code>storage</code>或<code>memory</code>添加到该类型来覆盖它。函数参数（包括返回参数）的默认值是<code>memory</code>，局部变量的默认值是<code>storage</code>，并且对该状态变量（显然）被强制为<code>storage</code>。</p>
-<p>还有第三个数据位置<code>calldata</code>，它是存储函数参数的不可修改的非持久性区域。外部函数的函数参数（不返回参数）被强制为calldata并且行为主要与内存相似。</p>
-<p>数据位置很重要，因为它们会改变分配的行为方式：<code>storage</code>和<code>memory</code>之间的分配以及状态变量（甚至来自其他状态变量）的分配始终会创建独立副本。虽然本地存储变量的赋值只能指定一个引用，并且该引用始终指向状态变量，即使后者在此期间发生更改。另一方面，从内存存储引用类型到另一个内存存储引用类型的分配不会创建副本。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    uint[] x; // the data location of x is storage</span><br><span class="line"></span><br><span class="line">    // the data location of memoryArray is memory</span><br><span class="line">    function f(uint[] memoryArray) &#123;</span><br><span class="line">        x = memoryArray; // works, copies the whole array to storage</span><br><span class="line">        var y = x; // works, assigns a pointer, data location of y is storage</span><br><span class="line">        y[7]; // fine, returns the 8th element</span><br><span class="line">        y.length = 2; // fine, modifies x through y</span><br><span class="line">        delete x; // fine, clears the array, also modifies y</span><br><span class="line">        // The following does not work; it would need to create a new temporary /</span><br><span class="line">        // unnamed array in storage, but storage is &quot;statically&quot; allocated:</span><br><span class="line">        // y = memoryArray;</span><br><span class="line">        // This does not work either, since it would &quot;reset&quot; the pointer, but there</span><br><span class="line">        // is no sensible location it could point to.</span><br><span class="line">        // delete y;</span><br><span class="line">        g(x); // calls g, handing over a reference to x</span><br><span class="line">        h(x); // calls h and creates an independent, temporary copy in memory</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function g(uint[] storage storageArray) internal &#123;&#125;</span><br><span class="line">    function h(uint[] memoryArray) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h4><p>强制的数据位置：</p>
-<ul>
-<li>外部函数的参数（不返回）：calldata</li>
-<li>状态变量： storage</li>
-</ul>
-<p>默认的数据位置：</p>
-<ul>
-<li>函数的参数（也返回）：memory</li>
-<li>其他的本地变量： storage</li>
-</ul>
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>数组可以有编译时固定的大小，也可以是动态的。对于<code>storage</code>数组，元素类型可以是任意的（即其他数组，映射或结构）。对于<code>memory</code>数组，它不能是一个<code>mapping</code>，如果它是一个公共可见函数的参数，则它必须是ABI类型。</p>
-<p>一个固定大小的数组k和元素类型T被写为<code>T[k]</code>，一个动态大小为<code>T[]</code>的数组。举例来说，uint的5个动态数组的数组是<code>uint[][5]</code>（请注意，与其他一些语言相比，符号是反转的）。要访问第三个动态数组中的第二个uint，可以使用<code>x[2][1]</code>（索引是基于零的，<b style="color:red">并且访问以与声明相反的方式工作</b>，即<code>x[2]</code>从类型中删除一个级别正确的）。</p>
-<p>bytes和string的变量是特殊数组。一个bytes与byte[]类似，但是它紧密地包含在<code>calldata</code>中。string等于bytes, 但不允许使用长度或索引访问（现在）。</p>
-<p>所以bytes总是比byte[]更受欢迎，因为它比较便宜。</p>
-<p><b style="color:#6ab0de">如果你想访问字符串<code>s</code>的字节表示，使用<code>bytes(s).length / bytes(s)[7] = &#39;x&#39;;</code>. 请记住，您正在访问UTF-8表示的低级字节，而不是单个字符！</b></p>
-<p>有可能将公开的数组标记并让Solidity创建一个getter。 数字索引将成为getter的必需参数。</p>
-<h4 id="分配内存数组"><a href="#分配内存数组" class="headerlink" title="分配内存数组"></a>分配内存数组</h4><p>在内存中创建具有可变长度的数组可以使用new关键字来完成。与<code>storage</code>数组相反，通过分配给<code>.length</code>成员来调整存储器阵列的大小是不可能的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function f(uint len) &#123;</span><br><span class="line">        uint[] memory a = new uint[](7);</span><br><span class="line">        bytes memory b = new bytes(len);</span><br><span class="line">        // Here we have a.length == 7 and b.length == len</span><br><span class="line">        a[6] = 8;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="数组文字-行内数组"><a href="#数组文字-行内数组" class="headerlink" title="数组文字/行内数组"></a>数组文字/行内数组</h4><p>数组文字是作为表达式写入的数组，并且不会立即分配给变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function f() &#123;</span><br><span class="line">        g([uint(1), 2, 3]);</span><br><span class="line">    &#125;</span><br><span class="line">    function g(uint[3] _data) &#123;</span><br><span class="line">        // ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>数组文本的类型是固定大小的<code>memory</code>数组，其基数类型是给定元素的常见类型。<code>[1,2,3]</code>的类型是<code>uint8[3] memory</code>，因为这些常量中的每一个的类型都是<code>uint8</code>。 因此，有必要将上例中的第一个元素转换为uint。请注意，目前固定大小的<code>memory</code>数组不能分配给动态大小的<code>memory</code>，即以下情况是不可能的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// This will not compile.</span><br><span class="line"></span><br><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    function f() &#123;</span><br><span class="line">        // The next line creates a type error because uint[3] memory</span><br><span class="line">        // cannot be converted to uint[] memory.</span><br><span class="line">        uint[] x = [uint(1), 3, 4];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>计划在将来删除此限制，但由于数组在ABI中的传递方式，目前会产生一些复杂性。</p>
-<h4 id="成员-1"><a href="#成员-1" class="headerlink" title="成员"></a>成员</h4><h5 id="length"><a href="#length" class="headerlink" title="length"></a>length</h5><p>数组有一个<code>length</code>成员来保存元素的数量。 通过更改<code>.length</code>成员，动态数组可以在<code>storage</code>中（不在内存中）调整大小。 尝试访问当前长度以外的元素时，不会自动发生。<code>memory</code>数组的大小一旦被创建就是固定的（但是动态的，即它可以依赖于运行时参数）。</p>
-<h5 id="push"><a href="#push" class="headerlink" title="push"></a>push</h5><p>动态<code>storage</code>数组和bytes（不是字符串）具有一个名为push的成员函数，可用于在数组末尾追加一个元素。 该函数返回新的长度。</p>
-<p><b style="color:#6ab0de">尚不可能在外部函数中使用数组的数组。</b></p>
-<p><b style="color:#6ab0de">由于EVM的限制，无法从外部函数调用返回动态内容。 <code>contract C { function f() returns (uint[]) { ... } }</code>中的函数f将返回从web3.js调用的内容，但不会从Solidity调用。<br>现在唯一的解决方法是使用大型静态大小的数组。</b></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract ArrayContract &#123;</span><br><span class="line">    uint[2**20] m_aLotOfIntegers;</span><br><span class="line">    // Note that the following is not a pair of dynamic arrays but a</span><br><span class="line">    // dynamic array of pairs (i.e. of fixed size arrays of length two).</span><br><span class="line">    bool[2][] m_pairsOfFlags;</span><br><span class="line">    // newPairs is stored in memory - the default for function arguments</span><br><span class="line"></span><br><span class="line">    function setAllFlagPairs(bool[2][] newPairs) &#123;</span><br><span class="line">        // assignment to a storage array replaces the complete array</span><br><span class="line">        m_pairsOfFlags = newPairs;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function setFlagPair(uint index, bool flagA, bool flagB) &#123;</span><br><span class="line">        // access to a non-existing index will throw an exception</span><br><span class="line">        m_pairsOfFlags[index][0] = flagA;</span><br><span class="line">        m_pairsOfFlags[index][1] = flagB;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function changeFlagArraySize(uint newSize) &#123;</span><br><span class="line">        // if the new size is smaller, removed array elements will be cleared</span><br><span class="line">        m_pairsOfFlags.length = newSize;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function clear() &#123;</span><br><span class="line">        // these clear the arrays completely</span><br><span class="line">        delete m_pairsOfFlags;</span><br><span class="line">        delete m_aLotOfIntegers;</span><br><span class="line">        // identical effect here</span><br><span class="line">        m_pairsOfFlags.length = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    bytes m_byteData;</span><br><span class="line"></span><br><span class="line">    function byteArrays(bytes data) &#123;</span><br><span class="line">        // byte arrays (&quot;bytes&quot;) are different as they are stored without padding,</span><br><span class="line">        // but can be treated identical to &quot;uint8[]&quot;</span><br><span class="line">        m_byteData = data;</span><br><span class="line">        m_byteData.length += 7;</span><br><span class="line">        m_byteData[3] = 8;</span><br><span class="line">        delete m_byteData[2];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function addFlag(bool[2] flag) returns (uint) &#123;</span><br><span class="line">        return m_pairsOfFlags.push(flag);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function createMemoryArray(uint size) returns (bytes) &#123;</span><br><span class="line">        // Dynamic memory arrays are created using `new`:</span><br><span class="line">        uint[2][] memory arrayOfPairs = new uint[2][](size);</span><br><span class="line">        // Create a dynamic byte array:</span><br><span class="line">        bytes memory b = new bytes(200);</span><br><span class="line">        for (uint i = 0; i &lt; b.length; i++)</span><br><span class="line">            b[i] = byte(i);</span><br><span class="line">        return b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><p>Solidity提供了一种以结构形式定义新类型的方法，如以下示例所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.11;</span><br><span class="line"></span><br><span class="line">contract CrowdFunding &#123;</span><br><span class="line">    // Defines a new type with two fields.</span><br><span class="line">    struct Funder &#123;</span><br><span class="line">        address addr;</span><br><span class="line">        uint amount;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    struct Campaign &#123;</span><br><span class="line">        address beneficiary;</span><br><span class="line">        uint fundingGoal;</span><br><span class="line">        uint numFunders;</span><br><span class="line">        uint amount;</span><br><span class="line">        mapping (uint =&gt; Funder) funders;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    uint numCampaigns;</span><br><span class="line">    mapping (uint =&gt; Campaign) campaigns;</span><br><span class="line"></span><br><span class="line">    function newCampaign(address beneficiary, uint goal) returns (uint campaignID) &#123;</span><br><span class="line">        campaignID = numCampaigns++; // campaignID is return variable</span><br><span class="line">        // Creates new struct and saves in storage. We leave out the mapping type.</span><br><span class="line">        campaigns[campaignID] = Campaign(beneficiary, goal, 0, 0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function contribute(uint campaignID) payable &#123;</span><br><span class="line">        Campaign storage c = campaigns[campaignID];</span><br><span class="line">        // Creates a new temporary memory struct, initialised with the given values</span><br><span class="line">        // and copies it over to storage.</span><br><span class="line">        // Note that you can also use Funder(msg.sender, msg.value) to initialise.</span><br><span class="line">        c.funders[c.numFunders++] = Funder(&#123;addr: msg.sender, amount: msg.value&#125;);</span><br><span class="line">        c.amount += msg.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function checkGoalReached(uint campaignID) returns (bool reached) &#123;</span><br><span class="line">        Campaign storage c = campaigns[campaignID];</span><br><span class="line">        if (c.amount &lt; c.fundingGoal)</span><br><span class="line">            return false;</span><br><span class="line">        uint amount = c.amount;</span><br><span class="line">        c.amount = 0;</span><br><span class="line">        c.beneficiary.transfer(amount);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>合约没有提供众筹合约的全部功能，但它包含了理解结构所必需的基本概念。 结构类型可以用在映射和数组中，它们本身可以包含映射和数组。</p>
-<p>尽管结构本身可以是映射成员的值类型，但结构不可能包含它自己类型的成员。 这个限制是必要的，因为结构的大小必须是有限的。</p>
-<p>请注意，在所有函数中，结构类型被分配给（缺省存储数据位置的）局部变量。 这不会复制该结构，而只会存储一个引用，以便分配给本地变量的成员实际写入该状态。</p>
-<p>当然，您也可以直接访问结构体的成员，而无需将其分配给本地变量，比如<code>campaigns[campaignID].amount=0</code>。</p>
-<h3 id="映射Mappings"><a href="#映射Mappings" class="headerlink" title="映射Mappings"></a>映射Mappings</h3><p>映射类型被声明为<code>mapping(_KeyType =&gt; _ValueType)</code>。这里<code>_KeyType</code>几乎可以是任何类型，除了映射，动态大小的数组，合约，枚举和结构。 <code>_ValueType</code>实际上可以是任何类型，包括映射。</p>
-<p>映射可以看作散列表，它被虚拟初始化，这样每个可能的键都存在并映射到一个字节表示全为零的值：一个类型的<a href="http://solidity.readthedocs.io/zh/latest/control-structures.html#default-value" target="_blank" rel="noopener">默认值</a>。但是，相似性在此处结束：关键数据实际上并不存储在映射中，只有其<code>keccak256</code>哈希用于查找值。</p>
-<p>因此，映射没有长度或“设置”键或值的概念。</p>
-<p>映射只能用于状态变量（或作为内部函数中的存储引用类型）。</p>
-<p>有可能将<code>public</code>标记映射并让Solidity创建一个getter。<code>_KeyType</code>将成为getter的必需参数，它将返回<code>_ValueType</code>。</p>
-<p><code>_ValueType</code>也可以是一个映射。 getter将递归地为每个<code>_KeyType</code>使用一个参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract MappingExample &#123;</span><br><span class="line">    mapping(address =&gt; uint) public balances;</span><br><span class="line"></span><br><span class="line">    function update(uint newBalance) &#123;</span><br><span class="line">        balances[msg.sender] = newBalance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract MappingUser &#123;</span><br><span class="line">    function f() returns (uint) &#123;</span><br><span class="line">        MappingExample m = new MappingExample();</span><br><span class="line">        m.update(100);</span><br><span class="line">        return m.balances(this);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>映射不可迭代，但可以在其上实现数据结构。 有关示例，请参阅<a href="https://github.com/ethereum/dapp-bin/blob/master/library/iterable_mapping.sol" target="_blank" rel="noopener">可迭代映射</a>。</p>
-<h2 id="涉及LValues的操作符"><a href="#涉及LValues的操作符" class="headerlink" title="涉及LValues的操作符"></a>涉及LValues的操作符</h2><p>如果a是一个LValue（即一个变量或可以分配的东西），则以下运算符可用作简写：</p>
-<p><code>a += e</code>相当于<code>a = a + e</code>。 相应地定义运算符 -=，*=，/=，％=，a |=，＆=和^=。 a++和a–相当于 a+= 1 / a -= 1，但表达式本身仍然具有a的前一个值。 相反，–a和++a对a有相同的效果，但在更改后返回值。</p>
-<h3 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h3><p><b style="color:red"><code>delete a</code>将类型的初始值赋给a</b>。即 对于整数而言，它相当于<code>a = 0</code>，但它也可以用于数组，它指定一个长度为零的动态数组或一个长度相同且所有元素都重置的静态数组。 对于结构体，它分配一个所有成员重置的结构体。</p>
-<p>删除对整个映射没有影响（因为映射的键可能是任意的并且通常是未知的）。 所以，如果你删除一个结构体，它将重置所有不是映射的成员，并且还会映射到成员中，除非它们是映射关系。 但是，可以删除个人密钥及其映射的内容。</p>
-<p><b style="color:red">需要注意的是<code>delete a</code>的行为类似于对a的赋值，即它将一个新对象存储在a中。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line"></span><br><span class="line">contract DeleteExample &#123;</span><br><span class="line">    uint data;</span><br><span class="line">    uint[] dataArray;</span><br><span class="line"></span><br><span class="line">    function f() &#123;</span><br><span class="line">        uint x = data;</span><br><span class="line">        delete x; // sets x to 0, does not affect data</span><br><span class="line">        delete data; // sets data to 0, does not affect x which still holds a copy</span><br><span class="line">        uint[] y = dataArray;</span><br><span class="line">        delete dataArray; // this sets dataArray.length to zero, but as uint[] is a complex object, also</span><br><span class="line">        // y is affected which is an alias to the storage object</span><br><span class="line">        // On the other hand: &quot;delete y&quot; is not valid, as assignments to local variables</span><br><span class="line">        // referencing storage objects can only be made from existing storage objects.</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="基本类型之间的转换"><a href="#基本类型之间的转换" class="headerlink" title="基本类型之间的转换"></a>基本类型之间的转换</h2><h3 id="显式转换"><a href="#显式转换" class="headerlink" title="显式转换"></a>显式转换</h3><p>如果编译器不允许隐式转换，但您知道自己在做什么，则有时可以使用显式类型转换。请注意，这可能会给你一些意想不到的行为，所以一定要测试以确保结果是你想要的！以下面的例子为例，你将一个负数int8转换为uint：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int8 y = -3;</span><br><span class="line">uint x = uint(y);</span><br></pre></td></tr></table></figure></p>
-<p>在此代码片段的末尾，x将具有值<code>0xfffff..fd</code>（64个十六进制字符），在256位的二进制补码表示中为<code>-3</code>。</p>
-<p>如果某种类型明确转换为较小类型，则会切断较高位：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint32 a = 0x12345678;</span><br><span class="line">uint16 b = uint16(a); // b will be 0x5678 now</span><br></pre></td></tr></table></figure></p>
-<h3 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h3><p>为了方便起见，并不总是需要明确指定变量的类型，编译器会根据分配给变量的第一个表达式的类型自动推断它：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint24 x = 0x123;</span><br><span class="line">var y = x;</span><br></pre></td></tr></table></figure></p>
-<p>在这里，类型y将是uint24。var函数参数或返回参数不可用。</p>
-<p><b style="color:#6ab0de">该类型仅从第一个赋值中推导出来，因此以下片段中的循环是无限的，因为i将具有该类型uint8并且该类型的 任何值都小于2000.</b><code>for (var i = 0; i &lt; 2000; i++) { ... }</code>.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3395,7 +3395,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-count">102</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -3452,7 +3452,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">22</span>
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -3655,7 +3657,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">95</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">97</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
