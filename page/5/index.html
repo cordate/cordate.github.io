@@ -276,7 +276,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/隔离见证、闪电网络理解/">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/java/Spring循环依赖检查/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gavin Zhang">
@@ -295,7 +295,712 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/27/blockchain/隔离见证、闪电网络理解/" itemprop="url">隔离见证、闪电网络理解</a></h1>
+                <a class="post-title-link" href="/2018/03/28/java/Spring循环依赖检查/" itemprop="url">Spring循环依赖检查</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T15:34:46+08:00">2018-03-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>对于循环依赖检查，一般地数据结构就是DAG（有向无环图图）。所以在Spring中也是这样去实现的。</p>
+<p>在Spring中检查依赖是和注入的方式有很大关系的。</p>
+<h2 id="构造器循环依赖"><a href="#构造器循环依赖" class="headerlink" title="构造器循环依赖"></a>构造器循环依赖</h2><p>Spring容器将每一个正在创建的Bean 标识符放在一个“<b style="color:red">当前创建Bean池</b>”中，Bean标识符在创建过程中将一直保持在这个池中，因此如果在创建Bean过程中发现自己已经在“当前创建Bean池”里时将抛出BeanCurrentlyInCreationException异常表示循环依赖；<b style="color:red">而对于创建完毕的Bean将从“当前创建Bean池”中清除掉</b>。</p>
+<h2 id="setter循环依赖"><a href="#setter循环依赖" class="headerlink" title="setter循环依赖"></a>setter循环依赖</h2><p>对于setter注入造成的依赖是通过Spring容器提前暴露刚完成构造器注入但未完成其他步骤（如setter注入）的Bean来完成的，而且<b style="color:red">只能解决单例作用域的Bean循环依赖</b>。我唯一有印象的就是这里的代码，之后如果再读Spring源码，我们再来进行详细地分析。</p>
+<p>通过提前暴露一个<b style="color:red">单例工厂方法ObjectFactory</b>，从而使其他Bean能引用到该Bean。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>解决问题的方式是多种多样的，以后一定要想如何去解决一个问题，而不是关注问题本身的解决。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/java/Spring中创建bean的几种方式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/28/java/Spring中创建bean的几种方式/" itemprop="url">Spring中创建bean的几种方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T14:36:40+08:00">2018-03-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近一直在忙于区块链知识的研究，却忘记了Spring的很多知识。其实我主打的知识还是应该是Spring、SpringMVC、Mybatis、Tomcat、SpringBoot、SpringCloud等等。但是实际上我现在对这方面的知识遗忘还是很厉害的。今天就来回顾一下Spring创建Bean的几种方式。</p>
+<h2 id="默认构造方法"><a href="#默认构造方法" class="headerlink" title="默认构造方法"></a>默认构造方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;hello&quot; name=&quot;helloImpl&quot; class=&quot;cn.javass.spring.chapter2.helloworld.HelloImpl&quot;/&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="有参数的构造方法"><a href="#有参数的构造方法" class="headerlink" title="有参数的构造方法"></a>有参数的构造方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean name=&quot;bean2&quot; class=&quot;cn.javass.spring.chapter2.HelloImpl2&quot;&gt;</span><br><span class="line">    &lt;!-- 指定构造器参数 --&gt;</span><br><span class="line">    &lt;constructor-arg index=&quot;0&quot; value=&quot;Hello Spring!&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="静态工厂方式"><a href="#静态工厂方式" class="headerlink" title="静态工厂方式"></a>静态工厂方式</h2><p>静态工厂的类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class HelloApiStaticFactory &#123;</span><br><span class="line">    //工厂方法</span><br><span class="line">    public static HelloApi newInstance(String message) &#123;</span><br><span class="line">        //返回需要的Bean实例</span><br><span class="line">        return new HelloImpl2(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>xml的配置方式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 使用静态工厂方法 --&gt;</span><br><span class="line">&lt;bean id=&quot;bean3&quot; class=&quot;cn.javass.spring.chapter2.HelloApiStaticFactory&quot; factory-method=&quot;newInstance&quot;&gt;</span><br><span class="line">    &lt;constructor-arg index=&quot;0&quot; value=&quot;Hello Spring!&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="实例工厂方法实例化Bean"><a href="#实例工厂方法实例化Bean" class="headerlink" title="实例工厂方法实例化Bean"></a>实例工厂方法实例化Bean</h2><p>实例工厂类代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">package cn.javass.spring.chapter2;</span><br><span class="line"></span><br><span class="line">public class HelloApiInstanceFactory &#123;</span><br><span class="line">    public HelloApi newInstance(String message) &#123;</span><br><span class="line">        return new HelloImpl2(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>xml的定义方式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!—1、定义实例工厂Bean --&gt;</span><br><span class="line">&lt;bean id=&quot;beanInstanceFactory&quot; class=&quot;cn.javass.spring.chapter2.HelloApiInstanceFactory&quot;/&gt;</span><br><span class="line">&lt;!—2、使用实例工厂Bean创建Bean --&gt;</span><br><span class="line">&lt;bean id=&quot;bean4&quot; factory-bean=&quot;beanInstanceFactory&quot; factory-method=&quot;newInstance&quot;&gt;</span><br><span class="line">    &lt;constructor-arg index=&quot;0&quot; value=&quot;Hello Spring!&quot;&gt;&lt;/constructor-arg&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="注入方式"><a href="#注入方式" class="headerlink" title="注入方式"></a>注入方式</h2><p>一个构造方法注入，一个是getter、Setter方法注入。除了注入bean，也可以注入常量、list、array、set、map等各种数据结构。</p>
+<p>当然由于bean的创建方式有工厂的方式进行创建，所以注入的参数也可以通过factory-method进入。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实不管是使用哪种方式的注入，都是生成FactoryBean，但其实我们可以使用多种方式对先有的Spring方式进行扩容。甚至是自己负责new一个对象，然后register到Spring容器里面。拥有这种思路对于我们后期对Springboot的学习很有帮助。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/28/blockchain/比特币/BIP-62处理延展性攻击/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/28/blockchain/比特币/BIP-62处理延展性攻击/" itemprop="url">BIP-62处理延展性攻击</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T10:23:54+08:00">2018-03-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这篇文档主要是解决比特币的延展性攻击。</p>
+<p><b style="color:red">交易的延展性，也被称作为是可锻性，啥叫可锻，也即同样一个东西（如一坨金属），它的本质和质量都没有改变，但是它的形状改变了。而这个可锻性，会造成交易ID——TXID的不一致，从而导致用户找不到发送的交易。因为交易的ID就是指交易的hash值。但是由于隔离见证的使用，导致脚本不再是交易结构的一部分（但是逻辑上还是一样的），这样这个扩展性问题就不那么重要了。但是如果旧节点产生的交易，可能还是要使用这样的规则去杜绝扩展性。</b></p>
+<p>注意：本文档是一项正在进行的工作，并未完成，实施或以其他方式适用于部署。</p>
+<h2 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h2><p>该文件规定了对比特币交易有效性规则的建议修改，以便不可能延展交易的可塑性（至少在交易发送者不选择避开它时）。</p>
+<h2 id="版权"><a href="#版权" class="headerlink" title="版权"></a>版权</h2><p>此BIP根据2条款BSD许可证进行许可。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>截至2014年2月，比特币交易在多个方面具有延展性。这意味着（有效）交易可以在传送中被修改，而不会使其失效，但无法访问相关私钥。</p>
+<p>这个问题有多种原因：（<b style="color:red">感觉这里讲的就是如果同一个输出，发送者发送多笔花费这个输出的交易会怎么样？</b>）</p>
+<ul>
+<li>交易被改后，交易发送者可能无法识别他自己的交易。（因为TXID可能被修改了，链上使用旧的txid是无法找到这笔交易的）</li>
+<li>交易发送者可以花费由原始交易创建的更改的交易。如果修改后的交易被矿机开采，这将变为无效。</li>
+<li>修改后的交易实际上是双重花费，可以在没有恶意的情况下（发送者）创建，但易于被用于其他攻击。</li>
+</ul>
+<p>已知几种延展性来源（<b style="color:red">主要是指哪些部分可以被修改，修改什么</b>）：</p>
+<ol>
+<li>现在的非DER编码的ECDSA签名. 比特币参考客户端使用OpenSSL来验证签名。由于OpenSSL接受的不仅仅是严格遵守DER标准的序列化，而且还是可延展性的来源。自v0.8.0以来，非DER签名不再被中继。（就是说DER签名可以解决问题，非DER签名的交易会有问题。）</li>
+<li>scriptSig中没有推送操作。 <b style="color:red">在scriptSig中脚本操作的任何序列号都会导致预期的数据推送，但不仅仅是推送该数据，会产生具有相同有效性的替代事务。</b></li>
+<li>scriptSig中非标准尺寸的推送操作。 比特币脚本语言具有多个推式运算符（OP_0，单字节推送，最多75字节的数据推送，OP_PUSHDATA1，OP_PUSHDATA2，OP_PUSHDATA4）。由于后者与前者具有相同的结果，它们会带来更多的可能性。(容易遭受DDOS攻击，推送大数据也会导致mempool内存爆满)</li>
+<li>零填充数字推送。 在scriptPubKey操作码使用被解释为数字的输入的情况下，它们可以被填充为零。</li>
+<li>内在的ECDSA签名延展性 ECDSA签名本身已经具有延展性：取数字S的负数（以曲线顺序为模）不会使其无效。（<b style="color:red">这个需要了解椭圆曲线的特性了，对称的点也在曲线上的</b>）</li>
+<li>多余的scriptSig操作。 在脚本开始处添加额外的数据推送，这些数据不会被相应的scriptPubKey消耗，这也是可延展性的来源。(一开始压入一些数字，如果栈不被清空会有很多的问题)</li>
+<li>输入被脚本忽略。 如果scriptPubKey以OP_DROP开头，例如，相应脚本的最后一次数据推送将始终被忽略。</li>
+<li>基于Sighash标志的掩码。 Sighash标志可用于在签名时忽略脚本的某些部分。（修改sighash，这个可以查看DER的结构）。</li>
+<li>交易发起者的新签名。 交易发起者（或任何可以访问相关私钥的人）总是能够创建新的签名，这些签名将相同的输入用于相同的输出。</li>
+</ol>
+<p><b style="color:red">前六个和第七个的一部分可以通过额外的共识规则来解决，但最后两个不能</b>。无法修复＃7意味着即使有了这些新的共识规则，也将始终有可能创建支出交易全都具有延展性的输出。然而，当限制使用一套安全的输出脚本时，<b style="color:red">额外的共识规则可以使支出交易选择性地不可延展（如果花费者选择;因为他自己总是可以绕过＃8和＃9）。</b></p>
+<h2 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h2><h3 id="新规则"><a href="#新规则" class="headerlink" title="新规则"></a>新规则</h3><p><b style="color:red">引入了七个额外的规则，以准确地与上面列出的七个可延展性来源进行对比：</b></p>
+<ol>
+<li>标准的ECDSA编码签名。 传递给OP_CHECKSIG，OP_CHECKSIGVERIFY，OP_CHECKMULTISIG或OP_CHECKMULTISIGVERIFY的ECDSA签名必须使用严格的DER编码进行编码。为了为OP_CHECKSIG和OP_CHECKMULTISIG故意创建无效签名提供一种紧凑的方式，还允许使用空字节数组（即OP_0的结果）。<b style="color:red">使用非DER签名进行验证会使整个脚本评估为False（而不仅仅是签名验证）</b>。请参阅参考资料：<a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#der-encoding" target="_blank" rel="noopener">DER编码</a>。</li>
+<li>scriptSig中的非推送操作。 ScriptSig中只允许数据推送。评估任何其他操作会使脚本评估为false。请参阅参考：<a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#push-operators" target="_blank" rel="noopener">推送运算符</a>。</li>
+<li>scriptSig中的推送操作是非标准大小类型。 尽可能使用尽可能最小的脚本操作。使用可以用较短方式编码的操作推送数据会使脚本评估为false。请参阅参考：推送运算符。</li>
+<li>零填充数字推送。 任何时候脚本操作码都会消耗一个被解释为数字的堆栈值，它必须以尽可能最短的形式进行编码。’负零’是不允许的。请参阅参考：数字。</li>
+<li>固有的ECDSA签名延展性。 我们要求ECDSA签名内的S值至多是曲线次序（就是n的值）除以2（实质上限制该值到其下半部分范围）。请参阅参考：<a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#low-s-values-in-signatures" target="_blank" rel="noopener">签名中的低S值</a>。</li>
+<li>多余的scriptSig操作。 scriptPubKey评估将需要导致一个非零值。如果任何额外的数据元素保留在堆栈上，则脚本评估为false。</li>
+<li>脚本忽略输入 OP_CHECKMULTISIG和OP_CHECKMULTISIGVERIFY消耗的（不必要的）额外堆栈元素必须是空字节数组（OP_0的结果）。其他任何事情都会使脚本评估为false。</li>
+</ol>
+<h3 id="区块有效性"><a href="#区块有效性" class="headerlink" title="区块有效性"></a>区块有效性</h3><p>为了在网络中引入这些新规则，我们添加了v3块和v3交易。交易跳过v2以使交易和​​区块规则之间的版本号保持同步。v2交易的处理与v1交易相同。使用与BIP 0034相同的机制来引入v3块。当过去1000个block中有75％是v3时，会激活一个新的共识规则：</p>
+<ul>
+<li>v3块中的所有交易都必须遵守规则＃1-＃2。</li>
+<li>v3块中的v3（或更高）交易也需要遵循规则＃3-＃7。</li>
+</ul>
+<p>当过去1000个块中的95％为v3或更高时，v2块将完全失效。但请注意，v1（和v2）交易永远保持有效。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>以下是签名，编码和数据推送效果的总结。</p>
+<h3 id="签名中的低位S值"><a href="#签名中的低位S值" class="headerlink" title="签名中的低位S值"></a>签名中的低位S值</h3><p>签名中的值S必须介于<code>0x1</code>和<code>0x7FFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF 5D576E73 57A4501D DFE92F46 681B20A0（含）</code>之间。如果S太高，只需将其替换为<code>S&#39;= 0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141 - S</code>.</p>
+<p>不保证OpenSSL库生成的签名与此约束一致。参考客户端的0.9.3版本提供了检测和纠正的示例。</p>
+<p>值R的约束与ECDSA不变，其值可以在<code>0x1</code>和<code>0xFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364140（含）</code>之间。</p>
+<h3 id="DER编码"><a href="#DER编码" class="headerlink" title="DER编码"></a>DER编码</h3><p>作为参考，这里是如何正确编码DER格式的签名。</p>
+<p>格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x30 [总长度] 0x02 [R长度] [R] 0x02 [S长度] [S] [sighash型]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>总长度：后面所有内容的1字节长度描述符，<b tsyle="color:red">不包括sighash字节。</b></li>
+<li>R长度：后面的R值的1字节长度描述符。</li>
+<li>R：任意长度的大端编码的R值。它不能以任何0x00字节开始，除非接下来的第一个字节是0x80或更高，在这种情况下需要一个0x00。</li>
+<li>S长度：接下来的S值的1字节长度描述符。</li>
+<li>S：任意长度的大端编码的S值。与R相同的规则适用。</li>
+<li>sighash类型：1字节散列类型标志（只允许0x01，0x02，0x03，0x81，0x82和0x83）。</li>
+</ul>
+<p>参考客户端自0.8.0版本开始实施（仅作为中继策略，而不是作为共识规则）。<br>该规则与上面的低S要求相结合导致S长度最多为32（并且R长度最多为33），并且总签名大小最多72字节（平均71.494字节）。</p>
+<h3 id="推动操作"><a href="#推动操作" class="headerlink" title="推动操作"></a>推动操作</h3><ul>
+<li>推空的字节序列必须使用OP_0。</li>
+<li>通过0x10推送一个1字节的字节序列0x01必须使用OP_n。</li>
+<li>推送字节0x81必须使用OP_1NEGATE。</li>
+<li>推送任何其他高达75字节的字节序列时，必须使用正常的数据推送（操作码字节n，其中n是字节数，紧接着推送n字节的数据）。</li>
+<li>推送76到255个字节必须使用OP_PUSHDATA1。</li>
+<li>推送256到520字节必须使用OP_PUSHDATA2。</li>
+<li>OP_PUSHDATA4永远不能使用，因为不允许超过520个字节，下面的操作可以使用其他操作符完成。</li>
+<li>任何其他操作都不被认为是push。（<b style="color:red">意思就是不能使用数字这样直接做推送</b>）</li>
+</ul>
+<h3 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h3><p>堆栈元素的本地数据类型是字节数组，但有些操作将参数解释为整数。使用的编码是带有明确的符号位（最后一个字节的最高位）的小端。数字的最短编码是（以（））之间的十六进制给出的范围边界编码。</p>
+<ul>
+<li>0：OP_0; （00）</li>
+<li>1..16：OP_1..OP_16; （51）..（60）</li>
+<li>-1：OP_1NEGATE; （79）</li>
+<li>-127 ..- 2和17..127：正常的1字节数据推送; （01 FF）..（01 82）和（01 11）..（01 7F）</li>
+<li>-32767 ..- 128和128..32767：正常的2字节数据推送; （02 FF FF）..（02 80 80）和（02 80 00）..（02 FF 7F）</li>
+<li>-8388607 ..- 32768和32768..8388607：正常的3字节数据推送; （03 FF FF FF）..（03 00 80 80）和（03 00 80 00）..（03 FF FF 7F）</li>
+<li>-2147483647 ..- 8388608和8388608..2147483647：正常的4字节数据推送; （04 FF FF FF FF）..（04 00 00 80 80）和（04 00 00 80 00）..（04 FF FF FF 7F）</li>
+<li>任何其他数字都不能被编码。</li>
+</ul>
+<p>特别要注意的是，如果允许使用非最短格式，则零可以编码为（01 80）（负零）。</p>
+<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2><p>交易中继发布了一个新的节点软件版本，它使v3交易标准化，并在scriptSigs满足上述规则时中继它们。v1交易的中继不受影响。支付v3交易创建的输出的v1交易也不受影响。</p>
+<p>电子钱包更新由于v3交易目前是非标准的，因此无法立即开始创建它们。可以检查软件以确认新的规则，但只有当网络的重要部分已升级到兼容的代码时才能启动v3。它的意图是“我希望这个交易受到延展保护”，并且仍然是钱包软件的选择。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.zhihu.com/question/53863396" target="_blank" rel="noopener">比特币的交易延展性指的是什么？</a><br><a href="https://github.com/bitkevin/blog.biqu.io/blob/master/source/_posts/2013-10-27-bitcoin-transaction-02.markdown" target="_blank" rel="noopener">交易的构造、签名与广播</a><br><a href="https://blockchain.iethpay.com/transaction-malleability.html" target="_blank" rel="noopener">比特币中交易延展性问题</a><br><a href="https://0dayzh.gitbooks.io/bitcoin_developer_guide/content/transaction_malleability.html" target="_blank" rel="noopener">交易延展性 | Transaction Malleability</a><br><a href="https://bitcoin.org/en/developer-guide#avoiding-key-reuse" target="_blank" rel="noopener">Transaction Malleability</a><br><a href="http://localhost:4000/2018/03/28/blockchain/BIP-62%E5%A4%84%E7%90%86%E5%BB%B6%E5%B1%95%E6%80%A7%E6%94%BB%E5%87%BB/" target="_blank" rel="noopener">bips/bip-0062.mediawiki</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/关于以太坊的签名/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/27/blockchain/关于以太坊的签名/" itemprop="url">关于以太坊的签名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-27T14:54:18+08:00">2018-03-27</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在之前的博文当中我们已经提到过关于区块链技术的基础密码学之<a href="/2018/03/26/算法/关于椭圆曲线的理解/">椭圆曲线</a>的知识.</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在正常的ecdsa算法中发现签名都是（r,s），但是以太坊中的签名返回好像还有一个v，而且在RFC6979中也没有提到这个v，我实在不知道这个v到底是一个什么的东西，今天特地来深入地研究一番。</p>
+<p>这个v其实是用于椭圆曲线点恢复使用的，在椭圆曲线中（ecdsa）点的y轴是经过mod p的，这样你获得的点可能是经过转换的，你可以查看<a href="https://bitcoin.stackexchange.com/questions/38351/ecdsa-v-r-s-what-is-v" target="_blank" rel="noopener">ECDSA: (v, r, s), what is v?</a>。另外比特币中是直接使用v=0|1，但是以太坊中v=27|28，这又是为啥呢？这主要是为了防止被攻击，可以查看<a href="https://ethereum.stackexchange.com/questions/15766/what-does-v-r-s-in-eth-gettransactionbyhash-mean" target="_blank" rel="noopener">What does v, r, s in eth_getTransactionByHash mean?</a>中的回答，主要的说明在<a href="https://github.com/ethereum/EIPs/issues/155" target="_blank" rel="noopener">EIP 155</a>当中。</p>
+<h2 id="签名"><a href="#签名" class="headerlink" title="签名"></a>签名</h2><p>实施签名需要两个部分：待签名的数据+实施签名的账户。签名过程可以使用web3.eth.sign()来实现，具体代码为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; let msg = web3.sha3(&apos;today is 20171026&apos;)</span><br><span class="line">&gt; let signature = web3.eth.sign(address, msg)</span><br><span class="line">0x125a275046b65a96f11fdb7cd1072054e67526a76f54b1622fde4e4592d6fe2d5bf664ace77da52c6f94f08a56077e5d7a80048f70c38a92169205df3c9c43ea1b</span><br></pre></td></tr></table></figure></p>
+<p>该返回值总共132字节（去掉前面的’0x’的话是130字节）。因为以太坊采用的ECDSA签名算法，根据ECDSA: (v, r, s), what is v?的介绍， 返回值可以分为三个部分：r, s, v。其中前0~66个字节为r， 66~130之间的字节为s， 130~132的字节为v。代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let r = signature.slice(0, 66)</span><br><span class="line">let s = &apos;0x&apos; + signature.slice(66, 130)</span><br><span class="line">let v = &apos;0x&apos; + signature.slice(130, 132)</span><br><span class="line">v = web3.toDecimal(v)</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们可以将它打印出来，在接下来验证签名的部分会用到。</p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p><b style="color:red">签名完成了，我们如何验证某些签名后的数据是哪个账户签名的呢？在web3.js 发布1.0版本以前，验证签名只能通过智能合约的ecrecover函数来实现</b>。新版的web3.js提供了web3.eth.accounts.recover函数用于验证签名。这里我们仍然使用传统的智能合约ecrecover方式。</p>
+<p>ecrecover接收数据的哈希值以及r/s/v等参数作为输入，返回实施该签名的账户地址。因此我们只需要通过合约拿到实施签名的地址，和我们真正的地址进行对比，如果地址一致，就说明验证通过了。</p>
+<p><b style="color:red">智能合约代码如下：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.15;</span><br><span class="line">// 专门写了一个用于验证签名的合约呀</span><br><span class="line">contract Auth &#123;      </span><br><span class="line">    function verify( bytes32 hash, uint8 v, bytes32 r, bytes32 s) constant returns(address retAddr) &#123;</span><br><span class="line">      bytes memory prefix = &quot;\x19Ethereum Signed Message:\n32&quot;;</span><br><span class="line">      bytes32 prefixedHash = sha3(prefix, hash);</span><br><span class="line">      // 验证过程(这里就可以看出，通过v返回address)</span><br><span class="line">      return ecrecover(prefixedHash, v, r, s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们调用合约进行交互：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const contract=web3.eth.contract(abi).at(&apos;0x2e2A4cD2869862492C744307310847466c008257&apos;);</span><br><span class="line">console.log(contract.verify(msg, v, r, s));</span><br><span class="line">console.log(address)</span><br></pre></td></tr></table></figure></p>
+<p>本地执行结果为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ node sign.js</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br><span class="line">0xe0803904cbfce8e07745e1b404de43ce6f1e43bc</span><br></pre></td></tr></table></figure></p>
+<p>可以看到实施签名的地址和验证后返回的地址一致，签名通过验证。在以太坊中完成对数据的签名和验证还是比较简单的。并且账户不仅可以对交易进行签名，还可以对任意数据进行签名并验证。</p>
+<p><b style="color:red">还有就是我们可以通过发合约来利用solidity帮我们处理一些自己写代码比较复杂的事情，比如说这里的验证签名，这个是一个很好的思路，记下了！</b></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><b style="color:blue">签名的算法比较奇特，这里我在网上搜索资料的时候发现了一篇<a href="http://www.5bite.com/post/862.html" target="_blank" rel="noopener">DFINITY区块链：密码学技术介绍</a>，我们先不理会这里面关于密码学深入的问题，里面的图其实和椭圆曲线大概是一致的，因为椭圆曲线中基点不停地加之后就是将所有的点联系起来，也就形成了这篇文章中的那些点线。感觉之前在看椭圆曲线的时候，还停留在代数基础上，其实去掉理论就会发现现在变成图了。然后思维就被打开了。</b></p>
+<p>关于验签是如何成功返回公钥的，这个可能是去找所有的公钥进行匹配，哪个公钥成功了就是这个人前的吧！不过确实合约中好像没有公钥，那么这个公钥是如何生成的呢？这个需要进一步地学习，我想生成是可以的因为有私钥，基点等数据，关键就是k这个值。因为<code>P=k*G</code>，只要从公式中导出这个就可以了。</p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://zhuanlan.zhihu.com/p/30481292" target="_blank" rel="noopener">基于以太坊(Ethereum)完成对数据的签名及验证</a><br><a href="http://me.tryblockchain.org/web3js-sign-ecrecover-decode.html" target="_blank" rel="noopener">区块链语言Solidity校验椭圆曲线加密数字签名（附实例）</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/27/blockchain/比特币/隔离见证、闪电网络理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/27/blockchain/比特币/隔离见证、闪电网络理解/" itemprop="url">隔离见证、闪电网络理解</a></h1>
         
 
         <div class="post-meta">
@@ -481,7 +1186,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/BIP-65 OP-CHECKLOCKTIMEVERIFY/">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/比特币/BIP-65 OP-CHECKLOCKTIMEVERIFY/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gavin Zhang">
@@ -500,7 +1205,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/26/blockchain/BIP-65 OP-CHECKLOCKTIMEVERIFY/" itemprop="url">BIP-65 OP_CHECKLOCKTIMEVERIFY</a></h1>
+                <a class="post-title-link" href="/2018/03/26/blockchain/比特币/BIP-65 OP-CHECKLOCKTIMEVERIFY/" itemprop="url">BIP-65 OP_CHECKLOCKTIMEVERIFY</a></h1>
         
 
         <div class="post-meta">
@@ -683,7 +1388,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/BIP-68使用共识序列号记录相对锁定时间/">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/26/blockchain/比特币/BIP-68使用共识序列号记录相对锁定时间/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gavin Zhang">
@@ -702,7 +1407,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/26/blockchain/BIP-68使用共识序列号记录相对锁定时间/" itemprop="url">BIP-68使用共识序列号记录相对锁定时间</a></h1>
+                <a class="post-title-link" href="/2018/03/26/blockchain/比特币/BIP-68使用共识序列号记录相对锁定时间/" itemprop="url">BIP-68使用共识序列号记录相对锁定时间</a></h1>
         
 
         <div class="post-meta">
@@ -1674,765 +2379,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/java/Java中ThreadLocal学习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/22/java/Java中ThreadLocal学习/" itemprop="url">Java中ThreadLocal学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T17:09:55+08:00">2018-03-22</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/jdk/" itemprop="url" rel="index"><span itemprop="name">jdk</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在java中，并发的操作包中有copyOnWrite，但是这个类不是用来处理数据隔离的，也就是不能达到保持线程上下文的问题，但是ThreadLocal类可以。这里我们简单介绍一下，就不做更多阐述了。以下代码是Java8的实现。</p>
-<h2 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h2><p>这个类就是ThreadLocal里面存放数据使用的数据结构了。<b style="color:red">不用我说大家都知道这个类是单例模式的，key呢就是ThreadLocal，也就是说ThreadLocal本身是多例程序，是的就是这样，因为Thread是通过TheadLocal获取的ThreadLocalMap里面的值。</b></p>
-<p>这个Map没有继承Map，而且是利用数组进行的实现，比较简单。<b style="color:red">特别需要说明的就是hash冲突的问题，一旦发生hash冲突就会从当前位置一步一步向下找空余的地方放置新值，找的时候如果没找到就从hash位置开始一个一个向下找。</b>以前在学习数据结构时候就比较好奇这种解决hash键冲突的方式，当时还是觉得这种方式比较不靠谱（主要当前基本都是使用C和C++，特别喜欢使用链表），今天看到这个应用觉得也还是不错的解决之道。</p>
-<p>关于Hash计算就是ThreadLocal中的threadLocalHashCode &amp; （length-1）计算出来。</p>
-<p><b style="color:red">关于初始化和扩容：默认创建16个元素，满三分之二后进行扩容。</b></p>
-<p><b style="color:red">每次数据遍历访问都会进行key的判断，如果元素已经失效就会进行删除，但是这不能完全解决ThreadLocal的内存泄露问题。</b></p>
-<h2 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h2><p>在Thread里面有两个属性，系统退出时会设置为null，用于释放资源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 包内访问的元素。</span><br><span class="line">ThreadLocal.ThreadLocalMap threadLocals = null;</span><br><span class="line">ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;</span><br></pre></td></tr></table></figure></p>
-<p>看一下exit方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">private void exit() &#123;</span><br><span class="line">    if (group != null) &#123;</span><br><span class="line">        group.threadTerminated(this);</span><br><span class="line">        group = null;</span><br><span class="line">    &#125;</span><br><span class="line">    /* Aggressively null out all reference fields: see bug 4006245 */</span><br><span class="line">    target = null;</span><br><span class="line">    /* Speed the release of some of these resources */</span><br><span class="line">    threadLocals = null;</span><br><span class="line">    inheritableThreadLocals = null;</span><br><span class="line">    inheritedAccessControlContext = null;</span><br><span class="line">    blocker = null;</span><br><span class="line">    uncaughtExceptionHandler = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="关于ThreadLocal"><a href="#关于ThreadLocal" class="headerlink" title="关于ThreadLocal"></a>关于ThreadLocal</h2><p>其实这个类只是起着链接ThreadLocalMap和Thread的链接访问而已。具体可以查看代码实现。这里就不做更多的说明了。</p>
-<h2 id="SuppliedThreadLocal"><a href="#SuppliedThreadLocal" class="headerlink" title="SuppliedThreadLocal"></a>SuppliedThreadLocal</h2><p>java8新的类，这里就是将ThreadLocal对象封装在supplier里面，防止为null而已，实现也比较简单。</p>
-<h2 id="关于内存泄露的问题"><a href="#关于内存泄露的问题" class="headerlink" title="关于内存泄露的问题"></a>关于内存泄露的问题</h2><p>我们来看一下ThreadLocalMap中Entry的数据结构，发现是一个弱引用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    /** The value associated with this ThreadLocal. */</span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    // key为ThreadLocal（这个需要深入学习一下）</span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        super(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用来引用它，那么系统 GC 的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value永远无法回收，造成内存泄漏。</b></p>
-<p>其实，ThreadLocalMap的设计中已经考虑到这种情况，也加上了一些防护措施：在ThreadLocal的get(),set(),remove()的时候都会清除线程ThreadLocalMap里所有key为null的value。</p>
-<p>但是这些被动的预防措施并不能保证不会内存泄漏：</p>
-<p>使用static的ThreadLocal，延长了ThreadLocal的生命周期，可能导致的内存泄漏（参考ThreadLocal 内存泄露的实例分析）。<br>分配使用了ThreadLocal又不再调用get(),set(),remove()方法，那么就会导致内存泄漏。</p>
-<h2 id="为什么使用弱引用"><a href="#为什么使用弱引用" class="headerlink" title="为什么使用弱引用"></a>为什么使用弱引用</h2><p>为了应对非常大和长时间的用途，哈希表使用弱引用的 key。</p>
-<p>ThreadLocal内存泄漏的根源是：由于ThreadLocalMap的生命周期跟Thread一样长，如果没有手动删除对应key就会导致内存泄漏，而不是因为弱引用。</p>
-<p>那么如何解决这个问题呢？</p>
-<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>向Entry中注册ReferenceQueue，利用一个线程定期清除这个Queue里面的被垃圾回收的数据就可以了。但是多付出了一个线程的开销。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.importnew.com/22039.html" target="_blank" rel="noopener">深入分析 ThreadLocal 内存泄漏问题</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/22/算法/Paxos协议详解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/22/算法/Paxos协议详解/" itemprop="url">Paxos协议详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T15:40:51+08:00">2018-03-22</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Paxos协议/算法是分布式系统中比较重要的协议，它有多重要呢？</p>
-<p><a href="https://coolshell.cn/articles/10910.html" target="_blank" rel="noopener">&lt;分布式系统的事务处理&gt;</a>：</p>
-<ul>
-<li>Google Chubby的作者Mike Burrows说过这个世界上只有一种一致性算法，那就是Paxos，其它的算法都是残次品。</li>
-</ul>
-<p><a href="https://book.douban.com/subject/25723658/" target="_blank" rel="noopener">&lt;大规模分布式存储系统&gt;</a>：</p>
-<ul>
-<li>理解了这两个分布式协议之后(Paxos/2PC)，学习其他分布式协议会变得相当容易。</li>
-</ul>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>记得一年前去看Paxos的算法，那真是云里雾里根本不知道在讲什么，后来看了网上的一个视频（<a href="http://cxh.me/2014/08/26/paxos-study/" target="_blank" rel="noopener">知行学社的分布式系统与Paxos算法视频课程</a>）终于记住了。但是时间一长又忘记了，但是永远记住了两个规则，我觉得总结的很好。这个视频讲解的也十分到位。</p>
-<ol>
-<li>Prepare阶段喜新厌旧</li>
-<li>Commit阶段后者认同前者</li>
-<li>最终少数服从多数</li>
-</ol>
-<h2 id="算法的说明"><a href="#算法的说明" class="headerlink" title="算法的说明"></a>算法的说明</h2><p><b style="color:red">首先将议员的角色分为proposers，acceptors，和learners（允许身兼数职）</b>。proposers提出提案，提案信息包括提案编号和提议的value；acceptor收到提案后可以<b style="color:red">接受</b>（accept）提案，若提案获得多数acceptors的接受，则称该提案被<b style="color:red">批准（chosen）</b>；learners只能<b style="color:red">“学习”</b>被批准的提案。划分角色后，就可以更精确的定义问题：</p>
-<ul>
-<li><b style="color:red">决议（value）</b>只有在被proposers提出后才能被批准（未经批准的决议称为“提案（proposal）”）；</li>
-<li>在一次Paxos算法的执行实例中，只<b style="color:red">批准（chosen）</b>一个value；</li>
-<li>learners只能获得<b style="color:red">被批准（chosen）</b>的value。</li>
-</ul>
-<p>另外还需要保证progress。这一点以后再讨论。作者通过不断加强上述3个约束（主要是第二个）获得了Paxos算法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P1：一个acceptor必须接受（accept）第一次收到的提案。</span><br></pre></td></tr></table></figure>
-<p>这个比较好理解。（但是这里忽略了预提交阶段的事情了）。然后下面就是后者认同前者了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2：一旦一个具有value v的提案被批准（chosen），那么之后批准（chosen）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
-<p>这个是对接收者后者认同前者的说明，但是貌似只是对一个acceptor有约束，所以必须成为所有acceptors的共识，于是有了P2a。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2a：一旦一个具有value v的提案被批准（chosen），那么之后任何acceptor再次接受（accept）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
-<p>之前说的后者认同前者都是针对acceptor，但如果对于Proposer呢？于是又出现了P2b：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2b：一旦一个具有value v的提案被批准（chosen），那么以后任何proposer提出的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
-<p>但是根据P2b难以提出实现手段。因此需要进一步加强P2b。虽然以上规则很美好，但是总会出现各种异常的情况，但总会出现被大多数人接收的提案（少数服从多数原则）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">P2c：如果一个编号为n的提案具有value v，那么存在一个多数派，要么他们中所有人都没有接受（accept）编号小于n</span><br><span class="line">的任何提案，要么他们已经接受（accept）的所有编号小于n的提案中编号最大的那个提案具有value v。</span><br></pre></td></tr></table></figure></p>
-<p><b style="color:red">最后这一条可能大家都不太明白，其实大概是这样的，当一个Proposer发现自己已经获得超过半数的之后后，就会进行广播说“我的提案通过啦，新的提案就不要再提出来啦”，于是众人开始学习（有点像区块链中挖出矿的幸运儿有木有）。对于掉队的孩子又找到队伍了，发起的旧协议终于到了“我提出一个提案，xxx”，于是其他人对他说“还提这些陈芝麻烂谷子干嘛，我们已经通过这个问题的提案了，就是XXX”，于是新人说那是晚到的邮件啊，我其实早就收到消息了呀！</b>不知你看懂没有，这就是Paxos协议。</p>
-<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>以上就是理解这个Paxos算法的思路，如果你想具体了解这个算法的过程，可以查看视频，也可以看wiki百科里面关于Paxos的示例，写得已经很明白了，只有按照前言中的三条规则向下面走，你一定会明白，这个应该不是特别难于理解。</p>
-<h2 id="决议的发布（主acceptor）"><a href="#决议的发布（主acceptor）" class="headerlink" title="决议的发布（主acceptor）"></a>决议的发布（主acceptor）</h2><p>一个显而易见的方法是当acceptors批准一个value时，将这个消息发送给所有learner。但是这个方法会导致消息量过大。</p>
-<p>由于假设没有Byzantine failures，learners可以通过别的learners获取已经通过的决议。因此acceptors只需将批准的消息发送给指定的某一个learner，其他learners向它询问已经通过的决议。这个方法降低了消息量，但是指定learner失效将引起系统失效。</p>
-<p><b style="color:red">因此acceptors需要将accept消息发送给learners的一个子集，然后由这些learners去通知所有learners。</b></p>
-<p>但是由于消息传递的不确定性，可能会没有任何learner获得了决议批准的消息。当learners需要了解决议通过情况时，可以让一个proposer重新进行一次提案。注意一个learner可能兼任proposer。</p>
-<h2 id="Progress的保证-主Proposer"><a href="#Progress的保证-主Proposer" class="headerlink" title="Progress的保证(主Proposer)"></a>Progress的保证(主Proposer)</h2><p><b style="color:red">根据上述过程当一个proposer发现存在编号更大的提案时将终止提案。这意味着提出一个编号更大的提案会终止之前的提案过程。如果两个proposer在这种情况下都转而提出一个编号更大的提案，就可能陷入活锁</b>，违背了Progress的要求。这种情况下的解决方案是选举出一个leader，仅允许leader提出提案。但是由于消息传递的不确定性，可能有多个proposer自认为自己已经成为leader。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://new-play.tudou.com/v/446596938.html?spm=a2hzp.8253869.0.0" target="_blank" rel="noopener">paxos和分布式系统</a><br><a href="https://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95#.E5.AE.9E.E4.BE.8B" target="_blank" rel="noopener">Paxos算法</a><br><a href="http://codemacro.com/2014/10/15/explain-poxos/" target="_blank" rel="noopener">图解分布式一致性协议Paxos</a><br><a href="http://blog.jobbole.com/106327/" target="_blank" rel="noopener">图解 Paxos 一致性协议</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/21/java/Java中volatile解析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/21/java/Java中volatile解析/" itemprop="url">Java中volatile解析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-21T15:44:05+08:00">2018-03-21</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/base/" itemprop="url" rel="index"><span itemprop="name">base</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这几天又想起volatile的知识，我只是知道是为了可见性，多拷贝导致的不一致性，别的好像想不起来了，所以今天就来深入了解一下，免得忘记（网上的文章真长，有比要吗？）。</p>
-<h2 id="计算机内存模型"><a href="#计算机内存模型" class="headerlink" title="计算机内存模型"></a>计算机内存模型</h2><p>这个是计算机体系结构的相关知识，计算机的数据存储大概是这样的。 CPU-&gt;寄存器-&gt;高速缓存块（cache）【可能不进cache】-&gt; 主存（内存）。所以操作一个对象的时候，可能就有存储多拷贝而引起的数据可见性的问题（多线程的情况下）。硬件上解决的话就是总线锁进行处理。</p>
-<p>对于操作系统还存储内核空间和用户空间的数据拷贝的问题。</p>
-<h2 id="并发三个概念"><a href="#并发三个概念" class="headerlink" title="并发三个概念"></a>并发三个概念</h2><p>在并发编程中，我们通常会遇到以下三个问题：原子性问题，可见性问题，有序性问题。</p>
-<h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>多步操作完成一件事的时候才会出现的问题，大多数的操作都是多步完成的。</p>
-<h3 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h3><p>多拷贝操作（并发计算等）进行数据回写的时候可能出现的问题。</p>
-<h3 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h3><p>一般来说指令在CPU中是顺序执行的，但是CPU有时会进行指令重排序，但是保证不会影响执行的结果，但是会影响逻辑结果。</p>
-<h3 id="指令重排序的危害"><a href="#指令重排序的危害" class="headerlink" title="指令重排序的危害"></a>指令重排序的危害</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//线程1:</span><br><span class="line">context = loadContext();   //语句1</span><br><span class="line">inited = true;             //语句2</span><br><span class="line"> </span><br><span class="line">//线程2:</span><br><span class="line">while(!inited )&#123;</span><br><span class="line">  sleep()</span><br><span class="line">&#125;</span><br><span class="line">doSomethingwithconfig(context);</span><br></pre></td></tr></table></figure>
-<p>在上面这个例子中，如果线程1执行时语句1和语句2进行了对换，那么当线程2利用inited判断上下文是否被加载成功的时候可能会被误判，这是很危险的。</p>
-<h2 id="Java的内存模型"><a href="#Java的内存模型" class="headerlink" title="Java的内存模型"></a>Java的内存模型</h2><p>基于栈帧的结构每个Java线程都有自己的工作内存。线程对变量的所有操作都必须在工作内存中进行，而不能直接对主存进行操作。并且每个线程不能访问其他线程的工作内存。</p>
-<p>那么来看看java中对并发的处理情况：</p>
-<h3 id="原子性-1"><a href="#原子性-1" class="headerlink" title="原子性"></a>原子性</h3><p>请分析以下哪些操作是原子性操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x = 10;         //语句1</span><br><span class="line">y = x;         //语句2</span><br><span class="line">x++;           //语句3</span><br><span class="line">x = x + 1;     //语句4</span><br></pre></td></tr></table></figure></p>
-<p>咋一看，有些朋友可能会说上面的4个语句中的操作都是原子性操作。其实只有语句1是原子性操作，其他三个语句都不是原子性操作。</p>
-<ul>
-<li>语句1是直接将数值10赋值给x，也就是说线程执行这个语句的会直接将数值10写入到工作内存中。</li>
-<li>语句2实际上包含2个操作，它先要去读取x的值，再将x的值写入工作内存，虽然读取x的值以及 将x的值写入工作内存 这2个操作都是原子性操作，但是合起来就不是原子性操作了。</li>
-<li>语句3与4，x++和 x = x+1包括3个操作：读取x的值，进行加1操作，写入新的值。</li>
-</ul>
-<p>所以上面4个语句只有语句1的操作具备原子性。</p>
-<p><b style="color:red">不过这里有一点需要注意：在32位平台下，对64位数据的读取和赋值是需要通过两个操作来完成的，不能保证其原子性。但是好像在最新的JDK中，JVM已经保证对64位数据的读取和赋值也是原子性操作了。</b></p>
-<p><b style="color:red">从上面可以看出，Java内存模型只保证了基本读取和赋值是原子性操作，如果要实现更大范围操作的原子性，可以通过synchronized和Lock来实现。由于synchronized和Lock能够保证任一时刻只有一个线程执行该代码块，那么自然就不存在原子性问题了，从而保证了原子性。</b></p>
-<h3 id="可见性-1"><a href="#可见性-1" class="headerlink" title="可见性"></a>可见性</h3><p>对于可见性，Java提供了volatile关键字来保证可见性。</p>
-<p><b style="color:red">另外，通过synchronized和Lock也能够保证可见性，synchronized和Lock能保证同一时刻只有一个线程获取锁然后执行同步代码，并且在释放锁之前会将对变量的修改刷新到主存当中。因此可以保证可见性。</b></p>
-<h3 id="有序性-1"><a href="#有序性-1" class="headerlink" title="有序性"></a>有序性</h3><p><b style="color:blue">在Java内存模型中，允许编译器和处理器对指令进行重排序，但是重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。</b></p>
-<p><b style="color:red">在Java里面，可以通过volatile关键字来保证一定的“有序性”（具体原理在下一节讲述）。另外可以通过synchronized和Lock来保证有序性，很显然，synchronized和Lock保证每个时刻是有一个线程执行同步代码，相当于是让线程顺序执行同步代码，自然就保证了有序性。</b></p>
-<p><b style="color:red">另外，Java内存模型具备一些先天的“有序性”，即不需要通过任何手段就能够得到保证的有序性，这个通常也称为 happens-before 原则。如果两个操作的执行次序无法从happens-before原则推导出来，那么它们就不能保证它们的有序性，虚拟机可以随意地对它们进行重排序。</b></p>
-<p>下面就来具体介绍下happens-before原则（先行发生原则）：</p>
-<ul>
-<li>程序次序规则：一个线程内，按照代码顺序，书写在前面的操作先行发生于书写在后面的操作</li>
-<li>锁定规则：一个unLock操作先行发生于后面对同一个锁的lock操作</li>
-<li>volatile变量规则：对一个变量的写操作先行发生于后面对这个变量的读操作</li>
-<li>传递规则：如果操作A先行发生于操作B，而操作B又先行发生于操作C，则可以得出操作A先行发生于操作C</li>
-<li>线程启动规则：Thread对象的start()方法先行发生于此线程的每个一个动作</li>
-<li>线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生</li>
-<li>线程终结规则：线程中所有的操作都先行发生于线程的终止检测，我们可以通过Thread.join()方法结束、Thread.isAlive()的返回值手段检测到线程已经终止执行</li>
-<li>对象终结规则：一个对象的初始化完成先行发生于他的finalize()方法的开始</li>
-</ul>
-<h2 id="volatile特性"><a href="#volatile特性" class="headerlink" title="volatile特性"></a>volatile特性</h2><h3 id="volatile关键字的两层语义"><a href="#volatile关键字的两层语义" class="headerlink" title="volatile关键字的两层语义"></a>volatile关键字的两层语义</h3><p>1）保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。</p>
-<p>2）禁止进行指令重排序。</p>
-<h3 id="volatile保证原子性吗？"><a href="#volatile保证原子性吗？" class="headerlink" title="volatile保证原子性吗？"></a>volatile保证原子性吗？</h3><p>不能保证，只能保证线程下次读取的值是最新的。类似于乐观锁而已。</p>
-<h3 id="volatile能保证有序性吗？"><a href="#volatile能保证有序性吗？" class="headerlink" title="volatile能保证有序性吗？"></a>volatile能保证有序性吗？</h3><p>在前面提到volatile关键字能禁止指令重排序，所以volatile能在一定程度上保证有序性。</p>
-<p>volatile关键字禁止指令重排序有两层意思：</p>
-<ol>
-<li><b style="color:red">当程序执行到volatile变量的读操作或者写操作时，在其前面的操作的更改肯定全部已经进行，且结果已经对后面的操作可见；在其后面的操作肯定还没有进行；</b></li>
-<li>在进行指令优化时，不能将在对volatile变量访问的语句放在其后面执行，也不能把volatile变量后面的语句放到其前面执行。</li>
-</ol>
-<h3 id="volatile的原理和实现机制"><a href="#volatile的原理和实现机制" class="headerlink" title="volatile的原理和实现机制"></a>volatile的原理和实现机制</h3><p><b style="color:red">观察加入volatile关键字和没有加入volatile关键字时所生成的汇编代码发现，加入volatile关键字时，会多出一个lock前缀指令(一种新的学习方法！)</b></p>
-<p>lock前缀指令实际上相当于一个内存屏障（也成内存栅栏），内存屏障会提供3个功能：</p>
-<ol>
-<li>它确保指令重排序时不会把其后面的指令排到内存屏障之前的位置，也不会把前面的指令排到内存屏障的后面；即在执行到内存屏障这句指令时，在它前面的操作已经全部完成；</li>
-<li>它会强制将对缓存的修改操作立即写入主存；</li>
-<li>如果是写操作，它会导致其他CPU中对应的缓存行无效。</li>
-</ol>
-<h2 id="使用volatile关键字的场景"><a href="#使用volatile关键字的场景" class="headerlink" title="使用volatile关键字的场景"></a>使用volatile关键字的场景</h2><p>通常来说，使用volatile必须具备以下2个条件：</p>
-<ol>
-<li>对变量的写操作不依赖于当前值</li>
-<li>该变量没有包含在具有其他变量的不变式中</li>
-</ol>
-<p>实际上，这些条件表明，可以被写入 volatile 变量的这些有效值独立于任何程序的状态，包括变量的当前状态。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.cnblogs.com/dolphin0520/p/3920373.html" target="_blank" rel="noopener">Java并发编程：volatile关键字解析</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/20/blockchain/BIP125：可选的交易费用替换信号/" itemprop="url">BIP125：可选的交易费用替换信号【翻译】</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
-<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
-<ul>
-<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
-<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
-</ul>
-<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
-<ul>
-<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
-<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
-</ul>
-<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
-<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
-<ul>
-<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
-<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
-<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
-<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
-<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
-</ul>
-<p>最初的实现可以在<a href="https://github.com/bitcoin/bitcoin/pull/6871" target="_blank" rel="noopener">比特核心PR＃6871</a>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
-<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
-<ul>
-<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
-<li>在确认之前忽略选择性（opt-in）交易。</li>
-</ul>
-<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
-<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
-<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin的Wiki页面</a>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
-<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
-<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<a href="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434" target="_blank" rel="noopener">允许</a> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
-<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<a href="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522" target="_blank" rel="noopener">删除了替代品</a>，仅留下评论“暂时禁用替换功能”。</p>
-<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
-<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
-<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
-<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
-<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
-<p>在满足两个条件之前，实际更换可能不可靠：</p>
-<ul>
-<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
-<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
-</ul>
-<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
-<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
-<li><a href="https://en.bitcoin.it/wiki/Transaction_replacement" target="_blank" rel="noopener">Bitcoin Wiki上的交易可替换性</a>旨在帮助钱包作者使用RBF</li>
-<li>用于创建选择性全RBF交易的工具：<a href="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools" target="_blank" rel="noopener">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools</a></li>
-<li>Reddit：<a href="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/" target="_blank" rel="noopener">关于选择性RBF的问题</a>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
-</ol>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener">Opt-in Full Replace-by-Fee Signaling</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2484,7 +2430,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">103</span>
+                    <span class="site-state-item-count">107</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2543,7 +2489,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">23</span>
+                      
+                    
+                    <span class="site-state-item-count">24</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2750,7 +2698,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">97</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">100</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

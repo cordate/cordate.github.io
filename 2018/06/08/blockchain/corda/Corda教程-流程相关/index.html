@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="corda,r3," />
+
+
+<meta name="description" content="使用客户端RPC API在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅Client RPC。 我们首先连接到节点本身。为了本教程的目的，我们将使用Driver来启动一个公证人和一个可以发行、移动和退出现金的Alice节点。 下面是我们如何将节点">
+<meta name="keywords" content="corda,r3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Corda教程-流程相关">
+<meta property="og:url" content="http://cordate.github.io/2018/06/08/blockchain/corda/Corda教程-流程相关/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="使用客户端RPC API在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅Client RPC。 我们首先连接到节点本身。为了本教程的目的，我们将使用Driver来启动一个公证人和一个可以发行、移动和退出现金的Alice节点。 下面是我们如何将节点">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-06-12T10:22:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Corda教程-流程相关">
+<meta name="twitter:description" content="使用客户端RPC API在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅Client RPC。 我们首先连接到节点本身。为了本教程的目的，我们将使用Driver来启动一个公证人和一个可以发行、移动和退出现金的Alice节点。 下面是我们如何将节点">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/06/08/blockchain/corda/Corda教程-流程相关/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Corda教程-流程相关 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/08/blockchain/corda/Corda教程-流程相关/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Corda教程-流程相关</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-08T17:46:22+08:00">2018-06-08</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="使用客户端RPC-API"><a href="#使用客户端RPC-API" class="headerlink" title="使用客户端RPC API"></a>使用客户端RPC API</h1><p>在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">Client RPC</a>。</p>
+<p>我们首先连接到节点本身。为了本教程的目的，我们将使用Driver来启动一个公证人和一个可以发行、移动和退出现金的Alice节点。</p>
+<p>下面是我们如何将节点配置为创建具有权限的用户来启动<code>CashIssueFlow</code>， <code>CashPaymentFlow</code>以及<code>CashExitFlow</code>：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintOrVisualise</span> </span>&#123;</span><br><span class="line">    Print,</span><br><span class="line">    Visualise</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    require(args.isNotEmpty()) &#123; <span class="string">"Usage: &lt;binary&gt; [Print|Visualise]"</span> &#125;</span><br><span class="line">    <span class="keyword">val</span> printOrVisualise = PrintOrVisualise.valueOf(args[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> baseDirectory = Paths.<span class="keyword">get</span>(<span class="string">"build/rpc-api-tutorial"</span>)</span><br><span class="line">    <span class="keyword">val</span> user = User(<span class="string">"user"</span>, <span class="string">"password"</span>, permissions = setOf(startFlow&lt;CashIssueFlow&gt;(),</span><br><span class="line">            startFlow&lt;CashPaymentFlow&gt;(),</span><br><span class="line">            startFlow&lt;CashExitFlow&gt;(),</span><br><span class="line">            invokeRpc(CordaRPCOps::nodeInfo)</span><br><span class="line">    ))</span><br><span class="line">    driver(DriverParameters(driverDirectory = baseDirectory, extraCordappPackagesToScan = listOf(<span class="string">"net.corda.finance"</span>), waitForAllNodesToFinish = <span class="literal">true</span>)) &#123;</span><br><span class="line">        <span class="keyword">val</span> node = startNode(providedName = ALICE_NAME, rpcUsers = listOf(user)).<span class="keyword">get</span>()</span><br></pre></td></tr></table></figure></p>
+<p>现在我们可以使用有效的RPC用户登录连接到节点本身，并使用<code>generateTransactions</code>（稍后定义）开始在不同线程中生成交易：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val client = CordaRPCClient(node.rpcAddress)</span><br><span class="line">val proxy = client.start(&quot;user&quot;, &quot;password&quot;).proxy</span><br><span class="line"></span><br><span class="line">thread &#123;</span><br><span class="line">    generateTransactions(proxy)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>proxy 公开节点的完整RPC接口：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the RPC protocol version, which is the same the node's Platform Version. Exists since version 1 so guaranteed</span></span><br><span class="line"><span class="comment"> * to be present.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">override</span> <span class="keyword">val</span> protocolVersion: <span class="built_in">Int</span> <span class="keyword">get</span>() = nodeInfo().platformVersion</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a list of currently in-progress state machine infos. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a data feed of currently in-progress state machine infos and an observable of</span></span><br><span class="line"><span class="comment"> * future state machine adds/removes.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineInfo&gt;, StateMachineUpdate&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot of vault states for a given query criteria (and optional order and paging specification)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [Vault.Page] object containing the following:</span></span><br><span class="line"><span class="comment"> *  1. states as a List of &lt;StateAndRef&gt; (page number and size defined by [PageSpecification])</span></span><br><span class="line"><span class="comment"> *  2. states metadata as a List of [Vault.StateMetadata] held in the Vault States table.</span></span><br><span class="line"><span class="comment"> *  3. total number of results available if [PageSpecification] supplied (otherwise returns -1)</span></span><br><span class="line"><span class="comment"> *  4. status types used in this query: UNCONSUMED, CONSUMED, ALL</span></span><br><span class="line"><span class="comment"> *  5. other results (aggregate functions with/without using value groups)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> VaultQueryException if the query cannot be executed for any reason</span></span><br><span class="line"><span class="comment"> *        (missing criteria or parsing error, paging errors, unsupported query, underlying database error)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes</span></span><br><span class="line"><span class="comment"> *   If no [PageSpecification] is provided, a maximum of [DEFAULT_PAGE_SIZE] results will be returned.</span></span><br><span class="line"><span class="comment"> *   API users must specify a [PageSpecification] if they are expecting more than [DEFAULT_PAGE_SIZE] results,</span></span><br><span class="line"><span class="comment"> *   otherwise a [VaultQueryException] will be thrown alerting to this condition.</span></span><br><span class="line"><span class="comment"> *   It is the responsibility of the API user to request further pages and/or specify a more suitable [PageSpecification].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">Note:</span> cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQuery</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByCriteria</span><span class="params">(criteria: <span class="type">QueryCriteria</span>, contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot (as per queryBy) and an observable of future updates to the vault for the given query criteria.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [DataFeed] object containing</span></span><br><span class="line"><span class="comment"> * 1) a snapshot as a [Vault.Page] (described previously in [CordaRPCOps.vaultQueryBy])</span></span><br><span class="line"><span class="comment"> * 2) an [Observable] of [Vault.Update]</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes: the snapshot part of the query adheres to the same behaviour as the [CordaRPCOps.vaultQueryBy] function.</span></span><br><span class="line"><span class="comment"> *        the [QueryCriteria] applies to both snapshot and deltas (streaming updates).</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">Note:</span> cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrack</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByCriteria</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a list of all recorded transactions.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsSnapshot</span><span class="params">()</span></span>: List&lt;SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a data feed of all recorded transactions and an observable of future recorded ones.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;SignedTransaction&gt;, SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a snapshot list of existing state machine id - recorded transaction hash mappings. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot list of existing state machine id - recorded transaction hash mappings, and a stream of future</span></span><br><span class="line"><span class="comment"> * such mappings as well.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineTransactionMapping&gt;, StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns all parties currently visible on the network with their advertised services. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapSnapshot</span><span class="params">()</span></span>: List&lt;NodeInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns all parties currently visible on the network with their advertised services and an observable of</span></span><br><span class="line"><span class="comment"> * future updates to the network.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;NodeInfo&gt;, NetworkMapCache.MapChange&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns [DataFeed] object containing information on currently scheduled parameters update (null if none are currently scheduled)</span></span><br><span class="line"><span class="comment"> * and observable with future update events. Any update that occurs before the deadline automatically cancels the current one.</span></span><br><span class="line"><span class="comment"> * Only the latest update can be accepted.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkParametersFeed</span><span class="params">()</span></span>: DataFeed&lt;ParametersUpdateInfo?, ParametersUpdateInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Accept network parameters with given hash, hash is obtained through [networkParametersFeed] method.</span></span><br><span class="line"><span class="comment"> * Information is sent back to the zone operator that the node accepted the parameters update - this process cannot be</span></span><br><span class="line"><span class="comment"> * undone.</span></span><br><span class="line"><span class="comment"> * Only parameters that are scheduled for update can be accepted, if different hash is provided this method will fail.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> parametersHash hash of network parameters to accept</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException if network map advertises update with different parameters hash then the one accepted by node's operator.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IOException if failed to send the approval to network map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">acceptNewNetworkParameters</span><span class="params">(parametersHash: <span class="type">SecureHash</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments. [logicType] must be annotated</span></span><br><span class="line"><span class="comment"> * with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments, returning an [Observable] with a single observation of the</span></span><br><span class="line"><span class="comment"> * result of running the flow. [logicType] must be annotated with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startTrackedFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowProgressHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Attempts to kill a flow. This is not a clean termination and should be reserved for exceptional cases such as stuck fibers.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> whether the flow existed and was killed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">killFlow</span><span class="params">(id: <span class="type">StateMachineRunId</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns Node's NodeInfo, assuming this will not change while the node is running. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfo</span><span class="params">()</span></span>: NodeInfo</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns network's notary identities, assuming this will not change while the node is running.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note that the identities are sorted based on legal name, and the ordering might change once new notaries are introduced.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryIdentities</span><span class="params">()</span></span>: List&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Add note(s) to an existing Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">addVaultTransactionNote</span><span class="params">(txnId: <span class="type">SecureHash</span>, txnNote: <span class="type">String</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Retrieve existing note(s) for a given Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getVaultTransactionNotes</span><span class="params">(txnId: <span class="type">SecureHash</span>)</span></span>: Iterable&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Checks whether an attachment with the given hash is stored on the node. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">attachmentExists</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Download an attachment JAR by ID. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">openAttachment</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: InputStream</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachment</span><span class="params">(jar: <span class="type">InputStream</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar including metadata to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachmentWithMetadata</span><span class="params">(jar: <span class="type">InputStream</span>, uploader: <span class="type">String</span>, filename: <span class="type">String</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Queries attachments metadata */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">queryAttachments</span><span class="params">(query: <span class="type">AttachmentQueryCriteria</span>, sorting: <span class="type">AttachmentSort</span>?)</span></span>: List&lt;AttachmentId&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the node's current time. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">currentNodeTime</span><span class="params">()</span></span>: Instant</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a [CordaFuture] which completes when the node has registered wih the network map service. It can also</span></span><br><span class="line"><span class="comment"> * complete with an exception if it is unable to.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">waitUntilNetworkReady</span><span class="params">()</span></span>: CordaFuture&lt;<span class="built_in">Void</span>?&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TODO These need rethinking. Instead of these direct calls we should have a way of replicating a subset of</span></span><br><span class="line"><span class="comment">// the node's state locally and query that directly.</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the well known identity from an abstract party. This is intended to resolve the well known identity</span></span><br><span class="line"><span class="comment"> * from a confidential identity, however it transparently handles returning the well known identity back if</span></span><br><span class="line"><span class="comment"> * a well known identity is passed in.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> party identity to determine well known identity for.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> well known identity, if found.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromAnonymous</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] corresponding to the given key, if found. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partyFromKey</span><span class="params">(key: <span class="type">PublicKey</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] with the X.500 principal as it's [Party.name]. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get a notary identity by name.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the notary identity, or null if there is no notary by that name. Note that this will return null if there</span></span><br><span class="line"><span class="comment"> * is a peer with that name but they are not a recognised notary service.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a list of candidate matches for a given string, with optional fuzzy(ish) matching. Fuzzy matching may</span></span><br><span class="line"><span class="comment"> * get smarter with time e.g. to correct spelling errors, so you should not hard-code indexes into the results</span></span><br><span class="line"><span class="comment"> * but rather show them via a user interface and let the user pick the one they wanted.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> query The string to check against the X.500 name components</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> exactMatch If true, a case sensitive match is done against each component of each X.500 name.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partiesFromName</span><span class="params">(query: <span class="type">String</span>, exactMatch: <span class="type">Boolean</span>)</span></span>: Set&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Enumerates the class names of the flows that this node knows about. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">registeredFlows</span><span class="params">()</span></span>: List&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a node's info from the network map cache, where known.</span></span><br><span class="line"><span class="comment"> * Notice that when there are more than one node for a given name (in case of distributed services) first service node</span></span><br><span class="line"><span class="comment"> * found will be returned.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the node info if available.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfoFromParty</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: NodeInfo?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Clear all network map data from local node cache. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">clearNetworkMapCache</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Sets the value of the node's flows draining mode.</span></span><br><span class="line"><span class="comment"> * If this mode is [enabled], the node will reject new flows through RPC, ignore scheduled flows, and do not process</span></span><br><span class="line"><span class="comment"> * initial session messages, meaning that P2P counterparties will not be able to initiate new flows involving the node.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> enabled whether the flows draining mode will be enabled.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">setFlowsDrainingModeEnabled</span><span class="params">(enabled: <span class="type">Boolean</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns whether the flows draining mode is enabled.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> setFlowsDrainingModeEnabled</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">isFlowsDrainingModeEnabled</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Shuts the node down. Returns immediately.</span></span><br><span class="line"><span class="comment"> * This does not wait for flows to be completed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">shutdown</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure></p>
+<p>我们需要用来转储交易图的RPC操作是<code>internalVerifiedTransactionsFeed</code>。类型签名告诉我们RPC操作将返回一系列交易和一个<code>Observable</code>流。这是一种普遍的模式，我们查询一些数据，节点将返回当前的快照和将来的更新。<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">客户端RPC</a>更详细地描述了可观察对象.<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (transactions: List&lt;SignedTransaction&gt;, futureTransactions: Observable&lt;SignedTransaction&gt;) = proxy.internalVerifiedTransactionsFeed()</span><br></pre></td></tr></table></figure></p>
+<p>该图将被定义如下：</p>
+<ul>
+<li>每个交易都是一个顶点，由打印<code>NODE &lt;txhash&gt;</code>表示 </li>
+<li>每个输入 - 输出关系都是一个边，由prining <code>EDGE &lt;txhash&gt; &lt;txhash&gt;</code>表示</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">when</span> (printOrVisualise) &#123;</span><br><span class="line">    PrintOrVisualise.Print -&gt; &#123;</span><br><span class="line">        futureTransactions.startWith(transactions).subscribe &#123; transaction -&gt;</span><br><span class="line">            println(<span class="string">"NODE <span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            transaction.tx.inputs.forEach &#123; (txhash) -&gt;</span><br><span class="line">                println(<span class="string">"EDGE <span class="variable">$txhash</span> <span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们只需要自己创建交易！<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">generateTransactions</span><span class="params">(proxy: <span class="type">CordaRPCOps</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> vault = proxy.vaultQueryBy&lt;Cash.State&gt;().states</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> ownedQuantity = vault.fold(<span class="number">0</span>L) &#123; sum, state -&gt;</span><br><span class="line">        sum + state.state.<span class="keyword">data</span>.amount.quantity</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> issueRef = OpaqueBytes.of(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">val</span> notary = proxy.notaryIdentities().first()</span><br><span class="line">    <span class="keyword">val</span> me = proxy.nodeInfo().legalIdentities.first()</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>)</span><br><span class="line">        <span class="keyword">val</span> random = SplittableRandom()</span><br><span class="line">        <span class="keyword">val</span> n = random.nextDouble()</span><br><span class="line">        <span class="keyword">if</span> (ownedQuantity &gt; <span class="number">10000</span> &amp;&amp; n &gt; <span class="number">0.8</span>) &#123;</span><br><span class="line">            <span class="keyword">val</span> quantity = Math.abs(random.nextLong()) % <span class="number">2000</span></span><br><span class="line">            proxy.startFlow(::CashExitFlow, Amount(quantity, USD), issueRef)</span><br><span class="line">            ownedQuantity -= quantity</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ownedQuantity &gt; <span class="number">1000</span> &amp;&amp; n &lt; <span class="number">0.7</span>) &#123;</span><br><span class="line">            <span class="keyword">val</span> quantity = Math.abs(random.nextLong() % Math.min(ownedQuantity, <span class="number">2000</span>))</span><br><span class="line">            proxy.startFlow(::CashPaymentFlow, Amount(quantity, USD), me)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">val</span> quantity = Math.abs(random.nextLong() % <span class="number">1000</span>)</span><br><span class="line">            proxy.startFlow(::CashIssueFlow, Amount(quantity, USD), issueRef, notary)</span><br><span class="line">            ownedQuantity += quantity</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们在这里使用几个RPC函数来查询节点集群或我们自己的库中的公证信息。<b style="color:red">这些RPC函数还会返回<code>Observable</code>对象，以便节点可以向我们发送更新的值。但是，我们在这里不需要更新，因此我们将这些观察值标记为<code>notUsed</code>（通常，您应该始终订阅一个<code>Observable</code> 或将其标记为未使用，否则会泄漏节点中的资源）。</b></p>
+<p>然后在一个循环中，我们随机生成一个Issue，一个Pay或一个Exit交易。</p>
+<p>我们需要启动一个现金交易的RPC是<code>startFlow</code>在足够的权限下启动一个任意的流程。</p>
+<p>最后，我们掌握了一切：我们启动几个节点，连接到它们，并开始创建交易，同时监听已成功创建的交易，并将这些交易转储到控制台。我们只需要运行它！<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Build the example</span></span><br><span class="line">./gradlew docs/source/example-code:installDist</span><br><span class="line"><span class="meta">#</span><span class="bash"> Start it</span></span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Print</span><br></pre></td></tr></table></figure></p>
+<p>现在让我们尝试对交易图进行可视化。我们将使用一个名为<code>graphstream</code>的图形绘制库。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">    PrintOrVisualise.Visualise -&gt; &#123;</span><br><span class="line">        <span class="keyword">val</span> graph = MultiGraph(<span class="string">"transactions"</span>)</span><br><span class="line">        transactions.forEach &#123; transaction -&gt;</span><br><span class="line">            graph.addNode&lt;Node&gt;(<span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        transactions.forEach &#123; transaction -&gt;</span><br><span class="line">            transaction.tx.inputs.forEach &#123; ref -&gt;</span><br><span class="line">                graph.addEdge&lt;Edge&gt;(<span class="string">"<span class="variable">$ref</span>"</span>, <span class="string">"<span class="subst">$&#123;ref.txhash&#125;</span>"</span>, <span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        futureTransactions.subscribe &#123; transaction -&gt;</span><br><span class="line">            graph.addNode&lt;Node&gt;(<span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            transaction.tx.inputs.forEach &#123; ref -&gt;</span><br><span class="line">                graph.addEdge&lt;Edge&gt;(<span class="string">"<span class="variable">$ref</span>"</span>, <span class="string">"<span class="subst">$&#123;ref.txhash&#125;</span>"</span>, <span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        graph.display()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果我们使用<code>Visualise</code>运行客户端，我们应该看到随着新交易的创建，会绘制一个简单的随机图。</p>
+<h2 id="将您的CorDapp与Corda节点上的类列入白名单"><a href="#将您的CorDapp与Corda节点上的类列入白名单" class="headerlink" title="将您的CorDapp与Corda节点上的类列入白名单"></a>将您的CorDapp与Corda节点上的类列入白名单</h2><p>如<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">Client RPC</a>所述，您必须将您添加的RPC请求或Corda节点响应中所需的任何其他类添加到白名单中。这里有一个例子，你可以通过这两种方法来做几个示例类。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Not annotated, so need to whitelist manually.</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue</span></span>(<span class="keyword">val</span> foo: String)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Annotated, so no need to whitelist manually.</span></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue2</span></span>(<span class="keyword">val</span> bar: <span class="built_in">Int</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCSerializationWhitelist</span> : <span class="type">SerializationWhitelist &#123;</span></span></span><br><span class="line">    <span class="comment">// Add classes like this.</span></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> whitelist = listOf(ExampleRPCValue::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://docs.corda.net/head/running-a-node.html" target="_blank" rel="noopener">在本地运行节点</a>这里查看更多插件。</p>
+<h2 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h2><p>与客户端关联的RPC凭证必须与服务器节点上配置的权限集匹配。这涉及身份验证（用户名和密码）和基于角色的授权（授权用户有权运行的一组经过授权的RPC操作）。</p>
+<p><b style="color:blue">注意：权限以String的形式表示，以允许RPC实现添加他们自己的权限。目前唯一定义的权限类型是StartFlow，它定义了经过身份验证的使用可能执行的白名单流程的列表。管理员用户（或开发人员）也可能被分配ALL权限，该权限授予对任何流量的访问权限。</b></p>
+<p>在上面的说明中，服务器节点权限是以编程方式driver代码中配置的：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">driver(driverDirectory = baseDirectory) &#123;</span><br><span class="line">    <span class="keyword">val</span> user = User(<span class="string">"user"</span>, <span class="string">"password"</span>, permissions = setOf(startFlow&lt;CashFlow&gt;()))</span><br><span class="line">    <span class="keyword">val</span> node = startNode(<span class="string">"CN=Alice Corp,O=Alice Corp,L=London,C=GB"</span>, rpcUsers = listOf(user)).<span class="keyword">get</span>()</span><br></pre></td></tr></table></figure></p>
+<p>当使用配置文件启动独立节点时，我们必须提供RPC凭证，如下所示：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpcUsers : [</span><br><span class="line">    &#123; username=user, password=password, permissions=[ StartFlow.net.corda.finance.flows.CashFlow ] &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>在使用Gradle Cordformation插件配置和部署节点时，您必须以类似的方式提供RPC凭据：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpcUsers = [</span><br><span class="line">        [<span class="string">'username'</span> : <span class="string">"user"</span>,</span><br><span class="line">         <span class="string">'password'</span> : <span class="string">"password"</span>,</span><br><span class="line">         <span class="string">'permissions'</span> : [<span class="string">"StartFlow.net.corda.finance.flows.CashFlow"</span>]]</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>然后，您可以按如下方式部署和启动节点（公证人和Alice）：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> to create a <span class="built_in">set</span> of configs and installs under ``docs/<span class="built_in">source</span>/example-code/build/nodes`` run</span></span><br><span class="line">./gradlew docs/source/example-code:deployNodes</span><br><span class="line"><span class="meta">#</span><span class="bash"> to open up two new terminals with the two nodes run</span></span><br><span class="line">./docs/source/example-code/build/nodes/runnodes</span><br><span class="line"><span class="meta">#</span><span class="bash"> followed by the same commands as before:</span></span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Print</span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Visualise</span><br></pre></td></tr></table></figure></p>
+<p>关于启动流RPC，还有一个额外的安全层，要执行的流必须注解<code>@StartableByRPC</code>。没有此注解的流程无法使用RPC执行。</p>
+<p>请参阅<a href="https://docs.corda.net/head/secure-coding-guidelines.html" target="_blank" rel="noopener">安全编码指南</a>中的安全性，<a href="https://docs.corda.net/head/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>中的节点配置以及<a href="https://docs.corda.net/head/running-a-node.html" target="_blank" rel="noopener">本地运行节点</a>中的<code>Cordformation</code> 。</p>
+<h1 id="构建交易"><a href="#构建交易" class="headerlink" title="构建交易"></a>构建交易</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>理解和实施Corda中的交易是构建和实施真实世界智能合约的关键。只有通过构建包含适当数据的有效Corda交易，分类账上的节点才能将真实世界的业务对象映射到Corda分类账中数据的共享数字视图。更重要的是，作为新智能合约的开发者，它是决定哪些数据格式良好以及哪些数据应该被拒绝为错误或防止恶意活动的代码。本文档详细介绍了在构建交易作为流程的一部分时所使用的一些注意事项和API。</p>
+<h2 id="交易的基本生命周期"><a href="#交易的基本生命周期" class="headerlink" title="交易的基本生命周期"></a>交易的基本生命周期</h2><p>Corda的交易包含许多要素：</p>
+<ol>
+<li>一组将被最终接受的交易处理的输入状态引用</li>
+<li>一组输出状态，用于创建/替换使用状态，从而成为分类账上新的最新数据版本</li>
+<li>一系列<code>Attachment</code>可以包含法律文件，合同代码或专用加密部分作为原生合同状态之外的扩展的项目</li>
+<li>一组<code>Command</code>项目，用于指示在交易中编码的分类帐转换的类型。每个命令还有一组相关联的签名者密钥，这些签名者密钥将用于签署交易</li>
+<li>签名者列表，它是各个<code>Command</code>对象上的签名者的联合</li>
+<li>指定哪个公证节点正在跟踪状态消费的公证身份（如果交易的输入状态用不同的公证节点注册，那么流程将不得不插入额外的<code>NotaryChange</code>交易，以便在允许突变任何状态之前将状态迁移到一致的公证节点）</li>
+<li>可选择一个时间窗口，公证人可以使用时间窗口来限定提议的交易可以提交给分类帐的时间段</li>
+</ol>
+<p>交易是通过填充一个<code>TransactionBuilder</code>。通常情况下，<code>TransactionBuilder</code>需要在各方之间进行交换，然后才能完全填充。这是Corda隐私模型的直接结果，其中输入状态很可能是其他节点未知的。</p>
+<p>一旦builder完全填充，流程应该通过签署<code>TransactionBuilder</code>创建一个<code>SignedTransaction</code>来冻结它。这是分类账协议流程的关键 - 一旦流程将节点的签名附加到交易中，它就有效地声明它接受交易的所有细节。</p>
+<p>对于流程来说，最好的做法是接收其他Party的<code>TransactionSignature</code>而不是完整的<code>SignedTransaction</code>对象，因为否则我们必须单独检查它是否仍然是相同的<code>SignedTransaction</code>，而不是恶意的替代品。</p>
+<p>将交易提交给分类帐的最后阶段是公证<code>SignedTransaction</code>，并将其分发给所有适当的当事人并将数据记录到分类账中。这些操作最好委托给<code>FinalityFlow</code>，而不是手动调用各个步骤。但是，请注意，对其他节点的最终广播是异步的，因此必须小心在单元测试中正确等待Vault更新。</p>
+<h2 id="收集输入"><a href="#收集输入" class="headerlink" title="收集输入"></a>收集输入</h2><p>形成交易的第一步是收集一组输入引用。根据智能合约所捕获的业务流程的性质以及请求的参数化细节，此流程将会有明显的不同。但是，它通常涉及通过<code>ServiceHub</code>里的<code>VaultService</code>接口来搜索vault来定位输入状态。</p>
+<p>给一些更具体的细节考虑两个简化的现实世界的情况。首先是基本的外汇现金交易。这笔交易需要找到一组资金进行交易。流程建模，这是在<code>FxTransactionBuildTutorial.kt</code>实现了 （见docs/source/example-code/src/main/kotlin/net/corda/docs/FxTransactionBuildTutorial.kt的 主<a href="https://github.com/corda/corda" target="_blank" rel="noopener">corda代码库</a>中）。其次，一个简单的商业模式，其中parties手动接受或拒绝对方的贸易提案，这是在<code>WorkflowTransactionBuildTutorial.kt</code>中实现的（见 docs/source/example-code/src/main/kotlin/net/corda/docs/WorkflowTransactionBuildTutorial.kt的 主<a href="https://github.com/corda/corda" target="_blank" rel="noopener">corda代码库</a>中）。要使用IntelliJ IDE运行和浏览这些示例，可以run/step完成<code>FxTransactionBuildTutorialTest.kt</code>和<code>WorkflowTransactionBuildTutorialTest.kt</code>中的相应单元测试，这些测试将流程驱动为模拟内存节点网络的一部分。</p>
+<p>注意：创建这些单元测试的IntelliJ运行配置之前，转到 运行- &gt;编辑配置- &gt;默认设置- &gt; JUnit中，添加 <code>-javaagent:lib/quasar.jar</code> 到VM选项，并设置工作目录<code>$PROJECT_DIR$</code>，那么<code>Quasar</code>仪器的配置就正确完成了。</p>
+<p>对于现金交易，假设我们使用的是在<code>:financial</code>gradle模块的标准<code>CashState</code>。<code>Cash</code>合同利用<code>FungibleAsset</code>状态与模型互换资产的持有量，并允许拆分，合并和求状态的总和，以满足合同义务。我们通常会使用该 Cash.generateSpend方法将所需数量的现金收集到a中TransactionBuilder，设置输出并生成Move 命令。然而，为了使事情更加清楚，这里示出的示例性流程的代码将手动通过指定相关的查询条件的过滤器到进行输入的查询tryLockFungibleStatesForSpending的方法VaultService。</p>
+<p>// This is equivalent to the Cash.generateSpend<br>// Which is brought here to make the filtering logic more visible in the example<br>private fun gatherOurInputs(serviceHub: ServiceHub,<br>                            lockId: UUID,<br>                            amountRequired: Amount&lt;Issued<currency>&gt;,<br>                            notary: Party?): Pair&lt;List&lt;StateAndRef&lt;Cash.State&gt;&gt;, Long&gt; {<br>    // extract our identity for convenience<br>    val ourKeys = serviceHub.keyManagementService.keys<br>    val ourParties = ourKeys.map { serviceHub.identityService.partyFromKey(it) ?: throw IllegalStateException(“Unable to resolve party from key”) }<br>    val fungibleCriteria = QueryCriteria.FungibleAssetQueryCriteria(owner = ourParties)</currency></p>
+<pre><code>val notaries = notary ?: serviceHub.networkMapCache.notaryIdentities.first()
+val vaultCriteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(notary = listOf(notaries as AbstractParty))
+
+val logicalExpression = builder { CashSchemaV1.PersistentCashState::currency.equal(amountRequired.token.product.currencyCode) }
+val cashCriteria = QueryCriteria.VaultCustomQueryCriteria(logicalExpression)
+
+val fullCriteria = fungibleCriteria.and(vaultCriteria).and(cashCriteria)
+
+val eligibleStates = serviceHub.vaultService.tryLockFungibleStatesForSpending(lockId, fullCriteria, amountRequired.withoutIssuer(), Cash.State::class.java)
+
+check(eligibleStates.isNotEmpty()) { &quot;Insufficient funds&quot; }
+val amount = eligibleStates.fold(0L) { tot, (state) -&gt; tot + state.data.amount.quantity }
+val change = amount - amountRequired.quantity
+
+return Pair(eligibleStates, change)
+</code></pre><p>}<br>这是一项外汇交易，所以我们预计另一种来自交易对手货币的投入状态。然而，Corda隐私模型意味着我们不知道其他节点的状态。因此，我们的流程必须要求另一个节点执行类似的查询并将额外的输入返回给交易（参见 ForeignExchangeFlow交换的更多细节）。我们现在拥有所有必需的输入StateRef项目，并可转而收集输出。</p>
+<p>对于贸易审批流程，我们需要实施一个简单的工作流程模式。我们首先将未经确认的交易细节记录在实现LinearState界面的状态对象中。此记录的一个字段用于将业务工作流映射到枚举状态。最初，发起者创建一个新的状态对象，该对象UniqueIdentifier在其linearId属性中接收新的状态， 并且启动工作流状态为NEW。该Contract.verify方法的写法是允许发起者签署该初始事务并将其发送给另一方。该模式确保为了审计目的在两个分类帐上都记录永久性副本，但是可以防止状态被恶意置于批准状态。接下来的工作流程步骤随后将消耗状态作为一方输入的事务处理，然后输出一个新的版本，其中包含任何状态更新，或者与业务流程相匹配linearId的修改，这些更改将保留在整个变更中。附Command对象有助于验证方法将更改限制在工作流中每个步骤的相应字段和签名者。在这种情况下，通常双方都签署了变更交易，但如果允许单方面签署，例如一方可以阻止拒绝，那么这是有效的。通常，这些工作流的手动启动器将通过RPC接口向Vault查询正确合同类型的状态以及正确的工作流状态。然后，RPC将启动相关流程StateRef或使用linearId值作为流程的参数，以识别正在进行操作的状态。因此，收集给定的最新输入状态的代码StateRef将使用VaultService如下代码：</p>
+<p>val criteria = VaultQueryCriteria(stateRefs = listOf(ref))<br>val latestRecord = serviceHub.vaultService.queryBy&lt;TradeApprovalContract.State&gt;(criteria).states.single()<br>生成命令<br>对于要添加到事务中的命令，这些命令需要正确反映当前的任务。这些必须匹配，因为在该Contract.verify方法中该命令将用于选择验证码路径。Contract.verify然后该方法将限制事务的允许内容以反映该上下文。典型的限制可能包括输入现金金额必须等于输出现金金额，或者工作流步骤仅允许更改状态字段。有时，命令可能会捕获一些数据，例如外汇汇率或一方的身份，或者在批量操作中产生命令的特定输入的StateRef。这些数据将被用来进一步帮助Contract.verify，因为为了确保分布式环境中的一致性，安全性和可重复性Contract.verify，交易是唯一允许使用交易内容来决定合法性的。</p>
+<p>命令的另一个基本要求是将正确的PublicKey对象集 添加到Command构建器上，这将用于在最终验证的事务上形成一组必需的签名者。这些必须与Contract.verify方法的期望保持一致 ，这应该写成防御性的检查。特别是，预计至少资产的所有者必须签署许可转让该资产。另外，在进行资产交换时，通常还需要其他签署方，例如甲骨文公司的Oracle身份标识或双方。</p>
+<p>生成输出<br>找到一StateAndRefs组作为交易输入后，流程必须生成输出状态。通常，这是对Kotlin copy方法的简单调用，以修改将在事务中转换的几个字段。generateXXX如果任务更复杂，合同代码可能会提供一种帮助此流程的 方法。对于工作流程状态，稍微修改的副本状态通常就足够了，特别是因为我们希望保留linearId状态修订版本之间的关系，以便Vault查询可以找到最新的修订版本。</p>
+<p>对于可替代的合同状态，例如cash在分配大量输入状态时，通常会分配和分配总金额，例如为原始所有者产生剩余的余额输出状态。请记住，成功交易的结果总是要完全消耗/消耗输入状态，因此需要这样才能节省总现金。例如来自演示代码：</p>
+<p>// Gather our inputs. We would normally use VaultService.generateSpend<br>// to carry out the build in a single step. To be more explicit<br>// we will use query manually in the helper function below.<br>// Putting this into a non-suspendable function also prevents issues when<br>// the flow is suspended.<br>val (inputs, residual) = gatherOurInputs(serviceHub, lockId, sellAmount, request.notary)</p>
+<p>// Build and an output state for the counterparty<br>val transferedFundsOutput = Cash.State(sellAmount, request.counterparty)</p>
+<p>val outputs = if (residual &gt; 0L) {<br>    // Build an output state for the residual change back to us<br>    val residualAmount = Amount(residual, sellAmount.token)<br>    val residualOutput = Cash.State(residualAmount, serviceHub.myInfo.singleIdentity())<br>    listOf(transferedFundsOutput, residualOutput)<br>} else {<br>    listOf(transferedFundsOutput)<br>}<br>return Pair(inputs, outputs)<br>构建SignedTransaction<br>收集了交易的所有组件后，我们现在需要使用a TransactionBuilder来构建完整的SignedTransaction。我们实例化一个TransactionBuilder并提供一个与输出状态相关的公证。然后我们不断添加输入，输出，命令和附件以完成交易。</p>
+<p>一旦交易完成后，我们呼吁ServiceHub.signInitialTransaction签署TransactionBuilder 并将其转换为SignedTransaction。</p>
+<p>这个过程的例子是：</p>
+<p>// Modify the state field for new output. We use copy, to ensure no other modifications.<br>// It is especially important for a LinearState that the linearId is copied across,<br>// not accidentally assigned a new random id.<br>val newState = latestRecord.state.data.copy(state = verdict)</p>
+<p>// We have to use the original notary for the new transaction<br>val notary = latestRecord.state.notary</p>
+<p>// Get and populate the new TransactionBuilder<br>// To destroy the old proposal state and replace with the new completion state.<br>// Also add the Completed command with keys of all parties to signal the Tx purpose<br>// to the Contract verify method.<br>val tx = TransactionBuilder(notary).<br>        withItems(<br>                latestRecord,<br>                StateAndContract(newState, TRADE_APPROVAL_PROGRAM_ID),<br>                Command(TradeApprovalContract.Commands.Completed(),<br>                        listOf(ourIdentity.owningKey, latestRecord.state.data.source.owningKey)))<br>tx.setTimeWindow(serviceHub.clock.instant(), 60.seconds)<br>// We can sign this transaction immediately as we have already checked all the fields and the decision<br>// is ultimately a manual one from the caller.<br>// As a SignedTransaction we can pass the data around certain that it cannot be modified,<br>// although we do require further signatures to complete the process.<br>val selfSignedTx = serviceHub.signInitialTransaction(tx)<br>private fun buildTradeProposal(ourInputStates: List&lt;StateAndRef&lt;Cash.State&gt;&gt;,<br>                               ourOutputState: List&lt;Cash.State&gt;,<br>                               theirInputStates: List&lt;StateAndRef&lt;Cash.State&gt;&gt;,<br>                               theirOutputState: List&lt;Cash.State&gt;): SignedTransaction {<br>    // This is the correct way to create a TransactionBuilder,<br>    // do not construct directly.<br>    // We also set the notary to match the input notary<br>    val builder = TransactionBuilder(ourInputStates.first().state.notary)</p>
+<pre><code>// Add the move commands and key to indicate all the respective owners and need to sign
+val ourSigners = ourInputStates.map { it.state.data.owner.owningKey }.toSet()
+val theirSigners = theirInputStates.map { it.state.data.owner.owningKey }.toSet()
+builder.addCommand(Cash.Commands.Move(), (ourSigners + theirSigners).toList())
+
+// Build and add the inputs and outputs
+builder.withItems(*ourInputStates.toTypedArray())
+builder.withItems(*theirInputStates.toTypedArray())
+builder.withItems(*ourOutputState.map { StateAndContract(it, Cash.PROGRAM_ID) }.toTypedArray())
+builder.withItems(*theirOutputState.map { StateAndContract(it, Cash.PROGRAM_ID) }.toTypedArray())
+
+// We have already validated their response and trust our own data
+// so we can sign. Note the returned SignedTransaction is still not fully signed
+// and would not pass full verification yet.
+return serviceHub.signInitialTransaction(builder, ourSigners.single())
+</code></pre><p>}<br>完成SignedTransaction<br>创建完成TransactionBuilder并将其转换为a后SignedTransaction，验证和形成完整的过程SignedTransaction开始，然后通过公证完成。在实践中，这是一个相对刻板的过程，因为假设SignedTransaction构建正确，验证应立即进行。但是，重新检查从外部节点接收的任何数据的业务详情也很重要，因为恶意方在返回事务之前总是可以修改内容。因此，每个远程流程应该尽可能多地检查SignedTransaction内部的初始状态unwrap的同意签署前的接收。任何问题都应立即抛出异常来中止流程。同样，始发者应始终对其原始提案应用任何新签名，以确保交易内容未被远程方更改。</p>
+<p>因此，典型的代码SignedTransaction 使用该verifySignaturesExcept方法检查收到的信息，但不包括其本身，公证人以及尚未申请其签名的任何其他方。SignedTransaction应该通过扩展toLedgerTransaction和调用 进一步充分验证内容verify。因此，应该进行更多的特定于上下文的业务检查，因为Contract.verify不允许访问外部上下文。例如，流程可能需要检查当事人是否正确，或者Command交易中的现在是否符合特定流程的预期。演示代码中的一个例子是：</p>
+<p>// First we receive the verdict transaction signed by their single key<br>val completeTx = sourceSession.receive<signedtransaction>().unwrap {<br>    // Check the transaction is signed apart from our own key and the notary<br>    it.verifySignaturesExcept(ourIdentity.owningKey, it.tx.notary!!.owningKey)<br>    // Check the transaction data is correctly formed<br>    val ltx = it.toLedgerTransaction(serviceHub, false)<br>    ltx.verify()<br>    // Confirm that this is the expected type of transaction<br>    require(ltx.commands.single().value is TradeApprovalContract.Commands.Completed) {<br>        “Transaction must represent a workflow completion”<br>    }<br>    // Check the context dependent parts of the transaction as the<br>    // Contract verify method must not use serviceHub queries.<br>    val state = ltx.outRef&lt;TradeApprovalContract.State&gt;(0)<br>    require(serviceHub.myInfo.isLegalIdentity(state.state.data.source)) {<br>        “Proposal not one of our original proposals”<br>    }<br>    require(state.state.data.counterparty == sourceSession.counterparty) {<br>        “Proposal not for sent from correct source”<br>    }<br>    it<br>}<br>在验证之后，远程流程将把其签名返回给始发者。发起人应该将该签名应用于开始 SignedTransaction并重新检查签名匹配。</signedtransaction></p>
+<p>提交交易<br>一旦将所有签名应用于该签名SignedTransaction，最后的步骤都是公证，并确保所有节点都记录完全签署的交易。代码为FinalityFlow：</p>
+<p>// Notarise and distribute the completed transaction.<br>subFlow(FinalityFlow(allPartySignedTx, setOf(newState.source)))<br>部分可见交易<br>迄今为止的讨论认为，各方需要对交易进行充分的可见性签署。但是，可能会出现以下情况：各方需要存储用于审计目的的私人数据，或者向监管机构提供证据，但不希望与其他贸易伙伴分享。Corda的拆解/ Merkle树支持允许流程发送完整事务的一部分以限制对远程方的可见性。要做到这一点，可以使用 SignedTransaction.buildFilteredTransaction扩展方法来产生一个FilteredTransaction。SignedTransaction 我们希望隐藏的元素将被替换为其安全散列。总体事务ID仍然可以通过FilteredTransaction防止私有数据的更改来证明 ，但我们不会将该数据直接暴露给其他节点。在这里可以找到完整的例子NodeInterestRatesirs-demo与RatesFixFlow流程交互的项目中的Oracle代码 。另外，请参阅交易拆分。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/corda/" rel="tag"># corda</a>
+          
+            <a href="/tags/r3/" rel="tag"># r3</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/08/blockchain/corda/Corda教程——合约部分/" rel="next" title="Corda教程——合约部分">
+                <i class="fa fa-chevron-left"></i> Corda教程——合约部分
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/13/java/内存栅栏/" rel="prev" title="内存栅栏">
+                内存栅栏 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">107</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">24</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用客户端RPC-API"><span class="nav-number">1.</span> <span class="nav-text">使用客户端RPC API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#将您的CorDapp与Corda节点上的类列入白名单"><span class="nav-number">1.1.</span> <span class="nav-text">将您的CorDapp与Corda节点上的类列入白名单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全"><span class="nav-number">1.2.</span> <span class="nav-text">安全</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建交易"><span class="nav-number">2.</span> <span class="nav-text">构建交易</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交易的基本生命周期"><span class="nav-number">2.2.</span> <span class="nav-text">交易的基本生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收集输入"><span class="nav-number">2.3.</span> <span class="nav-text">收集输入</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
