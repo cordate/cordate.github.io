@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="招聘," />
+
+
+<meta name="description" content="程序员招聘已经成了一个话题，之前做团队leader的时候我就在想什么样的团队是我们想要的。加入阿里才3个月，却面对团队的压力需要帮忙招聘，有的团队还引入到了KPI中，而我们所在的团队希望我们每周找简历，达不到要求就处理罚钱的规定。这个规定让我无所适从，甚至有了很强的离职想法！所以我决定写一篇文章来阐述一下我对这件事的看法。（当然团队内部是不能去说的。） 如何让团队招聘其实我觉得之前所叙述的，可以简">
+<meta name="keywords" content="招聘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于招聘的想法">
+<meta property="og:url" content="http://cordate.github.io/2018/10/13/团队与思考/关于招聘的想法/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="程序员招聘已经成了一个话题，之前做团队leader的时候我就在想什么样的团队是我们想要的。加入阿里才3个月，却面对团队的压力需要帮忙招聘，有的团队还引入到了KPI中，而我们所在的团队希望我们每周找简历，达不到要求就处理罚钱的规定。这个规定让我无所适从，甚至有了很强的离职想法！所以我决定写一篇文章来阐述一下我对这件事的看法。（当然团队内部是不能去说的。） 如何让团队招聘其实我觉得之前所叙述的，可以简">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-10-13T09:03:16.984Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于招聘的想法">
+<meta name="twitter:description" content="程序员招聘已经成了一个话题，之前做团队leader的时候我就在想什么样的团队是我们想要的。加入阿里才3个月，却面对团队的压力需要帮忙招聘，有的团队还引入到了KPI中，而我们所在的团队希望我们每周找简历，达不到要求就处理罚钱的规定。这个规定让我无所适从，甚至有了很强的离职想法！所以我决定写一篇文章来阐述一下我对这件事的看法。（当然团队内部是不能去说的。） 如何让团队招聘其实我觉得之前所叙述的，可以简">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2018/10/13/团队与思考/关于招聘的想法/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>关于招聘的想法 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/10/13/团队与思考/关于招聘的想法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于招聘的想法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-13T15:54:14+08:00">2018-10-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/团队与思考/" itemprop="url" rel="index"><span itemprop="name">团队与思考</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>程序员招聘已经成了一个话题，之前做团队leader的时候我就在想什么样的团队是我们想要的。加入阿里才3个月，却面对团队的压力需要帮忙招聘，有的团队还引入到了KPI中，而我们所在的团队希望我们每周找简历，达不到要求就处理罚钱的规定。这个规定让我无所适从，甚至有了很强的离职想法！所以我决定写一篇文章来阐述一下我对这件事的看法。（当然团队内部是不能去说的。）</p>
+<h1 id="如何让团队招聘"><a href="#如何让团队招聘" class="headerlink" title="如何让团队招聘"></a>如何让团队招聘</h1><p>其实我觉得之前所叙述的，可以简单的归纳为任务驱动式的。其实我觉得简单地任务驱动式没有啥问题，因为很多团队都采用这种管理的方式，的确有一些弊端。但是我觉得招聘是我们工作之外的事情，如果采用任务驱动式势必会让人产生反感，也许是个人觉得反感。那么既然是任务就必然会产生奖罚制度。这个思维就是这样的思路，所以就有了我文章开头的遭遇。</p>
+<p>而我觉得重要的制度就是一种文化，团队工作之外的事情怎么让团队去做呢？当然动员是必须的，你不说别人也不会去采取行动呀，毕竟每天都在想这个团队缺啥的人还是比较少的，但是我觉得优秀的团队被动的人应该是少数，你只要动员他们总会有想法的。我觉得更多的是让团队有种归属感，团队文化的认同感，这样他们才会为你打广告，在这种情况下，大家都是自愿的，会认真帮助团队将事情做好，比如检查候选人是否合适，如果是任务式的，候选人只要不要太离谱，可能都会被推荐进来，因为任务要达成。所以这个时候大家开始关注质量，于是开始奖惩制度。关于奖惩制度我也想说，适合工作成果；工作之外的事情，尽量少用罚款，否则团队的认同感就会被降低，应该使用奖而不罚的态度；而对于工作成果使用有奖有罚，我觉得是应该的。不同的场景下，应该使用不同的制度去应对。</p>
+<p>总结下来就是使用团队认同感和文化推动成员帮助团队招兵买马，奖励做出贡献的员工；但是注意有的员工是有资源的，就是说达成同样一件事，有的员工可能不费事，而有的人付出的代价可能会比较大。这个需要心中有数，能力这个事情有的时候并不体现在成果上。就是将工作成果和业余成果做一个区分，不要交叉和影响。</p>
+<h1 id="人才短期战略"><a href="#人才短期战略" class="headerlink" title="人才短期战略"></a>人才短期战略</h1><p>我们招聘人才往往是比较急，可是等团队人够了，正真的人才来了也只能拒绝，所以我觉得招聘中，不管多急，人才应该有余量，当有合适人选的时候，也可压缩余量，但是不能饱和。饱和的缺点是不能引入外部人才，同时内部工作饱和，大家做的事情也比较少，工作的余量可以检测一个员工的好坏。</p>
+<p>关于短期招聘，其实就是扩宽渠道，这就是一个我找人才的过程，这个过程会异常痛苦。其实如果你平时就比较关注这个人才战略，你就可以实现人才找你，只要你发布了相应信息，可能就会有人才响应，所以我觉得这个过程就是人才找你。</p>
+<p>所以说伯乐和人才都在相互寻找，渠道真的很重要，不是吗？那么就提一下人才找你之人才战略。</p>
+<h1 id="人才是一种战略"><a href="#人才是一种战略" class="headerlink" title="人才是一种战略"></a>人才是一种战略</h1><p>做过Leader或者面试过别人的，应该都知道招聘人才是一个漫长的过程。能找到团队需要的人那是很难的。这个就是我们团队现在的错误，那就是没有人才战略，而强制团队每一个去找，其实就是广撒网多捞鱼。其实人才的招聘是有战略思维的，绝大分的人才不会自荐，简历写的也许也不行，甚至还有各种性格缺陷，这些都是我们发现一个人才能的阻碍。所以除了HR那边的硬性指标，我们也应该通过很多方式发现人才的真实才能。</p>
+<h2 id="建立人才库"><a href="#建立人才库" class="headerlink" title="建立人才库"></a>建立人才库</h2><p>这个大家都知道，每个公司都有相应的人才库，甚至有大数据分析等，从人才库中找到适合自己的人才。人才库可以是自己的，也可以通过第三方网站进行爬取，也可以进行购买。总之建立人才库的方式有很多的。</p>
+<h2 id="品牌形象"><a href="#品牌形象" class="headerlink" title="品牌形象"></a>品牌形象</h2><p>建立品牌形象来找人才，这个其实和公司的形象有很大关系。其实我们公司虽然很多人想进，但是我觉得他的影响力已经下降，因为大家都可以从论坛中发现这里面的真实情况，所以需要改革内部制度，建立完善的制度吸引人才。</p>
+<h2 id="技术影响"><a href="#技术影响" class="headerlink" title="技术影响"></a>技术影响</h2><p>比如说建立技术网站，向全网普及知识扩大影响力的同时，也可以让更多的人才关注到你，只要你在里面发布消息，这种影响力还是比较客观的，也容易加大伯乐和千里马之间的认知，因为有时人才也怕遇到坑。</p>
+<h2 id="渠道"><a href="#渠道" class="headerlink" title="渠道"></a>渠道</h2><p>各大招聘网站是渠道，这个大家都明白。但是大家也可以关注行业的新闻，从里面找到人才都在关注啥，然后从这里面发现人才的聚集地，将人才招为己用。还有比如博客，git库等等各种地方，都可以找到你想要的人才。</p>
+<h2 id="猎头"><a href="#猎头" class="headerlink" title="猎头"></a>猎头</h2><p>上面说的渠道维护成本很高，所以猎头的出现就可以解决这个问题，而且老板和应聘者直接沟通必然有些话是不能说的，但是和猎头可以聊得多一些。但是猎头也有好坏之分的。而且猎头非专业人士，对人才的感知更多是凭感觉。</p>
+<h1 id="留住人才"><a href="#留住人才" class="headerlink" title="留住人才"></a>留住人才</h1><p>奖罚分明，维护良好的制度，培养积极的团队文化和氛围。让员工工作的爽，生活愉快，减少工作和生活的交织对于留住一个人才确实是比不可少的。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/招聘/" rel="tag"># 招聘</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/30/机器学习/机器学习实战笔记——k-近邻算法/" rel="next" title="机器学习实战笔记——k-近邻算法">
+                <i class="fa fa-chevron-left"></i> 机器学习实战笔记——k-近邻算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">108</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何让团队招聘"><span class="nav-number">1.</span> <span class="nav-text">如何让团队招聘</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#人才短期战略"><span class="nav-number">2.</span> <span class="nav-text">人才短期战略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#人才是一种战略"><span class="nav-number">3.</span> <span class="nav-text">人才是一种战略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建立人才库"><span class="nav-number">3.1.</span> <span class="nav-text">建立人才库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#品牌形象"><span class="nav-number">3.2.</span> <span class="nav-text">品牌形象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术影响"><span class="nav-number">3.3.</span> <span class="nav-text">技术影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渠道"><span class="nav-number">3.4.</span> <span class="nav-text">渠道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#猎头"><span class="nav-number">3.5.</span> <span class="nav-text">猎头</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#留住人才"><span class="nav-number">4.</span> <span class="nav-text">留住人才</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
