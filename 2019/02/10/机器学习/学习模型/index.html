@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="机器学习,knn,图解机器学习," />
+
+
+<meta name="description" content="如何使特定的函数与数据集相近似。 学习模型线性模型监督学习、直接得出后验概率。 纯粹的这种模型往往没有太大的实用价值。因此在实际的应用中，经常会对线性模型进行相应的扩展，使其变成基于参数的线性模型，这样就可以使线性模型也能用于表示非线性的输入与输出了。  在上式中，是基函数向量的第j个因子，是参数向量的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把">
+<meta name="keywords" content="机器学习,knn,图解机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习模型">
+<meta property="og:url" content="http://cordate.github.io/2019/02/10/机器学习/学习模型/index.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="如何使特定的函数与数据集相近似。 学习模型线性模型监督学习、直接得出后验概率。 纯粹的这种模型往往没有太大的实用价值。因此在实际的应用中，经常会对线性模型进行相应的扩展，使其变成基于参数的线性模型，这样就可以使线性模型也能用于表示非线性的输入与输出了。  在上式中，是基函数向量的第j个因子，是参数向量的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B.gif?raw=true">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\phi_{j}(x)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\theta_{j}">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\theta=(\theta_1,\theta_2,......,\theta_b)^{T}">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\phi(x)=(1,x,x^2,......x^{b-1})^T">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?x=(x^{(1)},x^{(2)},......x^{(d)})^T">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\sum_{j_1=1}^{b^{'}}...\sum_{j_d=1}^{b^{'}}\theta_{j_{1},...,j_d}\phi_{j_{1}}(x^{(1)})\cdot\cdot\cdot&space;\phi_{j_{d}}(x^{(d)})">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{k=1}^{d}\sum_{j=1}^{b^{'}}\theta_{k,j}\phi_{j}(x^{(k)})">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?K(x,c)=exp(-\frac{\left&space;\|&space;x-c&space;\right&space;\|^2}{2h^2})">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\left&space;\|&space;x&space;\right&space;\|=\sqrt{x^{T}x}">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%AB%98%E6%96%AF%E6%96%B9%E7%A8%8B1.png?raw=true">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%B8%80%E7%BB%B4%E9%AB%98%E6%96%AF%E6%A0%B8%E6%A8%A1%E5%9E%8B.png?raw=true">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%BA%8C%E7%BB%B4%E7%9A%84%E9%AB%98%E6%96%AF%E6%A0%B8%E6%A8%A1%E5%9E%8B.png?raw=true">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\theta_{j}K(x,c_j)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi&space;(x)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\alpha_{j}\phi(x;\beta_j)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\phi(x;\beta)=\frac{1}{1+exp(-x^{T}\omega&space;-\gamma&space;)},&space;\beta=(\omega^{T},&space;\gamma)^{T}">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?\phi(x;\beta)=exp(-\frac{\left&space;\|&space;x-c&space;\right&space;\|^2}{2h_2}),&space;\beta&space;=(c^T,&space;h)^T">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%B8%89%E5%B1%82%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C.png?raw=true">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\alpha&space;_1\phi&space;(x;\omega&space;_1,\gamma_1)&space;+&space;\alpha&space;_2\phi&space;(x;\omega&space;_2,\gamma&space;_2)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=(\alpha_1+\alpha&space;_2)\phi&space;(x;\omega&space;,\gamma&space;)">
+<meta property="og:updated_time" content="2019-03-08T16:43:21.190Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="学习模型">
+<meta name="twitter:description" content="如何使特定的函数与数据集相近似。 学习模型线性模型监督学习、直接得出后验概率。 纯粹的这种模型往往没有太大的实用价值。因此在实际的应用中，经常会对线性模型进行相应的扩展，使其变成基于参数的线性模型，这样就可以使线性模型也能用于表示非线性的输入与输出了。  在上式中，是基函数向量的第j个因子，是参数向量的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把">
+<meta name="twitter:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B.gif?raw=true">
+
+
+
+
+
+
+  <link rel="canonical" href="http://cordate.github.io/2019/02/10/机器学习/学习模型/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>学习模型 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Gavin的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2019/02/10/机器学习/学习模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">学习模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-10T00:51:10+08:00">2019-02-10</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>如何使特定的函数与数据集相近似。</p>
+<h1 id="学习模型"><a href="#学习模型" class="headerlink" title="学习模型"></a>学习模型</h1><h2 id="线性模型"><a href="#线性模型" class="headerlink" title="线性模型"></a>线性模型</h2><p><b style="color:red">监督学习、直接得出后验概率。</b></p>
+<p>纯粹的这种模型往往没有太大的实用价值。因此在实际的应用中，经常会对线性模型进行相应的扩展，使其变成基于参数的线性模型，这样就可以使线性模型也能用于表示非线性的输入与输出了。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B.gif?raw=true" alt=""></p>
+<p>在上式中，<a href="https://www.codecogs.com/eqnedit.php?latex=\phi_{j}(x)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\phi_{j}(x)" title="\phi_{j}(x)"></a>是基函数向量<img src="https://latex.codecogs.com/gif.latex?(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T" title="(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T">的第j个因子，<img src="https://latex.codecogs.com/gif.latex?\theta_{j}" title="\theta_{j}">是参数向量<img src="https://latex.codecogs.com/gif.latex?\theta=(\theta_1,\theta_2,......,\theta_b)^{T}" title="\theta=(\theta_1,\theta_2,......,\theta_b)^{T}">的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把基函数变为多项式的形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,x,x^2,......x^{b-1})^T" title="\phi(x)=(1,x,x^2,......x^{b-1})^T"><br>或者变为b=2m+1的三角多项式形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T" title="\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T"><br>上述的线性模型就可以表示复杂的非线性性模型了。</p>
+<p>在上述模型中，一维的输入x还可以扩展为d维的向量形式<img src="https://latex.codecogs.com/gif.latex?x=(x^{(1)},x^{(2)},......x^{(d)})^T" title="x=(x^{(1)},x^{(2)},......x^{(d)})^T">.</p>
+<p>对于多维的输入向量x，如何选择合适的基函数呢？下面介绍使用一维的基函数来构造多维基函数的乘法模型和加法模型做相应的介绍。</p>
+<p>乘法模型是指，把一维的基函数作为因子，通过使其相乘而获得多维基函数的方法。<br><img src="https://latex.codecogs.com/gif.latex?\sum_{j_1=1}^{b^{'}}...\sum_{j_d=1}^{b^{'}}\theta_{j_{1},...,j_d}\phi_{j_{1}}(x^{(1)})\cdot\cdot\cdot&space;\phi_{j_{d}}(x^{(d)})" title="\sum_{j_1=1}^{b^{'}}...\sum_{j_d=1}^{b^{'}}\theta_{j_{1},...,j_d}\phi_{j_{1}}(x^{(1)})\cdot\cdot\cdot \phi_{j_{d}}(x^{(d)})"></p>
+<p>上式中，b<sup>‘</sup>代表各维的参数个数。由于乘法模型由多个不同的一维基函数任意组合而成。但需要注意的是，所有参数的个数是(b<sup>‘</sup>)<sup>d</sup>，即总的输入维数是以d次方的形式呈指数级增长的。例如，当b<sup>‘</sup>=10,d=100的时候，全部参数的个数将会是10<sup>100</sup> 。</p>
+<p>这是一个天文数字，以至于普通计算机无法计算。这种我们通常称为<b style="color:red">维度灾难</b>.如何避免维度灾难，是机器学习算法研究中非常热门的研究领域。</p>
+<p>加法模型是指把一维的基函数作为因子，通过使其相加而获得多维基函数的方法。<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{k=1}^{d}\sum_{j=1}^{b^{'}}\theta_{k,j}\phi_{j}(x^{(k)})" title="f_\theta (x)=\sum_{k=1}^{d}\sum_{j=1}^{b^{'}}\theta_{k,j}\phi_{j}(x^{(k)})"></p>
+<p>加法模型中所有参数的个数是b<sup>‘</sup>d, 其只会随着输入维数d呈线性增长。但是，由于加法模型只考虑了一维基函数相加的情况，表现力要比乘法模型逊色许多。</p>
+<h2 id="核模型"><a href="#核模型" class="headerlink" title="核模型"></a>核模型</h2><p><b style="color:red">无监督学习</b></p>
+<p>在线性模型中，多项式或三角多项式等基函数与训练样本{(x<sub>i</sub>,y<sub>i</sub>)}<sup>n</sup><sub>i=1</sub>是毫不相关的。而核模型，则会在进行基函数的设计时使用到输入样本{x<sub>i</sub>}<sup>n</sup><sub>i=1</sub>。</p>
+<p>核模型，是以使用被称为核函数的二元函数K(·,·)，以K(x,x<sub>j</sub>)<sup>n</sup><sub>j=1</sub>的线性结合方式加以定义的。<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)" title="f_\theta (x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)"><br>在众多的核函数中，以高斯核函数的使用最为广泛。<br><img src="https://latex.codecogs.com/gif.latex?K(x,c)=exp(-\frac{\left&space;\|&space;x-c&space;\right&space;\|^2}{2h^2})" title="K(x,c)=exp(-\frac{\left \| x-c \right \|^2}{2h^2})"><br>在上式中，||*||代表2范数，即：<img src="https://latex.codecogs.com/gif.latex?\left&space;\|&space;x&space;\right&space;\|=\sqrt{x^{T}x}" title="\left \| x \right \|=\sqrt{x^{T}x}">. h和c分别对应于高斯核函数的带宽和均值。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%AB%98%E6%96%AF%E6%96%B9%E7%A8%8B1.png?raw=true" alt=""></p>
+<p>在高斯核函数中，对各个输入样本{x<sub>i</sub>}<sup>n</sup><sub>i=1</sub>进行高斯配置，并把其高度{θ<sub>i</sub>}<sup>n</sup><sub>i=1</sub>作为参数进行学习(图2.5)。因此在高斯核模型中，一般只能在训练集的输入样本附近对函数进行近似（图2.6）。与对输入空间的全体函数进行近似的乘法模型不同，在高斯核模型中，因为只能在训练集的输入样本{x<sub>i</sub>}<sup>n</sup><sub>i=1</sub>附近对函数进行近似，所以从某种程度上来说也减轻了维度灾难的影响。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%B8%80%E7%BB%B4%E9%AB%98%E6%96%AF%E6%A0%B8%E6%A8%A1%E5%9E%8B.png?raw=true" alt=""></p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%BA%8C%E7%BB%B4%E7%9A%84%E9%AB%98%E6%96%AF%E6%A0%B8%E6%A8%A1%E5%9E%8B.png?raw=true" alt=""></p>
+<p>实际上，在核模型中，参数的个数不依赖于输入变量x的维度d，只由训练样本数n决定。因此，即使输入维度d相当大，只要训练样本数n不是太大，也会在普通计算机的处理范围之内。而即使训练样本数n也很大，只要把输入样本{x<sub>i</sub>}<sup>n</sup><sub>i=1</sub>的部分集合{c<sub>j</sub>}<sup>b</sup><sub>j=1</sub>作为核均值来进行计算，计算负荷也可以得到很好的抑制。</p>
+<p><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\theta_{j}K(x,c_j)" title="f_\theta (x)=\sum_{j=1}^{b}\theta_{j}K(x,c_j)"></p>
+<p>该模型是参数向量θ=(θ<sub>1</sub>,θ<sub>2</sub>,···,θ<sub>n</sub>)<sup>T</sup>的线性形式，因此也可以作为<img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi&space;(x)" title="f_\theta (x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi (x)">这样的基于参数的线性模型的特例来考虑。但是由于基函数依赖输入样本，因此核模型的操作与基于参数的线性模型有很大的不同。在统计学中，通常把与基于参数的线性模型称为参数模型，把核模型称为非参数模型，以示区别。然而，我们把核模型视为基于参数的线性模型，应该也没有太大的问题。</p>
+<p>核模型的另一个特征是当输入样本x不是向量的时候，也能够很容易地实现扩展。<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&amp;space;(x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)" title="f_\theta (x)=\sum_{j=1}^{n}\theta_{j}K(x,x_j)"><br>这个核模型函数中，输入样本x只存在于核函数K(x, x’)中，因此，只需对两个输入样本x和x’相对应的核函数加以定义，而不用关心输入样本x具体是什么。例如，目前已经有人提出了输入样本x是字符串、决策树或图表等的核函数。使用这样的核函数进行的机器学习算法，称为核映射方法。核映射方法是近几年机器学习的热门研究领域。</p>
+<h2 id="层级模型"><a href="#层级模型" class="headerlink" title="层级模型"></a>层级模型</h2><p>与参数相关的非线性模型，称为非线性模型。只要是与参数相关的、不是线性的模型，都可以称之为非线性模型。这其中需要特别说明的是非线性模型中的层级模型，它在很多方面都有着广泛的应用。<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\sum_{j=1}^{b}\alpha_{j}\phi(x;\beta_j)" title="f_\theta (x)=\sum_{j=1}^{b}\alpha_{j}\phi(x;\beta_j)"><br>上式中，φ(x;β)是含有参数向量β的基函数。层级模型是基于参数向量α=(α<sub>1</sub>,α<sub>2</sub>,···,α<sub>b</sub>)<sup>T</sup>的线性形式。但是因为层级模型的基函数里也包含参数向量{β<sub>j</sub>}<sup>b</sup><sub>j=1</sub>，所以层级模型又是基于参数向量θ=(α<sup>T</sup>,β<sub>1</sub><sup>T</sup>,···,β<sub>b</sub><sup>T</sup>)<sup>T</sup>的非线性形式。</p>
+<p>基函数通常采用S型函数：<br><img src="https://latex.codecogs.com/gif.latex?\phi(x;\beta)=\frac{1}{1&plus;exp(-x^{T}\omega&space;-\gamma&space;)},&space;\beta=(\omega^{T},&space;\gamma)^{T}" title="\phi(x;\beta)=\frac{1}{1+exp(-x^{T}\omega -\gamma )}, \beta=(\omega^{T}, \gamma)^{T}"><br>或者高斯函数<br><img src="https://latex.codecogs.com/gif.latex?\phi(x;\beta)=exp(-\frac{\left&space;\|&space;x-c&space;\right&space;\|^2}{2h_2}),&space;\beta&space;=(c^T,&space;h)^T" title="\phi(x;\beta)=exp(-\frac{\left \| x-c \right \|^2}{2h_2}), \beta =(c^T, h)^T"><br>S型函数模仿的是人类脑细胞的输入输出函数，因此使用S型函数的层级模型也经常称为人工神经网络模型。另外，虽然这里的高斯函数与高斯核函数是相同的，但是，核模型中的带宽和均值都是固定的，而在层级模型中，在对耦合系数参数{α<sub>j</sub>}<sup>b</sup><sub>j=1</sub>进行学习的同时，也会对带宽和均值进行学习。因此，一般认为层级模型能够比核模型更加灵活地对函数进行近似。层级模型有时也表现为三层神经网络的形式。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%B8%89%E5%B1%82%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C.png?raw=true" alt=""></p>
+<p>然而在层级模型中，参数θ和函数f<sub>θ</sub>并不是一一对应的。例如，在b=2的人工神经网络模型中，<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=\alpha&space;_1\phi&space;(x;\omega&space;_1,\gamma_1)&space;&plus;&space;\alpha&space;_2\phi&space;(x;\omega&space;_2,\gamma&space;_2)" title="f_\theta (x)=\alpha _1\phi (x;\omega _1,\gamma_1) + \alpha _2\phi (x;\omega _2,\gamma _2)"><br>当上面的ω<sub>1</sub>=ω<sub>2</sub>=ω，且γ<sub>1</sub>=γ<sub>2</sub>=γ时，如果α<sub>1</sub>+α<sub>2</sub>是固定值的话，就都变成了同一个函数<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&space;(x)=(\alpha_1&plus;\alpha&space;_2)\phi&space;(x;\omega&space;,\gamma&space;)" title="f_\theta (x)=(\alpha_1+\alpha _2)\phi (x;\omega ,\gamma )"><br>正因为有这样的特性，人工神经网络模型也以学习过程异常艰难而著称。</p>
+<p>针对像人工神经网络这样的层级模型，采用贝叶斯学习的方法是不错的选择。另外，近些年来也有些研究者发现，通过从邻近输入样本的层级开始，一层一层地进行无监督学习，就可以很好地进行人工神经网络的初始化操作。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/knn/" rel="tag"># knn</a>
+          
+            <a href="/tags/图解机器学习/" rel="tag"># 图解机器学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/30/机器学习/什么是机器学习/" rel="next" title="什么是机器学习">
+                <i class="fa fa-chevron-left"></i> 什么是机器学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/user-avatar"
+                alt="Gavin Zhang" />
+            
+              <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+              <p class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">110</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">102</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#学习模型"><span class="nav-number">1.</span> <span class="nav-text">学习模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#线性模型"><span class="nav-number">1.1.</span> <span class="nav-text">线性模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核模型"><span class="nav-number">1.2.</span> <span class="nav-text">核模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#层级模型"><span class="nav-number">1.3.</span> <span class="nav-text">层级模型</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 Gavin 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

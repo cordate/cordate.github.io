@@ -276,6 +276,1229 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/17/blockchain/安全编写以太坊的智能合约指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/17/blockchain/安全编写以太坊的智能合约指南/" itemprop="url">安全编写以太坊的智能合约指南</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T12:14:09+08:00">2018-03-17</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/ethereum/" itemprop="url" rel="index"><span itemprop="name">ethereum</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><b style="color:blue">安全的开发以太坊的智能合约，是非常需要花费精力的。已经有一些好的指南以及汇总，比如 <a href="https://github.com/ConsenSys/smart-contract-best-practices" target="_blank" rel="noopener">Consensys的智能合约最佳实践</a>，和<a href="http://solidity.readthedocs.io/en/latest/security-considerations.html" target="_blank" rel="noopener">Solidity官方文档的安全指南</a>。但除非真正写代码，这些概念很难被记住和理解。</b></p>
+<p>本文会尝试一个有点不同的办法。首先解释提升智能合约安全的一些策略，并展示一些不遵从，而引起问题的例子。最后给一些已经调整地，可以直接使用的最佳实践。希望，这能帮助你创建避免某些不安全行为的肌肉记忆，从而在写代码的时候意识到可能的风险。</p>
+<p>不啰嗦了，进入正题吧。</p>
+<h2 id="尽早且明确的暴露问题"><a href="#尽早且明确的暴露问题" class="headerlink" title="尽早且明确的暴露问题"></a>尽早且明确的暴露问题</h2><p>一个简单且强大的最佳实践是，让<a href="https://oncodingstyle.blogspot.jp/2008/10/fail-early-fail-loudly.html" target="_blank" rel="noopener">尽早且明确的暴露问题</a>。接下来，看一个有问题的函数实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 有问题的代码，不要使用！</span><br><span class="line">contract BadFailEarly &#123;</span><br><span class="line">  uint constant DEFAULT_SALARY = 50000;</span><br><span class="line">  mapping(string =&gt; uint) nameToSalary;</span><br><span class="line"></span><br><span class="line">  function getSalary(string name) constant returns (uint) &#123;</span><br><span class="line">    if (bytes(name).length != 0 &amp;&amp; nameToSalary[name] != 0) &#123;</span><br><span class="line">      return nameToSalary[name];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      return DEFAULT_SALARY;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">为避免合约潜在的问题，或者让合约运行于一个不稳定或不一致的状态。上面例子中的函数getSalary应该在返回结果前，检查参数。那现在的例子有什么问题呢，问题在于，如果条件不满足，将返回默认值。这将掩盖参数的严重问题，因为仍然可以按正常业务逻辑返回值。这虽然是一个比较极端的例子，但却非常常见，原因是大家在程序设计时，担心程序兼容性不够，所以设置一些兜底方案。但真相是，越快失败，越容易发现问题。如果我们不恰当的掩盖错误，错误将扩散到代码的其它地方，从而引起非常难以跟踪的不一致错误。</b>快速失败也是一种很好的思想。下面是一个调整后的示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">contract GoodFailEarly &#123;</span><br><span class="line">  mapping(string =&gt; uint) nameToSalary;</span><br><span class="line">  </span><br><span class="line">  function getSalary(string name) constant returns (uint) &#123;</span><br><span class="line">    // 快速失败，让程序尽快退出运行 </span><br><span class="line">    if (bytes(name).length == 0) throw;</span><br><span class="line">    // 快速失败，让程序尽快退出运行 </span><br><span class="line">    if (nameToSalary[name] == 0) throw;</span><br><span class="line">    </span><br><span class="line">    return nameToSalary[name];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个版本的代码，还展示了另外一种推荐的编码方式，一种将条件预检查分开，分开判断，验证失败的方式。原因是可以使用Solidity提供的修改器的特性，来实现重用。</p>
+<h2 id="在支付时使用（pull）模式而不是（push）模式"><a href="#在支付时使用（pull）模式而不是（push）模式" class="headerlink" title="在支付时使用（pull）模式而不是（push）模式"></a><b style="color:red">在支付时使用（pull）模式而不是（push）模式</b></h2><p>每次ether的转移，都需要考虑对应帐户，潜在的代码执行。一个接收的合约可以实现一个默认的回退函数，这个函数可能抛出错误。由此，我们永远要考虑在send执行中的可能的错误。一个解决方案是，我们应该在支付时使用（pull）模式而不是（push）模式。来看一个看起来没有问题的，关于竞标函数的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 有问题的代码，请不要直接使用！</span><br><span class="line">contract BadPushPayments &#123;</span><br><span class="line">  address highestBidder;</span><br><span class="line">  uint highestBid;</span><br><span class="line"> </span><br><span class="line">  function bid() &#123;</span><br><span class="line">    // 如果throw的话，别人转进来以太币，但是执行的操作却失败了，这样会导致一些问题。</span><br><span class="line">    if (msg.value &lt; highestBid) throw;</span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      // return bid to previous winner</span><br><span class="line">      // 这里调用了send函数, 进行退款（这个操作不是很安全）。</span><br><span class="line">      if (!highestBidder.send(highestBid)) &#123;</span><br><span class="line">        // 发生throw，那么可能别人的投资就失效了</span><br><span class="line">        throw;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述的合约，调用了send函数，检查了返回值，看起来是非常符合常理的。但它在函数中调用了send函数，这带来了不安全，为什么？需要时刻记住的一点是，就像之前说的，<b style="color:red">send会触发另外一个合约的代码执行。</b></p>
+<p><b style="color:blue">假如某个竞标的地址，它会在每次有人转帐给他时throw。而此时，其它人尝试追加价格竞标时会发生什么呢？那么send调用将总是会失败，从而错误向上抛，让bid函数产生一个异常。一个函数调用如果以错误结束，将会让状态不发生变更（所有的变化都将回滚）。这将意味着，没有人将能继续竞标，合约失效了。</b></p>
+<p>最简单的解决方案是，将支付分离到另一个函数中，让用户请求（pull）金额，而不依赖于余下的合约逻辑：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">contract GoodPullPayments &#123;</span><br><span class="line">  address highestBidder;</span><br><span class="line">  uint highestBid;</span><br><span class="line">  // 定义一个缓冲队列</span><br><span class="line">  mapping(address =&gt; uint) refunds;</span><br><span class="line">  </span><br><span class="line">  function bid() external &#123;</span><br><span class="line">    if (msg.value &lt; highestBid) throw;</span><br><span class="line">    </span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      // 先把数据放入缓冲队列中（map结构）。然后就返回。</span><br><span class="line">      refunds[highestBidder] += highestBid;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function withdrawBid() external &#123;</span><br><span class="line">    // 从缓冲队列中取出数据，进行投票（两阶段分开操作）</span><br><span class="line">    uint refund = refunds[msg.sender];</span><br><span class="line">    // 清零，接下来进行处理</span><br><span class="line">    refunds[msg.sender] = 0;</span><br><span class="line">    // 这里再进行send方法的调用。</span><br><span class="line">    if (!msg.sender.send(refund)) &#123;</span><br><span class="line">      refunds[msg.sender] = refund;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">这次，我们使用一个mapping来存储每个待退款的竞标者的信息，提供了一个withdraw用于退款。</b>如果在send调用时抛出异常，仅仅只是那个有问题的竞标者受到影响。这是一个非常简单的模式，却解决了非常多的问题（比如，可重入）。所以，记住一点，当发送ether时，使用（pull）模式而不是（push）模式。</p>
+<p>我已经实现了<a href="https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/payment/PullPayment.sol" target="_blank" rel="noopener">一个使用这个模式的合约，可以方便的继承使用。</a></p>
+<h2 id="函数代码的顺序：条件，行为，交互"><a href="#函数代码的顺序：条件，行为，交互" class="headerlink" title="函数代码的顺序：条件，行为，交互"></a>函数代码的顺序：条件，行为，交互</h2><p><b style="color:red">作为尽可能早的暴露问题的原则的一个延伸，一个好的实践是将你的函数结构化为：首先，检查所有前置的条件；然后，对合约的状态进行修改；最后，与其它合约进行交互。</b></p>
+<p>条件，行为，交互。坚持使用这样的函数结构，将会让你避免大部分的问题。下面来看使用了这个模式的一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function auctionEnd() &#123;</span><br><span class="line">  // 1. Conditions(条件)</span><br><span class="line">  if (now &lt;= auctionStart + biddingTime)</span><br><span class="line">    throw; // auction did not yet end</span><br><span class="line">  if (ended)</span><br><span class="line">    throw; // this function has already been called</span><br><span class="line"></span><br><span class="line">  // 2. Effects（行为，进行链外计算）</span><br><span class="line">  ended = true;</span><br><span class="line">  AuctionEnded(highestBidder, highestBid);</span><br><span class="line"></span><br><span class="line">  // 3. Interaction（交互，进行链上交易）</span><br><span class="line">  if (!beneficiary.send(highestBid))</span><br><span class="line">    throw;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这首先符合尽可能早的暴露问题的原则，因为条件在一开始就进行了检查。<b style="color:red">它让存在潜在交互风险的，与其它合约的交互，留到了最后。</b></p>
+<h2 id="留意平台局限性"><a href="#留意平台局限性" class="headerlink" title="留意平台局限性"></a>留意平台局限性</h2><p><b style="color:red">EVM有非常多的关于合约能做的硬限制。这些是平台级的安全考虑，如果你不知道的话，却可以会威胁你的合约安全。</b>下面来看一个看起来正常的，雇员津贴管理的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 不安全的代码，不要直接使用！</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (var i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = calculateBonus(employee);</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    // some expensive computation ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>读完代码，业务实现非常直接，看起来也没有什么问题，但却潜藏三个问题，基于平台的一些独特性。</p>
+<p><b style="color:red">第一个问题是i的类型将会是uint8，因为如果要存0，如果不指定类型，将自动选择一个占用空间最小的，恰当的类型，在这里将是uint8。所以如果这个数组的大小超过255个元素，这个循环将永远不会结束，最终将导致gas耗尽。</b><b style="color:blue">应当在定义变量时，尽可能的不要使用var，明确变量的类型，</b>下面我们来修正一下上面的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 仍然是不安全的代码，请不要使用！</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = calculateBonus(employee);</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    // some expensive computation ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二个你需要考虑的事情是gas的限制。gas是以太坊的一种机制，来对资源的使用收费。<b style="color:red">每一个修改状态的功能调用都会花费gas</b>。<b style="color:red">假如calculateBonus计算津贴时有些复杂的运算，比如需要跨多个项目计算利润。这将消耗非常多的gas，将会很容易的达到交易和区块的gas限制。如果一个交易达到了gas的限制，所有的状态的改变都将会撤销，但消耗的gas不会退回</b>。当使用循环的时候，尤其要注意变量对gas消耗的影响。让我们来优化一下上述的代码，将津贴计算与循环分开。但需要注意的是，拆开后仍然有数组变大后，带来的gas消耗增长的问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// UNSAFE CODE, DO NOT USE!</span><br><span class="line">contract BadArrayUse &#123;</span><br><span class="line">  </span><br><span class="line">  address[] employees;</span><br><span class="line">  mapping(address =&gt; uint) bonuses;  </span><br><span class="line">  </span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = bonuses[employee];</span><br><span class="line">      employee.send(bonus);</span><br><span class="line">    &#125;     </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    uint bonus = 0;</span><br><span class="line">    // some expensive computation modifying the bonus...</span><br><span class="line">    bonuses[employee] = bonus;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">最后，还有一个关于调用栈调用深度的限制。EVM栈调用的硬限制是1024。</b>这意味着如果嵌套调用的深度达到1024，合约调用将会失败。<b style="color:red">一个攻击者可以调用递归的调用我们的合约1023次，从而因为栈深度的限制，让send失败</b>。前述的（pull）模式，可以比较好的避免这个问题（译者注：原链接找不到了，但找下github上的讨论：<a href="https://github.com/OpenZeppelin/zeppelin-solidity/issues/15" target="_blank" rel="noopener">https://github.com/OpenZeppelin/zeppelin-solidity/issues/15</a> ）。</p>
+<p>下面是一个最终的修改版，解决了上述的所有问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract GoodArrayUse is PullPaymentCapable &#123;</span><br><span class="line">  address[] employees;</span><br><span class="line">  // 还是先存在缓存中</span><br><span class="line">  mapping(address =&gt; uint) bonuses;</span><br><span class="line">  // 从缓存中一起发送红利</span><br><span class="line">  function payBonus() &#123;</span><br><span class="line">    for (uint i = 0; i &lt; employees.length; i++) &#123;</span><br><span class="line">      address employee = employees[i];</span><br><span class="line">      uint bonus = bonuses[employee];</span><br><span class="line">      asyncSend(employee, bonus);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  // 计算红利的方法，给某一个人计算红利</span><br><span class="line">  function calculateBonus(address employee) returns (uint) &#123;</span><br><span class="line">    uint bonus = 0;</span><br><span class="line">    // some expensive computation...</span><br><span class="line">    bonuses[employee] = bonus;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>总结一下，需要记住的：</p>
+<ol>
+<li>使用的变量类型的限制</li>
+<li>合约的gas消耗</li>
+<li>栈调用1024的限制。</li>
+</ol>
+<h2 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h2><p>编写测试用例会占用大量的时间，但也能抵消你在添加新功能后<a href="https://en.wikipedia.org/wiki/Software_regression" target="_blank" rel="noopener">回归问题</a>需要花费的时间。回归问题具体是指在添加功能的修改过程中，导致之前的组件出现bug。</p>
+<p>我将尽快写一个更加广泛的关于测试的指南，如果你比较好奇，可以先看看<a href="http://truffleframework.com/docs/getting_started/testing" target="_blank" rel="noopener">关于Truffle的测试指南</a>。</p>
+<h2 id="容错及自动bug奖励"><a href="#容错及自动bug奖励" class="headerlink" title="容错及自动bug奖励"></a>容错及自动bug奖励</h2><p>首先感谢Peter Borah带来的这两个想法的灵感。代码审查和安全审核对保证安全来说还不足够。我们的代码需要做好最坏情况的准备。<b style="color:red">当我们的智能合约中有漏洞时，应该有一种方法可以安全的恢复</b>。<b style="color:blue">不止如此，我们也应该尽可能早的发现漏洞。下面是一个内置的自动bug奖励机制带来的作用</b>。</p>
+<p>下面我们就来看一个自动bug奖励的假设的代币管理的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line">import &apos;./Token.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract Bounty is PullPaymentCapable &#123;</span><br><span class="line">  bool public claimed;</span><br><span class="line">  mapping(address =&gt; address) public researchers;</span><br><span class="line">  </span><br><span class="line">  function() &#123;</span><br><span class="line">    if (claimed) throw;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function createTarget() returns(Token) &#123;</span><br><span class="line">    Token target = new Token(0);</span><br><span class="line">    researchers[target] = msg.sender;</span><br><span class="line">    return target;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function claim(Token target) &#123;</span><br><span class="line">    address researcher = researchers[target];</span><br><span class="line">    if (researcher == 0) throw;</span><br><span class="line">    </span><br><span class="line">    // check Token contract invariants</span><br><span class="line">    if (target.totalSupply() == target.balance) &#123;</span><br><span class="line">      throw;</span><br><span class="line">    &#125;</span><br><span class="line">    asyncSend(researcher, this.balance);</span><br><span class="line">    claimed = true;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先，正如前面所述，我们使用PullPaymentCapable来让我们的支付更加安全。这个赏金合约，允许研究者创建当前我们审核的Token合约的副本。任何人都可以参与到这个赏金项目，通过发送交易到这个赏金项目地址。<b style="color:red">如果任何研究者可以攻破他自己的Token合约的拷贝，让一些本不该变的情况变化（比如这里，让总代币发行量与当前代币余额不一致），他将获得对应的赏金。一旦赏金被领取了，合约将不再继续接受新的资金（无名的函数被称为合约的回退函数，在每次合约接收ether时自动执行）。</b></p>
+<p>正如你看到的，它有一个非常好的特性是分离了合约，不需要对原始的Token合约进行修改。<a href="https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/Bounty.sol" target="_blank" rel="noopener">这里有一个完整，任何人都可以使用的版本</a>。</p>
+<p>而对于容错性，我们需要修改我们原来的合约来增加额外的安全机制。<b style="color:red">一种简单的方案是允许合约的监督者可以冻结合约，作为一种紧急的机制</b>。我们来看一个通过继承实现这种行为的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">contract Stoppable &#123;</span><br><span class="line">  address public curator;</span><br><span class="line">  bool public stopped;</span><br><span class="line">  modifier stopInEmergency &#123; if (!stopped) _ &#125;</span><br><span class="line">  modifier onlyInEmergency &#123; if (stopped) _ &#125;</span><br><span class="line">  </span><br><span class="line">  function Stoppable(address _curator) &#123;</span><br><span class="line">    if (_curator == 0) throw;</span><br><span class="line">    curator = _curator;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function emergencyStop() external &#123;</span><br><span class="line">    if (msg.sender != curator) throw;</span><br><span class="line">    stopped = true;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Stoppable允许指定一个监督者，可以来停止整个合约。实现方式是，通过继承这个合约，在对应的功能上使用修改器stopInEmergency和onlyInEmergency，下面我们来看一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./PullPaymentCapable.sol&apos;;</span><br><span class="line">import &apos;./Stoppable.sol&apos;;</span><br><span class="line"></span><br><span class="line">contract StoppableBid is Stoppable, PullPaymentCapable &#123;</span><br><span class="line">  address public highestBidder;</span><br><span class="line">  uint public highestBid;</span><br><span class="line">  </span><br><span class="line">  function StoppableBid(address _curator)</span><br><span class="line">    Stoppable(_curator)</span><br><span class="line">    PullPaymentCapable() &#123;&#125;</span><br><span class="line">  </span><br><span class="line">  function bid() external stopInEmergency &#123;</span><br><span class="line">    if (msg.value &lt;= highestBid) throw;</span><br><span class="line">    </span><br><span class="line">    if (highestBidder != 0) &#123;</span><br><span class="line">      asyncSend(highestBidder, highestBid);</span><br><span class="line">    &#125;</span><br><span class="line">    highestBidder = msg.sender;</span><br><span class="line">    highestBid = msg.value;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  function withdraw() onlyInEmergency &#123;</span><br><span class="line">    suicide(curator);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:blue">在上面这个非常简单的例子中，bid可以被一个监督者停止，监督者在合约创建时指定</b>。StoppableBid在正常情况下，只有bid函数可以被调用，而当出现紧急情况时，监督者可以介入，并激活紧急状态。并让bid函数不再可用，同时激活withdraw功能。</p>
+<p>在上面的例子中，紧急模式将允许监督者销毁合约，恢复资金。但在实际场景中，恢复的逻辑更为复杂（举例来说，需要返还资金给每个投资者）。</p>
+<h2 id="限制可存入的资金"><a href="#限制可存入的资金" class="headerlink" title="限制可存入的资金"></a>限制可存入的资金</h2><p><b style="color:blue">另一个保护我们智能合约远离攻击的方式是限制。攻击者最有可能针对管理数百万美元的高调合同。并不是所有的合约，有这样的高的资金量。尤其是当我们正在初期。在这种情形下，限制合约可以接收的资金量就将非常有用。最简单的方式，可以实现为一个余额的硬上限。</b></p>
+<p>下面是一个简单的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">contract LimitFunds &#123;</span><br><span class="line">  </span><br><span class="line">  uint LIMIT = 5000;</span><br><span class="line">  </span><br><span class="line">  function() &#123; throw; &#125;</span><br><span class="line">  </span><br><span class="line">  function deposit() &#123;</span><br><span class="line">    if (this.balance &gt; LIMIT) throw;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>回退函数里，会拒绝接收所有的直接支付。deposit函数会首先检查合约的余额是否已经超限，超限将直接抛出异常。其它一些更有意思的，<b style="color:red">比如动态上限，管理限制也很容易实现</b>。</p>
+<h2 id="简单和模块化的代码"><a href="#简单和模块化的代码" class="headerlink" title="简单和模块化的代码"></a>简单和模块化的代码</h2><p>安全来自，我们想写的与代码实际可以做的距离。这非常的难以验证，特别是当代码量又大，又混乱时。这就是为什么写简单和模块化的代码变得非常重要。</p>
+<p>这意味着，函数应该尽可能的简单，代码之间的依赖应该极尽可能的少，文件应该尽可能的小，将独立的逻辑放进模块，每块的职责更加单一。</p>
+<p>命名是我们在编码过程中表达我们意图的方式。想一个好的名字，尽可能的让名字清晰。</p>
+<p>让我们来看一个关于<a href="https://solidity.readthedocs.io/en/latest/contracts.html#events" target="_blank" rel="noopener">Event</a>的差命名的例子。看看<a href="https://github.com/slockit/DAO/blob/develop/DAO.sol#L618-L691" target="_blank" rel="noopener">DAO里的函数</a>。其中的函数代码都太长了。</p>
+<p>最大的问题是太长，而且功能复杂。尽可能的让你的函数短小，比如，最多不超过30到40行代码。理想情况下，你应该在1分钟内弄明白函数的意图。另一个问题是关于事件Transfer在第685行的命名。这个名字与一个叫<a href="https://github.com/slockit/DAO/blob/develop/DAO.sol#L755" target="_blank" rel="noopener">transfer的函数名</a>只有一字之差。这将带来误解。<b style="color:red">一般来说，关于事件的推荐命名是使用Log打头</b>，这样的话，这个事件应该命名为LogTransfer。</p>
+<p>记住，尽可能的将你的合约写得简单，模块化，良好的命名。这将极大的帮助其它人和你自己审查你自己的代码。</p>
+<h2 id="不要从0开始写所有的代码"><a href="#不要从0开始写所有的代码" class="headerlink" title="不要从0开始写所有的代码"></a>不要从0开始写所有的代码</h2><p>最后，正如一句格言所说，“不要从头发明你自己的加密币”。我想它也适用于智能合约代码。你的操作与钱有关，你的数据是公开的，你正在一个全新的成长中的平台上。代价非常高，糟蹋机会的人无处不在。</p>
+<p>上述这些实践帮助我们写出更安全的合约。但最终，我们应该开发出更好的创建智能合约的工具。这里有一些先行者，包括<a href="https://www.youtube.com/watch?v=H2uwUdzVD9I&amp;feature=youtu.be" target="_blank" rel="noopener">better type systems</a>，<a href="https://blog.ethereum.org/2015/12/24/understanding-serenity-part-i-abstraction/" target="_blank" rel="noopener">Serenity Abstractions</a> 和<a href="https://www.rsk.co/" target="_blank" rel="noopener">the Rootstock platform</a>。</p>
+<p>现在已经有非常多的安全的代码，以及框架出现了。我们整合了一部分最佳实践到<a href="https://github.com/OpenZeppelin/zeppelin-solidity" target="_blank" rel="noopener">Github的资源库Open Zeppelin</a>。欢迎看看以及贡献新代码，以及提供代码审查建议。</p>
+<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><p>回顾一下，这篇文章中描述的安全模式有：</p>
+<ul>
+<li>尽早且明确的暴露问题。</li>
+<li>使用（pull）模式而不是（push）模式</li>
+<li>代码结构遵从：条件，行为，交互</li>
+<li>注意平台限制</li>
+<li>测试用例</li>
+<li>容错及自动bug奖励</li>
+<li>限制存入的资金</li>
+<li>简单与模块化的代码</li>
+<li>不要从零开始写代码</li>
+</ul>
+<p>如果你想讨论与智能合约相关的问题，欢迎加入Slack，让我们一起来提升智能合约编程标准。</p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="https://blog.zeppelin.solutions/onward-with-ethereum-smart-contract-security-97a827e47702" target="_blank" rel="noopener">Onward with Ethereum Smart Contract Security</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/17/blockchain/比特币/bitcoin脚本解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gavin Zhang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/user-avatar">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/17/blockchain/比特币/bitcoin脚本解析/" itemprop="url">bitcoin脚本解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-17T00:08:08+08:00">2018-03-17</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。</p>
+<p>在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public enum ScriptType &#123;</span><br><span class="line">    NO_TYPE,</span><br><span class="line">    P2PKH,</span><br><span class="line">    PUB_KEY,</span><br><span class="line">    P2SH</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再看一下脚本的验证类型吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum VerifyFlag &#123;</span><br><span class="line">    P2SH, // Enable BIP16-style subscript evaluation.</span><br><span class="line">    STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.</span><br><span class="line">    DERSIG, // Passing a non-strict-DER signature to a checksig operation causes script failure (softfork safe, BIP66 rule 1)</span><br><span class="line">    LOW_S, // Passing a non-strict-DER signature or one with S &gt; order/2 to a checksig operation causes script failure</span><br><span class="line">    NULLDUMMY, // Verify dummy stack item consumed by CHECKMULTISIG is of zero-length.</span><br><span class="line">    SIGPUSHONLY, // Using a non-push operator in the scriptSig causes script failure (softfork safe, BIP62 rule 2).</span><br><span class="line">    MINIMALDATA, // Require minimal encodings for all push operations</span><br><span class="line">    DISCOURAGE_UPGRADABLE_NOPS, // Discourage use of NOPs reserved for upgrades (NOP1-10)</span><br><span class="line">    CLEANSTACK, // Require that only a single stack element remains after evaluation.</span><br><span class="line">    CHECKLOCKTIMEVERIFY, // Enable CHECKLOCKTIMEVERIFY operation</span><br><span class="line">    CHECKSEQUENCEVERIFY // Enable CHECKSEQUENCEVERIFY operation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="命令简介"><a href="#命令简介" class="headerlink" title="命令简介"></a>命令简介</h2><h3 id="常数"><a href="#常数" class="headerlink" title="常数"></a>常数</h3><p>当我们说脚本的时候，经常省略了这些把数字压入堆栈的关键字。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_0,OP_FALSE</td>
+<td>0</td>
+<td>0×00</td>
+<td>无</td>
+<td>空</td>
+<td>一个字节空串被推到堆栈中(并非no-op操作，有一个元素压入堆栈)</td>
+</tr>
+<tr>
+<td>N/A</td>
+<td>1-75</td>
+<td>0×01-0x4b</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下一个操作码字节是要被压入堆栈的数据</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA1</td>
+<td>76</td>
+<td>0x4c</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下一字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA2</td>
+<td>77</td>
+<td>0x4d</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下两个字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA4</td>
+<td>78</td>
+<td>0x4e</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下四个字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_1NEGATE</td>
+<td>79</td>
+<td>0x4f</td>
+<td>无</td>
+<td>-1</td>
+<td>数字-1被压入堆栈</td>
+</tr>
+<tr>
+<td>OP_1,OP_TRUE</td>
+<td>81</td>
+<td>0×51</td>
+<td>无</td>
+<td>1</td>
+<td>数字1被压入堆栈</td>
+</tr>
+<tr>
+<td>OP_2-OP_16</td>
+<td>82-96</td>
+<td>0×52-0×60</td>
+<td>无</td>
+<td>2-16</td>
+<td>与关键名相对应的数字被压入堆栈</td>
+</tr>
+</tbody>
+</table>
+<h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_NOP</td>
+<td>97</td>
+<td>0×61</td>
+<td>无</td>
+<td>无</td>
+<td>无任何操作</td>
+</tr>
+<tr>
+<td>OP_IF</td>
+<td>99</td>
+<td>0×63</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>–</td>
+<td>如果栈项元素值不为0，语句将被执行，栈项元素值被删除。</td>
+</tr>
+<tr>
+<td>OP_NOTIF</td>
+<td>100</td>
+<td>0×64</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>如果栈项元素值为0，语句将被执行，栈项元素值被删除。</td>
+</tr>
+<tr>
+<td>OP_ELSE</td>
+<td>103</td>
+<td>0×67</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>如果前述的OP_IF或 OP_NOTIF或OP_ELSE 未被执行，这些语句就会被执行；如果前述的OP_IF或 OP_NOTIF或OP_ELSE被执行，这些语句就不会被执行</td>
+</tr>
+<tr>
+<td>OP_ENDIF</td>
+<td>104</td>
+<td>0×68</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>结束if/else语言块</td>
+</tr>
+<tr>
+<td>OP_VERIFY</td>
+<td>105</td>
+<td>0×69</td>
+<td>True / false</td>
+<td>无 / False</td>
+<td>如果栈项元素值非真，则标记交易无效。True会被删除，False不会被删除。</td>
+</tr>
+<tr>
+<td>OP_RETURN</td>
+<td>106</td>
+<td>0x6a</td>
+<td>无</td>
+<td>无</td>
+<td>标记交易无效</td>
+</tr>
+</tbody>
+</table>
+<h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_TOALTSTACK</td>
+<td>107</td>
+<td>0x6b</td>
+<td>x1</td>
+<td>(alt)x1</td>
+<td>把输入压入辅堆栈的项部，从主堆栈删除。</td>
+</tr>
+<tr>
+<td>OP_FROMALTSTACK</td>
+<td>108</td>
+<td>0x6c</td>
+<td>(alt)x1</td>
+<td>x1</td>
+<td>把输入压入主堆栈的项部，从辅堆栈删除。</td>
+</tr>
+<tr>
+<td>OP_IFDUP</td>
+<td>115</td>
+<td>0×73</td>
+<td>x</td>
+<td>x / x x</td>
+<td>如果栈项元素值不为0，复制该元素值</td>
+</tr>
+<tr>
+<td>OP_DEPTH</td>
+<td>116</td>
+<td>0×74</td>
+<td>无</td>
+<td>&lt;堆栈大小&gt;</td>
+<td>把堆栈元素个数压入堆栈</td>
+</tr>
+<tr>
+<td>OP_DROP</td>
+<td>117</td>
+<td>0×75</td>
+<td>x</td>
+<td>无</td>
+<td>删除栈顶元素</td>
+</tr>
+<tr>
+<td>OP_DUP</td>
+<td>118</td>
+<td>0×76</td>
+<td>x</td>
+<td>x x</td>
+<td>复制栈顶元素</td>
+</tr>
+<tr>
+<td>OP_NIP</td>
+<td>119</td>
+<td>0×77</td>
+<td>x1 x2</td>
+<td>x2</td>
+<td>删除栈顶的下一个元素</td>
+</tr>
+<tr>
+<td>OP_OVER</td>
+<td>120</td>
+<td>0×78</td>
+<td>x1 x2</td>
+<td>x1 x2 x1</td>
+<td>复制栈顶的下一个元素到栈顶</td>
+</tr>
+<tr>
+<td>OP_PICK</td>
+<td>121</td>
+<td>0×79</td>
+<td>xn … x2 x1 x0 <n></n></td>
+<td>xn … x2 x1 x0 xn</td>
+<td>把堆栈的第n个元素拷贝到栈顶</td>
+</tr>
+<tr>
+<td>OP_ROLL</td>
+<td>122</td>
+<td>0x7a</td>
+<td>xn … x2 x1 x0 <n></n></td>
+<td>… x2 x1 x0 xn</td>
+<td>把堆栈的第n个元素移动到栈顶</td>
+</tr>
+<tr>
+<td>OP_ROT</td>
+<td>123</td>
+<td>0x7b</td>
+<td>x1 x2 x3</td>
+<td>x2 x3 x1</td>
+<td>栈顶的三个元素向左翻转</td>
+</tr>
+<tr>
+<td>OP_SWAP</td>
+<td>124</td>
+<td>0x7c</td>
+<td>x1 x2</td>
+<td>x2 x1</td>
+<td>栈顶的两个元素交换</td>
+</tr>
+<tr>
+<td>OP_TUCK</td>
+<td>125</td>
+<td>0x7d</td>
+<td>x1 x2</td>
+<td>x2 x1 x2</td>
+<td>把栈顶元素拷贝并插入到栈顶下一个元素之后。注意：原文为“插入到栈顶下一个元素之前”，可能有误，翻译时改为“之后”</td>
+</tr>
+<tr>
+<td>OP_2DROP</td>
+<td>109</td>
+<td>0x6d</td>
+<td>x1 x2</td>
+<td>无</td>
+<td>删除栈顶两个元素</td>
+</tr>
+<tr>
+<td>OP_2DUP</td>
+<td>110</td>
+<td>0x6e</td>
+<td>x1 x2</td>
+<td>x1 x2 x1 x2</td>
+<td>复制栈顶两个元素</td>
+</tr>
+<tr>
+<td>OP_3DUP</td>
+<td>111</td>
+<td>0x6f</td>
+<td>x1 x2 x3</td>
+<td>x1 x2 x3 x1 x2 x3</td>
+<td>复制栈顶三个元素</td>
+</tr>
+<tr>
+<td>OP_2OVER</td>
+<td>112</td>
+<td>0×70</td>
+<td>x1 x2 x3 x4</td>
+<td>x1 x2 x3 x4 x1 x2</td>
+<td>把栈底的两个元素拷贝到栈顶</td>
+</tr>
+<tr>
+<td>OP_2ROT</td>
+<td>113</td>
+<td>0×71</td>
+<td>x1 x2 x3 x4 x5 x6</td>
+<td>x3 x4 x5 x6 x1 x2</td>
+<td>以一对元素为单位，向左翻转。注意：原文大意“把第五和第六元素移动到栈顶”，明显有误</td>
+</tr>
+<tr>
+<td>OP_2SWAP</td>
+<td>114</td>
+<td>0×72</td>
+<td>x1 x2 x3 x4    x3 x4</td>
+<td>x1 x2</td>
+<td>以一对元素为单位，交换栈顶的两对元素的位置。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_CAT</td>
+<td>126</td>
+<td>0x7e</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>连接两个字符串，已禁用</td>
+</tr>
+<tr>
+<td>OP_SUBSTR</td>
+<td>127</td>
+<td>0x7f</td>
+<td>in begin size</td>
+<td>out</td>
+<td>返回字符串的一部分，已禁用</td>
+</tr>
+<tr>
+<td>OP_LEFT</td>
+<td>128</td>
+<td>0×80</td>
+<td>in size</td>
+<td>out</td>
+<td>在一个字符串中保留左边指定长度的子串，已禁用</td>
+</tr>
+<tr>
+<td>OP_RIGHT</td>
+<td>129</td>
+<td>0×81</td>
+<td>in size</td>
+<td>out</td>
+<td>在一个字符串中保留右边指定长度的子串，已禁用</td>
+</tr>
+<tr>
+<td>OP_SIZE</td>
+<td>130</td>
+<td>0×82</td>
+<td>in</td>
+<td>in size</td>
+<td>把栈顶元素的字符串长度压入堆栈(无需弹出元素)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="位逻辑"><a href="#位逻辑" class="headerlink" title="位逻辑"></a>位逻辑</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_INVERT</td>
+<td>131</td>
+<td>0×83</td>
+<td>in</td>
+<td>out</td>
+<td>所有输入的位取反，已禁用.</td>
+</tr>
+<tr>
+<td>OP_AND</td>
+<td>132</td>
+<td>0×84</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的所有位进行布尔与运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_OR</td>
+<td>133</td>
+<td>0×85</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的每一位进行布尔或运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_XOR</td>
+<td>134</td>
+<td>0×86</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的每一位进行布尔异或运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_EQUAL</td>
+<td>135</td>
+<td>0×87</td>
+<td>x1 x2</td>
+<td>True / false</td>
+<td>如果输入的两个数相等，返回1，否则返回0。</td>
+</tr>
+<tr>
+<td>OP_EQUALVERIFY</td>
+<td>136</td>
+<td>0×88</td>
+<td>x1 x2</td>
+<td>True / false</td>
+<td>与OP_EQUAL一样，之后运行OP_VERIFY 。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="算术逻辑"><a href="#算术逻辑" class="headerlink" title="算术逻辑"></a>算术逻辑</h3><p>注意：算术逻辑的输入限于有符号32位长整数，但输出有可能会溢出。</p>
+<p>如果任何命令的输入值长度超过4字节，脚本必须中止和失败返回。如果标记为已禁用的操作码出现在交易中，也必须终止和失败返回</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_1ADD</td>
+<td>139</td>
+<td>0x8b</td>
+<td>in</td>
+<td>out</td>
+<td>输入值加1</td>
+</tr>
+<tr>
+<td>OP_1SUB</td>
+<td>140</td>
+<td>0x8c</td>
+<td>in</td>
+<td>out</td>
+<td>输入值减1</td>
+</tr>
+<tr>
+<td>OP_2MUL</td>
+<td>141</td>
+<td>0x8d</td>
+<td>in</td>
+<td>out</td>
+<td>输入值乘2，已禁用</td>
+</tr>
+<tr>
+<td>OP_2DIV</td>
+<td>142</td>
+<td>0x8e</td>
+<td>in</td>
+<td>out</td>
+<td>输入值除2，已禁用</td>
+</tr>
+<tr>
+<td>OP_NEGATE</td>
+<td>143</td>
+<td>0x8f</td>
+<td>in</td>
+<td>out</td>
+<td>输入值符号取反</td>
+</tr>
+<tr>
+<td>OP_ABS</td>
+<td>144</td>
+<td>0×90</td>
+<td>in</td>
+<td>out</td>
+<td>输入值符号取正</td>
+</tr>
+<tr>
+<td>OP_NOT</td>
+<td>145</td>
+<td>0×91</td>
+<td>in</td>
+<td>out</td>
+<td>如果输入值为0或1，则输出1或0；否则输出0。I</td>
+</tr>
+<tr>
+<td>OP_0NOTEQUAL</td>
+<td>146</td>
+<td>0×92</td>
+<td>in</td>
+<td>out</td>
+<td>输入值为0输出0；否则输出1。</td>
+</tr>
+<tr>
+<td>OP_ADD</td>
+<td>147</td>
+<td>0×93</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a+b</td>
+</tr>
+<tr>
+<td>OP_SUB</td>
+<td>148</td>
+<td>0×94</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a-b</td>
+</tr>
+<tr>
+<td>OP_MUL</td>
+<td>149</td>
+<td>0×95</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a*b，已禁用</td>
+</tr>
+<tr>
+<td>OP_DIV</td>
+<td>150</td>
+<td>0×96</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a/b, 已禁用</td>
+</tr>
+<tr>
+<td>OP_MOD</td>
+<td>151</td>
+<td>0×97</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a/b的余数，已禁用</td>
+</tr>
+<tr>
+<td>OP_LSHIFT</td>
+<td>152</td>
+<td>0×98</td>
+<td>a b</td>
+<td>out</td>
+<td>把a向左移动b位，保留符号，已禁用</td>
+</tr>
+<tr>
+<td>OP_RSHIFT</td>
+<td>153</td>
+<td>0×99</td>
+<td>a b</td>
+<td>out</td>
+<td>把a向右移动b位，保留符号，已禁用</td>
+</tr>
+<tr>
+<td>OP_BOOLAND</td>
+<td>154</td>
+<td>0x9a</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a和b都不为0，输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_BOOLOR</td>
+<td>155</td>
+<td>0x9b</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a或b不为0，输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_NUMEQUAL</td>
+<td>156</td>
+<td>0x9c</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a=b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_NUMEQUALVERIFY</td>
+<td>157</td>
+<td>0x9d</td>
+<td>a b</td>
+<td>out</td>
+<td>与OP_NUMEQUAL一样，之后要运行OP_VERIFY</td>
+</tr>
+<tr>
+<td>OP_NUMNOTEQUAL</td>
+<td>158</td>
+<td>0x9e</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a!=b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_LESSTHAN</td>
+<td>159</td>
+<td>0x9f</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&lt;b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_GREATERTHAN</td>
+<td>160</td>
+<td>0xa0</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&gt;b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_LESSTHANOREQUAL</td>
+<td>161</td>
+<td>0xa1</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&lt;=b则输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_GREATERTHANOREQUAL</td>
+<td>162</td>
+<td>0xa2</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&gt;=b则输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_MIN</td>
+<td>163</td>
+<td>0xa3</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a,b中的最小值</td>
+</tr>
+<tr>
+<td>OP_MAX</td>
+<td>164</td>
+<td>0xa4</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a,b中的最大值</td>
+</tr>
+<tr>
+<td>OP_WITHIN</td>
+<td>165</td>
+<td>0xa5</td>
+<td>x min max</td>
+<td>out</td>
+<td>如果x在min和max之间，则输出1，否则输出</td>
+</tr>
+</tbody>
+</table>
+<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_RIPEMD160</td>
+<td>166</td>
+<td>0xa6</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用RIPEMD-160算法HASH</td>
+</tr>
+<tr>
+<td>OP_SHA1</td>
+<td>167</td>
+<td>0xa7</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-1算法HASH.</td>
+</tr>
+<tr>
+<td>OP_SHA256</td>
+<td>168</td>
+<td>0xa8</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-256算法HASH.</td>
+</tr>
+<tr>
+<td>OP_HASH160</td>
+<td>169</td>
+<td>0xa9</td>
+<td>in</td>
+<td>hash</td>
+<td>输入被HASH两次，先用 SHA-256，再用 RIPEMD-160.</td>
+</tr>
+<tr>
+<td>OP_HASH256</td>
+<td>170</td>
+<td>0xaa</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-256算法HASH两次.</td>
+</tr>
+<tr>
+<td>OP_CODESEPARATOR</td>
+<td>171</td>
+<td>0xab</td>
+<td>无</td>
+<td>无</td>
+<td>所有签名检查只需匹配最近一次执行的OP_CODESEPARATOR 操作数据的签名即可。</td>
+</tr>
+<tr>
+<td>OP_CHECKSIG</td>
+<td>172</td>
+<td>0xac</td>
+<td>sig pubkey</td>
+<td>True / false</td>
+<td>全部交易的输出、输入和脚本(从最近执行的OP_CODESEPARATOR操作到最)都被HASH，OP_CHECKSIG使用的签名必须是该HASH值和公钥的有效签名，如果是真则返回1，否则返回0。</td>
+</tr>
+<tr>
+<td>OP_CHECKSIGVERIFY</td>
+<td>173</td>
+<td>0xad</td>
+<td>sig pubkey</td>
+<td>True / false</td>
+<td>与OP_CHECKSIG一样，但之后执行 OP_VERIFY</td>
+</tr>
+<tr>
+<td>OP_CHECKMULTISIG</td>
+<td>174</td>
+<td>0xae</td>
+<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 <number of="" public="" keys=""></number></number></td>
+<td>True / False</td>
+<td>对于每个签名和公钥对，OP_CHECKSIG 都会被执行，如果公钥列得比签名多，一些公钥/签名对会失败。所有的签名要与公钥匹配。如果所有签名有效，输出1，否则返回0。因为存在BUG，一个未使用的外部值会从堆栈中删除。</td>
+</tr>
+<tr>
+<td>OP_CHECKMULTISIGVERIFY</td>
+<td>175</td>
+<td>0xaf</td>
+<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 … <number of="" public="" keys=""></number></number></td>
+<td>True / False</td>
+<td>与 OP_CHECKMULTISIG,一样，但是之后运行 OP_VERIFY。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="伪关键字"><a href="#伪关键字" class="headerlink" title="伪关键字"></a>伪关键字</h3><p>这些关键字仅供内部使用，用辅助进行交易匹配，如果使用在实际的交易中则是无效的。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_PUBKEYHASH</td>
+<td>253</td>
+<td>0xfd</td>
+<td>表示公钥用OP_HASH160操作码HASH</td>
+</tr>
+<tr>
+<td>OP_PUBKEY</td>
+<td>254</td>
+<td>0xfe</td>
+<td>表示与OP_CHECKSIG.兼容的一个公钥</td>
+</tr>
+<tr>
+<td>OP_INVALIDOPCODE</td>
+<td>255</td>
+<td>0xff</td>
+<td>匹配任何未指定的操作码</td>
+</tr>
+</tbody>
+</table>
+<h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_RESERVED</td>
+<td>80</td>
+<td>0×50</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VER</td>
+<td>98</td>
+<td>0×62</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VERIF</td>
+<td>101</td>
+<td>0×65</td>
+<td>交易无效，即使发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VERNOTIF</td>
+<td>102</td>
+<td>0×66</td>
+<td>交易无效，即使发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_RESERVED1</td>
+<td>137</td>
+<td>0×89</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_RESERVED2</td>
+<td>138</td>
+<td>0x8a</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_NOP1-OP_NOP10</td>
+<td>176-185</td>
+<td>0xb0-0xb9</td>
+<td>这些关键字被忽略</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p>
+<p><img src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png" alt=""></p>
+<p>这里面的实现其实比较简单，没有什么特别需要说明的。</p>
+<p>我们大概解释这里面的类的含义：</p>
+<ol>
+<li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li>
+<li>ScriptError是脚本所有的错误集</li>
+<li>ScriptException是关于脚本的所有异常</li>
+<li>ScriptChunk是脚本的每个命令的抽象</li>
+<li>ScriptOpCodes是存放脚本命令的集合和编码</li>
+<li>TransactionSignature是交易的签名</li>
+<li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li>
+<li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li>
+</ol>
+<p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p>
+<h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html" target="_blank" rel="noopener">第四章 密钥和地址</a><br><a href="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html" target="_blank" rel="noopener">第六章 交易</a><br><a href="https://en.bitcoin.it/wiki/Script" target="_blank" rel="noopener">Script</a><br><a href="http://www.8btc.com/bitcoin_scripts" target="_blank" rel="noopener">比特币脚本</a><br><a href="http://www.8btc.com/understand-bitcoin-script" target="_blank" rel="noopener">理解比特币脚本</a><br><a href="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash" target="_blank" rel="noopener">Working with contracts</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/16/blockchain/比特币/bitcoin智能合约的实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1622,352 +2845,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/算法/散标的设计之道/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/算法/散标的设计之道/" itemprop="url">散标的设计之道</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:48:28+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>最近再做债权匹配的业务，需求是这样的，将债权（后面改称标的）打包放到一个投资计划里面去，然后接受用户的投资，那么用户投资过来的钱，要直接匹配上债权。当时我们在设计这个算法的时候，我就考虑到了以下几点：</p>
-<ul>
-<li>匹配的标的最好和用户投资的金额相等，不要留有空间，否则会出现等待资金。</li>
-<li>如果出现资金不能单独匹配一个标的就需要和其他的人一起投资进入标的。这样用户的资金开始分散。</li>
-<li>优先使用大额标的匹配用户资金，这样留下来的小额资金能够适应后面的变化。</li>
-<li>用户等待的资金何时进入的问题，如果他人投资的金额每次都能完好匹配进入，那么之前的等待资金就会一直不进入。我们的策略是他人投资加上等待资金，如果能够完好匹配，那么就加上等待资金一起进入。</li>
-<li>因为标的有一定的期限，标的到期可能资金的流转还没结束，必须匹配新的标的，这是我们发现流转资金的在匹配可能会出现路径问题。</li>
-<li>在匹配资金中，只能有一种策略那就是同一个人的资金拆完之后，就不要试图去合并，这样程序的复杂度会攀升。注意不是不能合并，而是复杂度及其的高，最好保持原有的状态，这样处理起来比较方便。</li>
-<li>资金拆解进入标的后，我们一定要做资金的画像，将资金的流转使用图数据库进行记录，以流转图的形式记录下来。</li>
-<li>如果出现新的标的集中，无法完全匹配新产生的债权，那么就会面临新的问题，新的资金拆解，如果程序写的不好，多次轮转之后，我们的资金可能越来越细化，这不是我们想看到的现象。</li>
-<li>散标的多态性：以上说的是标的是固定的状态，但是可能标的是根据资金进行选取，这种方式相对简单很多，但是也有待支付标的，走我们放款的，就是用户选择标的付钱，然后放款给借款人，这里的问题就是及时性，如果不及时可能影响用户的体验。还有就是单笔标的的自由交易，这种也相对比较简单。最讨厌的还是收益复投，这个会有一大堆的小资金，进入就是一个麻烦。</li>
-</ul>
-<h2 id="资金如何整合"><a href="#资金如何整合" class="headerlink" title="资金如何整合"></a>资金如何整合</h2><p>我们看到之前的设计中，我们对资金是有一定的要求的，如果资金本身的数字不规整，那么散标是无法匹配资金的，这会带来很多的麻烦，所以我们不得不考虑规整资金的问题。</p>
-<p>在我们的业务中，可能要求资金必须是100的整数倍，这样资金就规整了，至少我们可以解决很多的问题，但是如果引入收益复投，这样问题就来了，这么散的资金如何进入匹配呢？</p>
-<p>思路就是职责拆分，整合资金是一部分，资金投资是一部分。其实就是整个资金做一次整合变成规整的资金，然后利用规整的资金进行散标匹配，日后的资金结算以规整后的资金为主，如果资金结算具体到某一个人，那么需要这边的职责进行拆分。这样我们原来的散标策略又可以起作用了，也不担心一些问题了。如果一个人的钱是规整的，直接进入匹配，然后在这里记录整资金，这样完美兼容原来的设计。只是收益可能不规整，所有收益的零头可能要做个标计，并且还要确定是谁的部分收益不能进入，这里就是另一种策略了，当然最好保证所有人的收益都是能进入的。这里就不深入讨论了。</p>
-<p>以上就是我们对资金的和散标的处理过程。</p>
-<h2 id="资产固定匹配"><a href="#资产固定匹配" class="headerlink" title="资产固定匹配"></a>资产固定匹配</h2><p>一般发布计划时资产都是固定的，那么我们该如何进入匹配呢？一般我们是根据一些条件先判断能否匹配。比如我们知道金额，就知道一些零头是不能完全匹配的，这样我们直接匹配，不用考虑完全匹配。</p>
-<p>那么我们如何检查是否完全匹配能。一般我们是统计现有的金额和对应的标的量，采用回归的策略进行查找。本来这没啥问题，但是如果用户投资的金额比较大，那么这样的递归速度不是很差？所以我们决定，如果金额很大，先使用大额标的，将要匹配的空间尽量压缩，当到了一定的阈值之后，再来使用精确匹配，匹配掉剩余的值。另外我们还做了一些其他的优化，整个算法测下来，金额的匹配都是相当快得，本来我们还打算走异步匹配，后来发现压根就没有这个必要，最后我们还是使用了同步匹配的策略。</p>
-<p>当然这里需要注意，当你匹配大额资产的时候可能会出现，本来能匹配的资金由于大额资产多了，而不能精确匹配上去，这时候可以考虑退一个大额资产，再进行匹配的策略。总之这个问题不是那么好去解决的。</p>
-<p>还有就是如果我们的资产价值又多了一个，我们的策略是否还会生效，这也是我们不得不面对的一个问题。一般来说资产价值不会有多种，我们利用统计的策略就是为了，一是预检资金能否完全匹配，二是将匹配问题变成一个类似求24点的问题，这样比较简单，但是如果资产的价值情况是多样的，而且数量也是多样的，那么这个问题可能会很严重。这个我们只能使用递归策略找到最优解，这样的性能可能是大家所不能接受的。可以做必要的优化。记录哪些值是走过的，否则这个时间都是浪费的。</p>
-<p>其实还有一种情况就是如果资产价值本身不规整，那么我们该如何处理，一是计划金额不好办，二是用户投资也不能限定。当然最好的思路就是一个资产价值地卖，这样就没问题了。如果实在不行，那可能和前面一样资产分组规整资产，这个确实实现起来比较复杂。这种极端情况应该不怎么出现。</p>
-<p><b style="color:red">总之这里一定要实现：数据、策略、业务三者的分离，不能靠在一起，否则会出现大问题。</b></p>
-<h2 id="轮转资金匹配"><a href="#轮转资金匹配" class="headerlink" title="轮转资金匹配"></a>轮转资金匹配</h2><p>一是资产打包进入匹配，二是根据需要的金额数量定制资产包。其实我比较偏向于第二种方法，这样资金的流程比较简单，但是也会出现一个问题，就是资产包可能由于资产的问题，可以打出相应金额的包，但是不能实现定制，那么这个时候，你不想去拆你的资金都是不能的。</p>
-<p>重点是我们的散标策略必须知道这些，这个时候是有一个前提条件的，那就是金额和资产总价值是恒等的，这比之前的匹配好多了，但是这次需要记录资金的路径。而且是按照价值进行匹配，如果某个价值不能匹配，应该先放在一边进行晾着。</p>
-<p>第一轮匹配完成后，进入拆解匹配剩余资金的流程，这里主要有个策略就是应该优先拆解谁的资金，一是一个人的整资金，二是本身的混合资金。在我看来如果拆混合资金，会导致很多问题，所以最好拆整资金，成分单一无历史包袱，所以最好这样去处理。但是如果只剩混合资金怎么办？那就不得不这样去做，所以这个流程你还是会去处理，这个就比较麻烦了。有些事情你还是逃不掉的。必须去做。</p>
-<p>以上就是轮转资金的匹配策略了，我们要处理的还有很多。</p>
-<h2 id="直投式的匹配"><a href="#直投式的匹配" class="headerlink" title="直投式的匹配"></a>直投式的匹配</h2><p>这里其实分两种情况，一是用户现在自己账户设置为投入多少钱，风险系数，高风险标的不投；那么这时的处理可能不是这么简单了，散标考虑的事情应该很多，掺杂一点业务需求。不过散标匹配相对简单，只是选择谁的资金进入而已。这种是典型的先有资金，后有标的的情况，但是这种方式也不是那么简单地解决。因为你要保证谁的钱先到优先使谁的资金先进入，但是也可能面临将别人的资金拆得比较散的情况；不管这么说这种方式比较简单的。</p>
-<p>但是如果用户投资的金额不足以满足一个标的，标的里面也堆积了很多标的，那么这笔金额是等待，还是找那些急着使用的标的放款。这个我觉得应该使用一个时间段的，如果在这个时间段的标的有个组合能满足标的，为啥不放，但是这样会面临一个风险就是最需要资金的标的可能会饿死，这是很有可能发生的情况。这个问题又回到了之前先有标的后有资金的问题，但是又加了一个紧急度的维度，这样处理起来还是有点麻烦的。</p>
-<p>还有就是标的到了，用户选择标的放款。这种方式就更好了，这样我们其实什么都不用担心，像处理普通业务一样而已。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>也许关于散标匹配的内容还有很多，也没有在网上找到相应的资料的，所以发现这个却成了我们的一个问题，经过一段时间的考虑和实践，我们总结出了一套自己的散标匹配策略。随着实践的深入，我们还会不停地完善这个策略。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/14/系统设计/账务系统平级和层级账户体系设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gavin Zhang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/user-avatar">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/14/系统设计/账务系统平级和层级账户体系设计/" itemprop="url">账务系统平级和层级账户体系设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:43:40+08:00">2018-03-14</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>作为一家互联网金融公司，没有严格的账户处理机制是一种不好的现象，当然我们在处理各种账户体系的过程中其实遇到了各种各样的问题。我一开始可能受到一些前端设计界面的影响，导致在账户体系设计的时候没有考虑到我在后台添加的一个资金批次号的问题。然后我与产品沟通是否需要资金批次号中对应那笔资金的流转进行详细的分析，得到的答案是肯定的，但是我回归界面设计的时候却发现界面的设计上根本就不会体现出资金的批次流转问题，界面提现出来的就是总资金流转的账户设计。然后查看了一些其他家互金的app，确实大家都不会把这种信息透露出来。</p>
-<p>所以说，有的人说的是真话，但是其实是一个伪命题。别人再回答你的问题的时候，得到的答案可能是想当然的，觉得合理就要。但是其实在设计的时候却不会理会这个东西。这其实是一种很好玩的现象。不提了，反思总结一下就好，不用较真。自己理解知晓就好。</p>
-<p>然后我突然明白我在设计系统时陷入一个盲区，没有进行严格区分产品的需求和系统设计的单独隔离的问题。原来沟通是需要广度和深度的。与产品沟通更需要广度，与团队成员沟通更需要一定的深度；与产品沟通要放弃细节，与团队成员沟通需要深入细节；与产品沟通不用说具体设计，而应该说这种设计所导致的宏观表象就可以了，与团队成员沟通不要太专注表象，而应该关注具体的实现策略选择和系统思维的维护上。所以我们需要一层转换底层设计到产品的转化，这种转化我以前一直认为是代码上的，但其实可能也是数据库上。这种转化不一定是严格的具有上下层的，也可能是物理平级逻辑上下层的理论。这是一种很好的思维扩展。</p>
-<p>在某种程度上受到固有一些因素的影响，当然还有自我因素，但是我是不停发展的，我不会局限当前解决问题的思路。调整策略方式，继续前行。</p>
-<p>正是受到这次事件的影响，我不得不考虑我们系统账户设计的问题。后来我们发现我们的设计不足以追踪投入资金批次的流转问题。一开始我的思想是扩展资金进入记录表，在这张表上扩展一些字段记录一下它的流转信息，其实这是一种很好的解决问题的思路，后来团队成员意见是这种方式计算比较麻烦。其实是可以实现的。</p>
-<p>其实这种想法还是将record表当成了record表，后来一想这应该是账户表，账户升级后这张表的账户就会和计划投资账户形成了一种平级的概念，所以这里我提出了一个平级账户的概念。既然是账户表，那就要记录流水表的设计。这时一个平级账户出现了。</p>
-<p>我又仔细一想为何要将这个账户平级，我可以将这个账户移到计划账户的下面，这样的话，账户体系又扩充了一层，本来的平级账户，瞬间变成了层级账户。</p>
-<p>OK，这就是这次思维的变迁过程，平级账户和层级账户都是我自定义的名词，很好的反应出这些问题。那么下面我就来详细分析这里面的内容。</p>
-<h1 id="业务形态问题"><a href="#业务形态问题" class="headerlink" title="业务形态问题"></a>业务形态问题</h1><p>从上面看，其实平级账户我们是从record表的基础上扩展而来的，这样损失了record，但其实我们可以继续建立record表。所以在某种程度上来说，业务表与账户体系之间有着或多或少的联系，这是我们在设计财务系统的时候经常会忽略的问题。没错本人就是善于从问题中分析总结抽出我想要的东西和理论。</p>
-<p>大家也注意到，平级账户可以扩展到层级账户上去，这里大家也许会发现这样的话，层级账户也是和record表是有关系的。这是个很有趣的现象不是么？所以下面我会再写一篇博客专门介绍业务表、流水表和账户表的设计的问题。发现这个规律你就明白，原来被忽略的事情如此简单。</p>
-<h1 id="记录表去哪了"><a href="#记录表去哪了" class="headerlink" title="记录表去哪了"></a>记录表去哪了</h1><p>平级账户我是基于record表进行设置的，但是仔细一想record表怎么办，不去记录了，这不太可能，对于平级账户，记录表计成和原来一模一样就可以了，它关联的是计划账户表。==但其实记录表是可以关联到计划表上面去的，至于关联哪张表这个可以放到下一篇博客中分析，不是本次重点。==</p>
-<p>再来说说层级账户吧，其实record还是可以关联到原来的计划账户上，实现1对多关系，也可以关联到批次账户上实现1对1关系。详细的分析还是留待后面的分析，以及后面的实践中去总结吧！不过这个是个很有趣的问题。</p>
-<h1 id="关于账户管理"><a href="#关于账户管理" class="headerlink" title="关于账户管理"></a>关于账户管理</h1><p>平级账户其实是一种帐两种表现形式。而层级账户是总账明细账的处理流。平级账户提现的是维度账户体系，需要进行多维度地观看账户的信息。</p>
-<p>另外层级账户和平级账户的设计所能提现出来的信息也是不同的；层级账户很有层次，数据零散而具有层次，有些信息就是不停地进行统计获取到，而且可以获得任何形式的数据，缺点就是统计起来比较耗时，很多数据都要统计；而平级账户本身可能是带有一定维度的，这本来是一件好事，但是要想看另一个维度的数据就比较麻烦，可能你没法看。也就是说平级账户体系可以带来多维度的扩展，但是不太利于多元化的统计，因为维度有限。</p>
-<p>这个层级账户可以利用统计来实现维度账户体系的划分，但是实现的时候效率都不是很高，但是统计灵活，数据可以实现多元化扩展。</p>
-<p>这两种账户在对账上也是有所区分的，==以后应该专门写一篇博客来说明如何进行对账处理。== 这两种账户体系都是可以用来进行对账处理的。并且其实对账的工作量是一样的，该做事情还是要做，只是对帐的形式不同罢了。平级账户减少了账户的层次，这时是需要在平级账户加上一些特殊的标记信息，以弥补层级缺失所导致的一些其他问题（信息上的同步、关联等问题）。</p>
-<h1 id="两种体系的后期转化"><a href="#两种体系的后期转化" class="headerlink" title="两种体系的后期转化"></a>两种体系的后期转化</h1><p>如果我们确定了我们的账户体系，后期我们想实现一种账户体系到另一种账户体系的转化你会发现很多的转化问题，或者说就是无法转化，因为老数据的转化就是一个麻烦，烫手的山芋。</p>
-<h1 id="对账和流水"><a href="#对账和流水" class="headerlink" title="对账和流水"></a>对账和流水</h1><p>流水一般分为汇总的总账流水，和明细型的流水，有的账户这两种流水或许都是存在的。一般来说明细流水的具体流水都是汇总之后向上记录汇总的总账流水。（==注：总账或许在业务上是不存在的，或者界面设计的不同界面会提现出不同类型的流水，有总账型的也有基础流水型的，也许还有业务性的记录等等，我们设计的时候其实都应该注意到==）</p>
-<p>对账的实现，如果延时，那么多维度或者平级账户如何保证数据的计算方式是不同的。理论上计算方式的异同决定了对账的准确性，如果计算方式一致，一般是对不出问题的。平级账户一般数据的计算方式就是不同的，所以一般来说对账是没有问题的，但是不能进行细化对账，因为每个账户的维度不同，最后也就是总账对一下，一旦发现问题，可能无法定位到具体的问题所在。</p>
-<p>而层级账户可以解决这个问题，因为账户形式是总-分型的，所以一旦核对不上可以很明显地精确到具体的位置，但是也就是这种层级关系，在数据写入的时候，往往都是相同的方式计算出来的，所以发现问题很难。</p>
-<h1 id="与业务关系"><a href="#与业务关系" class="headerlink" title="与业务关系"></a>与业务关系</h1><p>账户体系的搭建其实不应该和具体的业务耦合在一起，但是在实际的实现过程中，我们发现这种关联性很强。影响的因素可能是法律合规、想法和具体的业务场景有关。其中最有账户破坏性的就是存管，一旦上存管，就必须考虑，系统账户和存管账户的关联。这个可能要做一些中间代码或者中间数据模型转化。</p>
-<p>但是要说这两种账户体系哪种更好，我还是觉得层级账户更好，平级账户其实不能适应需求的变化。</p>
-<h1 id="账户体系选择"><a href="#账户体系选择" class="headerlink" title="账户体系选择"></a>账户体系选择</h1><p>如果从etl的角度来说，可能就是要同时实现这两种账户体系的转化。那是他们需要处理的，也许在他们的结构设计中压根就没有账户这一概念。</p>
-<p>但是从系统的角度来说，应该优先选择层级账户。但是最好不要两种方式一起实现，只要一套就可以了，因为有系统数据的维护成本。系统设计和数据分析的思路完全不同。如果非要两种体系都实现，那就需要分步来做，主流程处理一种账户体系，另一个体系可以通过后台工作线程或者专门的定时器来实现，进行必要的延时操作。有时可能需要进行实时的数据统计。</p>
-<p>所以账户体系的建立还有很长的一段路要走。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这个是我自己的原创总结，里面的思维在别人看来可能比较混乱，写博客本身就是一个比较累的过程。还有就是文章本身枯燥乏味。其实这篇文章更多的就是要从各个角度分析我发现这个现象，然后对它进行深入思考，在别人看来可能比较难于理解。</p>
-<p>洋洋洒洒地写了这么多，耗费了不少脑力，就写到这儿吧！</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2019,7 +2896,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">108</span>
+                    <span class="site-state-item-count">110</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2297,7 +3174,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">101</span>
+                      
+                    
+                    <span class="site-state-item-count">102</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -2337,7 +3216,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
