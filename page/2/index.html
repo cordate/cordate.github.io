@@ -47,13 +47,13 @@
 <link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
 
 
   <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
@@ -72,7 +72,7 @@
     version: '7.2.0',
     sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="https://www.gitbook.com/" title="柳絮纷飞" type="application/atom+xml"/>
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
 
 
 
@@ -123,7 +123,7 @@
 </script>
 
   
-  <title>柳絮纷飞</title>
+  <title>柳絮纷飞 - Gavin的个人博客</title>
   
 
 
@@ -189,7 +189,7 @@
     </div>
     
       
-        <p class="site-subtitle">Gavin的个人博客</p>
+        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
       
     
     
@@ -389,6 +389,13 @@
     </header>
 
     
+  
+  
+
+  
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
 
 
     <main id="main" class="main">
@@ -414,12 +421,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/blockchain/corda/Corda教程-hello world/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda教程-hello world.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -431,16 +438,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/07/blockchain/corda/Corda教程-hello world/" class="post-title-link" itemprop="url">Corda教程 - hello world</a>
+                <a href="/blockchain/corda/Corda教程-hello world.html" class="post-title-link" itemprop="url">Corda教程 - hello world</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -501,13 +511,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">20k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">18 分钟</span>
+            </span>
           
 
           
@@ -540,15 +571,15 @@
 <p>在传统的分布式账本系统中，所有数据都被广播给每个网络参与者，您不需要考虑数据流 - 只需打包分类账更新并将其发送给网络上的其他人即可。但在Corda，隐私是核心焦点，流程使我们能够在同意分类账更新的过程中仔细控制谁看到了什么。</p>
 <h3 id="CorDapp模板"><a href="#CorDapp模板" class="headerlink" title="CorDapp模板"></a>CorDapp模板</h3><p>编写新的CorDapp时，通常需要将其基于标准模板：</p>
 <ul>
-<li><a href="https://github.com/corda/cordapp-template-java" target="_blank" rel="noopener">Java的Cordapp模板</a></li>
-<li><a href="https://github.com/corda/cordapp-template-kotlin" target="_blank" rel="noopener">kotlin的Cordapp模板</a></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUtamF2YQ==" title="https://github.com/corda/cordapp-template-java">Java的Cordapp模板<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUta290bGlu" title="https://github.com/corda/cordapp-template-kotlin">kotlin的Cordapp模板<i class="fa fa-external-link"></i></span></li>
 </ul>
 <p>Cordapp模板为开发CorDapp提供了必需的样板，并允许您将CorDapp快速部署到虚拟节点的本地测试网络上，以测试其功能。</p>
 <p>CorDapps可以用Java和Kotlin编写，并且将在本教程中以两种语言提供代码。</p>
 <p>请注意，不需要下载和安装Corda本身。Corda V1.0所需的库将从一个在线Maven仓库自动下载。</p>
 <h4 id="下载模板"><a href="#下载模板" class="headerlink" title="下载模板"></a>下载模板</h4><p>要下载模板，请在要下载CorDapp模板的目录中打开终端窗口，然后运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/corda/cordapp-template-java.git ;  cd cordapp-template-java</span><br></pre></td></tr></table></figure></p>
 <p><em>要么</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/corda/cordapp-template-kotlin.git ;  cd cordapp-template-kotlin</span><br></pre></td></tr></table></figure></p>
-<h4 id="在IntelliJ中打开模板"><a href="#在IntelliJ中打开模板" class="headerlink" title="在IntelliJ中打开模板"></a>在IntelliJ中打开模板</h4><p>下载模板后，按照以下说明在IntelliJ中打开它：<a href="https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。" target="_blank" rel="noopener">https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。</a></p>
+<h4 id="在IntelliJ中打开模板"><a href="#在IntelliJ中打开模板" class="headerlink" title="在IntelliJ中打开模板"></a>在IntelliJ中打开模板</h4><p>下载模板后，按照以下说明在IntelliJ中打开它：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC90dXRvcmlhbC1jb3JkYXBwLmh0bWwjb3BlbmluZy10aGUtZXhhbXBsZS1jb3JkYXBwLWluLWludGVsbGlq44CC" title="https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。">https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。<i class="fa fa-external-link"></i></span></p>
 <h4 id="模板结构"><a href="#模板结构" class="headerlink" title="模板结构"></a>模板结构</h4><p>该模板有许多文件，但我们可以忽略其中的大部分。我们只会修改以下文件：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对于kotlin</span></span><br><span class="line"><span class="comment">// 1. The state</span></span><br><span class="line">cordapp-contracts-states/src/main/kotlin/com/template/StatesAndContracts.kt</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. The flow</span></span><br><span class="line">cordapp/src/main/kotlin/com/template/App.kt</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对于java</span></span><br><span class="line"><span class="comment">// 1. The state</span></span><br><span class="line">cordapp-contracts-states/src/main/java/com/template/TemplateState.java</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. The flow</span></span><br><span class="line">cordapp/src/main/java/com/template/TemplateFlow.java</span><br></pre></td></tr></table></figure>
 <h4 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h4><p>为了防止以后出现构建错误，我们应该在开始之前删除以下文件：</p>
@@ -658,7 +689,7 @@
 <p>我们通过从项目的根目录运行以下命令来启动节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">build/nodes/runnodes</span><br></pre></td></tr></table></figure></p>
 <h4 id="与节点交互"><a href="#与节点交互" class="headerlink" title="与节点交互"></a>与节点交互</h4><p>现在我们的节点正在运行，让我们命令其中一个通过开启我们的<code>IOUFlow</code>创建一个借条。在更大的应用程序中，我们通常会提供一个位于节点顶部的Web API。在这里，为了简单起见，我们将通过其内置的CRaSH shell与节点进行交互。</p>
 <p>转到显示<code>PartyA</code>的CRaSH shell的终端窗口。键入<code>help</code>将显示可用命令的列表。</p>
-<p>注意: 本地终端shell只能在开发模式下使用。在生产环境中，可以启用SSH服务器。有关SSH和如何连接的更多信息，请参阅<a href="https://docs.corda.net/head/shell.html" target="_blank" rel="noopener">Shell</a>页面。</p>
+<p>注意: 本地终端shell只能在开发模式下使用。在生产环境中，可以启用SSH服务器。有关SSH和如何连接的更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3NoZWxsLmh0bWw=" title="https://docs.corda.net/head/shell.html">Shell<i class="fa fa-external-link"></i></span>页面。</p>
 <p>我们想用PartyB创建一个99的欠条。我们开始<code>IOUFlow</code>输入：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Kotlin</span><br><span class="line">start IOUFlow iouValue: 99, otherParty: "O=PartyB,L=New York,C=US"</span><br><span class="line">// Java</span><br><span class="line">start IOUFlow arg0: 99, arg1: "O=PartyB,L=New York,C=US"</span><br></pre></td></tr></table></figure></p>
 <p>这个单一命令将导致PartyA和PartyB自动同意一个借条。这是流程框架的一大优势 - 它允许您将复杂的协商和更新过程减少为单个函数调用。</p>
 <p>如果这个流程奏效了，它应该在PartyA和PartyB的Vault里记录一条新的借条。让我们检查。</p>
@@ -672,8 +703,8 @@
 </ul>
 <p>完成本教程后，您的CorDapp应该如下所示：</p>
 <ul>
-<li>Java：<a href="https://github.com/corda/corda-tut1-solution-java" target="_blank" rel="noopener">https://github.com/corda/corda-tut1-solution-java</a></li>
-<li>Kotlin：<a href="https://github.com/corda/corda-tut1-solution-kotlin" target="_blank" rel="noopener">https://github.com/corda/corda-tut1-solution-kotlin</a></li>
+<li>Java：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDEtc29sdXRpb24tamF2YQ==" title="https://github.com/corda/corda-tut1-solution-java">https://github.com/corda/corda-tut1-solution-java<i class="fa fa-external-link"></i></span></li>
+<li>Kotlin：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDEtc29sdXRpb24ta290bGlu" title="https://github.com/corda/corda-tut1-solution-kotlin">https://github.com/corda/corda-tut1-solution-kotlin<i class="fa fa-external-link"></i></span></li>
 </ul>
 <h4 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h4><p>我们可以对这个CorDapp进行一些改进：</p>
 <ul>
@@ -813,11 +844,11 @@
 <p>我们的CorDapp现在对发行IOU进行限制。最重要的是，借款发行现在需要借款人和借款人达成协议，然后才能在账本上创建借条。这样可以防止贷款人或借款人以一种只有利于自己的方式单方面更新分类账。</p>
 <p>完成本教程后，您的CorDapp应该如下所示：</p>
 <ul>
-<li>Java：<a href="https://github.com/corda/corda-tut2-solution-java" target="_blank" rel="noopener">https://github.com/corda/corda-tut2-solution-java</a></li>
-<li>Kotlin：<a href="https://github.com/corda/corda-tut2-solution-kotlin" target="_blank" rel="noopener">https://github.com/corda/corda-tut2-solution-kotlin</a></li>
+<li>Java：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDItc29sdXRpb24tamF2YQ==" title="https://github.com/corda/corda-tut2-solution-java">https://github.com/corda/corda-tut2-solution-java<i class="fa fa-external-link"></i></span></li>
+<li>Kotlin：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDItc29sdXRpb24ta290bGlu" title="https://github.com/corda/corda-tut2-solution-kotlin">https://github.com/corda/corda-tut2-solution-kotlin<i class="fa fa-external-link"></i></span></li>
 </ul>
 <p>你现在应该准备开发你自己的CorDapps。您也可以在这里找到样品CorDapps的列表 。在编写CorDapps时，您还需要了解有关Corda API的更多信息 。</p>
-<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><a href="https://docs.corda.net/head/hello-world-introduction.html" target="_blank" rel="noopener">Hello, World!</a><br><a href="https://docs.corda.net/head/tut-two-party-introduction.html" target="_blank" rel="noopener">Hello, World! Pt.2 - Contract constraints</a></p>
+<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2hlbGxvLXdvcmxkLWludHJvZHVjdGlvbi5odG1s" title="https://docs.corda.net/head/hello-world-introduction.html">Hello, World!<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3R1dC10d28tcGFydHktaW50cm9kdWN0aW9uLmh0bWw=" title="https://docs.corda.net/head/tut-two-party-introduction.html">Hello, World! Pt.2 - Contract constraints<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -876,12 +907,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/blockchain/corda/Corda-networks/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda-networks.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -893,16 +924,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/07/blockchain/corda/Corda-networks/" class="post-title-link" itemprop="url">Corda networks</a>
+                <a href="/blockchain/corda/Corda-networks.html" class="post-title-link" itemprop="url">Corda networks</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -963,13 +997,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">12k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">11 分钟</span>
+            </span>
           
 
           
@@ -996,8 +1051,8 @@
 <li>Oracle：通过提供影响交易有效性的事实将账本与外部世界链接起来的网络服务</li>
 <li>常规节点：所有节点都有一个Vault，并且可能开始与其他节点，公证人和神谕（Oracle）进行通信的协议，并发展他们的私人分类账</li>
 </ul>
-<h3 id="建立你自己的网络"><a href="#建立你自己的网络" class="headerlink" title="建立你自己的网络"></a>建立你自己的网络</h3><h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>给定Corda网络中的每个节点都必须具有由网络根CA签署的身份证书。有关更多信息，请参阅<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>。</p>
-<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>节点可以通过在节点的目录中添加/编辑<code>node.conf</code>进行配置。有关详情请参阅<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>。</p>
+<h3 id="建立你自己的网络"><a href="#建立你自己的网络" class="headerlink" title="建立你自己的网络"></a>建立你自己的网络</h3><h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>给定Corda网络中的每个节点都必须具有由网络根CA签署的身份证书。有关更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>。</p>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>节点可以通过在节点的目录中添加/编辑<code>node.conf</code>进行配置。有关详情请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY29yZGEtY29uZmlndXJhdGlvbi1maWxlLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html">节点配置<i class="fa fa-external-link"></i></span>。</p>
 <p>一个示例配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">myLegalName : &quot;O=Bank A,L=London,C=GB&quot;</span><br><span class="line">keyStorePassword : &quot;cordacadevpass&quot;</span><br><span class="line">trustStorePassword : &quot;trustpass&quot;</span><br><span class="line">dataSourceProperties : &#123;</span><br><span class="line">    dataSourceClassName : org.h2.jdbcx.JdbcDataSource</span><br><span class="line">    &quot;dataSource.url&quot; : &quot;jdbc:h2:file:&quot;$&#123;baseDirectory&#125;&quot;/persistence&quot;</span><br><span class="line">    &quot;dataSource.user&quot; : sa</span><br><span class="line">    &quot;dataSource.password&quot; : &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line">p2pAddress : &quot;my-corda-node:10002&quot;</span><br><span class="line">rpcSettings = &#123;</span><br><span class="line">    useSsl = false</span><br><span class="line">    standAloneBroker = false</span><br><span class="line">    address : &quot;my-corda-node:10003&quot;</span><br><span class="line">    adminAddress : &quot;my-corda-node:10004&quot;</span><br><span class="line">&#125;</span><br><span class="line">webAddress : &quot;localhost:10004&quot;</span><br><span class="line">rpcUsers : [</span><br><span class="line">    &#123; username=user1, password=letmein, permissions=[ StartFlow.net.corda.protocols.CashProtocol ] &#125;</span><br><span class="line">]</span><br><span class="line">devMode : true</span><br></pre></td></tr></table></figure></p>
 <p>有关网络配置的最重要的配置是：</p>
 <ul>
@@ -1008,15 +1063,15 @@
 <h4 id="引导网络"><a href="#引导网络" class="headerlink" title="引导网络"></a>引导网络</h4><p>节点使用网络图互相看到。这是一个静态签名的节点信息文件的集合，每个节点在网络中都有一个文件。大多数生产部署将通过HTTP使用高度可用，安全的网络映射分布。</p>
 <p>对于节点（至少最初）驻留在同一个文件系统中的测试部署，可以将这些节点信息文件直接放置在节点的<code>additional-node-infos</code>目录中，节点将从该目录中选择并将它们存储在本地网络映射缓存中。节点在启动时生成自己的节点信息文件。</p>
 <p>除了网络映射之外，网络中的所有节点都必须使用相同的一组网络参数。这些是一组保证节点间互操作性的常量。HTTP网络图分发节点自动下载的网络参数。在没有这个的情况下，网络参数必须在本地生成。这可以通过网络引导程序完成。这是一个工具，用于扫描公共目录中的所有节点配置，以生成复制到节点目录的网络参数文件。它还将每个节点的节点信息文件复制到每个其他节点，以便它们可以互相交换。</p>
-<p>引导程序工具可以从<a href="http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar" target="_blank" rel="noopener">http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar</a> 下载，其中<code>X</code>是主要的Corda版本，并且<code>Y</code>是次要的Corda版本。</p>
+<p>引导程序工具可以从<span class="exturl" data-url="aHR0cDovL2Rvd25sb2Fkcy5jb3JkYS5uZXQvbmV0d29yay1ib290c3RyYXBwZXItY29yZGEtWC5ZLmphcg==" title="http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar">http://downloads.corda.net/network-bootstrapper-corda-X.Y.jar<i class="fa fa-external-link"></i></span> 下载，其中<code>X</code>是主要的Corda版本，并且<code>Y</code>是次要的Corda版本。</p>
 <p>要使用它，请为要创建的每个节点创建一个包含<code>node.conf</code>文件的目录。然后运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar network-bootstrapper.jar &lt;nodes-root-dir&gt;</span><br></pre></td></tr></table></figure></p>
 <p>例如，在包含这些文件的目录上运行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├──notary.conf //公证人的node.conf文件</span><br><span class="line">├──partya.conf // Party A的node.conf文件</span><br><span class="line">└──partyb.conf //乙方的node.conf文件</span><br></pre></td></tr></table></figure></p>
 <p>会生成包含三个节点的目录：公证人，partya和partyb。</p>
 <p>该工具仅引导网络。如果新节点需要加入网络，或者现有节点已经改变节点信息中的某些内容，例如P2P地址，它就不能动态更新。为此，新的节点信息文件将需要放置在其他节点的<code>additional-node-infos</code>目录中。一个简单的方法是使用rsync。但是，如果事先知道节点集合，最终节点文件夹可以在引导程序中预生成并且只在需要时启动。</p>
-<h4 id="白名单合同"><a href="#白名单合同" class="headerlink" title="白名单合同"></a>白名单合同</h4><p>如果您想创建区域白名单（请参阅<a href="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html" target="_blank" rel="noopener">API：合同约束</a>），则可以传入CorDapp jar列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar network-bootstrapper.jar &lt;nodes-root-dir&gt; &lt;path-to-first-corDapp&gt; &lt;path-to-second-corDapp&gt; ..</span><br></pre></td></tr></table></figure></p>
+<h4 id="白名单合同"><a href="#白名单合同" class="headerlink" title="白名单合同"></a>白名单合同</h4><p>如果您想创建区域白名单（请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvc2V0dGluZy11cC1hLWNvcmRhLW5ldHdvcmsuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html">API：合同约束<i class="fa fa-external-link"></i></span>），则可以传入CorDapp jar列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar network-bootstrapper.jar &lt;nodes-root-dir&gt; &lt;path-to-first-corDapp&gt; &lt;path-to-second-corDapp&gt; ..</span><br></pre></td></tr></table></figure></p>
 <p>CorDapp jars将被散列并扫描Contract类。默认情况下，该工具将生成一个名为<code>whitelist.txt</code>包含每个包含该jar散列项的合约的条目的文件。</p>
 <p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net.corda.finance.contracts.asset.Obligation：decd098666b9657314870e192ced0c3519c2c9d395507a238338f8d003929de8</span><br><span class="line">net.corda.finance.contracts.asset.Cash:decd098666b9657314870e192ced0c3519c2c9d395507a238338f8d003929de9</span><br></pre></td></tr></table></figure></p>
-<p>这些将被添加到<code>NetworkParameters.whitelistedContractImplementations</code>。请参阅<a href="https://docs.corda.net/releases/release-V3.1/network-map.html" target="_blank" rel="noopener">网络映射</a>。</p>
+<p>这些将被添加到<code>NetworkParameters.whitelistedContractImplementations</code>。请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvbmV0d29yay1tYXAuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/network-map.html">网络映射<i class="fa fa-external-link"></i></span>。</p>
 <p>这意味着默认情况下，网络引导程序工具会将所有通过的CorDapps中的所有合约列入白名单。</p>
 <p>如果根目录中有一个文件<code>whitelist.txt</code>，工具会将新的jar散列或合约附加到它。</p>
 <p>区域操作员将维护这个白名单文件，并使用该工具将新版本的CorDapps添加到它。</p>
@@ -1034,7 +1089,7 @@
 <h4 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h4><p>只有少数重要的线条打印在控制台上。有关详细信息/诊断问题，请检查日志。</p>
 <p>日志记录是标准的log4j2，可以进行相应配置。日志默认被重定向到<code>NODE_DIRECTORY/logs/</code>中的文件。</p>
 <h4 id="连接到节点"><a href="#连接到节点" class="headerlink" title="连接到节点"></a>连接到节点</h4><p>一旦节点启动成功，您可以连接到它作为客户端来启动协议/查询状态等。根据您的网络设置，您可能需要通过管道远程执行此操作。</p>
-<p>请参阅<a href="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html" target="_blank" rel="noopener">使用客户端RPC API</a>了解如何建立RPC链接。</p>
+<p>请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvdHV0b3JpYWwtY2xpZW50cnBjLWFwaS5odG1s" title="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html">使用客户端RPC API<i class="fa fa-external-link"></i></span>了解如何建立RPC链接。</p>
 <p>旁注：客户始终与具有单一身份的单个节点相关联，该身份只能看到其分类账的一部分。</p>
 <h2 id="网络许可"><a href="#网络许可" class="headerlink" title="网络许可"></a>网络许可</h2><p>Corda网络获得许可。要连接到网络，节点需要在其<code>&lt;workspace&gt;/certificates/</code>文件夹中有三个密钥库 ：</p>
 <ul>
@@ -1043,7 +1098,7 @@
 <li><code>sslkeystore.jks</code>，它存储节点的TLS密钥对和证书</li>
 </ul>
 <p><b style="color:red">生产部署需要安全的证书颁发机构。大多数生产部署将使用现有的证书颁发机构或使用将在未来几个月内提供的软件构建一个。在此之前，以下文档可用于创建您自己的认证中心。</b></p>
-<p>注意: 如果您正在查找有关如何连接到现有兼容区域的信息，请转至章节：<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html#connecting-to-a-compatibility-zone" target="_blank" rel="noopener">连接到兼容区域</a></p>
+<p>注意: 如果您正在查找有关如何连接到现有兼容区域的信息，请转至章节：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1sI2Nvbm5lY3RpbmctdG8tYS1jb21wYXRpYmlsaXR5LXpvbmU=" title="https://docs.corda.net/releases/release-V3.1/permissioning.html#connecting-to-a-compatibility-zone">连接到兼容区域<i class="fa fa-external-link"></i></span></p>
 <h3 id="证书层级"><a href="#证书层级" class="headerlink" title="证书层级"></a>证书层级</h3><p>Corda网络有四种类型的证书颁发机构（CA）：</p>
 <ul>
 <li>根CA网络</li>
@@ -1157,8 +1212,8 @@
 <p>默认情况下，它会期望信任存储文件位于该位置<code>certificates/network-root-truststore.jks</code>。这可以用附加<code>--network-root-truststore</code>标志覆盖。</p>
 <p>将根据从节点配置中获取的节点信息创建证书签名请求。生成请求需要来自节点配置文件的以下信息。</p>
 <ul>
-<li>myLegalName：    您公司的法定名称为X.500字符串。X.500允许区分具有相同名称的实体，因为合法名称在网络上必须是唯一的。如果另一个节点已经被许可使用该名称，则许可服务器将自动拒绝该请求。如果违反合法名称规则，请求也将被拒绝，请参阅<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming" target="_blank" rel="noopener">节点命名</a>以获取更多信息。</li>
-<li>电子邮件地址：    例如“<a href="mailto:admin@company.com" target="_blank" rel="noopener">admin@company.com</a>“</li>
+<li>myLegalName：    您公司的法定名称为X.500字符串。X.500允许区分具有相同名称的实体，因为合法名称在网络上必须是唯一的。如果另一个节点已经被许可使用该名称，则许可服务器将自动拒绝该请求。如果违反合法名称规则，请求也将被拒绝，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbCNub2RlLW5hbWluZw==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming">节点命名<i class="fa fa-external-link"></i></span>以获取更多信息。</li>
+<li>电子邮件地址：    例如“<span class="exturl" data-url="bWFpbHRvOmFkbWluQGNvbXBhbnkuY29t" title="mailto:admin@company.com">admin@company.com<i class="fa fa-external-link"></i></span>“</li>
 <li>DEVMODE：    必须设置为false</li>
 <li>compatibilityZoneURL：<br>Corda兼容区域网络管理服务根URL。<br>由Corda节点生成的一对新的私钥和公钥将用于创建请求。<br>该实用程序将向门卫服务器提交请求并定期轮询结果以检索证书。一旦请求被批准并且从服务器下载证书，节点将使用证书和生成的私钥创建密钥库和信任库。</li>
 </ul>
@@ -1213,7 +1268,7 @@
 <h3 id="additional-node-infos目录"><a href="#additional-node-infos目录" class="headerlink" title="additional-node-infos目录"></a><code>additional-node-infos</code>目录</h3><p>除了HTTP网络map服务外，或者如果节点没有连接到一个节点，节点将轮询位于其基本目录中的<code>additional-node-infos</code>目录的内容。预计每个文件都是网络地图服务发布的相同签名<code>NodeInfo</code>对象。这些会自动添加到节点的缓存中，并可用于补充或替换HTTP网络图。如果同一节点通过这两种机制进行广告，则采用最新的节点。</p>
 <p>启动时，节点会生成自己的签名节点信息文件，格式的文件名nodeInfo-${hash}。它也可以使用–just-generate-node-info命令行标志生成而不需要启动节点。要创建一个没有HTTP网络映射服务的简单网络，只需将该文件放置在该网络中每个节点的<code>additional-node-infos</code>目录中即可。例如，一个简单的方法是使用rsync。</p>
 <p>通常，测试网络具有提前知晓的结构。为了创建这样的网络，我们提供了一个 <code>network-bootstrapper</code>工具。如果给定网络中每台机器的IP地址/域名，此工具会预先生成节点配置目录。生成的节点目录包含网络中每个其他节点的NodeInfos以及网络参数文件和身份证书。生成的节点不需要一次全部在线 - 一个未与之交互的离线节点不会以任何方式影响网络。因此，像这样生成的测试集群可以按照您可能需要的最大大小来确定大小，然后根据需要进行放大和缩小。</p>
-<p>更多信息可以在<a href="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html" target="_blank" rel="noopener">设置Corda网络</a>中找到。</p>
+<p>更多信息可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvc2V0dGluZy11cC1hLWNvcmRhLW5ldHdvcmsuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/setting-up-a-corda-network.html">设置Corda网络<i class="fa fa-external-link"></i></span>中找到。</p>
 <h3 id="网络参数"><a href="#网络参数" class="headerlink" title="网络参数"></a>网络参数</h3><p>网络参数是一组值，参与该区域的每个节点需要达成一致并用于正确互操作。它们可以被认为是Corda部署的各个方面的封装，理性人可能会不同意。虽然其他区块链/DLT系统通常需要源代码fork以改变各种常量（如加密货币中的硬币总数，使用的端口号等），但在Corda中，我们将这些决策重构为单独的文件，并允许“区域运营商”对其进行决策。操作员签署一个包含这些值的数据结构，并将它们与网络map一起分发。提供工具以获得用户选择同意新版本参数的权限，并确保每个人同时切换到它们。</p>
 <p>如果节点正在使用HTTP网络map服务，那么在首次启动时，它将下载已签名的网络参数，将其缓存在<code>network-parameters</code>文件中并将其应用到节点上。</p>
 <p>警告: 如果<code>network-parameters</code>文件发生更改并且不再与网络map服务所发布的内容相匹配，则该节点将自动关闭。解决方法是删除不正确的文件并重新启动节点，以便可以再次下载参数。</p>
@@ -1226,7 +1281,7 @@
 <li>maxTransactionSize：交易的最大允许字节数。这是交易对象及其附件的大小。</li>
 <li>modifiedTime：    网络参数上次由兼容性区域运算符修改的时间。</li>
 <li>epoch：    网络参数的版本号。从1开始，只要有任何参数改变，它就会一直增加。</li>
-<li>whitelistedContractImplementations：合同代码的白名单版本列表。对于每个合同类，都有包含该合同的已批准CorDapp jar版本的散列列表。点击此处了解更多关于区域限制的信息<a href="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html" target="_blank" rel="noopener">API：合同限制</a></li>
+<li>whitelistedContractImplementations：合同代码的白名单版本列表。对于每个合同类，都有包含该合同的已批准CorDapp jar版本的散列列表。点击此处了解更多关于区域限制的信息<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWNvbnRyYWN0LWNvbnN0cmFpbnRzLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html">API：合同限制<i class="fa fa-external-link"></i></span></li>
 </ul>
 <p>更多参数将在未来版本中添加，以管理诸如允许的端口号，节点在从区域被逐出之前可以离线多久，区域成员是否需要IPv6连接，所需的加密算法和部署时间表（例如用于后期量子密码学），与SGX有关的参数等等。</p>
 <h3 id="网络参数更新过程"><a href="#网络参数更新过程" class="headerlink" title="网络参数更新过程"></a>网络参数更新过程</h3><p>如果需要更改网络参数，Corda区域操作员将开始更新过程。有很多原因可能导致这一决定：例如，添加公证人，设置添加的新字段以实现平滑的网络互操作性，或者需要更改现有的兼容性常量。</p>
@@ -1300,12 +1355,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/linux/Systemd添加自定义系统服务设置自定义开机启动.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1317,16 +1372,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/07/linux/Systemd添加自定义系统服务设置自定义开机启动/" class="post-title-link" itemprop="url">【转】Systemd添加自定义系统服务设置自定义开机启动</a>
+                <a href="/linux/Systemd添加自定义系统服务设置自定义开机启动.html" class="post-title-link" itemprop="url">【转】Systemd添加自定义系统服务设置自定义开机启动</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1380,13 +1438,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.6k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -1541,7 +1620,7 @@
 <h3 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl restart nginx.service</span><br></pre></td></tr></table></figure>
 <h3 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl reload nginx.service</span><br></pre></td></tr></table></figure>
 <h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl stop nginx.service</span><br></pre></td></tr></table></figure>
-<h2 id="原创"><a href="#原创" class="headerlink" title="原创"></a>原创</h2><p><a href="http://blog.51cto.com/wjb10000/1788364" target="_blank" rel="noopener">systemd添加自定义系统服务设置自定义开机启动</a></p>
+<h2 id="原创"><a href="#原创" class="headerlink" title="原创"></a>原创</h2><p><span class="exturl" data-url="aHR0cDovL2Jsb2cuNTFjdG8uY29tL3dqYjEwMDAwLzE3ODgzNjQ=" title="http://blog.51cto.com/wjb10000/1788364">systemd添加自定义系统服务设置自定义开机启动<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -1600,12 +1679,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/06/blockchain/corda/Corda-Nodes/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda-Nodes.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1617,16 +1696,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/06/blockchain/corda/Corda-Nodes/" class="post-title-link" itemprop="url">Corda Nodes</a>
+                <a href="/blockchain/corda/Corda-Nodes.html" class="post-title-link" itemprop="url">Corda Nodes</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1697,13 +1779,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">19k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">17 分钟</span>
+            </span>
           
 
           
@@ -1725,7 +1828,7 @@
           
             <h2 id="创建本地节点"><a href="#创建本地节点" class="headerlink" title="创建本地节点"></a>创建本地节点</h2><p>每个Corda节点都有以下的结构<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── certificates            // The node&apos;s certificates</span><br><span class="line">├── corda-webserver.jar     // The built-in node webserver</span><br><span class="line">├── corda.jar               // The core Corda libraries</span><br><span class="line">├── logs                    // The node logs</span><br><span class="line">├── node.conf               // The node&apos;s configuration files</span><br><span class="line">├── persistence.mv.db       // The node&apos;s database</span><br><span class="line">└── cordapps                // The CorDapps jars installed on the node</span><br></pre></td></tr></table></figure></p>
 <p>该节点通过编辑其<code>node.conf</code>文件进行配置。通过将CorDapp JAR放入该<code>cordapps</code>文件夹中来在节点上安装CorDapps 。</p>
-<p>在开发模式下（即何时<code>devMode = true</code>，请参阅<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>以获取更多信息）， 如果所需的密钥库不存在，则<code>certificates</code>目录中将填充预先配置的密钥库。这可以确保开发人员能够尽快获得节点的工作。但是，这些预配置的密钥库不安全。要了解更多信息，请参阅<a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>。</p>
+<p>在开发模式下（即何时<code>devMode = true</code>，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY29yZGEtY29uZmlndXJhdGlvbi1maWxlLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html">节点配置<i class="fa fa-external-link"></i></span>以获取更多信息）， 如果所需的密钥库不存在，则<code>certificates</code>目录中将填充预先配置的密钥库。这可以确保开发人员能够尽快获得节点的工作。但是，这些预配置的密钥库不安全。要了解更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>。</p>
 <h2 id="节点命名"><a href="#节点命名" class="headerlink" title="节点命名"></a>节点命名</h2><p>节点的名称必须是有效的X.500专有名称。为了与其他实现（特别是TLS实现）兼容，我们将允许的X.500名称属性类型约束为X.509证书（在RFC 3280中指定）的最小支持集的子集以及locality属性：</p>
 <ul>
 <li>组织（O）</li>
@@ -1735,9 +1838,9 @@
 <li>组织单元（OU）</li>
 <li>通用名称（CN）</li>
 </ul>
-<p>更多信息参考<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming" target="_blank" rel="noopener">这个网址</a>！</p>
-<h2 id="Cordform任务"><a href="#Cordform任务" class="headerlink" title="Cordform任务"></a>Cordform任务</h2><p>Corda提供了一个名为的gradle插件<code>Cordform</code>，允许您自动生成和配置一组用于测试和演示的节点。这是一个<code>Cordform</code>调用的示例任务<code>deployNodes</code>，它创建三个节点，在<a href="https://github.com/corda/cordapp-template-kotlin/blob/release-V3/build.gradle#L100" target="_blank" rel="noopener">Kotlin CorDapp模板</a>中定义：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    directory <span class="string">"./build/nodes"</span></span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Notary,L=London,C=GB"</span></span><br><span class="line">        <span class="comment">// The notary will offer a validating notary service.</span></span><br><span class="line">        notary = [validating : <span class="keyword">true</span>]</span><br><span class="line">        p2pPort  <span class="number">10002</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10003</span></span><br><span class="line">            adminPort <span class="number">10023</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// No webport property, so no webserver will be created.</span></span><br><span class="line">        h2Port   <span class="number">10004</span></span><br><span class="line">        <span class="comment">// Includes the corda-finance CorDapp on our node.</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyA,L=London,C=GB"</span></span><br><span class="line">        p2pPort  <span class="number">10005</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10006</span></span><br><span class="line">            adminPort <span class="number">10026</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10007</span></span><br><span class="line">        h2Port   <span class="number">10008</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 all RPC permissions.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"ALL"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        p2pPort  <span class="number">10009</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10010</span></span><br><span class="line">            adminPort <span class="number">10030</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10011</span></span><br><span class="line">        h2Port   <span class="number">10012</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>要将节点配置扩展到<code>deployNodes</code>任务中定义的属性之外，请使用<code>configFile</code>路径（相对或绝对）设置为其他配置文件的属性。根据node.conf，该文件应该遵循标准的<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>格式。该文件的属性将被附加到生成的节点配置中。通过<code>-PconfigFile</code>命令行选项运行Gradle任务时，也可以添加文件的路径。但是，相同的文件将应用于所有节点。在前面的示例<code>PartyB</code>节点之后，将有一个从文件添加的额外配置选项<code>none-b.conf</code>：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    [...]</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        [...]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">        configFile = <span class="string">"samples/trader-demo/src/main/resources/none-b.conf"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>更多信息参考<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbCNub2RlLW5hbWluZw==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html#node-naming">这个网址<i class="fa fa-external-link"></i></span>！</p>
+<h2 id="Cordform任务"><a href="#Cordform任务" class="headerlink" title="Cordform任务"></a>Cordform任务</h2><p>Corda提供了一个名为的gradle插件<code>Cordform</code>，允许您自动生成和配置一组用于测试和演示的节点。这是一个<code>Cordform</code>调用的示例任务<code>deployNodes</code>，它创建三个节点，在<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUta290bGluL2Jsb2IvcmVsZWFzZS1WMy9idWlsZC5ncmFkbGUjTDEwMA==" title="https://github.com/corda/cordapp-template-kotlin/blob/release-V3/build.gradle#L100">Kotlin CorDapp模板<i class="fa fa-external-link"></i></span>中定义：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    directory <span class="string">"./build/nodes"</span></span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=Notary,L=London,C=GB"</span></span><br><span class="line">        <span class="comment">// The notary will offer a validating notary service.</span></span><br><span class="line">        notary = [validating : <span class="keyword">true</span>]</span><br><span class="line">        p2pPort  <span class="number">10002</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10003</span></span><br><span class="line">            adminPort <span class="number">10023</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// No webport property, so no webserver will be created.</span></span><br><span class="line">        h2Port   <span class="number">10004</span></span><br><span class="line">        <span class="comment">// Includes the corda-finance CorDapp on our node.</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyA,L=London,C=GB"</span></span><br><span class="line">        p2pPort  <span class="number">10005</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10006</span></span><br><span class="line">            adminPort <span class="number">10026</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10007</span></span><br><span class="line">        h2Port   <span class="number">10008</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 all RPC permissions.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"ALL"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        p2pPort  <span class="number">10009</span></span><br><span class="line">        rpcSettings &#123;</span><br><span class="line">            port <span class="number">10010</span></span><br><span class="line">            adminPort <span class="number">10030</span></span><br><span class="line">        &#125;</span><br><span class="line">        webPort  <span class="number">10011</span></span><br><span class="line">        h2Port   <span class="number">10012</span></span><br><span class="line">        cordapps = [<span class="string">"net.corda:corda-finance:$corda_release_version"</span>]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>要将节点配置扩展到<code>deployNodes</code>任务中定义的属性之外，请使用<code>configFile</code>路径（相对或绝对）设置为其他配置文件的属性。根据node.conf，该文件应该遵循标准的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY29yZGEtY29uZmlndXJhdGlvbi1maWxlLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html">节点配置<i class="fa fa-external-link"></i></span>格式。该文件的属性将被附加到生成的节点配置中。通过<code>-PconfigFile</code>命令行选项运行Gradle任务时，也可以添加文件的路径。但是，相同的文件将应用于所有节点。在前面的示例<code>PartyB</code>节点之后，将有一个从文件添加的额外配置选项<code>none-b.conf</code>：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> deployNodes(type: net.corda.plugins.Cordform, dependsOn: [<span class="string">'jar'</span>]) &#123;</span><br><span class="line">    [...]</span><br><span class="line">    node &#123;</span><br><span class="line">        name <span class="string">"O=PartyB,L=New York,C=US"</span></span><br><span class="line">        [...]</span><br><span class="line">        <span class="comment">// Grants user1 the ability to start the MyFlow flow.</span></span><br><span class="line">        rpcUsers = [[ user: <span class="string">"user1"</span>, <span class="string">"password"</span>: <span class="string">"test"</span>, <span class="string">"permissions"</span>: [<span class="string">"StartFlow.net.corda.flows.MyFlow"</span>]]]</span><br><span class="line">        configFile = <span class="string">"samples/trader-demo/src/main/resources/none-b.conf"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>运行此任务将在<code>build/nodes</code>文件夹中创建三个节点：</p>
 <ul>
 <li>一个<code>Notary</code>节点：<ul>
@@ -1760,7 +1863,7 @@
 <p>不需要指定端口，因为每个节点都是独立的容器，所以不会发生端口冲突。运行该任务将创建与“Cordform任务”中所述的相同的文件夹结构<code>Dockerfile</code>，并<code>docker-compose.yml</code>在每个节点目录中和<code>build/nodes</code>目录中添加一个附加文件夹结构。默认情况下，每个节点都公开端口<code>10003</code>，这是RPC连接的默认端口。</p>
 <p>要创建我们<code>deployNodes</code>任务中定义的节点，请在定义任务的项目根目录的终端窗口中运行以下命令<code>deployNodes</code>：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew deployNodes</span><br></pre></td></tr></table></figure></p>
 <p>这将在<code>build/nodes</code>文件夹中创建节点。将为该deployNodes任务中定义的每个节点生成一个节点文件夹，以及runnodes用于同时运行所有节点以进行测试和开发的shell脚本（或Windows上的批处理文件）。如果您对CorDapp源代码或deployNodes任务进行了任何更改，则需要重新运行该任务以查看更改才能生效。</p>
-<p>现在可以按照运行节点中的说明<a href="https://docs.corda.net/releases/release-V3.1/running-a-node.html" target="_blank" rel="noopener">运行节点</a>。</p>
+<p>现在可以按照运行节点中的说明<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcnVubmluZy1hLW5vZGUuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/running-a-node.html">运行节点<i class="fa fa-external-link"></i></span>。</p>
 <h2 id="本地运行节点"><a href="#本地运行节点" class="headerlink" title="本地运行节点"></a>本地运行节点</h2><p>出于测试目的，本地运行Corda节点有几种方法。</p>
 <h3 id="一次启动所有节点"><a href="#一次启动所有节点" class="headerlink" title="一次启动所有节点"></a>一次启动所有节点</h3><p><code>runnodes</code>是一个shell脚本（或Windows上的批处理文件），<code>deployNodes</code>可以让您快速启动所有节点及其Web服务器。<code>runnodes</code>只能用于测试目的。</p>
 <p><code>runnodes</code>通过从项目的根目录运行以下命令来启动节点：命令：<code>build/nodes/runnodes</code>.</p>
@@ -1771,21 +1874,21 @@
 <p>也可以通过在节点的文件夹中打开终端窗口并运行以下命令来运行节点的Web服务器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar corda-webserver.jar</span><br></pre></td></tr></table></figure></p>
 <h3 id="启动启用远程调试的节点"><a href="#启动启用远程调试的节点" class="headerlink" title="启动启用远程调试的节点"></a>启动启用远程调试的节点</h3><p><b style="color:red">要启用节点的远程调试，请从终端窗口运行以下命令：</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Dcapsule.jvm.args=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005&quot; -jar corda.jar</span><br></pre></td></tr></table></figure></p>
 <p>该命令行将在端口5005上启动调试器并暂停进程，等待调试器附件。</p>
-<h2 id="部署节点"><a href="#部署节点" class="headerlink" title="部署节点"></a>部署节点</h2><p>这些说明适用于想要将Corda节点部署到服务器的人员，无论他们是按照<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">本地创建节点</a>中的指示信息开发并测试了CorDapp 还是正在部署第三方CorDapp。</p>
+<h2 id="部署节点"><a href="#部署节点" class="headerlink" title="部署节点"></a>部署节点</h2><p>这些说明适用于想要将Corda节点部署到服务器的人员，无论他们是按照<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html">本地创建节点<i class="fa fa-external-link"></i></span>中的指示信息开发并测试了CorDapp 还是正在部署第三方CorDapp。</p>
 <h3 id="Linux：作为系统服务安装并运行Corda"><a href="#Linux：作为系统服务安装并运行Corda" class="headerlink" title="Linux：作为系统服务安装并运行Corda"></a>Linux：作为系统服务安装并运行Corda</h3><p>我们建议创建系统服务来运行节点和可选的Web服务器。这提供日志记录和服务处理，并确保Corda服务在启动时运行。</p>
-<p>具体细节查看<a href="https://docs.corda.net/releases/release-V3.1/deploying-a-node.html" target="_blank" rel="noopener">这里</a>！</p>
+<p>具体细节查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZGVwbG95aW5nLWEtbm9kZS5odG1s" title="https://docs.corda.net/releases/release-V3.1/deploying-a-node.html">这里<i class="fa fa-external-link"></i></span>！</p>
 <h3 id="测试安装是否正确"><a href="#测试安装是否正确" class="headerlink" title="测试安装是否正确"></a>测试安装是否正确</h3><p>运行节点后，然后通过rpc服务尝试连接节点，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet your-hostname.example.com 10002</span><br></pre></td></tr></table></figure></p>
 <p>如果你收到这个信息<code>Escape character is ^]</code>，说明Corda已经启动并且可使用。</p>
 <h2 id="节点配置"><a href="#节点配置" class="headerlink" title="节点配置"></a>节点配置</h2><h3 id="文件位置"><a href="#文件位置" class="headerlink" title="文件位置"></a>文件位置</h3><p>Corda all-in-one <code>corda.jar</code>文件由<code>gradle buildCordaJAR</code>任务生成，默认为从当前工作目录中的<code>node.conf</code>文件读取配置。可以使用<code>--config-file</code> 命令行选项以不同名称或不同文件位置（相对路径相对于当前工作目录）为目标来配置此行为。另外，命令行<code>--base-directory</code>选项会更改Corda节点工作空间的位置，如果指定<code>node.conf</code>，则工作空间的根目录中会出现配置文件。</p>
 <p>用于该<code>gradle deployNodes</code>任务的配置文件模板将在该文件夹<code>/config/dev</code>中找到。还要注意，从<code>:node</code>gradle模块的内置资源文件<code>/node/src/main/resources/reference.conf</code>中加载了一组基本的默认值。此文件中的所有属性都可以在文件配置中进行过滤，对于很少更改的属性，此默认值允许将该属性从配置文件中排除。</p>
-<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p>Corda配置文件使用JSON超集的HOCON格式。它具有多种功能，使其成为配置格式非常有用。请访问他们的<a href="https://github.com/typesafehub/config/blob/master/HOCON.md" target="_blank" rel="noopener">页面</a>了解更多详情。</p>
+<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p>Corda配置文件使用JSON超集的HOCON格式。它具有多种功能，使其成为配置格式非常有用。请访问他们的<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3R5cGVzYWZlaHViL2NvbmZpZy9ibG9iL21hc3Rlci9IT0NPTi5tZA==" title="https://github.com/typesafehub/config/blob/master/HOCON.md">页面<i class="fa fa-external-link"></i></span>了解更多详情。</p>
 <h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>用于托管IRS Demo服务的常规节点配置文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">myLegalName : &quot;O=Bank A,L=London,C=GB&quot;</span><br><span class="line">keyStorePassword : &quot;cordacadevpass&quot;</span><br><span class="line">trustStorePassword : &quot;trustpass&quot;</span><br><span class="line">dataSourceProperties : &#123;</span><br><span class="line">    dataSourceClassName : org.h2.jdbcx.JdbcDataSource</span><br><span class="line">    &quot;dataSource.url&quot; : &quot;jdbc:h2:file:&quot;$&#123;baseDirectory&#125;&quot;/persistence&quot;</span><br><span class="line">    &quot;dataSource.user&quot; : sa</span><br><span class="line">    &quot;dataSource.password&quot; : &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line">p2pAddress : &quot;my-corda-node:10002&quot;</span><br><span class="line">rpcSettings = &#123;</span><br><span class="line">    useSsl = false</span><br><span class="line">    standAloneBroker = false</span><br><span class="line">    address : &quot;my-corda-node:10003&quot;</span><br><span class="line">    adminAddress : &quot;my-corda-node:10004&quot;</span><br><span class="line">&#125;</span><br><span class="line">webAddress : &quot;localhost:10004&quot;</span><br><span class="line">rpcUsers : [</span><br><span class="line">    &#123; username=user1, password=letmein, permissions=[ StartFlow.net.corda.protocols.CashProtocol ] &#125;</span><br><span class="line">]</span><br><span class="line">devMode : true</span><br></pre></td></tr></table></figure></p>
 <p>简单的Notary配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">myLegalName : &quot;O=Notary Service,OU=corda,L=London,C=GB&quot;</span><br><span class="line">keyStorePassword : &quot;cordacadevpass&quot;</span><br><span class="line">trustStorePassword : &quot;trustpass&quot;</span><br><span class="line">p2pAddress : &quot;localhost:12345&quot;</span><br><span class="line">rpcSettings = &#123;</span><br><span class="line">    useSsl = false</span><br><span class="line">    standAloneBroker = false</span><br><span class="line">    address : &quot;my-corda-node:10003&quot;</span><br><span class="line">    adminAddress : &quot;my-corda-node:10004&quot;</span><br><span class="line">&#125;</span><br><span class="line">webAddress : &quot;localhost:12347&quot;</span><br><span class="line">notary : &#123;</span><br><span class="line">    validating : false</span><br><span class="line">&#125;</span><br><span class="line">devMode : true</span><br><span class="line">compatibilityZoneURL : &quot;https://cz.corda.net&quot;</span><br></pre></td></tr></table></figure></p>
-<h3 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h3><p>下面是字段的解释，请查看<a href="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html#fields" target="_blank" rel="noopener">这里</a>。</p>
+<h3 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h3><p>下面是字段的解释，请查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY29yZGEtY29uZmlndXJhdGlvbi1maWxlLmh0bWwjZmllbGRz" title="https://docs.corda.net/releases/release-V3.1/corda-configuration-file.html#fields">这里<i class="fa fa-external-link"></i></span>。</p>
 <h2 id="客户端RPC"><a href="#客户端RPC" class="headerlink" title="客户端RPC"></a>客户端RPC</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Corda提供了一个客户端库，允许您使用JVM兼容语言轻松编写客户端以与正在运行的节点进行交互。库使用消息队列协议连接到节点，然后提供一个简单的RPC接口与节点进行交互。正常情况下，您会对Java对象进行调用，并且会为您处理来回编组。</p>
-<p>客户端库的起点是<a href="https://docs.corda.net/releases/release-V3.1/api/javadoc/net/corda/client/rpc/CordaRPCClient.html" target="_blank" rel="noopener"><code>CordaRPCClient</code></a>类。<code>CordaRPCClient</code>提供了一个<code>start</code>返回<code>CordaRPCConnection</code>的方法。一个<code>CordaRPCConnection</code>允许您访问的实现 <code>CordaRPCOps</code>接口，这个接口有<code>proxy</code>方法（kotlin）或<code>getProxy()</code>（Java中）。可以订阅RPC操作返回的可观察数据，以便从节点接收正在进行的更新流。有关此功能的更多详细信息在该proxy方法的文档中提供。</p>
+<p>客户端库的起点是<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpL2phdmFkb2MvbmV0L2NvcmRhL2NsaWVudC9ycGMvQ29yZGFSUENDbGllbnQuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/api/javadoc/net/corda/client/rpc/CordaRPCClient.html"><code>CordaRPCClient</code><i class="fa fa-external-link"></i></span>类。<code>CordaRPCClient</code>提供了一个<code>start</code>返回<code>CordaRPCConnection</code>的方法。一个<code>CordaRPCConnection</code>允许您访问的实现 <code>CordaRPCOps</code>接口，这个接口有<code>proxy</code>方法（kotlin）或<code>getProxy()</code>（Java中）。可以订阅RPC操作返回的可观察数据，以便从节点接收正在进行的更新流。有关此功能的更多详细信息在该proxy方法的文档中提供。</p>
 <p><b style="color:blue">警告: 返回的<code>CordaRPCConnection</code>创建并消耗少量服务器端资源的成本有点高。当你完成它时，请调用<code>close</code>方法。或者，您可以在传入的lambda结束后使用CordaRPCClient上的<code>use</code>方法自动清理。不要为每次调用创建新的代理 - 重复使用现有的代理。</b></p>
-<p>有关使用RPC API的简要教程，请参阅<a href="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html" target="_blank" rel="noopener">使用客户端RPC API</a>。</p>
+<p>有关使用RPC API的简要教程，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvdHV0b3JpYWwtY2xpZW50cnBjLWFwaS5odG1s" title="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html">使用客户端RPC API<i class="fa fa-external-link"></i></span>。</p>
 <h3 id="RPC权限"><a href="#RPC权限" class="headerlink" title="RPC权限"></a>RPC权限</h3><p>对于节点的所有者通过RPC与其节点进行交互，他们必须定义一个或多个RPC用户。每个用户都使用用户名和密码进行身份验证，并为其分配一组权限，以控制他们可以执行哪些RPC操作。</p>
 <p>通过将RPC用户添加到rpcUsers节点node.conf文件的列表中来创建RPC用户：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rpcUsers = [ </span><br><span class="line">    &#123; </span><br><span class="line">        username = exampleUser </span><br><span class="line">        password = examplePass </span><br><span class="line">        permissions = [] </span><br><span class="line">    &#125; </span><br><span class="line">    ... </span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
 <p>默认情况下，RPC用户没有权限执行任何RPC操作。</p>
@@ -1800,7 +1903,7 @@
 </ul>
 <p>这些功能由嵌套在<code>security</code>字段中的一组选项控制<code>node.conf</code>。以下示例显示如何使用哈希加密格式的密码配置从远程数据库中检索用户凭据和权限，并启用用户数据的内存中缓存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">security  =  &#123; </span><br><span class="line">    authService  =  &#123; </span><br><span class="line">        dataSource  =  &#123; </span><br><span class="line">            type  =  “DB” ，</span><br><span class="line">            passwordEncryption  =  “SHIRO_1_CRYPT” ，</span><br><span class="line">            connection  =  &#123; </span><br><span class="line">               jdbcUrl  =  “&lt;jdbc connection string&gt;” </span><br><span class="line">               username  =  “&lt;db username&gt;” </span><br><span class="line">               password  =  “&lt;db user password&gt;” </span><br><span class="line">               driverClassName  =  “&lt;JDBC驱动程序&gt;”</span><br><span class="line">            &#125; </span><br><span class="line">        &#125; </span><br><span class="line">        options  =  &#123; </span><br><span class="line">             cache  =  &#123; </span><br><span class="line">                expireAfterSecs  =  120 </span><br><span class="line">                maxEntries  = 10000 </span><br><span class="line">             &#125; </span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>另外，也可以具有嵌入在用户的静态列表<code>security</code>通过指定结构<code>dataSource</code>的<code>INMEMORY</code>类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">security  =  &#123; </span><br><span class="line">    authService  =  &#123; </span><br><span class="line">        dataSource  =  &#123; </span><br><span class="line">            type  =  “INMEMORY” ，</span><br><span class="line">            users  =  [ </span><br><span class="line">                &#123; </span><br><span class="line">                    username  =  “&lt;username&gt;” ，</span><br><span class="line">                    password  =  “&lt;password&gt;” ，</span><br><span class="line">                    permissions  =  [ “&lt;permission 1&gt;” ， “&lt;permission 2&gt; “ ， ...] </span><br><span class="line">                &#125;，</span><br><span class="line">                ... </span><br><span class="line">            ] </span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h3><p>看<a href="https://docs.corda.net/releases/release-V3.1/clientrpc.html" target="_blank" rel="noopener">原文</a></p>
+<h3 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h3><p>看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY2xpZW50cnBjLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/clientrpc.html">原文<i class="fa fa-external-link"></i></span></p>
 <h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p>Corda Shell是嵌入式的命令行工具，允许管理员控制和监视节点。它基于CRaSH外壳，并支持许多相同的功能。这些功能包括：</p>
 <ul>
 <li>调用任何节点的RPC方法</li>
@@ -1822,7 +1925,7 @@
 </ul>
 <h3 id="通过shell与节点交互"><a href="#通过shell与节点交互" class="headerlink" title="通过shell与节点交互"></a>通过shell与节点交互</h3><p>shell通过发出RPC（远程过程调用）与节点交互。您可以通过输入<code>run</code>后跟所需RPC方法的名称从shell进行 RPC。例如，您可以运行以下命令，在节点上看到注册流程的列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run registeredFlows</span><br></pre></td></tr></table></figure></p>
 <p>一些RPC返回将在屏幕上显示的事件流，直到您按Ctrl-C。</p>
-<p>您可以在<a href="https://docs.corda.net/api/kotlin/corda/net.corda.core.messaging/-corda-r-p-c-ops/index.html" target="_blank" rel="noopener">这里</a>找到可用RPC方法的列表 。</p>
+<p>您可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9hcGkva290bGluL2NvcmRhL25ldC5jb3JkYS5jb3JlLm1lc3NhZ2luZy8tY29yZGEtci1wLWMtb3BzL2luZGV4Lmh0bWw=" title="https://docs.corda.net/api/kotlin/corda/net.corda.core.messaging/-corda-r-p-c-ops/index.html">这里<i class="fa fa-external-link"></i></span>找到可用RPC方法的列表 。</p>
 <h4 id="流程命令"><a href="#流程命令" class="headerlink" title="流程命令"></a>流程命令</h4><p>该shell还具有处理流程的特殊命令：</p>
 <ul>
 <li><code>flow list</code> 列出节点上可用的流</li>
@@ -1839,10 +1942,10 @@
 <li>除非包含逗号，冒号或嵌入引号，否则字符串不需要用引号括起来</li>
 <li>类名必须是完全合格的（例如<code>java.lang.String</code>）</li>
 </ul>
-<p>注意: 如果您的CorDapp是用Java编写的，除非使用<code>-parameters</code>javac参数编译节点，否则命名参数将不起作用 。请参阅<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">本地创建节点</a>以了解如何通过Gradle指定<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">节点</a>。</p>
+<p>注意: 如果您的CorDapp是用Java编写的，除非使用<code>-parameters</code>javac参数编译节点，否则命名参数将不起作用 。请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html">本地创建节点<i class="fa fa-external-link"></i></span>以了解如何通过Gradle指定<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html">节点<i class="fa fa-external-link"></i></span>。</p>
 <h5 id="创建一个类的实例"><a href="#创建一个类的实例" class="headerlink" title="创建一个类的实例"></a>创建一个类的实例</h5><p>类实例使用花括号语法创建。例如，如果我们有一个<code>Campaign</code>具有以下构造函数的类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data class Campaign(val name: String, val target: Int)</span><br></pre></td></tr></table></figure></p>
 <p>然后我们可以创建这个类的一个实例作为参数传递，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">newCampaign: &#123; name: Roger, target: 1000 &#125;</span><br></pre></td></tr></table></figure></p>
-<h5 id="从字符串到类型的映射"><a href="#从字符串到类型的映射" class="headerlink" title="从字符串到类型的映射"></a>从字符串到类型的映射</h5><p>几个参数类型可以自动从字符串映射。查看<a href="https://docs.corda.net/releases/release-V3.1/api/kotlin/corda/net.corda.client.jackson/-jackson-support/index.html" target="_blank" rel="noopener">定义的解析器</a>以获取更多信息。我们覆盖这里最常见的类型。</p>
+<h5 id="从字符串到类型的映射"><a href="#从字符串到类型的映射" class="headerlink" title="从字符串到类型的映射"></a>从字符串到类型的映射</h5><p>几个参数类型可以自动从字符串映射。查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpL2tvdGxpbi9jb3JkYS9uZXQuY29yZGEuY2xpZW50LmphY2tzb24vLWphY2tzb24tc3VwcG9ydC9pbmRleC5odG1s" title="https://docs.corda.net/releases/release-V3.1/api/kotlin/corda/net.corda.client.jackson/-jackson-support/index.html">定义的解析器<i class="fa fa-external-link"></i></span>以获取更多信息。我们覆盖这里最常见的类型。</p>
 <h5 id="Amount"><a href="#Amount" class="headerlink" title="Amount"></a>Amount</h5><p>类型的参数<code>Amount&lt;Currency&gt;</code>可以写为：</p>
 <ul>
 <li>美元（$），英镑（£）或欧元（€）符号，后面跟着小数点</li>
@@ -1866,11 +1969,11 @@
 <li><code>vaultQuery</code> 是我们想要做的RPC调用</li>
 <li><code>contractStateType: com.template.IOUState</code> 是我们查询的状态类型的完全限定名称</li>
 </ul>
-<h4 id="附件"><a href="#附件" class="headerlink" title="附件"></a>附件</h4><p>该shell可用于从节点上载和下载附件。要了解更多信息，请参阅教程“<a href="https://docs.corda.net/releases/release-V3.1/tutorial-attachments.html" target="_blank" rel="noopener">使用附件</a> ”。</p>
+<h4 id="附件"><a href="#附件" class="headerlink" title="附件"></a>附件</h4><p>该shell可用于从节点上载和下载附件。要了解更多信息，请参阅教程“<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvdHV0b3JpYWwtYXR0YWNobWVudHMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/tutorial-attachments.html">使用附件<i class="fa fa-external-link"></i></span> ”。</p>
 <h4 id="获得帮助"><a href="#获得帮助" class="headerlink" title="获得帮助"></a>获得帮助</h4><p>您可以键入<code>help</code> shell以列出可用的命令，并<code>man</code>获得许多命令的交互式帮助。您还可以将该标志<code>--help</code>或<code>-h</code>标志传递给命令以获取有关它支持哪些开关的信息。</p>
 <p>命令可能具有子命令，其格式与<code>git</code>。在这种情况下，自行运行命令将列出支持的子命令。</p>
 <h3 id="扩展shell"><a href="#扩展shell" class="headerlink" title="扩展shell"></a>扩展shell</h3><p>可以使用以Java或Groovy（一种Java兼容的脚本语言）编写的命令来扩展shell 。这些命令可以完全访问节点的内部API，因此可以用来实现几乎所有的功能。</p>
-<p>有关如何编写这些命令的完整教程不在本文档的范围之内。要了解更多信息，请参阅<a href="http://www.crashub.org/" target="_blank" rel="noopener">CRaSH</a>文档。新命令放置在<code>shell-commands</code>节点目录的子目录中。现有命令的编辑将自动使用，但当前在节点启动后添加的命令不会被自动检测到。命令必须全部以小写字母<code>.java</code>或<code>.groovy</code>扩展名命名。</p>
+<p>有关如何编写这些命令的完整教程不在本文档的范围之内。要了解更多信息，请参阅<span class="exturl" data-url="aHR0cDovL3d3dy5jcmFzaHViLm9yZy8=" title="http://www.crashub.org/">CRaSH<i class="fa fa-external-link"></i></span>文档。新命令放置在<code>shell-commands</code>节点目录的子目录中。现有命令的编辑将自动使用，但当前在节点启动后添加的命令不会被自动检测到。命令必须全部以小写字母<code>.java</code>或<code>.groovy</code>扩展名命名。</p>
 <p><b style="color:blue">警告:在Groovy中编写的命令会忽略Java安全检查，因此无论是否存在任何沙盒，都可以无限制地访问节点和JVM内部。不允许不受信任的用户编辑shell-commands目录中的文件！</b></p>
 <h3 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h3><p>随着时间的推移，Shell将得到增强。目前已知的限制包括：</p>
 <ul>
@@ -1883,7 +1986,7 @@
 <h2 id="节点数据库"><a href="#节点数据库" class="headerlink" title="节点数据库"></a>节点数据库</h2><p>目前，节点将其数据存储在H2数据库中。今后，我们计划支持各种各样的数据库。</p>
 <p>您可以直接连接到正在运行的节点的数据库，以查看其存储的状态，交易和附件，如下所示：</p>
 <ul>
-<li>下载独立于<a href="http://www.h2database.com/html/download.html" target="_blank" rel="noopener">h2平台的zip文件</a>，将zip解压缩，然后在终端窗口中导航到解压缩的文件夹</li>
+<li>下载独立于<span class="exturl" data-url="aHR0cDovL3d3dy5oMmRhdGFiYXNlLmNvbS9odG1sL2Rvd25sb2FkLmh0bWw=" title="http://www.h2database.com/html/download.html">h2平台的zip文件<i class="fa fa-external-link"></i></span>，将zip解压缩，然后在终端窗口中导航到解压缩的文件夹</li>
 <li>将目录更改为bin文件夹：<code>cd h2/bin</code></li>
 <li>运行以下命令以在Web浏览器选项卡中打开h2 Web控制台：<code>sh h2.sh</code></li>
 <li><p>找到节点的JDBC连接字符串。每个节点在启动时在终端窗口中输出其连接字符串。在运行节点的终端窗口中，查找以下字符串：</p>
@@ -1905,7 +2008,7 @@
 <p>用户名和密码可以在节点配置中更改，但默认为用户名“sa”和空白密码。</p>
 <p>任何支持JDBC的数据库浏览工具都可以使用，但是如果您有IntelliJ Ultimate版本，那么您的IDE中会集成一个工具。只需打开数据库窗口并添加一个H2数据源，并提供上述详细信息。您现在可以浏览其中的表格和行数据。</p>
 <h3 id="监视你的节点"><a href="#监视你的节点" class="headerlink" title="监视你的节点"></a>监视你的节点</h3><p>与大多数Java服务器一样，节点通过行业标准的JMX基础架构导出各种有用的度量标准和管理操作 。JMX是注册所谓的MBeans …对象的标准API，其属性和方法用于服务器管理。它不需要任何特定的网络协议来输出。因此，这些数据可以通过各种方式从节点导出：一些监控系统提供了一个“Java代理”，它本质上是一个JVM插件，用于查找所有MBean并将它们发送到网络上的统计收集器。对于这些系统，请按照供应商提供的说明进行操作。</p>
-<p>具体查看<a href="https://docs.corda.net/releases/release-V3.1/node-administration.html#monitoring-your-node" target="_blank" rel="noopener">这里</a>! </p>
+<p>具体查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvbm9kZS1hZG1pbmlzdHJhdGlvbi5odG1sI21vbml0b3JpbmcteW91ci1ub2Rl" title="https://docs.corda.net/releases/release-V3.1/node-administration.html#monitoring-your-node">这里<i class="fa fa-external-link"></i></span>! </p>
 <h3 id="内存使用和调整"><a href="#内存使用和调整" class="headerlink" title="内存使用和调整"></a>内存使用和调整</h3><p>所有垃圾收集程序可以运行得更快，如果你给他们更多的内存，因为他们需要收集更少的频率。作为默认的JVM，如果你愿意的话，它可以愉快地占用你系统上的所有内存，默认情况下，Corda配置了一个相对较小的200MB Java堆。当添加其他开销时，这会为一个节点产生大约500mb的总内存使用量（开销来自编译代码，元数据，堆外缓冲区，线程堆栈等）。</p>
 <p>如果你想让你的节点变得更快，并且分析表明过多的GC开销是原因，或者如果你的节点内存不足，你可以通过运行节点来给它更多的东西：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx1024m -jar corda.jar</span><br></pre></td></tr></table></figure></p>
 <p>上面的示例命令会给出1千兆字节的Java堆。</p>
@@ -1974,12 +2077,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/01/blockchain/corda/Cordapp基础知识/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Cordapp基础知识.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1991,16 +2094,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/01/blockchain/corda/Cordapp基础知识/" class="post-title-link" itemprop="url">Cordapp基础知识</a>
+                <a href="/blockchain/corda/Cordapp基础知识.html" class="post-title-link" itemprop="url">Cordapp基础知识</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2071,13 +2177,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">13k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">12 分钟</span>
+            </span>
           
 
           
@@ -2134,8 +2261,8 @@
 <p>在生产环境中，应该使用生产就绪的网络服务器，这些文件应该移到不同的模块或项目中，以便在构建时不会膨胀CorDapp。</p>
 <h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><p>您应该将项目的结构基于Java或Kotlin模板：</p>
 <ul>
-<li><a href="https://github.com/corda/cordapp-template-java" target="_blank" rel="noopener">Java模板CorDapp</a></li>
-<li><a href="https://github.com/corda/cordapp-template-kotlin" target="_blank" rel="noopener">Kotlin模板CorDapp</a></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUtamF2YQ==" title="https://github.com/corda/cordapp-template-java">Java模板CorDapp<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUta290bGlu" title="https://github.com/corda/cordapp-template-kotlin">Kotlin模板CorDapp<i class="fa fa-external-link"></i></span></li>
 </ul>
 <p>该项目应该分为两个模块：</p>
 <ul>
@@ -2170,15 +2297,15 @@
 <p>这些用于测试目的，并将在生产CorDapp中删除。</p>
 <h3 id="学习的资源"><a href="#学习的资源" class="headerlink" title="学习的资源"></a>学习的资源</h3><p>在编写CorDapp时，您应该查阅以下资源：</p>
 <ul>
-<li><a href="https://docs.corda.net/releases/release-V3.1/getting-set-up.html" target="_blank" rel="noopener">快速设置</a>来设置你的开发环境</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2V0dGluZy1zZXQtdXAuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/getting-set-up.html">快速设置<i class="fa fa-external-link"></i></span>来设置你的开发环境</li>
 <li>你好，世界！教程来编写你的第一个CorDapp</li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/cordapp-build-systems.html" target="_blank" rel="noopener">构建一个CorDapp</a>来构建和运行您的CorDapp</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY29yZGFwcC1idWlsZC1zeXN0ZW1zLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/cordapp-build-systems.html">构建一个CorDapp<i class="fa fa-external-link"></i></span>来构建和运行您的CorDapp</li>
 <li>该API文档阅读有关开发CorDapps可用的API<ul>
-<li>还有一个<a href="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html" target="_blank" rel="noopener">cheatsheet</a>重新说明关键类型</li>
+<li>还有一个<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY2hlYXQtc2hlZXQuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html">cheatsheet<i class="fa fa-external-link"></i></span>重新说明关键类型</li>
 </ul>
 </li>
-<li>该<a href="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html" target="_blank" rel="noopener">流程指南</a>看如何执行常见任务流的代码示例</li>
-<li><a href="https://www.corda.net/samples/" target="_blank" rel="noopener">CorDapps实例程序</a>显示Corda功能的各个部分</li>
+<li>该<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZmxvdy1jb29rYm9vay5odG1s" title="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html">流程指南<i class="fa fa-external-link"></i></span>看如何执行常见任务流的代码示例</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuY29yZGEubmV0L3NhbXBsZXMv" title="https://www.corda.net/samples/">CorDapps实例程序<i class="fa fa-external-link"></i></span>显示Corda功能的各个部分</li>
 </ul>
 <h2 id="构建一个Cordapp"><a href="#构建一个Cordapp" class="headerlink" title="构建一个Cordapp"></a>构建一个Cordapp</h2><h3 id="CorDapp格式"><a href="#CorDapp格式" class="headerlink" title="CorDapp格式"></a>CorDapp格式</h3><p>Cordapp是一个semi-fat的jar包，它包含除 Corda核心库和其它依赖的任何其他CorDapps 之外的所有CorDapp依赖项。</p>
 <h3 id="构建工具"><a href="#构建工具" class="headerlink" title="构建工具"></a>构建工具</h3><p>在下面的说明中，我们假设你正在使用<code>gradle</code>和<code>cordformation</code>插件来构建你的CorDapp。</p>
@@ -2215,27 +2342,27 @@
 </ul>
 <p>请注意，<code>cordformation</code>和<code>cordapp</code> Gradle插件可以一起使用。</p>
 <h4 id="其他依赖关系"><a href="#其他依赖关系" class="headerlink" title="其他依赖关系"></a>其他依赖关系</h4><p>如果您的CorDapps有任何额外的外部依赖关系，可以像Gradle中的正常Kotlin / Java依赖关系那样指定它们。看下面的例子，特别是<code>apache-commons</code>包含。</p>
-<p>有关管理依赖关系的更多信息，请参阅<a href="https://docs.gradle.org/current/userguide/dependency_management.html" target="_blank" rel="noopener">Gradle文档</a>。</p>
+<p>有关管理依赖关系的更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmdyYWRsZS5vcmcvY3VycmVudC91c2VyZ3VpZGUvZGVwZW5kZW5jeV9tYW5hZ2VtZW50Lmh0bWw=" title="https://docs.gradle.org/current/userguide/dependency_management.html">Gradle文档<i class="fa fa-external-link"></i></span>。</p>
 <p>以下是CorDapp的Gradle依赖关系块的示例：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    <span class="comment">// Corda integration dependencies</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-core:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-finance:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-jackson:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-rpc:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-node-api:$corda_release_version"</span></span><br><span class="line">    cordaCompile <span class="string">"net.corda:corda-webserver-impl:$corda_release_version"</span></span><br><span class="line">    cordaRuntime <span class="string">"net.corda:corda:$corda_release_version"</span></span><br><span class="line">    cordaRuntime <span class="string">"net.corda:corda-webserver:$corda_release_version"</span></span><br><span class="line">    testCompile <span class="string">"net.corda:corda-test-utils:$corda_release_version"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Corda Plugins: dependent flows and services</span></span><br><span class="line">    <span class="comment">// Identifying a CorDapp by its module in the same project.</span></span><br><span class="line">    cordapp <span class="keyword">project</span>(<span class="string">":cordapp-contracts-states"</span>)</span><br><span class="line">    <span class="comment">// Identifying a CorDapp by its fully-qualified name.</span></span><br><span class="line">    cordapp <span class="string">"net.corda:bank-of-corda-demo:1.0"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some other dependencies</span></span><br><span class="line">    <span class="keyword">compile</span> <span class="string">"org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"</span></span><br><span class="line">    testCompile <span class="string">"org.jetbrains.kotlin:kotlin-test:$kotlin_version"</span></span><br><span class="line">    testCompile <span class="string">"junit:junit:$junit_version"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">compile</span> <span class="string">"org.apache.commons:commons-lang3:3.6"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="创建CorDapp-Jar"><a href="#创建CorDapp-Jar" class="headerlink" title="创建CorDapp Jar"></a>创建CorDapp Jar</h3><p>一旦您的依赖关系设置正确，您可以使用gradle <code>jar</code>任务来构建您的CorDapp JAR ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; gradlew jar</span><br></pre></td></tr></table></figure></p>
 <p>CorDapp JAR将被输出到<code>build/libs</code>文件夹。</p>
-<h3 id="安装CorDapp-JAR"><a href="#安装CorDapp-JAR" class="headerlink" title="安装CorDapp JAR"></a>安装CorDapp JAR</h3><p>在安装CorDapp之前，您必须创建一个或多个节点来安装它。有关说明，请参阅<a href="https://docs.corda.net/releases/release-V3.1/generating-a-node.html" target="_blank" rel="noopener">本地创建节点</a>。</p>
+<h3 id="安装CorDapp-JAR"><a href="#安装CorDapp-JAR" class="headerlink" title="安装CorDapp JAR"></a>安装CorDapp JAR</h3><p>在安装CorDapp之前，您必须创建一个或多个节点来安装它。有关说明，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZ2VuZXJhdGluZy1hLW5vZGUuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/generating-a-node.html">本地创建节点<i class="fa fa-external-link"></i></span>。</p>
 <p>在运行时，节点将加载其<code>cordapps</code>文件夹中存在的任何CorDapps 。因此，为了在节点上安装CorDapp，必须将CorDapp JAR添加到该<code>&lt;node_dir&gt;/cordapps/</code>文件夹中，其中node_dir是存储节点的JAR和配置文件的文件夹。</p>
 <h2 id="通过master分支编译"><a href="#通过master分支编译" class="headerlink" title="通过master分支编译"></a>通过master分支编译</h2><p>针对最新的Corda稳定版本开发CorDapps是明智的。但是，如果您使用的是最新功能，或者正在测试主代码库上的PR，则可能需要针对不稳定的Master分支进行构建。</p>
 <h2 id="Corda-Api"><a href="#Corda-Api" class="headerlink" title="Corda Api"></a>Corda Api</h2><p>以下是用于开发CorDapps的核心API：</p>
 <ul>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-states.html" target="_blank" rel="noopener">API：状态 States</a>  <a href="http://cncorda.com/doc/apis/api-states/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-persistence.html" target="_blank" rel="noopener">API：持久化 Persistence</a>  <a href="http://cncorda.com/doc/apis/api-persistence/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-contracts.html" target="_blank" rel="noopener">API：合约 Contracts</a>  <a href="http://cncorda.com/doc/apis/api-contracts/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html" target="_blank" rel="noopener">API：合约约束 Contract Constraints</a>  <a href="http://cncorda.com/doc/apis/api-contract-constrains/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-vault-query.html" target="_blank" rel="noopener">API：Vault查询</a>  <a href="https://docs.corda.net/releases/release-V3.1/api-vault-query.html" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-transactions.html" target="_blank" rel="noopener">API：交易 Transaction</a>  <a href="http://cncorda.com/doc/apis/api-transactions/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-flows.html" target="_blank" rel="noopener">API：流程 Flows</a>  <a href="http://cncorda.com/doc/apis/api-flows/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-identity.html" target="_blank" rel="noopener">API：身份 Identity</a>  <a href="http://cncorda.com/doc/apis/api-identity/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-service-hub.html" target="_blank" rel="noopener">API：ServiceHub</a> <a href="http://cncorda.com/doc/apis/api-servicehub/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-rpc.html" target="_blank" rel="noopener">API：RPC操作 RPC operations</a> <a href="http://cncorda.com/doc/apis/api-rpc-operations/" target="_blank" rel="noopener">中文</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-core-types.html" target="_blank" rel="noopener">API：核心类型</a></li>
-<li><a href="https://docs.corda.net/releases/release-V3.1/api-testing.html#flow-testing" target="_blank" rel="noopener">API：测试 Testing</a></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXN0YXRlcy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-states.html">API：状态 States<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1zdGF0ZXMv" title="http://cncorda.com/doc/apis/api-states/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXBlcnNpc3RlbmNlLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-persistence.html">API：持久化 Persistence<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1wZXJzaXN0ZW5jZS8=" title="http://cncorda.com/doc/apis/api-persistence/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWNvbnRyYWN0cy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-contracts.html">API：合约 Contracts<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1jb250cmFjdHMv" title="http://cncorda.com/doc/apis/api-contracts/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWNvbnRyYWN0LWNvbnN0cmFpbnRzLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-contract-constraints.html">API：合约约束 Contract Constraints<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1jb250cmFjdC1jb25zdHJhaW5zLw==" title="http://cncorda.com/doc/apis/api-contract-constrains/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXZhdWx0LXF1ZXJ5Lmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-vault-query.html">API：Vault查询<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXZhdWx0LXF1ZXJ5Lmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-vault-query.html">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXRyYW5zYWN0aW9ucy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-transactions.html">API：交易 Transaction<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS10cmFuc2FjdGlvbnMv" title="http://cncorda.com/doc/apis/api-transactions/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWZsb3dzLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-flows.html">API：流程 Flows<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1mbG93cy8=" title="http://cncorda.com/doc/apis/api-flows/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWlkZW50aXR5Lmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-identity.html">API：身份 Identity<i class="fa fa-external-link"></i></span>  <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1pZGVudGl0eS8=" title="http://cncorda.com/doc/apis/api-identity/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXNlcnZpY2UtaHViLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/api-service-hub.html">API：ServiceHub<i class="fa fa-external-link"></i></span> <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1zZXJ2aWNlaHViLw==" title="http://cncorda.com/doc/apis/api-servicehub/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXJwYy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-rpc.html">API：RPC操作 RPC operations<i class="fa fa-external-link"></i></span> <span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tL2RvYy9hcGlzL2FwaS1ycGMtb3BlcmF0aW9ucy8=" title="http://cncorda.com/doc/apis/api-rpc-operations/">中文<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWNvcmUtdHlwZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/api-core-types.html">API：核心类型<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXRlc3RpbmcuaHRtbCNmbG93LXRlc3Rpbmc=" title="https://docs.corda.net/releases/release-V3.1/api-testing.html#flow-testing">API：测试 Testing<i class="fa fa-external-link"></i></span></li>
 </ul>
 <h3 id="内部API和稳定性保证"><a href="#内部API和稳定性保证" class="headerlink" title="内部API和稳定性保证"></a>内部API和稳定性保证</h3><p>Corda 3.0提供稳定的wire协议并支持数据库升级。因此，您应该能够将持久数据从3.0迁移到未来版本。但是，在我们开始提供ABI稳定性之前，有必要针对未来版本的API重新编译应用程序。</p>
 <p>此外，请注意，Corda 3.0版本已经过基本级别的安全审核，为确保节点安全得到维护，应遵循以下最佳做法：</p>
@@ -2312,7 +2439,7 @@
 <li>通过实现<code>SerializationWhitelist</code>接口并指定白名单类别的列表。</li>
 <li>通过内置的Corda白名单（见<code>DefaultWhitelist</code>类）。虽然这不是用户可编辑的，但它列出了为方便您而列入白名单的常见JDK类。</li>
 </ul>
-<p>注解的方式是加入白名单的首选方式。<a href="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html" target="_blank" rel="noopener">Using the client RPC API</a>是一个实例。</p>
+<p>注解的方式是加入白名单的首选方式。<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvdHV0b3JpYWwtY2xpZW50cnBjLWFwaS5odG1s" title="https://docs.corda.net/releases/release-V3.1/tutorial-clientrpc-api.html">Using the client RPC API<i class="fa fa-external-link"></i></span>是一个实例。</p>
 <h3 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a>AMQP</h3><p>目前，基于Kryo的格式仍然被客户端和服务器端的RPC框架所使用。但是，计划很快RPC框架将转向AMQP框架。</p>
 <p>将序列化方案分离到不同的上下文中使我们能够为该上下文使用最合适的框架，而不是试图强制采取一刀切的方法。Kryo更适合于程序堆栈框架的序列化，因为它比我们的AMQP框架在构建和序列化方面更加灵活。但是，这种灵活性使得安全性变得异常困难。相反，我们的AMQP框架允许我们专注于可以推理的安全框架，从而使安全性更低，安全漏洞更少。</p>
 <h3 id="核心类型"><a href="#核心类型" class="headerlink" title="核心类型"></a>核心类型</h3><p>本节介绍AMQP序列化格式支持的类和接口。</p>
@@ -2344,7 +2471,7 @@
 <h4 id="无法访问的私有属性"><a href="#无法访问的私有属性" class="headerlink" title="无法访问的私有属性"></a>无法访问的私有属性</h4><p>虽然Corda AMQP序列化框架支持私有对象属性，但没有可公开访问的getter方法，但强烈建议不要使用此开发习惯用法。</p>
 <h4 id="不匹配的类属性-构造函数参数"><a href="#不匹配的类属性-构造函数参数" class="headerlink" title="不匹配的类属性/构造函数参数"></a>不匹配的类属性/构造函数参数</h4><p>考虑一个例子，您希望确保类型为某种形式容器的类的属性总是按照某些特定条件进行排序，但您希望保持该类的不变性。</p>
 <h4 id="可变容器"><a href="#可变容器" class="headerlink" title="可变容器"></a>可变容器</h4><p>因为Java从根本上不提供可以确定类的可变性的机制，所以这给序列化框架带来了问题。当用容器属性（列表，地图等）重新构建对象时，我们必须选择是创建可变对象还是不可变对象。考虑到这些限制，我们决定保留不可变对象的不变性更好，而不是强制推断不可变对象的可变性。</p>
-<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><p>所有的枚举都支持，只要它们被<code>@CordaSerializable</code>注解。Corda支持枚举类型版本的互操作性。这允许这样的类型随时间改变而不破坏反向（或向前）兼容性。<a href="https://docs.corda.net/releases/release-V3.1/serialization-enum-evolution.html" target="_blank" rel="noopener">Enum Evolution</a>讨论了这样做的规则和机制。</p>
+<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><p>所有的枚举都支持，只要它们被<code>@CordaSerializable</code>注解。Corda支持枚举类型版本的互操作性。这允许这样的类型随时间改变而不破坏反向（或向前）兼容性。<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvc2VyaWFsaXphdGlvbi1lbnVtLWV2b2x1dGlvbi5odG1s" title="https://docs.corda.net/releases/release-V3.1/serialization-enum-evolution.html">Enum Evolution<i class="fa fa-external-link"></i></span>讨论了这样做的规则和机制。</p>
 <h4 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h4><p>以下规则适用于受支持的<code>Throwable</code>实现。</p>
 <ol>
 <li>如果你希望你的异常是可序列化和安全传输的，它应该继承自<code>CordaException</code>或者<code>CordaRuntimeException</code></li>
@@ -2358,9 +2485,9 @@
 <li>实例内化支持。我们将添加对确定应根据实例映射解析的类的支持，以避免创建许多相同（类似于String.intern()）的重复实例，</li>
 </ol>
 <h3 id="类型演变"><a href="#类型演变" class="headerlink" title="类型演变"></a>类型演变</h3><p>类型演化是类可以随时间改变的机制，但仍然可以在所有类型的版本中保持序列化和反序列化。这确保了一个对象的序列化，它具有旧类型的“看起来像”类可以被反序列化的版本以及实例化类的当前状态的版本。</p>
-<p>更多细节可以在<a href="https://docs.corda.net/releases/release-V3.1/serialization-default-evolution.html" target="_blank" rel="noopener">Default Class Evolution</a>中找到。</p>
+<p>更多细节可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvc2VyaWFsaXphdGlvbi1kZWZhdWx0LWV2b2x1dGlvbi5odG1s" title="https://docs.corda.net/releases/release-V3.1/serialization-default-evolution.html">Default Class Evolution<i class="fa fa-external-link"></i></span>中找到。</p>
 <h2 id="安全的编码准则"><a href="#安全的编码准则" class="headerlink" title="安全的编码准则"></a>安全的编码准则</h2><p>该平台通过默认设计确保安全。不幸的是，该平台无法防止各种安全错误。本文档描述了在编写应用程序以阻止各种攻击时需要考虑的问题。尽管假设没有合理的交易对手试图用流程级别的攻击来颠覆您的交易可能会很诱人，但是依靠信任来提高软件安全性会使您很难在稍后想要快速添加对手方并且没有广泛审查的情况下扩展您的业务。</p>
-<h3 id="流动"><a href="#流动" class="headerlink" title="流动"></a>流动</h3><p><a href="https://docs.corda.net/releases/release-V3.1/flow-state-machines.html" target="_blank" rel="noopener">编写流程</a>是您的应用程序与网络上的其他各方进行通信的方式。因此，它们是恶意数据进入您应用程序的典型切入点，必须小心处理。</p>
+<h3 id="流动"><a href="#流动" class="headerlink" title="流动"></a>流动</h3><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZmxvdy1zdGF0ZS1tYWNoaW5lcy5odG1s" title="https://docs.corda.net/releases/release-V3.1/flow-state-machines.html">编写流程<i class="fa fa-external-link"></i></span>是您的应用程序与网络上的其他各方进行通信的方式。因此，它们是恶意数据进入您应用程序的典型切入点，必须小心处理。</p>
 <p>这些<code>receive</code>方法返回包装在<code>UntrustworthyData&lt;T&gt;</code>标记类型中的数据。这种类型不会添加任何功能，它只是提醒您正确验证从网络获得的所有内容。请记住，另一方可能没有运行您提供的用于参与流程的代码：他们被允许执行任何操作！需要注意的事项：</p>
 <ul>
 <li>例如，如果您建议为资产交易价值100美元的现金状态，并且签署的交易从另一方返回，则该交易与流程中较早建立或建议的部分交易不匹配，您必须检查它指向您实际请求的状态。否则，攻击者可以让你签署一项交易，如果他们知道一个ID的话，那么这笔交易将花费更多的时间给你。</li>
@@ -2374,9 +2501,9 @@
 <li>意外捕获并丢弃可能由验证逻辑抛出的异常。</li>
 <li>如果您不知道其他合约是做什么或可能做什么，则通过虚拟方法调用其他合约。</li>
 </ul>
-<h2 id="流程cookbook"><a href="#流程cookbook" class="headerlink" title="流程cookbook"></a>流程cookbook</h2><p><a href="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html" target="_blank" rel="noopener">该流程</a>展示了如何在Java和Kotlin中使用Corda的API。</p>
-<h2 id="备忘单"><a href="#备忘单" class="headerlink" title="备忘单"></a>备忘单</h2><p><a href="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html" target="_blank" rel="noopener">这个网页</a>是Corda知识的备忘单。</p>
-<h2 id="Cordapp示例"><a href="#Cordapp示例" class="headerlink" title="Cordapp示例"></a>Cordapp示例</h2><p><a href="https://docs.corda.net/releases/release-V3.1/building-a-cordapp-samples.html" target="_blank" rel="noopener">CorDapp samples</a></p>
+<h2 id="流程cookbook"><a href="#流程cookbook" class="headerlink" title="流程cookbook"></a>流程cookbook</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZmxvdy1jb29rYm9vay5odG1s" title="https://docs.corda.net/releases/release-V3.1/flow-cookbook.html">该流程<i class="fa fa-external-link"></i></span>展示了如何在Java和Kotlin中使用Corda的API。</p>
+<h2 id="备忘单"><a href="#备忘单" class="headerlink" title="备忘单"></a>备忘单</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvY2hlYXQtc2hlZXQuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/cheat-sheet.html">这个网页<i class="fa fa-external-link"></i></span>是Corda知识的备忘单。</p>
+<h2 id="Cordapp示例"><a href="#Cordapp示例" class="headerlink" title="Cordapp示例"></a>Cordapp示例</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYnVpbGRpbmctYS1jb3JkYXBwLXNhbXBsZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/building-a-cordapp-samples.html">CorDapp samples<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -2435,12 +2562,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/31/blockchain/corda/Corda基础学习/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda基础学习.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2452,16 +2579,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/31/blockchain/corda/Corda基础学习/" class="post-title-link" itemprop="url">Corda基础学习</a>
+                <a href="/blockchain/corda/Corda基础学习.html" class="post-title-link" itemprop="url">Corda基础学习</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2532,13 +2662,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">11k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">10 分钟</span>
+            </span>
           
 
           
@@ -2601,14 +2752,14 @@
 <li>一个组织的法律身份</li>
 <li>网络服务的服务标识（该节点只是提供服务而已）</li>
 </ul>
-<p><b style="color:red">法律身份用于交易中的各方，例如现金状态的所有者。服务标识用于提供与交易相关的服务的人员，例如公证人员或oracle。</b>服务身份与合法身份不同，因此分布式服务可以存在于不同组织所拥有的节点上。这种分布式服务身份是基于的<code>CompositeKeys</code>，它描述了服务签名的有效签名者集合。有关<code>CompositeKeys</code>的更多技术细节，请参阅<a href="https://docs.corda.net/releases/release-V3.1/api-core-types.html" target="_blank" rel="noopener">API：核心类型</a>。</p>
+<p><b style="color:red">法律身份用于交易中的各方，例如现金状态的所有者。服务标识用于提供与交易相关的服务的人员，例如公证人员或oracle。</b>服务身份与合法身份不同，因此分布式服务可以存在于不同组织所拥有的节点上。这种分布式服务身份是基于的<code>CompositeKeys</code>，它描述了服务签名的有效签名者集合。有关<code>CompositeKeys</code>的更多技术细节，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLWNvcmUtdHlwZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.1/api-core-types.html">API：核心类型<i class="fa fa-external-link"></i></span>。</p>
 <p><b style="color:red">身份是众所周知的还是保密的，取决于他们的X.509证书（和对应的证书路径是否可信的根证书）已发布：</b>.</p>
 <ul>
 <li>众所周知的身份是法律实体或服务的一般可识别的公钥，这使得它们不适用于需要参与者保密的交易。<b style="color:blue">此证书已发布在网络地图服务中供任何人访问。</b></li>
 <li>机密身份只发布给参与交易的人员。公钥可能暴露给第三方（例如公证服务），但名称和X.509证书的分发是受限的。</li>
 </ul>
 <p>虽然Corda交易隐私模式有几个要素，包括确保交易只与需要查看它们的用户共享以及有计划地使用英特尔SGX，但重要的是要提供深入的防御隐私攻击。机密身份用于确保即使第三方访问未加密的交易，他们也无法在没有附加信息的情况下识别参与者。</p>
-<h3 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h3><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>）。Doorman服务应用适当的身份检查，<b style="color:red">然后向用作节点认证中心（CA）的节点发放证书</b>。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p>
+<h3 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h3><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>）。Doorman服务应用适当的身份检查，<b style="color:red">然后向用作节点认证中心（CA）的节点发放证书</b>。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p>
 <p>组织可以从签署证书创建公开和机密身份。众所周知的身份的用例包括代表用于冗余目的的单个身份的节点集群，或者为组织单位创建身份。</p>
 <p>组织需要决定他们希望在网络地图服务中发布哪些身份，使其广为人知，并且出于隐私原因（通常是为了避免暴露商业敏感的交易细节），他们希望将其保留为机密身份。<b style="color:red">在某些情况下，出于操作原因，除了主网络地图服务之外，节点还可能使用专用网络地图服务。</b>使用此类网络地图注册的身份必须被认为是众所周知的，并且将机密身份存储在中央目录中，而不在记录级别应用控制，以确保只有需要访问身份的人才能检索其证书。</p>
 <h2 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h2><p>概要：</p>
@@ -2649,7 +2800,7 @@
 <p><b style="color:red">为了达到这个目的，合约评估确定性沙箱中的交易。沙盒有一个白名单（这就是在源码看到的WhiteList的作用了吧，不过这个白名单是针对附件的），可以防止合约导入可能成为非确定性来源的库</b>。这包括提供当前时间的库，随机数生成器，提供文件系统访问的库或网络库等。最终，验证交易时可用于合约的唯一信息是交易本身中包含的信息。</p>
 <h3 id="合约限制"><a href="#合约限制" class="headerlink" title="合约限制"></a>合约限制</h3><p>由于合约无法获得外部信息，它只能检查交易的内部有效性。例如，它不能检查交易是否与最初与交易对手达成一致。</p>
 <p>因此，节点在签署交易之前应检查交易内容，即使交易合约有效，以查看他们是否同意提议的分类帐更新。节点没有义务签署一项交易，只是因为它在合约中有效。例如，他们可能不愿意承担过大的贷款，或可能不同意为资产提供的现金数额。</p>
-<h3 id="神谕（Oracle）"><a href="#神谕（Oracle）" class="headerlink" title="神谕（Oracle）"></a>神谕（Oracle）</h3><p>有时，交易有效性将取决于一些外部信息，例如汇率。在这些情况下，需要一个oracle。有关更多详细信息，请参阅<a href="https://docs.corda.net/releases/release-V3.2/key-concepts-oracles.html" target="_blank" rel="noopener">Oracles</a>。</p>
+<h3 id="神谕（Oracle）"><a href="#神谕（Oracle）" class="headerlink" title="神谕（Oracle）"></a>神谕（Oracle）</h3><p>有时，交易有效性将取决于一些外部信息，例如汇率。在这些情况下，需要一个oracle。有关更多详细信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLW9yYWNsZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.2/key-concepts-oracles.html">Oracles<i class="fa fa-external-link"></i></span>。</p>
 <h3 id="法律散文（legal-prose）"><a href="#法律散文（legal-prose）" class="headerlink" title="法律散文（legal prose）"></a>法律散文（legal prose）</h3><p>每份合约还涉及法律散文文件，其中规定了与传统法律体系兼容的随时间推移的状态演变规则。在法律纠纷的情况下，可以依靠这份文件。</p>
 <h2 id="交易"><a href="#交易" class="headerlink" title="交易"></a>交易</h2><p>概要</p>
 <ul>
@@ -2671,7 +2822,7 @@
 <p>交易是原子的：要么所有交易的提议变更都被接受，要么都没有。</p>
 <p>这里有两种基础交易类型：</p>
 <ul>
-<li>公证改变交易（用来改变一个状态的公证人，参阅<a href="https://docs.corda.net/releases/release-V3.2/key-concepts-notaries.html" target="_blank" rel="noopener">Notaries</a>）</li>
+<li>公证改变交易（用来改变一个状态的公证人，参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLW5vdGFyaWVzLmh0bWw=" title="https://docs.corda.net/releases/release-V3.2/key-concepts-notaries.html">Notaries<i class="fa fa-external-link"></i></span>）</li>
 <li>普通的交易（其它的交易）</li>
 </ul>
 <h3 id="交易链"><a href="#交易链" class="headerlink" title="交易链"></a>交易链</h3><p>在创建新交易时，交易将申明的输出状态尚不存在，因此必须由交易提议者创建。但是，输入状态已作为先前交易的输出存在。因此，我们将其纳入拟议的交易中。</p>
@@ -2694,7 +2845,7 @@
 <ul>
 <li>交易有效性：对于提议的交易以及创建当前提议的交易输入的交易链中的每个交易：<ul>
 <li>交易由所有必要方进行数字签名</li>
-<li>合约验证交易有效（查看<a href="https://docs.corda.net/releases/release-V3.2/key-concepts-contracts.html" target="_blank" rel="noopener">Contracts</a>）</li>
+<li>合约验证交易有效（查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLWNvbnRyYWN0cy5odG1s" title="https://docs.corda.net/releases/release-V3.2/key-concepts-contracts.html">Contracts<i class="fa fa-external-link"></i></span>）</li>
 </ul>
 </li>
 <li>交易唯一性：没有其他交易已经消耗了我们建议交易的任何投入</li>
@@ -2761,7 +2912,7 @@
 <li>从对手方节点收集签名</li>
 <li>验证一系列交易</li>
 </ul>
-<p>有关可用内置流程的更多信息，请参见<a href="https://docs.corda.net/releases/release-V3.1/flow-library.html" target="_blank" rel="noopener">Flow库</a>。</p>
+<p>有关可用内置流程的更多信息，请参见<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvZmxvdy1saWJyYXJ5Lmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/flow-library.html">Flow库<i class="fa fa-external-link"></i></span>。</p>
 <h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><p>流程框架允许节点一次有多个活动流。这些流量可能持续数天，跨节点重启甚至升级。</p>
 <p>这是通过将数据流序列化到磁盘来实现的，只要它们进入阻塞状态（例如，当它们正在等待I / O或网络呼叫时）。与其等待流程畅通无阻，节点立即开始处理任何其他计划流程，仅在以后返回到原始流程。</p>
 <h2 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h2><p>概要</p>
@@ -2880,7 +3031,7 @@
 </ul>
 <p>节点的所有者可以使用RPC接口查询节点的存储（见下文）。</p>
 <h3 id="网络接口"><a href="#网络接口" class="headerlink" title="网络接口"></a>网络接口</h3><p>作为运行流程的一部分，与网络中其他节点的所有通信都由节点本身处理。节点的所有者不直接与其他网络节点交互。</p>
-<h3 id="RPC接口"><a href="#RPC接口" class="headerlink" title="RPC接口"></a>RPC接口</h3><p>节点的所有者通过远程过程调用（RPC）与节点交互。<a href="https://docs.corda.net/releases/release-V3.1/api-rpc.html" target="_blank" rel="noopener">API：RPC操作</a>记录了节点公开的关键<a href="https://docs.corda.net/releases/release-V3.1/api-rpc.html" target="_blank" rel="noopener">RPC操作</a>。</p>
+<h3 id="RPC接口"><a href="#RPC接口" class="headerlink" title="RPC接口"></a>RPC接口</h3><p>节点的所有者通过远程过程调用（RPC）与节点交互。<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXJwYy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-rpc.html">API：RPC操作<i class="fa fa-external-link"></i></span>记录了节点公开的关键<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvYXBpLXJwYy5odG1s" title="https://docs.corda.net/releases/release-V3.1/api-rpc.html">RPC操作<i class="fa fa-external-link"></i></span>。</p>
 <h3 id="服务中心（ServiceHub）"><a href="#服务中心（ServiceHub）" class="headerlink" title="服务中心（ServiceHub）"></a>服务中心（ServiceHub）</h3><p>在内部，节点可以访问在流程执行期间使用的一组丰富的服务，以协调分类帐更新。提供的主要服务是：</p>
 <ul>
 <li>有关网络上其他节点及其提供的服务的信息</li>
@@ -2943,7 +3094,7 @@
 <li>现有的SQL数据库</li>
 <li>现有的消息队列实现</li>
 </ul>
-<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><a href="https://docs.corda.net/releases/release-V3.1/key-concepts.html" target="_blank" rel="noopener">https://docs.corda.net/releases/release-V3.1/key-concepts.html</a></p>
+<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEva2V5LWNvbmNlcHRzLmh0bWw=" title="https://docs.corda.net/releases/release-V3.1/key-concepts.html">https://docs.corda.net/releases/release-V3.1/key-concepts.html<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -3002,12 +3153,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/30/blockchain/corda/Corda基础知识/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda基础知识.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -3019,16 +3170,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/30/blockchain/corda/Corda基础知识/" class="post-title-link" itemprop="url">Corda基础知识</a>
+                <a href="/blockchain/corda/Corda基础知识.html" class="post-title-link" itemprop="url">Corda基础知识</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -3099,13 +3253,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">18k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">16 分钟</span>
+            </span>
           
 
           
@@ -3125,9 +3300,9 @@
       
         
           
-            <p>corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击<a href="https://github.com/cryptonomex/graphenes" target="_blank" rel="noopener">这里</a>。<a href="https://steemit.com/blockchain/@robinwen/bts-steem-eos" target="_blank" rel="noopener">这篇文章</a>也做了详细的介绍。</p>
+            <p>corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NyeXB0b25vbWV4L2dyYXBoZW5lcw==" title="https://github.com/cryptonomex/graphenes">这里<i class="fa fa-external-link"></i></span>。<span class="exturl" data-url="aHR0cHM6Ly9zdGVlbWl0LmNvbS9ibG9ja2NoYWluL0Byb2Jpbndlbi9idHMtc3RlZW0tZW9z" title="https://steemit.com/blockchain/@robinwen/bts-steem-eos">这篇文章<i class="fa fa-external-link"></i></span>也做了详细的介绍。</p>
 <p>Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的，但是不管怎样分布式账本技术都是借鉴了区块链的设计思想的；Fabric是插件化的，而Corda是模块化的，我觉得这点在软件设计上有很大的区别。Corda是基于Kotlin开发的，而Fabric主力语言是Go，但是也可以使用其他语言，并不限制。</p>
-<p>如果你想了解更多的Corda知识，可以参阅官网的<a href="https://docs.corda.net/releases/release-M7.0/_static/corda-introductory-whitepaper.pdf" target="_blank" rel="noopener">技术白皮书</a>。这个白皮书介绍了，这个系统最终的方案，现在还有很多未实现，正在实现中，当然在实现中可能会有与白皮书不一样的地方。</p>
+<p>如果你想了解更多的Corda知识，可以参阅官网的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvX3N0YXRpYy9jb3JkYS1pbnRyb2R1Y3Rvcnktd2hpdGVwYXBlci5wZGY=" title="https://docs.corda.net/releases/release-M7.0/_static/corda-introductory-whitepaper.pdf">技术白皮书<i class="fa fa-external-link"></i></span>。这个白皮书介绍了，这个系统最终的方案，现在还有很多未实现，正在实现中，当然在实现中可能会有与白皮书不一样的地方。</p>
 <h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><h3 id="包含的实现"><a href="#包含的实现" class="headerlink" title="包含的实现"></a>包含的实现</h3><p>Corda原型机目前包括：</p>
 <ul>
 <li>具有消息持久性和递送重试的对等网络。</li>
@@ -3152,7 +3327,7 @@
 <li>它使用嵌入式SQL数据库，但尚未支持主流SQL供应商（Oracle，Postgres，MySQL，SQL Server等）的连接。</li>
 </ul>
 <h3 id="程序运行"><a href="#程序运行" class="headerlink" title="程序运行"></a>程序运行</h3><p>在corda项目下定义了一些示例程序，这些程序在samples目录下，运行的命令如官网的命令，这里就不做更多说明了。</p>
-<p><a href="https://docs.corda.net/releases/release-M7.0/running-the-demos.html" target="_blank" rel="noopener">运行演示</a></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvcnVubmluZy10aGUtZGVtb3MuaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/running-the-demos.html">运行演示<i class="fa fa-external-link"></i></span></p>
 <h2 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><ul>
 <li>corda网络是由运行Corda和CorDapps的节点组成</li>
 <li>网络是授权网络，通过doorman控制访问</li>
@@ -3188,14 +3363,14 @@
 <li>组织的合法身份</li>
 <li>一个网络服务的服务身份</li>
 </ul>
-<p>合法身份是为交易的参与者使用，比如一个Cash状态的拥有者。服务身份是给这些提供交易相关服务使用，比如Notary，或者Oracle。服务身份与和合法身份是不同的，以至于一个节点上存在不同组织的服务。这些分散的服务身份是基于<code>CompositeKeys</code>;<code>CompositeKeys</code>为服务的签名描述有效的签名者集合。查看<a href="https://docs.corda.net/releases/release-V3.2/api-core-types.html" target="_blank" rel="noopener">API: Core types</a>，了解更多关于<code>CompositeKeys</code>的知识。</p>
+<p>合法身份是为交易的参与者使用，比如一个Cash状态的拥有者。服务身份是给这些提供交易相关服务使用，比如Notary，或者Oracle。服务身份与和合法身份是不同的，以至于一个节点上存在不同组织的服务。这些分散的服务身份是基于<code>CompositeKeys</code>;<code>CompositeKeys</code>为服务的签名描述有效的签名者集合。查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIvYXBpLWNvcmUtdHlwZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.2/api-core-types.html">API: Core types<i class="fa fa-external-link"></i></span>，了解更多关于<code>CompositeKeys</code>的知识。</p>
 <p><b style="color:red">身份是众所周知的还是保密的，取决于他们的X.509证书（和对应的证书路径是否可信的根证书）已发布：</b>.</p>
 <ul>
 <li>众所周知的身份是法律实体或服务的一般可识别的公钥，这使得它们不适用于需要参与者保密的交易。此证书已发布在网络地图服务中供任何人访问。</li>
 <li>机密身份只发布给参与交易身份的人员。公钥可能暴露给第三方（例如公证服务），但名称和X.509证书的分发是有限的。</li>
 </ul>
 <p>虽然Corda交易隐私模式有几个要素，包括确保交易只与需要查看它们的用户共享以及有计划地使用英特尔SGX，但重要的是要提供深入的防御隐私攻击。机密身份用于确保即使第三方访问未加密的交易，他们也无法在没有附加信息的情况下识别参与者。</p>
-<h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <a href="https://docs.corda.net/releases/release-V3.1/permissioning.html" target="_blank" rel="noopener">网络许可</a>）。Doorman服务应用适当的身份检查，然后向用作节点认证中心（CA）的节点发放证书。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p>
+<h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>）。Doorman服务应用适当的身份检查，然后向用作节点认证中心（CA）的节点发放证书。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p>
 <p>组织可以从签署证书创建公开和机密身份。众所周知的身份的用例包括代表用于冗余目的的单个身份的节点集群，或者为组织单位创建身份。</p>
 <p>组织需要决定他们希望在网络地图服务中发布哪些身份，使其广为人知，并且出于隐私原因（通常是为了避免暴露商业敏感的交易细节），他们希望将其保留为机密身份。在某些情况下，出于操作原因，除了主网络地图服务之外，节点还可能使用专用网络地图服务。使用此类网络地图注册的身份必须被认为是众所周知的，并且将机密身份存储在中央目录中，而不在记录级别应用控制，以确保只有需要访问身份的人才能检索其证书。</p>
 <h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p>这里需要介绍状态（State）、交易（Transaction）和合约（Contract），以及它们之间的交互关系。</p>
@@ -3255,7 +3430,7 @@
 <h4 id="日期支持"><a href="#日期支持" class="headerlink" title="日期支持"></a>日期支持</h4><p>有许多支持接口和类供合约处理日期（特别是在截止日期范围内）使用。由于合约谈判通常涉及诸如“overnight”，“T+3”等期限的最后期限，因此希望允许将这些条款转换为相应的截止日期。<code>Tenor</code>在截止日期之前（例如3天等）对间隔进行建模，同时<code>DateRollConvention</code>描述如何修改最后期限以考虑银行假期或修改正常工作日的其他事件。</p>
 <p>根据工作日计算期限的延期需要有关所涉银行假期的信息（以及合同各方在不同的国家/地区，例如，这可能涉及多套不同的银行假期）。<code>BusinessCalendar</code>类模拟这些商业假期的日历; 目前它从磁盘上的文件加载这些文件，但将来这可能涉及参考数据库，以确保所用日期的一致性。</p>
 <h4 id="加密和数学支持"><a href="#加密和数学支持" class="headerlink" title="加密和数学支持"></a>加密和数学支持</h4><p><code>SecureHash</code>类代表未知算法的安全散列。我们目前只定义一个子类，<code>SecureHash.SHA256</code>。有实用的方法来创建它们，解析它们等等。</p>
-<p>我们还提供了一些数学实用工具，特别是一组插值器和用于样条线的类。这些可以在<a href="https://docs.corda.net/releases/release-M7.0/api/net.corda.core.math/index.html" target="_blank" rel="noopener">数学包</a>中找到。</p>
+<p>我们还提供了一些数学实用工具，特别是一组插值器和用于样条线的类。这些可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvYXBpL25ldC5jb3JkYS5jb3JlLm1hdGgvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/api/net.corda.core.math/index.html">数学包<i class="fa fa-external-link"></i></span>中找到。</p>
 <h3 id="交易拆分"><a href="#交易拆分" class="headerlink" title="交易拆分"></a>交易拆分</h3><p>我们平台的基本数据结构之一就是交易。它可以通过签名和验证，也可以由第三方进行验证。交易的构建假定它们构成一个具有输入和输出状态，命令和附件的完整实体。但是，所有敏感数据都不应该透露给参与验证级别交易创建的其他节点（这种情况的一个很好的例子是只验证嵌入式命令的Oracle）。如何以一种让对方信服他们获得签名数据的方式来实现这一点，确实构成了交易的一部分？</p>
 <p>我们决定使用众所周知的密码方案来提供包含和数据完整性的证明。Merkle树广泛用于点对点网络，区块链系统和git。</p>
 <h4 id="Corda的Merkle树"><a href="#Corda的Merkle树" class="headerlink" title="Corda的Merkle树"></a>Corda的Merkle树</h4><p>交易分为叶子，每个叶子都包含输入，输出，命令或附件。计算中不使用时间戳或签名者等其他字段。接下来，Merkle树以正常方式构建，方法是将当前节点下方的节点散列连接在一起。它在下面的示例图像中可见，其中<code>H</code>表示sha256函数，“+” – 级联。</p>
@@ -3292,13 +3467,13 @@
 <p>如果一个交易没有被检查有效性，它会打开平台进行“拒绝状态”攻击，任何人都可以建立一个无效的交易，消耗其他人的状态并将其提交给公证员以使状态“被阻止”。但是，对交易的验证需要公证人能够看到有问题交易的全部内容及其依赖关系。这是一个明显的隐私泄露。</p>
 <p>我们的平台非常灵活，目前我们支持验证和非验证公证实施 - 一方可以根据自己的隐私要求选择使用哪一个。</p>
 <h4 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h4><p>在这个模型中，公证人还充当时间戳机构，验证交易时间戳命令。</p>
-<h2 id="涉及的技术"><a href="#涉及的技术" class="headerlink" title="涉及的技术"></a>涉及的技术</h2><h3 id="corda网站"><a href="#corda网站" class="headerlink" title="corda网站"></a>corda网站</h3><p>这里是corda的<a href="https://www.corda.net/zh-hant/" target="_blank" rel="noopener">官方网站</a>。<br><a href="https://github.com/corda" target="_blank" rel="noopener">这个网站</a>是corda的github主页，你可在里面找到我们的corda项目，入门的cordapp example也可以在这里找到，还是比较实用的。</p>
+<h2 id="涉及的技术"><a href="#涉及的技术" class="headerlink" title="涉及的技术"></a>涉及的技术</h2><h3 id="corda网站"><a href="#corda网站" class="headerlink" title="corda网站"></a>corda网站</h3><p>这里是corda的<span class="exturl" data-url="aHR0cHM6Ly93d3cuY29yZGEubmV0L3poLWhhbnQv" title="https://www.corda.net/zh-hant/">官方网站<i class="fa fa-external-link"></i></span>。<br><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRh" title="https://github.com/corda">这个网站<i class="fa fa-external-link"></i></span>是corda的github主页，你可在里面找到我们的corda项目，入门的cordapp example也可以在这里找到，还是比较实用的。</p>
 <h3 id="Kotlin"><a href="#Kotlin" class="headerlink" title="Kotlin"></a>Kotlin</h3><p>最后这里列一下Kotlin的学习的一些资料。</p>
-<p>最棒的就是<a href="https://try.kotlinlang.org/#/Kotlin%20Koans/Introduction/Strings/Task.kt" target="_blank" rel="noopener">这个网站</a>的在线练习，做的的确棒极了。</p>
-<p>当然对于Kotlin，我们不得不研究一下它的<a href="http://kotlinlang.org/docs/reference/coding-conventions.html" target="_blank" rel="noopener">官方指南</a>. 你可以在这里查询文档和Api的说明文档，另外里面还做了一个全局的搜索，不管是文档，博客还是Api文档，你都可以一键搜索，很是方便。</p>
-<h3 id="Gradle"><a href="#Gradle" class="headerlink" title="Gradle"></a>Gradle</h3><p>这个是志愿者翻译的<a href="https://dongchuan.gitbooks.io/gradle-user-guide-/content/overview/features.html" target="_blank" rel="noopener">Gradle User Guide中文版</a></p>
-<p>当然如果你想自定义Gradle插件的话，就不得不研究<a href="https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#org.gradle.api.Project:buildscript(groovy.lang.Closure" target="_blank" rel="noopener">Gradle的文档</a>)，里面有相关的Api和概念。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html" target="_blank" rel="noopener">https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html</a><br><a href="https://docs.corda.net/releases/release-M7.0/index.html" target="_blank" rel="noopener">Corda API reference</a><br><a href="https://medium.com/corda/peer-to-peer-enterprise-blockchain-networking-with-the-corda-firewall-4f6a427ebd97" target="_blank" rel="noopener">Peer-to-Peer Enterprise Blockchain Networking with the Corda Firewall.</a><br><a href="http://cncorda.com/" target="_blank" rel="noopener">Corda中文网</a></p>
+<p>最棒的就是<span class="exturl" data-url="aHR0cHM6Ly90cnkua290bGlubGFuZy5vcmcvIy9Lb3RsaW4lMjBLb2Fucy9JbnRyb2R1Y3Rpb24vU3RyaW5ncy9UYXNrLmt0" title="https://try.kotlinlang.org/#/Kotlin%20Koans/Introduction/Strings/Task.kt">这个网站<i class="fa fa-external-link"></i></span>的在线练习，做的的确棒极了。</p>
+<p>当然对于Kotlin，我们不得不研究一下它的<span class="exturl" data-url="aHR0cDovL2tvdGxpbmxhbmcub3JnL2RvY3MvcmVmZXJlbmNlL2NvZGluZy1jb252ZW50aW9ucy5odG1s" title="http://kotlinlang.org/docs/reference/coding-conventions.html">官方指南<i class="fa fa-external-link"></i></span>. 你可以在这里查询文档和Api的说明文档，另外里面还做了一个全局的搜索，不管是文档，博客还是Api文档，你都可以一键搜索，很是方便。</p>
+<h3 id="Gradle"><a href="#Gradle" class="headerlink" title="Gradle"></a>Gradle</h3><p>这个是志愿者翻译的<span class="exturl" data-url="aHR0cHM6Ly9kb25nY2h1YW4uZ2l0Ym9va3MuaW8vZ3JhZGxlLXVzZXItZ3VpZGUtL2NvbnRlbnQvb3ZlcnZpZXcvZmVhdHVyZXMuaHRtbA==" title="https://dongchuan.gitbooks.io/gradle-user-guide-/content/overview/features.html">Gradle User Guide中文版<i class="fa fa-external-link"></i></span></p>
+<p>当然如果你想自定义Gradle插件的话，就不得不研究<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmdyYWRsZS5vcmcvY3VycmVudC9kc2wvb3JnLmdyYWRsZS5hcGkuUHJvamVjdC5odG1sI29yZy5ncmFkbGUuYXBpLlByb2plY3Q6YnVpbGRzY3JpcHQoZ3Jvb3Z5LmxhbmcuQ2xvc3VyZQ==" title="https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#org.gradle.api.Project:buildscript(groovy.lang.Closure">Gradle的文档<i class="fa fa-external-link"></i></span>)，里面有相关的Api和概念。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLWVjb3N5c3RlbS5odG1s" title="https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html">https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/index.html">Corda API reference<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL2NvcmRhL3BlZXItdG8tcGVlci1lbnRlcnByaXNlLWJsb2NrY2hhaW4tbmV0d29ya2luZy13aXRoLXRoZS1jb3JkYS1maXJld2FsbC00ZjZhNDI3ZWJkOTc=" title="https://medium.com/corda/peer-to-peer-enterprise-blockchain-networking-with-the-corda-firewall-4f6a427ebd97">Peer-to-Peer Enterprise Blockchain Networking with the Corda Firewall.<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tLw==" title="http://cncorda.com/">Corda中文网<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -3357,12 +3532,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/30/java/ProcessBuilder简介/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/ProcessBuilder简介.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -3374,16 +3549,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/30/java/ProcessBuilder简介/" class="post-title-link" itemprop="url">ProcessBuilder简介</a>
+                <a href="/java/ProcessBuilder简介.html" class="post-title-link" itemprop="url">ProcessBuilder简介</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -3444,13 +3622,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.3k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -3503,7 +3702,7 @@
 <h2 id="Runtime-exec"><a href="#Runtime-exec" class="headerlink" title="Runtime.exec()"></a>Runtime.exec()</h2><p>ProcessBuilder与Runtime.exec()的区别? </p>
 <p>ProcessBuilder.start() 和 Runtime.exec() 方法都被用来创建一个操作系统进程（执行命令行操作），并返回 Process 子类的一个实例，该实例可用来控制进程状态并获得相关信息。 </p>
 <p>ProcessBuilder.start() 和 Runtime.exec()传递的参数有所不同，Runtime.exec()可接受一个单独的字符串，这个字符串是通过空格来分隔可执行命令程序和参数的；也可以接受字符串数组参数。而ProcessBuilder的构造函数是一个字符串列表或者数组。列表中第一个参数是可执行命令程序，其他的是命令行执行是需要的参数。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://blog.csdn.net/u013256816/article/details/54603910" target="_blank" rel="noopener">浅析ProcessBuilder</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMyNTY4MTYvYXJ0aWNsZS9kZXRhaWxzLzU0NjAzOTEw" title="https://blog.csdn.net/u013256816/article/details/54603910">浅析ProcessBuilder<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -3562,12 +3761,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/30/java/java线程状态的分析/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/java线程状态的分析.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -3579,16 +3778,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/30/java/java线程状态的分析/" class="post-title-link" itemprop="url">java线程状态的分析</a>
+                <a href="/java/java线程状态的分析.html" class="post-title-link" itemprop="url">java线程状态的分析</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -3649,13 +3851,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">821</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -3716,7 +3939,7 @@
 <p>但是这些基础知识就不做更多的介绍了，这也不是我要说明的重点。</p>
 <h2 id="sun-misc-Unsafe"><a href="#sun-misc-Unsafe" class="headerlink" title="sun.misc.Unsafe"></a>sun.misc.Unsafe</h2><p>今天主要是来说明这个类的作用的。这个类里面有很多的内容，今天就重点介绍里面的park方法。</p>
 <p>因为park方法可以改变线程的状态，这种改变时操作系统级别的，这种调用一定是使用了系统调用，主要是你要明白这一点才能里面AQS里面的实现，这里就是简单的记录一下。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://blog.onlycatch.com/post/java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E4%BB%A5%E5%8F%8A%E7%BA%BF%E7%A8%8B%E6%A0%88%E5%88%86%E6%9E%90" target="_blank" rel="noopener">java中线程的状态以及线程栈分析</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cDovL2Jsb2cub25seWNhdGNoLmNvbS9wb3N0L2phdmElRTQlQjglQUQlRTclQkElQkYlRTclQTglOEIlRTclOUElODQlRTclOEElQjYlRTYlODAlODElRTQlQkIlQTUlRTUlOEYlOEElRTclQkElQkYlRTclQTglOEIlRTYlQTAlODglRTUlODglODYlRTYlOUUlOTA=" title="http://blog.onlycatch.com/post/java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E4%BB%A5%E5%8F%8A%E7%BA%BF%E7%A8%8B%E6%A0%88%E5%88%86%E6%9E%90">java中线程的状态以及线程栈分析<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -3775,12 +3998,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/05/30/java/缓存行与计算机缓存结构/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/缓存行与计算机缓存结构.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -3792,16 +4015,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/05/30/java/缓存行与计算机缓存结构/" class="post-title-link" itemprop="url">缓存行与计算机缓存结构</a>
+                <a href="/java/缓存行与计算机缓存结构.html" class="post-title-link" itemprop="url">缓存行与计算机缓存结构</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -3862,13 +4088,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">525</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -3895,7 +4142,7 @@
 <p>这就是背景知识。</p>
 <h2 id="缓存行"><a href="#缓存行" class="headerlink" title="缓存行"></a>缓存行</h2><p>高速缓存块不是按照每一个字节进行缓存，而是按照一个内存块进行缓存。可是一旦这块中任何一个内容改变，都会导致整个块的Refresh。</p>
 <h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>这里主要是指程序的改进，比如说你定义一个对象。以前这个对象在一个缓存行中，但是对象中改变的字段就是一个两个频繁改变，这样每次refresh的块比较大。所以方法就是将可变的属性放入一个缓存块中，将不可变的放入另一个缓存块中，这样刷新的少了，速度自然提升了。这就是缓存块的具体说明，具体可以查看具体的引用。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://geek.csdn.net/news/detail/114619" target="_blank" rel="noopener">认识CPU Cache</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cDovL2dlZWsuY3Nkbi5uZXQvbmV3cy9kZXRhaWwvMTE0NjE5" title="http://geek.csdn.net/news/detail/114619">认识CPU Cache<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -3977,7 +4224,7 @@
 <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   
     <img class="site-author-image" itemprop="image"
-      src="/images/user-avatar"
+      src="/images/user-avatar.jpg"
       alt="Gavin Zhang"/>
   
   <p class="site-author-name" itemprop="name">Gavin Zhang</p>
@@ -4291,7 +4538,7 @@
 <!-- rss -->
 
   <div class="feed-link motion-element">
-    <a href="https://www.gitbook.com/" rel="alternate">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
       <i class="fa fa-rss"></i>RSS
     </a>
   </div>
@@ -4310,12 +4557,22 @@
       
         
       
-        <a href="https://github.com/yourname" title="GitHub &rarr; https://github.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
       </span>
     
   </div>
 
 
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
 
 
 
@@ -4341,32 +4598,70 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Author</span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">819k</span>
+  
 
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:25</span>
   
 </div>
 
 
-  <div class="powered-by">由 Gavin 强力驱动 v3.5.0</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
 
 
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -4475,12 +4770,45 @@
   <script src="/js/next-boot.js?v=7.2.0"></script>
 
   
+  <script src="/js/js.cookie.js?v=7.2.0"></script>
+  <script src="/js/scroll-cookie.js?v=7.2.0"></script>
+
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
 
   
 
   
+  
+  
 
   
+    
+      
+    
+  
+
+  
+  
+  
+    <script src="/lib/quicklink/quicklink.umd.js"></script>
+    <script>
+      
+        window.addEventListener('load', () => {
+      
+        quicklink({
+          timeout: 3000,
+          priority: true,
+          ignores: [uri => uri.includes('#'),uri => uri == 'http://cordate.github.io/page/2/',]
+        });
+      
+        });
+      
+    </script>
+  
+
 
   
 
@@ -4816,6 +5144,71 @@
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
 
   
 
@@ -4831,14 +5224,8 @@
 
   
 
-  
 
   
 
-  
-
-
-  
-
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

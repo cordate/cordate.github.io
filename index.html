@@ -47,13 +47,13 @@
 <link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
 
 
   <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
@@ -72,7 +72,7 @@
     version: '7.2.0',
     sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="https://www.gitbook.com/" title="柳絮纷飞" type="application/atom+xml"/>
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
 
 
 
@@ -123,7 +123,7 @@
 </script>
 
   
-  <title>柳絮纷飞</title>
+  <title>柳絮纷飞 - Gavin的个人博客</title>
   
 
 
@@ -189,7 +189,7 @@
     </div>
     
       
-        <p class="site-subtitle">Gavin的个人博客</p>
+        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
       
     
     
@@ -389,6 +389,13 @@
     </header>
 
     
+  
+  
+
+  
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
 
 
     <main id="main" class="main">
@@ -414,12 +421,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2019/03/09/机器学习/图解机器学习-最小二乘学习法-md/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -431,16 +438,23 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/03/09/机器学习/图解机器学习-最小二乘学习法-md/" class="post-title-link" itemprop="url">图解机器学习-最小二乘学习法.md</a>
+                <a href="/机器学习/图解机器学习-最小二乘学习法-md.html" class="post-title-link" itemprop="url">图解机器学习-最小二乘学习法.md</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+            <i class="fa fa-thumb-tack"></i>
+            <font color=ff6800>置顶</font>
+            <span class="post-meta-divider">|</span>
+          
 
           
           
@@ -459,13 +473,23 @@
                 
               
 
-              <time title="创建时间：2019-03-09 03:06:57 / 修改时间：05:02:48" itemprop="dateCreated datePublished" datetime="2019-03-09T03:06:57+08:00">2019-03-09</time>
+              <time title="创建时间：2019-03-09 03:06:57" itemprop="dateCreated datePublished" datetime="2019-03-09T03:06:57+08:00">2019-03-09</time>
             </span>
           
 
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-20 05:14:47" itemprop="dateModified" datetime="2019-07-20T05:14:47+08:00">2019-07-20</time>
+              </span>
             
           
 
@@ -494,13 +518,246 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">553</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="最小二乘学习法"><a href="#最小二乘学习法" class="headerlink" title="最小二乘学习法"></a>最小二乘学习法</h1><p>这是一个有监督回归的学习方法。我们将对以d维实向量x作为输入、以实数值y作为输出的函数y=f(x)的学习匹配。但是一般输出样本y<sub>i</sub>的真实值f(x<sub>i</sub>)中经常会存在噪声。</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>最小二乘学习法是对模型的输出f<sub>θ</sub>(x<sub>i</sub>)和训练集输出{y<sub>i</sub>}<sup>n</sup><sub>i=1</sub>的平方差：<br><img src="https://latex.codecogs.com/gif.latex?J_{LS}(\theta&space;)=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2" title="J_{LS}(\theta )=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2"></p>
+<p>为最小的参数θ进行学习：<br><img src="https://latex.codecogs.com/gif.latex?\hat{\theta&space;}_{LS}=\underset{\theta}{argmin}\:&space;J_{LS}(\theta)" title="\hat{\theta }_{LS}=\underset{\theta}{argmin}\: J_{LS}(\theta)"></p>
+<p>“LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对J<sub>LS</sub>进行微分时得到的2.平方误差(f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>)<sup>2</sup>是残差f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>的L<sub>2</sub>范数。所以最小二乘法也称为L<sub>2</sub>损失最小化学习法。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/机器学习/图解机器学习-最小二乘学习法-md.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/什么是机器学习.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/机器学习/什么是机器学习.html" class="post-title-link" itemprop="url">什么是机器学习</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+            <i class="fa fa-thumb-tack"></i>
+            <font color=ff6800>置顶</font>
+            <span class="post-meta-divider">|</span>
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-30 00:51:10" itemprop="dateCreated datePublished" datetime="2019-01-30T00:51:10+08:00">2019-01-30</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-20 05:15:05" itemprop="dateModified" datetime="2019-07-20T05:15:05+08:00">2019-07-20</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.3k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -520,16 +777,21 @@
       
         
           
-            <h1 id="最小二乘学习法"><a href="#最小二乘学习法" class="headerlink" title="最小二乘学习法"></a>最小二乘学习法</h1><p>这是一个有监督回归的学习方法。我们将对以d维实向量x作为输入、以实数值y作为输出的函数y=f(x)的学习匹配。但是一般输出样本y<sub>i</sub>的真实值f(x<sub>i</sub>)中经常会存在噪声。</p>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>最小二乘学习法是对模型的输出f<sub>θ</sub>(x<sub>i</sub>)和训练集输出{y<sub>i</sub>}<sup>n</sup><sub>i=1</sub>的平方差：<br><img src="https://latex.codecogs.com/gif.latex?J_{LS}(\theta&space;)=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2" title="J_{LS}(\theta )=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2"></p>
-<p>为最小的参数θ进行学习：<br><img src="https://latex.codecogs.com/gif.latex?\hat{\theta&space;}_{LS}=\underset{\theta}{argmin}\:&space;J_{LS}(\theta)" title="\hat{\theta }_{LS}=\underset{\theta}{argmin}\: J_{LS}(\theta)"></p>
-<p>“LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对J<sub>LS</sub>进行微分时得到的2.平方误差(f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>)<sup>2</sup>是残差f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>的L<sub>2</sub>范数。所以最小二乘法也称为L<sub>2</sub>损失最小化学习法。</p>
-<p>如果使用线性模型：<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&amp;space;(x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi&amp;space;(x)" title="f_\theta (x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi (x)"><br>的话，那么训练样本的平方差J<sub>LS</sub>就能够表示为下述形式。<br><img src="https://latex.codecogs.com/gif.latex?J_{LS}(\theta)=\frac{1}{2}\left&space;\|&space;\Phi&space;\theta&space;-y&space;\right&space;\|^2" title="J_{LS}(\theta)=\frac{1}{2}\left \| \Phi \theta -y \right \|^2"><br>在这里，y=(y<sub>1</sub>,···y<sub>n</sub>)<sup>T</sup>是训练输出的n维向量，Φ是下面定义的n × b阶矩阵，也称为设计矩阵。<br><img src="https://latex.codecogs.com/gif.latex?\Phi=\begin{bmatrix}&space;\phi&space;_1(x_1)&space;&&space;\cdots&space;&&space;\phi&space;_b(x_1)&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\phi&space;_1(x_n)&space;&&space;\cdots&space;&&space;\phi&space;_b(x_n)&space;\end{bmatrix}" title="\Phi=\begin{bmatrix} \phi _1(x_1) & \cdots & \phi _b(x_1) \\ \vdots & \ddots & \vdots \\ \phi _1(x_n) & \cdots & \phi _b(x_n) \end{bmatrix}"></p>
-<p><b style="color:red">将结果变成一个矩阵进行统一处理而已！</b></p>
-<p>训练样本的平方差J<sub>LS</sub>的参数向量θ的偏微分▽<sub>θ</sub>J<sub>LS</sub>以<br><img src="https://latex.codecogs.com/gif.latex?\triangledown_{\theta&space;}J_{LS}=\begin{pmatrix}&space;\frac{\partial&space;J_{LS}}{\partial\theta_1}&space;&&space;\cdots&space;&&space;\frac{\partial&space;J_{LS}}{\partial\theta_b}&space;\end{pmatrix}^T=\Phi&space;^T\Phi&space;\theta&space;-\Phi&space;^Ty" title="\triangledown_{\theta }J_{LS}=\begin{pmatrix} \frac{\partial J_{LS}}{\partial\theta_1} & \cdots & \frac{\partial J_{LS}}{\partial\theta_b} \end{pmatrix}^T=\Phi ^T\Phi \theta -\Phi ^Ty"></p>
-<p>这样的形式给出。如果将其微分设置为0，最小二乘解就满足关系式<br><img src="https://latex.codecogs.com/gif.latex?\Phi&space;^T\Phi&space;\theta&space;=\Phi&space;^Ty" title="\Phi ^T\Phi \theta =\Phi ^Ty"></p>
-<p>这个方程式的解使用设计矩阵Φ的广义逆矩阵Φ<sup>†</sup>：(pinv)来进行计算，可以得出<br><img src="https://latex.codecogs.com/gif.latex?\hat{\theta}_{LS}=\Phi^\dagger&space;y" title="\hat{\theta}_{LS}=\Phi^\dagger y"></p>
-<p>在这里，<sup>†</sup>是剑标。相对于只有方阵、非奇异矩阵才能定义逆矩阵，广义逆矩阵则是矩形矩阵或奇异矩阵都可以定义，是对逆矩阵的推广。Φ<sup>†</sup>Φ有逆矩阵的时候，广义逆矩阵Φ<sup>†</sup>可以用下式表示。<br><img src="https://latex.codecogs.com/gif.latex?\Phi^\dagger&space;=&space;(\Phi^T\Phi)^{-1}\Phi^T" title="\Phi^\dagger = (\Phi^T\Phi)^{-1}\Phi^T"></p>
+            <h1 id="什么是机器学习"><a href="#什么是机器学习" class="headerlink" title="什么是机器学习"></a>什么是机器学习</h1><h2 id="学习的种类"><a href="#学习的种类" class="headerlink" title="学习的种类"></a>学习的种类</h2><p>根据处理的数据种类的不同，可以分为监督学习、无监督学习、强化学习等几种类型。</p>
+<p>监督学习：<b style="color:red">对没有学习过的问题也可以做出正确解答，使计算机获得这种泛化能力，是监督学习的最终目标。</b>监督学习在手写文字识别、声音处理、图像处理、垃圾邮件分类与拦截、网页检索、基因诊断以及股票预测等各个方面，都有着广泛的应用。<b style="color:red">这一机器学习的典型任务包括：预测数值型数据的回归、预测分类标签的分类、预测顺序的排序等。</b></p>
+<p>无监督学习：基本上指计算机在互联网中自动收集信息，并从中获取有用信息。<b style="color:red">无监督学习在人造卫星故障诊断、视频分析、社交网站解析和声音信号解析等各方面大显身手的同时，在数据可视化以及作为监督学习方法的前处理工具方面，也有着广泛的应用。</b>这一类机器学习的典型任务有聚类、异常检测等。</p>
+<p>强化学习：与监督学习类似，也以使计算机获得对没有学习过的问题作出正确解答的泛化能力为目标，但在学习的过程中，不设置老师提示对错、告知最终答案的环节。然而如果真的在学习过程中不能从周围环境中获得任何信息的话，强化学习就变成了无监督学习了.<b style="color:blue">强化学习是指在没有老师提示的情况下，自己对预测结果进行评估的方法.</b>通过自我评估，学生为了获得老师的最高嘉奖而不断地进行学习。强化学习，在机器人的自动控制、计算机游戏中的人工智能、市场战略的最优化等方面均有广泛应用。在强化学习中经常会用到回归、分类、聚类和降维等各种各样的机器学习算法。</p>
+<h2 id="机器学习任务的例子"><a href="#机器学习任务的例子" class="headerlink" title="机器学习任务的例子"></a>机器学习任务的例子</h2><p>回归：是指把实函数在样本点附近加以近似的有监督的函数近似问题。（函数回归，连续不间断的曲线）</p>
+<p>分类：是指对于指定的模式进行识别的有监督的模式识别问题。分类问题只是单纯地对样本应该属于哪一个类别进行预测，并根据预测准确与否来衡量泛化误差，这一点与回归是不同的。</p>
+<p>异常检测：是指寻找输入样本中所包含的异常数据的问题。在已知正常数据与异常数据的例子的情况下，其与有监督学习的分类问题是相同的。但是一般情况下，在异常检测中，对于什么样的数据是异常的事先是未知的。在这样的无监督的异常检测中，一般采用<b style="color:red">密度估计</b>的方法，把靠近密度中心的数据作为正常数据，偏离的作为异常数据。</p>
+<p>聚类：与分类相同，也是模式匹配，但是属于无监督学习的一种。只给属于样本，然后判断各个样本属于哪个族，有多少簇等。在聚类问题中，如何准确计算样本间的相似度是很重要的课题。</p>
+<p>降维：是指从高维度数据中提取关键信息，将其转换为易于计算的低维度问题进而求解的方法。降维根据数据种类的不同，可以分为监督学习和无监学习两种。在转换为较低维度的样本之后，应该保持原始输入样本的数据分布性质，以及数据间的近邻关系不发生变化。</p>
+<h2 id="机器学习的方法"><a href="#机器学习的方法" class="headerlink" title="机器学习的方法"></a>机器学习的方法</h2><p>机器学习有多种不同的流派。这里以对模式x的类别y进行预测的分类问题为例，对机器学习中的主要流派，即产生式分类和判别式分类，以及频率派和贝叶斯派的基本方法加以介绍。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21hdHJpeF9zcGFjZS9hcnRpY2xlL2RldGFpbHMvODM3MTM2MzI=" title="https://blog.csdn.net/matrix_space/article/details/83713632">机器学习：几种分类识别问题<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5pdHVyaW5nLmNvbS5jbi9ib29rL21pbmlhcnRpY2xlLzE5NTg3Mw==" title="http://www.ituring.com.cn/book/miniarticle/195873">生成的分类和识别的分类<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cudGlueW1pbmQuY24vYXJ0aWNsZXMvMTIw" title="https://www.tinymind.cn/articles/120">详解计算机视觉五大技术：图像分类、对象检测、目标跟踪、语义分割和实例分割<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3l1bmR1YW5tdXh1ZS9hcnRpY2xlL2RldGFpbHMvMjAxMjI5MzE=" title="https://blog.csdn.net/yunduanmuxue/article/details/20122931">模式识别（二）：分类问题简介<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3hpb25nY2hhbzk5L2FydGljbGUvZGV0YWlscy83NDkxMDk4NA==" title="https://blog.csdn.net/xiongchao99/article/details/74910984">模式识别之分类器<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -588,12 +850,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2019/02/10/机器学习/学习模型/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/学习模型.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -605,16 +867,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/02/10/机器学习/学习模型/" class="post-title-link" itemprop="url">学习模型</a>
+                <a href="/机器学习/学习模型.html" class="post-title-link" itemprop="url">学习模型</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -678,13 +943,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.2k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -708,7 +994,7 @@
 <h1 id="学习模型"><a href="#学习模型" class="headerlink" title="学习模型"></a>学习模型</h1><h2 id="线性模型"><a href="#线性模型" class="headerlink" title="线性模型"></a>线性模型</h2><p><b style="color:red">监督学习、直接得出后验概率。</b></p>
 <p>纯粹的这种模型往往没有太大的实用价值。因此在实际的应用中，经常会对线性模型进行相应的扩展，使其变成基于参数的线性模型，这样就可以使线性模型也能用于表示非线性的输入与输出了。</p>
 <p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B.gif?raw=true" alt=""></p>
-<p>在上式中，<a href="https://www.codecogs.com/eqnedit.php?latex=\phi_{j}(x)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\phi_{j}(x)" title="\phi_{j}(x)"></a>是基函数向量<img src="https://latex.codecogs.com/gif.latex?(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T" title="(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T">的第j个因子，<img src="https://latex.codecogs.com/gif.latex?\theta_{j}" title="\theta_{j}">是参数向量<img src="https://latex.codecogs.com/gif.latex?\theta=(\theta_1,\theta_2,......,\theta_b)^{T}" title="\theta=(\theta_1,\theta_2,......,\theta_b)^{T}">的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把基函数变为多项式的形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,x,x^2,......x^{b-1})^T" title="\phi(x)=(1,x,x^2,......x^{b-1})^T"><br>或者变为b=2m+1的三角多项式形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T" title="\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T"><br>上述的线性模型就可以表示复杂的非线性性模型了。</p>
+<p>在上式中，<span class="exturl" data-url="aHR0cHM6Ly93d3cuY29kZWNvZ3MuY29tL2VxbmVkaXQucGhwP2xhdGV4PVxwaGlfe2p9KHgp" title="https://www.codecogs.com/eqnedit.php?latex=\phi_{j}(x)"><img src="https://latex.codecogs.com/gif.latex?\phi_{j}(x)" title="\phi_{j}(x)"><i class="fa fa-external-link"></i></span>是基函数向量<img src="https://latex.codecogs.com/gif.latex?(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T" title="(\phi_{1}(x),\phi_{2}(x),......\phi_{b}(x))^T">的第j个因子，<img src="https://latex.codecogs.com/gif.latex?\theta_{j}" title="\theta_{j}">是参数向量<img src="https://latex.codecogs.com/gif.latex?\theta=(\theta_1,\theta_2,......,\theta_b)^{T}" title="\theta=(\theta_1,\theta_2,......,\theta_b)^{T}">的第j个因子。另外b是基函数的个数。我们可以看到，虽然上式依然是基于参数向量θ的线性形式，但是把基函数变为多项式的形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,x,x^2,......x^{b-1})^T" title="\phi(x)=(1,x,x^2,......x^{b-1})^T"><br>或者变为b=2m+1的三角多项式形式<br><img src="https://latex.codecogs.com/gif.latex?\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T" title="\phi(x)=(1,sin(x),cos(x),sin(2x),cos(2x),......,sin(mx),cos(mx))^T"><br>上述的线性模型就可以表示复杂的非线性性模型了。</p>
 <p>在上述模型中，一维的输入x还可以扩展为d维的向量形式<img src="https://latex.codecogs.com/gif.latex?x=(x^{(1)},x^{(2)},......x^{(d)})^T" title="x=(x^{(1)},x^{(2)},......x^{(d)})^T">.</p>
 <p>对于多维的输入向量x，如何选择合适的基函数呢？下面介绍使用一维的基函数来构造多维基函数的乘法模型和加法模型做相应的介绍。</p>
 <p>乘法模型是指，把一维的基函数作为因子，通过使其相乘而获得多维基函数的方法。<br><img src="https://latex.codecogs.com/gif.latex?\sum_{j_1=1}^{b^{'}}...\sum_{j_d=1}^{b^{'}}\theta_{j_{1},...,j_d}\phi_{j_{1}}(x^{(1)})\cdot\cdot\cdot&space;\phi_{j_{d}}(x^{(d)})" title="\sum_{j_1=1}^{b^{'}}...\sum_{j_d=1}^{b^{'}}\theta_{j_{1},...,j_d}\phi_{j_{1}}(x^{(1)})\cdot\cdot\cdot \phi_{j_{d}}(x^{(d)})"></p>
@@ -790,12 +1076,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2019/01/30/机器学习/什么是机器学习/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/团队与思考/关于招聘的想法.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -807,205 +1093,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/01/30/机器学习/什么是机器学习/" class="post-title-link" itemprop="url">什么是机器学习</a>
+                <a href="/团队与思考/关于招聘的想法.html" class="post-title-link" itemprop="url">关于招聘的想法</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
 
+          <!-- 置顶的实现 -->
           
-          
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-01-30 00:51:10" itemprop="dateCreated datePublished" datetime="2019-01-30T00:51:10+08:00">2019-01-30</time>
-            </span>
-          
-
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-03 01:59:03" itemprop="dateModified" datetime="2019-03-03T01:59:03+08:00">2019-03-03</time>
-              </span>
-            
-          
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          <br/>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="什么是机器学习"><a href="#什么是机器学习" class="headerlink" title="什么是机器学习"></a>什么是机器学习</h1><h2 id="学习的种类"><a href="#学习的种类" class="headerlink" title="学习的种类"></a>学习的种类</h2><p>根据处理的数据种类的不同，可以分为监督学习、无监督学习、强化学习等几种类型。</p>
-<p>监督学习：<b style="color:red">对没有学习过的问题也可以做出正确解答，使计算机获得这种泛化能力，是监督学习的最终目标。</b>监督学习在手写文字识别、声音处理、图像处理、垃圾邮件分类与拦截、网页检索、基因诊断以及股票预测等各个方面，都有着广泛的应用。<b style="color:red">这一机器学习的典型任务包括：预测数值型数据的回归、预测分类标签的分类、预测顺序的排序等。</b></p>
-<p>无监督学习：基本上指计算机在互联网中自动收集信息，并从中获取有用信息。<b style="color:red">无监督学习在人造卫星故障诊断、视频分析、社交网站解析和声音信号解析等各方面大显身手的同时，在数据可视化以及作为监督学习方法的前处理工具方面，也有着广泛的应用。</b>这一类机器学习的典型任务有聚类、异常检测等。</p>
-<p>强化学习：与监督学习类似，也以使计算机获得对没有学习过的问题作出正确解答的泛化能力为目标，但在学习的过程中，不设置老师提示对错、告知最终答案的环节。然而如果真的在学习过程中不能从周围环境中获得任何信息的话，强化学习就变成了无监督学习了.<b style="color:blue">强化学习是指在没有老师提示的情况下，自己对预测结果进行评估的方法.</b>通过自我评估，学生为了获得老师的最高嘉奖而不断地进行学习。强化学习，在机器人的自动控制、计算机游戏中的人工智能、市场战略的最优化等方面均有广泛应用。在强化学习中经常会用到回归、分类、聚类和降维等各种各样的机器学习算法。</p>
-<h2 id="机器学习任务的例子"><a href="#机器学习任务的例子" class="headerlink" title="机器学习任务的例子"></a>机器学习任务的例子</h2><p>回归：是指把实函数在样本点附近加以近似的有监督的函数近似问题。（函数回归，连续不间断的曲线）</p>
-<p>分类：是指对于指定的模式进行识别的有监督的模式识别问题。分类问题只是单纯地对样本应该属于哪一个类别进行预测，并根据预测准确与否来衡量泛化误差，这一点与回归是不同的。</p>
-<p>异常检测：是指寻找输入样本中所包含的异常数据的问题。在已知正常数据与异常数据的例子的情况下，其与有监督学习的分类问题是相同的。但是一般情况下，在异常检测中，对于什么样的数据是异常的事先是未知的。在这样的无监督的异常检测中，一般采用<b style="color:red">密度估计</b>的方法，把靠近密度中心的数据作为正常数据，偏离的作为异常数据。</p>
-<p>聚类：与分类相同，也是模式匹配，但是属于无监督学习的一种。只给属于样本，然后判断各个样本属于哪个族，有多少簇等。在聚类问题中，如何准确计算样本间的相似度是很重要的课题。</p>
-<p>降维：是指从高维度数据中提取关键信息，将其转换为易于计算的低维度问题进而求解的方法。降维根据数据种类的不同，可以分为监督学习和无监学习两种。在转换为较低维度的样本之后，应该保持原始输入样本的数据分布性质，以及数据间的近邻关系不发生变化。</p>
-<h2 id="机器学习的方法"><a href="#机器学习的方法" class="headerlink" title="机器学习的方法"></a>机器学习的方法</h2><p>机器学习有多种不同的流派。这里以对模式x的类别y进行预测的分类问题为例，对机器学习中的主要流派，即产生式分类和判别式分类，以及频率派和贝叶斯派的基本方法加以介绍。</p>
-<p><a href="https://blog.csdn.net/matrix_space/article/details/83713632" target="_blank" rel="noopener">机器学习：几种分类识别问题</a></p>
-<p><a href="http://www.ituring.com.cn/book/miniarticle/195873" target="_blank" rel="noopener">生成的分类和识别的分类</a></p>
-<p><a href="https://www.tinymind.cn/articles/120" target="_blank" rel="noopener">详解计算机视觉五大技术：图像分类、对象检测、目标跟踪、语义分割和实例分割</a></p>
-<p><a href="https://blog.csdn.net/yunduanmuxue/article/details/20122931" target="_blank" rel="noopener">模式识别（二）：分类问题简介</a></p>
-<p><a href="https://blog.csdn.net/xiongchao99/article/details/74910984" target="_blank" rel="noopener">模式识别之分类器</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/10/13/团队与思考/关于招聘的想法/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Author"/>
-      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/10/13/团队与思考/关于招聘的想法/" class="post-title-link" itemprop="url">关于招聘的想法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
 
           
           
@@ -1059,13 +1159,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.9k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -1157,12 +1278,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/09/30/机器学习/机器学习实战笔记——k-近邻算法/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/机器学习实战笔记——k-近邻算法.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1174,16 +1295,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/09/30/机器学习/机器学习实战笔记——k-近邻算法/" class="post-title-link" itemprop="url">机器学习实战笔记——k-近邻算法</a>
+                <a href="/机器学习/机器学习实战笔记——k-近邻算法.html" class="post-title-link" itemprop="url">机器学习实战笔记——k-近邻算法</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1247,13 +1371,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">883</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -1365,12 +1510,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/09/29/机器学习/机器学习实战笔记——机器学习基础/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/机器学习实战笔记——机器学习基础.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1382,16 +1527,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/09/29/机器学习/机器学习实战笔记——机器学习基础/" class="post-title-link" itemprop="url">机器学习实战笔记——机器学习基础</a>
+                <a href="/机器学习/机器学习实战笔记——机器学习基础.html" class="post-title-link" itemprop="url">机器学习实战笔记——机器学习基础</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1455,13 +1603,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.1k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -1582,12 +1751,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/13/java/内存栅栏/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/内存栅栏.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1599,16 +1768,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/13/java/内存栅栏/" class="post-title-link" itemprop="url">内存栅栏</a>
+                <a href="/java/内存栅栏.html" class="post-title-link" itemprop="url">内存栅栏</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1679,13 +1851,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.1k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -1724,7 +1917,7 @@
 <p>下图是CPU的Local Memory与主存的通信过程：<br><img src="https://github.com/gavin-account/blog-pics/blob/master/java/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%E5%9B%BE1.jpg?raw=true" alt=""></p>
 <h2 id="Java中内存栅栏的使用"><a href="#Java中内存栅栏的使用" class="headerlink" title="Java中内存栅栏的使用"></a>Java中内存栅栏的使用</h2><p>Java内存模型中volatile变量在写操作之后会插入一个store屏障，在读操作之前会插入一个load屏障。一个类的final字段会在初始化后插入一个store屏障，来确保final字段在构造函数初始化完成并可被使用时可见。</p>
 <h2 id="内存栅栏对性能的影响"><a href="#内存栅栏对性能的影响" class="headerlink" title="内存栅栏对性能的影响"></a>内存栅栏对性能的影响</h2><p>内存栅栏阻止了 CPU 很多隐式的内存延迟技术的执行，因此是有性能损耗的，不过在上层看来这种损耗并不大。在合适的时候使用内存栅栏，仍然是一种高效的做法。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://zh.wikipedia.org/zh-hans/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C" target="_blank" rel="noopener">维基百科 - 内存屏障</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3poLWhhbnMvJUU1JTg2JTg1JUU1JUFEJTk4JUU1JUIxJThGJUU5JTlBJTlD" title="https://zh.wikipedia.org/zh-hans/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C">维基百科 - 内存屏障<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -1783,12 +1976,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/08/blockchain/corda/Corda教程-流程相关/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda教程-流程相关.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1800,16 +1993,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/08/blockchain/corda/Corda教程-流程相关/" class="post-title-link" itemprop="url">Corda教程-流程相关</a>
+                <a href="/blockchain/corda/Corda教程-流程相关.html" class="post-title-link" itemprop="url">Corda教程-流程相关</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1880,13 +2076,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">32k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">29 分钟</span>
+            </span>
           
 
           
@@ -1906,12 +2123,12 @@
       
         
           
-            <h1 id="使用客户端RPC-API"><a href="#使用客户端RPC-API" class="headerlink" title="使用客户端RPC API"></a>使用客户端RPC API</h1><p>在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">Client RPC</a>。</p>
+            <h1 id="使用客户端RPC-API"><a href="#使用客户端RPC-API" class="headerlink" title="使用客户端RPC API"></a>使用客户端RPC API</h1><p>在本教程中，我们将构建一个简单的命令行实用程序，该实用程序连接到节点，创建一些现金交易并将交易图转储到标准输出。然后，我们将在顶部放置一些简单的可视化。有关Corda如何在Corda中工作的说明，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2NsaWVudHJwYy5odG1s" title="https://docs.corda.net/head/clientrpc.html">Client RPC<i class="fa fa-external-link"></i></span>。</p>
 <p>我们首先连接到节点本身。为了本教程的目的，我们将使用Driver来启动一个公证人和一个可以发行、移动和退出现金的Alice节点。</p>
 <p>下面是我们如何将节点配置为创建具有权限的用户来启动<code>CashIssueFlow</code>， <code>CashPaymentFlow</code>以及<code>CashExitFlow</code>：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintOrVisualise</span> </span>&#123;</span><br><span class="line">    Print,</span><br><span class="line">    Visualise</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    require(args.isNotEmpty()) &#123; <span class="string">"Usage: &lt;binary&gt; [Print|Visualise]"</span> &#125;</span><br><span class="line">    <span class="keyword">val</span> printOrVisualise = PrintOrVisualise.valueOf(args[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> baseDirectory = Paths.<span class="keyword">get</span>(<span class="string">"build/rpc-api-tutorial"</span>)</span><br><span class="line">    <span class="keyword">val</span> user = User(<span class="string">"user"</span>, <span class="string">"password"</span>, permissions = setOf(startFlow&lt;CashIssueFlow&gt;(),</span><br><span class="line">            startFlow&lt;CashPaymentFlow&gt;(),</span><br><span class="line">            startFlow&lt;CashExitFlow&gt;(),</span><br><span class="line">            invokeRpc(CordaRPCOps::nodeInfo)</span><br><span class="line">    ))</span><br><span class="line">    driver(DriverParameters(driverDirectory = baseDirectory, extraCordappPackagesToScan = listOf(<span class="string">"net.corda.finance"</span>), waitForAllNodesToFinish = <span class="literal">true</span>)) &#123;</span><br><span class="line">        <span class="keyword">val</span> node = startNode(providedName = ALICE_NAME, rpcUsers = listOf(user)).<span class="keyword">get</span>()</span><br></pre></td></tr></table></figure></p>
 <p>现在我们可以使用有效的RPC用户登录连接到节点本身，并使用<code>generateTransactions</code>（稍后定义）开始在不同线程中生成交易：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val client = CordaRPCClient(node.rpcAddress)</span><br><span class="line">val proxy = client.start(&quot;user&quot;, &quot;password&quot;).proxy</span><br><span class="line"></span><br><span class="line">thread &#123;</span><br><span class="line">    generateTransactions(proxy)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>proxy 公开节点的完整RPC接口：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the RPC protocol version, which is the same the node's Platform Version. Exists since version 1 so guaranteed</span></span><br><span class="line"><span class="comment"> * to be present.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">override</span> <span class="keyword">val</span> protocolVersion: <span class="built_in">Int</span> <span class="keyword">get</span>() = nodeInfo().platformVersion</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a list of currently in-progress state machine infos. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a data feed of currently in-progress state machine infos and an observable of</span></span><br><span class="line"><span class="comment"> * future state machine adds/removes.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineInfo&gt;, StateMachineUpdate&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot of vault states for a given query criteria (and optional order and paging specification)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [Vault.Page] object containing the following:</span></span><br><span class="line"><span class="comment"> *  1. states as a List of &lt;StateAndRef&gt; (page number and size defined by [PageSpecification])</span></span><br><span class="line"><span class="comment"> *  2. states metadata as a List of [Vault.StateMetadata] held in the Vault States table.</span></span><br><span class="line"><span class="comment"> *  3. total number of results available if [PageSpecification] supplied (otherwise returns -1)</span></span><br><span class="line"><span class="comment"> *  4. status types used in this query: UNCONSUMED, CONSUMED, ALL</span></span><br><span class="line"><span class="comment"> *  5. other results (aggregate functions with/without using value groups)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> VaultQueryException if the query cannot be executed for any reason</span></span><br><span class="line"><span class="comment"> *        (missing criteria or parsing error, paging errors, unsupported query, underlying database error)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes</span></span><br><span class="line"><span class="comment"> *   If no [PageSpecification] is provided, a maximum of [DEFAULT_PAGE_SIZE] results will be returned.</span></span><br><span class="line"><span class="comment"> *   API users must specify a [PageSpecification] if they are expecting more than [DEFAULT_PAGE_SIZE] results,</span></span><br><span class="line"><span class="comment"> *   otherwise a [VaultQueryException] will be thrown alerting to this condition.</span></span><br><span class="line"><span class="comment"> *   It is the responsibility of the API user to request further pages and/or specify a more suitable [PageSpecification].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Note: cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQuery</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByCriteria</span><span class="params">(criteria: <span class="type">QueryCriteria</span>, contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot (as per queryBy) and an observable of future updates to the vault for the given query criteria.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [DataFeed] object containing</span></span><br><span class="line"><span class="comment"> * 1) a snapshot as a [Vault.Page] (described previously in [CordaRPCOps.vaultQueryBy])</span></span><br><span class="line"><span class="comment"> * 2) an [Observable] of [Vault.Update]</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes: the snapshot part of the query adheres to the same behaviour as the [CordaRPCOps.vaultQueryBy] function.</span></span><br><span class="line"><span class="comment"> *        the [QueryCriteria] applies to both snapshot and deltas (streaming updates).</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Note: cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrack</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByCriteria</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a list of all recorded transactions.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsSnapshot</span><span class="params">()</span></span>: List&lt;SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a data feed of all recorded transactions and an observable of future recorded ones.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;SignedTransaction&gt;, SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a snapshot list of existing state machine id - recorded transaction hash mappings. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot list of existing state machine id - recorded transaction hash mappings, and a stream of future</span></span><br><span class="line"><span class="comment"> * such mappings as well.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineTransactionMapping&gt;, StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns all parties currently visible on the network with their advertised services. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapSnapshot</span><span class="params">()</span></span>: List&lt;NodeInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns all parties currently visible on the network with their advertised services and an observable of</span></span><br><span class="line"><span class="comment"> * future updates to the network.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;NodeInfo&gt;, NetworkMapCache.MapChange&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns [DataFeed] object containing information on currently scheduled parameters update (null if none are currently scheduled)</span></span><br><span class="line"><span class="comment"> * and observable with future update events. Any update that occurs before the deadline automatically cancels the current one.</span></span><br><span class="line"><span class="comment"> * Only the latest update can be accepted.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkParametersFeed</span><span class="params">()</span></span>: DataFeed&lt;ParametersUpdateInfo?, ParametersUpdateInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Accept network parameters with given hash, hash is obtained through [networkParametersFeed] method.</span></span><br><span class="line"><span class="comment"> * Information is sent back to the zone operator that the node accepted the parameters update - this process cannot be</span></span><br><span class="line"><span class="comment"> * undone.</span></span><br><span class="line"><span class="comment"> * Only parameters that are scheduled for update can be accepted, if different hash is provided this method will fail.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> parametersHash hash of network parameters to accept</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException if network map advertises update with different parameters hash then the one accepted by node's operator.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IOException if failed to send the approval to network map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">acceptNewNetworkParameters</span><span class="params">(parametersHash: <span class="type">SecureHash</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments. [logicType] must be annotated</span></span><br><span class="line"><span class="comment"> * with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments, returning an [Observable] with a single observation of the</span></span><br><span class="line"><span class="comment"> * result of running the flow. [logicType] must be annotated with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startTrackedFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowProgressHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Attempts to kill a flow. This is not a clean termination and should be reserved for exceptional cases such as stuck fibers.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> whether the flow existed and was killed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">killFlow</span><span class="params">(id: <span class="type">StateMachineRunId</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns Node's NodeInfo, assuming this will not change while the node is running. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfo</span><span class="params">()</span></span>: NodeInfo</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns network's notary identities, assuming this will not change while the node is running.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note that the identities are sorted based on legal name, and the ordering might change once new notaries are introduced.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryIdentities</span><span class="params">()</span></span>: List&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Add note(s) to an existing Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">addVaultTransactionNote</span><span class="params">(txnId: <span class="type">SecureHash</span>, txnNote: <span class="type">String</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Retrieve existing note(s) for a given Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getVaultTransactionNotes</span><span class="params">(txnId: <span class="type">SecureHash</span>)</span></span>: Iterable&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Checks whether an attachment with the given hash is stored on the node. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">attachmentExists</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Download an attachment JAR by ID. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">openAttachment</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: InputStream</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachment</span><span class="params">(jar: <span class="type">InputStream</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar including metadata to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachmentWithMetadata</span><span class="params">(jar: <span class="type">InputStream</span>, uploader: <span class="type">String</span>, filename: <span class="type">String</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Queries attachments metadata */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">queryAttachments</span><span class="params">(query: <span class="type">AttachmentQueryCriteria</span>, sorting: <span class="type">AttachmentSort</span>?)</span></span>: List&lt;AttachmentId&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the node's current time. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">currentNodeTime</span><span class="params">()</span></span>: Instant</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a [CordaFuture] which completes when the node has registered wih the network map service. It can also</span></span><br><span class="line"><span class="comment"> * complete with an exception if it is unable to.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">waitUntilNetworkReady</span><span class="params">()</span></span>: CordaFuture&lt;<span class="built_in">Void</span>?&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TODO These need rethinking. Instead of these direct calls we should have a way of replicating a subset of</span></span><br><span class="line"><span class="comment">// the node's state locally and query that directly.</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the well known identity from an abstract party. This is intended to resolve the well known identity</span></span><br><span class="line"><span class="comment"> * from a confidential identity, however it transparently handles returning the well known identity back if</span></span><br><span class="line"><span class="comment"> * a well known identity is passed in.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> party identity to determine well known identity for.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> well known identity, if found.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromAnonymous</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] corresponding to the given key, if found. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partyFromKey</span><span class="params">(key: <span class="type">PublicKey</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] with the X.500 principal as it's [Party.name]. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get a notary identity by name.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the notary identity, or null if there is no notary by that name. Note that this will return null if there</span></span><br><span class="line"><span class="comment"> * is a peer with that name but they are not a recognised notary service.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a list of candidate matches for a given string, with optional fuzzy(ish) matching. Fuzzy matching may</span></span><br><span class="line"><span class="comment"> * get smarter with time e.g. to correct spelling errors, so you should not hard-code indexes into the results</span></span><br><span class="line"><span class="comment"> * but rather show them via a user interface and let the user pick the one they wanted.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> query The string to check against the X.500 name components</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> exactMatch If true, a case sensitive match is done against each component of each X.500 name.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partiesFromName</span><span class="params">(query: <span class="type">String</span>, exactMatch: <span class="type">Boolean</span>)</span></span>: Set&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Enumerates the class names of the flows that this node knows about. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">registeredFlows</span><span class="params">()</span></span>: List&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a node's info from the network map cache, where known.</span></span><br><span class="line"><span class="comment"> * Notice that when there are more than one node for a given name (in case of distributed services) first service node</span></span><br><span class="line"><span class="comment"> * found will be returned.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the node info if available.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfoFromParty</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: NodeInfo?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Clear all network map data from local node cache. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">clearNetworkMapCache</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Sets the value of the node's flows draining mode.</span></span><br><span class="line"><span class="comment"> * If this mode is [enabled], the node will reject new flows through RPC, ignore scheduled flows, and do not process</span></span><br><span class="line"><span class="comment"> * initial session messages, meaning that P2P counterparties will not be able to initiate new flows involving the node.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> enabled whether the flows draining mode will be enabled.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">setFlowsDrainingModeEnabled</span><span class="params">(enabled: <span class="type">Boolean</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns whether the flows draining mode is enabled.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> setFlowsDrainingModeEnabled</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">isFlowsDrainingModeEnabled</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Shuts the node down. Returns immediately.</span></span><br><span class="line"><span class="comment"> * This does not wait for flows to be completed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">shutdown</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure></p>
-<p>我们需要用来转储交易图的RPC操作是<code>internalVerifiedTransactionsFeed</code>。类型签名告诉我们RPC操作将返回一系列交易和一个<code>Observable</code>流。这是一种普遍的模式，我们查询一些数据，节点将返回当前的快照和将来的更新。<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">客户端RPC</a>更详细地描述了可观察对象.<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (transactions: List&lt;SignedTransaction&gt;, futureTransactions: Observable&lt;SignedTransaction&gt;) = proxy.internalVerifiedTransactionsFeed()</span><br></pre></td></tr></table></figure></p>
+<p>proxy 公开节点的完整RPC接口：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the RPC protocol version, which is the same the node's Platform Version. Exists since version 1 so guaranteed</span></span><br><span class="line"><span class="comment"> * to be present.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">override</span> <span class="keyword">val</span> protocolVersion: <span class="built_in">Int</span> <span class="keyword">get</span>() = nodeInfo().platformVersion</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a list of currently in-progress state machine infos. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a data feed of currently in-progress state machine infos and an observable of</span></span><br><span class="line"><span class="comment"> * future state machine adds/removes.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachinesFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineInfo&gt;, StateMachineUpdate&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot of vault states for a given query criteria (and optional order and paging specification)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [Vault.Page] object containing the following:</span></span><br><span class="line"><span class="comment"> *  1. states as a List of &lt;StateAndRef&gt; (page number and size defined by [PageSpecification])</span></span><br><span class="line"><span class="comment"> *  2. states metadata as a List of [Vault.StateMetadata] held in the Vault States table.</span></span><br><span class="line"><span class="comment"> *  3. total number of results available if [PageSpecification] supplied (otherwise returns -1)</span></span><br><span class="line"><span class="comment"> *  4. status types used in this query: UNCONSUMED, CONSUMED, ALL</span></span><br><span class="line"><span class="comment"> *  5. other results (aggregate functions with/without using value groups)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> VaultQueryException if the query cannot be executed for any reason</span></span><br><span class="line"><span class="comment"> *        (missing criteria or parsing error, paging errors, unsupported query, underlying database error)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes</span></span><br><span class="line"><span class="comment"> *   If no [PageSpecification] is provided, a maximum of [DEFAULT_PAGE_SIZE] results will be returned.</span></span><br><span class="line"><span class="comment"> *   API users must specify a [PageSpecification] if they are expecting more than [DEFAULT_PAGE_SIZE] results,</span></span><br><span class="line"><span class="comment"> *   otherwise a [VaultQueryException] will be thrown alerting to this condition.</span></span><br><span class="line"><span class="comment"> *   It is the responsibility of the API user to request further pages and/or specify a more suitable [PageSpecification].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">Note:</span> cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultQueryAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQuery</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByCriteria</span><span class="params">(criteria: <span class="type">QueryCriteria</span>, contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultQueryByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: Vault.Page&lt;T&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultQueryAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot (as per queryBy) and an observable of future updates to the vault for the given query criteria.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Generic vault query function which takes a [QueryCriteria] object to define filters,</span></span><br><span class="line"><span class="comment"> * optional [PageSpecification] and optional [Sort] modification criteria (default unsorted),</span></span><br><span class="line"><span class="comment"> * and returns a [DataFeed] object containing</span></span><br><span class="line"><span class="comment"> * 1) a snapshot as a [Vault.Page] (described previously in [CordaRPCOps.vaultQueryBy])</span></span><br><span class="line"><span class="comment"> * 2) an [Observable] of [Vault.Update]</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Notes: the snapshot part of the query adheres to the same behaviour as the [CordaRPCOps.vaultQueryBy] function.</span></span><br><span class="line"><span class="comment"> *        the [QueryCriteria] applies to both snapshot and deltas (streaming updates).</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackByAPI</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackBy</span><span class="params">(criteria: <span class="type">QueryCriteria</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     paging: <span class="type">PageSpecification</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     sorting: <span class="type">Sort</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                                     contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackByAPI</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">Note:</span> cannot apply @JvmOverloads to interfaces nor interface implementations</span></span><br><span class="line"><span class="comment">// Java Helpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DOCSTART VaultTrackAPIHelpers</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrack</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByCriteria</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithPagingSpec</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, paging: <span class="type">PageSpecification</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ContractState&gt;</span> <span class="title">vaultTrackByWithSorting</span><span class="params">(contractStateType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">T</span>&gt;, criteria: <span class="type">QueryCriteria</span>, sorting: <span class="type">Sort</span>)</span></span>: DataFeed&lt;Vault.Page&lt;T&gt;, Vault.Update&lt;T&gt;&gt;</span><br><span class="line"><span class="comment">// DOCEND VaultTrackAPIHelpers</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a list of all recorded transactions.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsSnapshot</span><span class="params">()</span></span>: List&lt;SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@suppress</span> Returns a data feed of all recorded transactions and an observable of future recorded ones.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * TODO This method should be removed once SGX work is finalised and the design of the corresponding API using [FilteredTransaction] can be started</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Deprecated(<span class="meta-string">"This method is intended only for internal use and will be removed from the public API soon."</span>)</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">internalVerifiedTransactionsFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;SignedTransaction&gt;, SignedTransaction&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns a snapshot list of existing state machine id - recorded transaction hash mappings. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingSnapshot</span><span class="params">()</span></span>: List&lt;StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a snapshot list of existing state machine id - recorded transaction hash mappings, and a stream of future</span></span><br><span class="line"><span class="comment"> * such mappings as well.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">stateMachineRecordedTransactionMappingFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;StateMachineTransactionMapping&gt;, StateMachineTransactionMapping&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns all parties currently visible on the network with their advertised services. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapSnapshot</span><span class="params">()</span></span>: List&lt;NodeInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns all parties currently visible on the network with their advertised services and an observable of</span></span><br><span class="line"><span class="comment"> * future updates to the network.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkMapFeed</span><span class="params">()</span></span>: DataFeed&lt;List&lt;NodeInfo&gt;, NetworkMapCache.MapChange&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns [DataFeed] object containing information on currently scheduled parameters update (null if none are currently scheduled)</span></span><br><span class="line"><span class="comment"> * and observable with future update events. Any update that occurs before the deadline automatically cancels the current one.</span></span><br><span class="line"><span class="comment"> * Only the latest update can be accepted.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">networkParametersFeed</span><span class="params">()</span></span>: DataFeed&lt;ParametersUpdateInfo?, ParametersUpdateInfo&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Accept network parameters with given hash, hash is obtained through [networkParametersFeed] method.</span></span><br><span class="line"><span class="comment"> * Information is sent back to the zone operator that the node accepted the parameters update - this process cannot be</span></span><br><span class="line"><span class="comment"> * undone.</span></span><br><span class="line"><span class="comment"> * Only parameters that are scheduled for update can be accepted, if different hash is provided this method will fail.</span></span><br><span class="line"><span class="comment"> * Note: This operation may be restricted only to node administrators.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> parametersHash hash of network parameters to accept</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException if network map advertises update with different parameters hash then the one accepted by node's operator.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IOException if failed to send the approval to network map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// TODO This operation should be restricted to just node admins.</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">acceptNewNetworkParameters</span><span class="params">(parametersHash: <span class="type">SecureHash</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments. [logicType] must be annotated</span></span><br><span class="line"><span class="comment"> * with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Start the given flow with the given arguments, returning an [Observable] with a single observation of the</span></span><br><span class="line"><span class="comment"> * result of running the flow. [logicType] must be annotated with [net.corda.core.flows.StartableByRPC].</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">startTrackedFlowDynamic</span><span class="params">(logicType: <span class="type">Class</span>&lt;<span class="type">out</span> <span class="type">FlowLogic</span>&lt;<span class="type">T</span>&gt;&gt;, <span class="keyword">vararg</span> args: <span class="type">Any</span>?)</span></span>: FlowProgressHandle&lt;T&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Attempts to kill a flow. This is not a clean termination and should be reserved for exceptional cases such as stuck fibers.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> whether the flow existed and was killed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">killFlow</span><span class="params">(id: <span class="type">StateMachineRunId</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns Node's NodeInfo, assuming this will not change while the node is running. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfo</span><span class="params">()</span></span>: NodeInfo</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns network's notary identities, assuming this will not change while the node is running.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note that the identities are sorted based on legal name, and the ordering might change once new notaries are introduced.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryIdentities</span><span class="params">()</span></span>: List&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Add note(s) to an existing Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">addVaultTransactionNote</span><span class="params">(txnId: <span class="type">SecureHash</span>, txnNote: <span class="type">String</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Retrieve existing note(s) for a given Vault transaction. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getVaultTransactionNotes</span><span class="params">(txnId: <span class="type">SecureHash</span>)</span></span>: Iterable&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Checks whether an attachment with the given hash is stored on the node. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">attachmentExists</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Download an attachment JAR by ID. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">openAttachment</span><span class="params">(id: <span class="type">SecureHash</span>)</span></span>: InputStream</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachment</span><span class="params">(jar: <span class="type">InputStream</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Uploads a jar including metadata to the node, returns it's hash. */</span></span><br><span class="line"><span class="meta">@Throws(java.nio.file.FileAlreadyExistsException::class)</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">uploadAttachmentWithMetadata</span><span class="params">(jar: <span class="type">InputStream</span>, uploader: <span class="type">String</span>, filename: <span class="type">String</span>)</span></span>: SecureHash</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Queries attachments metadata */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">queryAttachments</span><span class="params">(query: <span class="type">AttachmentQueryCriteria</span>, sorting: <span class="type">AttachmentSort</span>?)</span></span>: List&lt;AttachmentId&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the node's current time. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">currentNodeTime</span><span class="params">()</span></span>: Instant</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a [CordaFuture] which completes when the node has registered wih the network map service. It can also</span></span><br><span class="line"><span class="comment"> * complete with an exception if it is unable to.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RPCReturnsObservables</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">waitUntilNetworkReady</span><span class="params">()</span></span>: CordaFuture&lt;<span class="built_in">Void</span>?&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TODO These need rethinking. Instead of these direct calls we should have a way of replicating a subset of</span></span><br><span class="line"><span class="comment">// the node's state locally and query that directly.</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the well known identity from an abstract party. This is intended to resolve the well known identity</span></span><br><span class="line"><span class="comment"> * from a confidential identity, however it transparently handles returning the well known identity back if</span></span><br><span class="line"><span class="comment"> * a well known identity is passed in.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> party identity to determine well known identity for.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> well known identity, if found.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromAnonymous</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] corresponding to the given key, if found. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partyFromKey</span><span class="params">(key: <span class="type">PublicKey</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Returns the [Party] with the X.500 principal as it's [Party.name]. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">wellKnownPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get a notary identity by name.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the notary identity, or null if there is no notary by that name. Note that this will return null if there</span></span><br><span class="line"><span class="comment"> * is a peer with that name but they are not a recognised notary service.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">notaryPartyFromX500Name</span><span class="params">(x500Name: <span class="type">CordaX500Name</span>)</span></span>: Party?</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a list of candidate matches for a given string, with optional fuzzy(ish) matching. Fuzzy matching may</span></span><br><span class="line"><span class="comment"> * get smarter with time e.g. to correct spelling errors, so you should not hard-code indexes into the results</span></span><br><span class="line"><span class="comment"> * but rather show them via a user interface and let the user pick the one they wanted.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> query The string to check against the X.500 name components</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> exactMatch If true, a case sensitive match is done against each component of each X.500 name.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">partiesFromName</span><span class="params">(query: <span class="type">String</span>, exactMatch: <span class="type">Boolean</span>)</span></span>: Set&lt;Party&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Enumerates the class names of the flows that this node knows about. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">registeredFlows</span><span class="params">()</span></span>: List&lt;String&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a node's info from the network map cache, where known.</span></span><br><span class="line"><span class="comment"> * Notice that when there are more than one node for a given name (in case of distributed services) first service node</span></span><br><span class="line"><span class="comment"> * found will be returned.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the node info if available.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">nodeInfoFromParty</span><span class="params">(party: <span class="type">AbstractParty</span>)</span></span>: NodeInfo?</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Clear all network map data from local node cache. */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">clearNetworkMapCache</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** Sets the value of the node's flows draining mode.</span></span><br><span class="line"><span class="comment"> * If this mode is [enabled], the node will reject new flows through RPC, ignore scheduled flows, and do not process</span></span><br><span class="line"><span class="comment"> * initial session messages, meaning that P2P counterparties will not be able to initiate new flows involving the node.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> enabled whether the flows draining mode will be enabled.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">setFlowsDrainingModeEnabled</span><span class="params">(enabled: <span class="type">Boolean</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns whether the flows draining mode is enabled.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> setFlowsDrainingModeEnabled</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">isFlowsDrainingModeEnabled</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Shuts the node down. Returns immediately.</span></span><br><span class="line"><span class="comment"> * This does not wait for flows to be completed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">shutdown</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure></p>
+<p>我们需要用来转储交易图的RPC操作是<code>internalVerifiedTransactionsFeed</code>。类型签名告诉我们RPC操作将返回一系列交易和一个<code>Observable</code>流。这是一种普遍的模式，我们查询一些数据，节点将返回当前的快照和将来的更新。<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2NsaWVudHJwYy5odG1s" title="https://docs.corda.net/head/clientrpc.html">客户端RPC<i class="fa fa-external-link"></i></span>更详细地描述了可观察对象.<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (transactions: List&lt;SignedTransaction&gt;, futureTransactions: Observable&lt;SignedTransaction&gt;) = proxy.internalVerifiedTransactionsFeed()</span><br></pre></td></tr></table></figure></p>
 <p>该图将被定义如下：</p>
 <ul>
 <li>每个交易都是一个顶点，由打印<code>NODE &lt;txhash&gt;</code>表示 </li>
@@ -1925,8 +2142,8 @@
 <p>最后，我们掌握了一切：我们启动几个节点，连接到它们，并开始创建交易，同时监听已成功创建的交易，并将这些交易转储到控制台。我们只需要运行它！<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Build the example</span></span><br><span class="line">./gradlew docs/source/example-code:installDist</span><br><span class="line"><span class="meta">#</span><span class="bash"> Start it</span></span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Print</span><br></pre></td></tr></table></figure></p>
 <p>现在让我们尝试对交易图进行可视化。我们将使用一个名为<code>graphstream</code>的图形绘制库。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">    PrintOrVisualise.Visualise -&gt; &#123;</span><br><span class="line">        <span class="keyword">val</span> graph = MultiGraph(<span class="string">"transactions"</span>)</span><br><span class="line">        transactions.forEach &#123; transaction -&gt;</span><br><span class="line">            graph.addNode&lt;Node&gt;(<span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        transactions.forEach &#123; transaction -&gt;</span><br><span class="line">            transaction.tx.inputs.forEach &#123; ref -&gt;</span><br><span class="line">                graph.addEdge&lt;Edge&gt;(<span class="string">"<span class="variable">$ref</span>"</span>, <span class="string">"<span class="subst">$&#123;ref.txhash&#125;</span>"</span>, <span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        futureTransactions.subscribe &#123; transaction -&gt;</span><br><span class="line">            graph.addNode&lt;Node&gt;(<span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            transaction.tx.inputs.forEach &#123; ref -&gt;</span><br><span class="line">                graph.addEdge&lt;Edge&gt;(<span class="string">"<span class="variable">$ref</span>"</span>, <span class="string">"<span class="subst">$&#123;ref.txhash&#125;</span>"</span>, <span class="string">"<span class="subst">$&#123;transaction.id&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        graph.display()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>如果我们使用<code>Visualise</code>运行客户端，我们应该看到随着新交易的创建，会绘制一个简单的随机图。</p>
-<h2 id="将您的CorDapp与Corda节点上的类列入白名单"><a href="#将您的CorDapp与Corda节点上的类列入白名单" class="headerlink" title="将您的CorDapp与Corda节点上的类列入白名单"></a>将您的CorDapp与Corda节点上的类列入白名单</h2><p>如<a href="https://docs.corda.net/head/clientrpc.html" target="_blank" rel="noopener">Client RPC</a>所述，您必须将您添加的RPC请求或Corda节点响应中所需的任何其他类添加到白名单中。这里有一个例子，你可以通过这两种方法来做几个示例类。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Not annotated, so need to whitelist manually.</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue</span></span>(<span class="keyword">val</span> foo: String)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Annotated, so no need to whitelist manually.</span></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue2</span></span>(<span class="keyword">val</span> bar: <span class="built_in">Int</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCSerializationWhitelist</span> : <span class="type">SerializationWhitelist &#123;</span></span></span><br><span class="line">    <span class="comment">// Add classes like this.</span></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> whitelist = listOf(ExampleRPCValue::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://docs.corda.net/head/running-a-node.html" target="_blank" rel="noopener">在本地运行节点</a>这里查看更多插件。</p>
+<h2 id="将您的CorDapp与Corda节点上的类列入白名单"><a href="#将您的CorDapp与Corda节点上的类列入白名单" class="headerlink" title="将您的CorDapp与Corda节点上的类列入白名单"></a>将您的CorDapp与Corda节点上的类列入白名单</h2><p>如<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2NsaWVudHJwYy5odG1s" title="https://docs.corda.net/head/clientrpc.html">Client RPC<i class="fa fa-external-link"></i></span>所述，您必须将您添加的RPC请求或Corda节点响应中所需的任何其他类添加到白名单中。这里有一个例子，你可以通过这两种方法来做几个示例类。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Not annotated, so need to whitelist manually.</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue</span></span>(<span class="keyword">val</span> foo: String)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Annotated, so no need to whitelist manually.</span></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCValue2</span></span>(<span class="keyword">val</span> bar: <span class="built_in">Int</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleRPCSerializationWhitelist</span> : <span class="type">SerializationWhitelist &#123;</span></span></span><br><span class="line">    <span class="comment">// Add classes like this.</span></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> whitelist = listOf(ExampleRPCValue::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3J1bm5pbmctYS1ub2RlLmh0bWw=" title="https://docs.corda.net/head/running-a-node.html">在本地运行节点<i class="fa fa-external-link"></i></span>这里查看更多插件。</p>
 <h2 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h2><p>与客户端关联的RPC凭证必须与服务器节点上配置的权限集匹配。这涉及身份验证（用户名和密码）和基于角色的授权（授权用户有权运行的一组经过授权的RPC操作）。</p>
 <p><b style="color:blue">注意：权限以String的形式表示，以允许RPC实现添加他们自己的权限。目前唯一定义的权限类型是StartFlow，它定义了经过身份验证的使用可能执行的白名单流程的列表。管理员用户（或开发人员）也可能被分配ALL权限，该权限授予对任何流量的访问权限。</b></p>
 <p>在上面的说明中，服务器节点权限是以编程方式driver代码中配置的：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">driver(driverDirectory = baseDirectory) &#123;</span><br><span class="line">    <span class="keyword">val</span> user = User(<span class="string">"user"</span>, <span class="string">"password"</span>, permissions = setOf(startFlow&lt;CashFlow&gt;()))</span><br><span class="line">    <span class="keyword">val</span> node = startNode(<span class="string">"CN=Alice Corp,O=Alice Corp,L=London,C=GB"</span>, rpcUsers = listOf(user)).<span class="keyword">get</span>()</span><br></pre></td></tr></table></figure></p>
@@ -1934,7 +2151,7 @@
 <p>在使用Gradle Cordformation插件配置和部署节点时，您必须以类似的方式提供RPC凭据：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpcUsers = [</span><br><span class="line">        [<span class="string">'username'</span> : <span class="string">"user"</span>,</span><br><span class="line">         <span class="string">'password'</span> : <span class="string">"password"</span>,</span><br><span class="line">         <span class="string">'permissions'</span> : [<span class="string">"StartFlow.net.corda.finance.flows.CashFlow"</span>]]</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
 <p>然后，您可以按如下方式部署和启动节点（公证人和Alice）：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> to create a <span class="built_in">set</span> of configs and installs under ``docs/<span class="built_in">source</span>/example-code/build/nodes`` run</span></span><br><span class="line">./gradlew docs/source/example-code:deployNodes</span><br><span class="line"><span class="meta">#</span><span class="bash"> to open up two new terminals with the two nodes run</span></span><br><span class="line">./docs/source/example-code/build/nodes/runnodes</span><br><span class="line"><span class="meta">#</span><span class="bash"> followed by the same commands as before:</span></span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Print</span><br><span class="line">./docs/source/example-code/build/install/docs/source/example-code/bin/client-rpc-tutorial Visualise</span><br></pre></td></tr></table></figure></p>
 <p>关于启动流RPC，还有一个额外的安全层，要执行的流必须注解<code>@StartableByRPC</code>。没有此注解的流程无法使用RPC执行。</p>
-<p>请参阅<a href="https://docs.corda.net/head/secure-coding-guidelines.html" target="_blank" rel="noopener">安全编码指南</a>中的安全性，<a href="https://docs.corda.net/head/corda-configuration-file.html" target="_blank" rel="noopener">节点配置</a>中的节点配置以及<a href="https://docs.corda.net/head/running-a-node.html" target="_blank" rel="noopener">本地运行节点</a>中的<code>Cordformation</code> 。</p>
+<p>请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3NlY3VyZS1jb2RpbmctZ3VpZGVsaW5lcy5odG1s" title="https://docs.corda.net/head/secure-coding-guidelines.html">安全编码指南<i class="fa fa-external-link"></i></span>中的安全性，<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2NvcmRhLWNvbmZpZ3VyYXRpb24tZmlsZS5odG1s" title="https://docs.corda.net/head/corda-configuration-file.html">节点配置<i class="fa fa-external-link"></i></span>中的节点配置以及<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3J1bm5pbmctYS1ub2RlLmh0bWw=" title="https://docs.corda.net/head/running-a-node.html">本地运行节点<i class="fa fa-external-link"></i></span>中的<code>Cordformation</code> 。</p>
 <h1 id="构建交易"><a href="#构建交易" class="headerlink" title="构建交易"></a>构建交易</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>理解和实施Corda中的交易是构建和实施真实世界智能合约的关键。只有通过构建包含适当数据的有效Corda交易，分类账上的节点才能将真实世界的业务对象映射到Corda分类账中数据的共享数字视图。更重要的是，作为新智能合约的开发者，它是决定哪些数据格式良好以及哪些数据应该被拒绝为错误或防止恶意活动的代码。本文档详细介绍了在构建交易作为流程的一部分时所使用的一些注意事项和API。</p>
 <h2 id="交易的基本生命周期"><a href="#交易的基本生命周期" class="headerlink" title="交易的基本生命周期"></a>交易的基本生命周期</h2><p>Corda的交易包含许多要素：</p>
 <ol>
@@ -1951,7 +2168,7 @@
 <p>对于流程来说，最好的做法是接收其他Party的<code>TransactionSignature</code>而不是完整的<code>SignedTransaction</code>对象，因为否则我们必须单独检查它是否仍然是相同的<code>SignedTransaction</code>，而不是恶意的替代品。</p>
 <p>将交易提交给分类帐的最后阶段是公证<code>SignedTransaction</code>，并将其分发给所有适当的当事人并将数据记录到分类账中。这些操作最好委托给<code>FinalityFlow</code>，而不是手动调用各个步骤。但是，请注意，对其他节点的最终广播是异步的，因此必须小心在单元测试中正确等待Vault更新。</p>
 <h2 id="收集输入"><a href="#收集输入" class="headerlink" title="收集输入"></a>收集输入</h2><p>形成交易的第一步是收集一组输入引用。根据智能合约所捕获的业务流程的性质以及请求的参数化细节，此流程将会有明显的不同。但是，它通常涉及通过<code>ServiceHub</code>里的<code>VaultService</code>接口来搜索vault来定位输入状态。</p>
-<p>给一些更具体的细节考虑两个简化的现实世界的情况。首先是基本的外汇现金交易。这笔交易需要找到一组资金进行交易。流程建模，这是在<code>FxTransactionBuildTutorial.kt</code>实现了 （见docs/source/example-code/src/main/kotlin/net/corda/docs/FxTransactionBuildTutorial.kt的 主<a href="https://github.com/corda/corda" target="_blank" rel="noopener">corda代码库</a>中）。其次，一个简单的商业模式，其中parties手动接受或拒绝对方的贸易提案，这是在<code>WorkflowTransactionBuildTutorial.kt</code>中实现的（见 docs/source/example-code/src/main/kotlin/net/corda/docs/WorkflowTransactionBuildTutorial.kt的 主<a href="https://github.com/corda/corda" target="_blank" rel="noopener">corda代码库</a>中）。要使用IntelliJ IDE运行和浏览这些示例，可以run/step完成<code>FxTransactionBuildTutorialTest.kt</code>和<code>WorkflowTransactionBuildTutorialTest.kt</code>中的相应单元测试，这些测试将流程驱动为模拟内存节点网络的一部分。</p>
+<p>给一些更具体的细节考虑两个简化的现实世界的情况。首先是基本的外汇现金交易。这笔交易需要找到一组资金进行交易。流程建模，这是在<code>FxTransactionBuildTutorial.kt</code>实现了 （见docs/source/example-code/src/main/kotlin/net/corda/docs/FxTransactionBuildTutorial.kt的 主<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRh" title="https://github.com/corda/corda">corda代码库<i class="fa fa-external-link"></i></span>中）。其次，一个简单的商业模式，其中parties手动接受或拒绝对方的贸易提案，这是在<code>WorkflowTransactionBuildTutorial.kt</code>中实现的（见 docs/source/example-code/src/main/kotlin/net/corda/docs/WorkflowTransactionBuildTutorial.kt的 主<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRh" title="https://github.com/corda/corda">corda代码库<i class="fa fa-external-link"></i></span>中）。要使用IntelliJ IDE运行和浏览这些示例，可以run/step完成<code>FxTransactionBuildTutorialTest.kt</code>和<code>WorkflowTransactionBuildTutorialTest.kt</code>中的相应单元测试，这些测试将流程驱动为模拟内存节点网络的一部分。</p>
 <p>注意：创建这些单元测试的IntelliJ运行配置之前，转到 运行- &gt;编辑配置- &gt;默认设置- &gt; JUnit中，添加 <code>-javaagent:lib/quasar.jar</code> 到VM选项，并设置工作目录<code>$PROJECT_DIR$</code>，那么<code>Quasar</code>仪器的配置就正确完成了。</p>
 <p>对于现金交易，假设我们使用的是在<code>:financial</code>gradle模块的标准<code>CashState</code>。<code>Cash</code>合同利用<code>FungibleAsset</code>状态与模型互换资产的持有量，并允许拆分，合并和求状态的总和，以满足合同义务。我们通常会使用该 Cash.generateSpend方法将所需数量的现金收集到a中TransactionBuilder，设置输出并生成Move 命令。然而，为了使事情更加清楚，这里示出的示例性流程的代码将手动通过指定相关的查询条件的过滤器到进行输入的查询tryLockFungibleStatesForSpending的方法VaultService。</p>
 <p>// This is equivalent to the Cash.generateSpend<br>// Which is brought here to make the filtering logic more visible in the example<br>private fun gatherOurInputs(serviceHub: ServiceHub,<br>                            lockId: UUID,<br>                            amountRequired: Amount&lt;Issued<currency>&gt;,<br>                            notary: Party?): Pair&lt;List&lt;StateAndRef&lt;Cash.State&gt;&gt;, Long&gt; {<br>    // extract our identity for convenience<br>    val ourKeys = serviceHub.keyManagementService.keys<br>    val ourParties = ourKeys.map { serviceHub.identityService.partyFromKey(it) ?: throw IllegalStateException(“Unable to resolve party from key”) }<br>    val fungibleCriteria = QueryCriteria.FungibleAssetQueryCriteria(owner = ourParties)</currency></p>
@@ -2062,12 +2279,12 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/08/blockchain/corda/Corda教程——合约部分/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda教程——合约部分.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2079,16 +2296,19 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/08/blockchain/corda/Corda教程——合约部分/" class="post-title-link" itemprop="url">Corda教程——合约部分</a>
+                <a href="/blockchain/corda/Corda教程——合约部分.html" class="post-title-link" itemprop="url">Corda教程——合约部分</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2149,13 +2369,34 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">33k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">30 分钟</span>
+            </span>
           
 
           
@@ -2195,7 +2436,7 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <ul>
 <li><code>issuance</code>，是对某一方发布的特定商业票据的参考。</li>
 <li><code>owner</code>，当前所有者的公钥。这与在比特币中看到的概念是一样的：公钥没有附加的身份，并且由于隐私原因预计会一次性使用。然而，与比特币不同的是，我们将个体所有权视为个别状态层面而不是平台层面的概念，因为我们认为平台上的许多（可能是大多数）合约不代表“所有者/发行人”关系，而是“party/party“衍生合约等关系。</li>
-<li><code>faceValue</code>，一个<code>Amount&lt;Issued&lt;Currency&gt;&gt;</code>包装整数个便士和特定于一些发行者（例如正规银行，中央银行等）的货币的货币。你可以在<a href="https://docs.corda.net/head/api-core-types.html" target="_blank" rel="noopener">API：核心类型</a>中阅读更多关于这个非常常见的类型。</li>
+<li><code>faceValue</code>，一个<code>Amount&lt;Issued&lt;Currency&gt;&gt;</code>包装整数个便士和特定于一些发行者（例如正规银行，中央银行等）的货币的货币。你可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2FwaS1jb3JlLXR5cGVzLmh0bWw=" title="https://docs.corda.net/head/api-core-types.html">API：核心类型<i class="fa fa-external-link"></i></span>中阅读更多关于这个非常常见的类型。</li>
 <li><code>maturityDate</code>中，即时，这是从Java 8标准时间库中的类型。它定义了时间线上的一个点。</li>
 </ul>
 <p>状态是不可变的，因此这个类也被定义为不可变的。Kotlin版本中的修饰符<code>data</code>会导致编译器自动生成equals/hashCode/toString方法，以及可用于创建原始对象变体的复制方法。如果您熟悉该语言，则数据类与Scala中的案例类相似。<code>withoutOwner</code>方法使用自动生成的复制方法来返回状态的一个版本，其拥有者公钥已被删除：稍后将证明这一点很有用。</p>
@@ -2251,7 +2492,7 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <p>随着原型的发展，将会探索这些要求并更新本教程以反映合同API的改进。</p>
 <h2 id="如何测试你的合同"><a href="#如何测试你的合同" class="headerlink" title="如何测试你的合同"></a>如何测试你的合同</h2><p>当然，单元测试你的新业务逻辑块是非常重要的，以确保它的行为像你期望的那样。由于合约代码只是一个常规的Java函数，因此您可以用通常的方式手工完全写出逻辑。但是这样做会很不方便，然后你会厌倦写作测试，那很糟糕：你可能会想要跳过一些。</p>
 <p>为了使合同测试更加方便Corda为Kotlin和Java提供了类似于语言的API，使您可以轻松构建交易链并验证它们是通过验证还是失败并显示特定的错误消息。</p>
-<p>使用该领域特定语言测试合同在单独的教程，<a href="https://docs.corda.net/head/tutorial-test-dsl.html" target="_blank" rel="noopener">编写合同测试</a>中有介绍。</p>
+<p>使用该领域特定语言测试合同在单独的教程，<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3R1dG9yaWFsLXRlc3QtZHNsLmh0bWw=" title="https://docs.corda.net/head/tutorial-test-dsl.html">编写合同测试<i class="fa fa-external-link"></i></span>中有介绍。</p>
 <h2 id="将生成API添加到您的合同"><a href="#将生成API添加到您的合同" class="headerlink" title="将生成API添加到您的合同"></a>将生成API添加到您的合同</h2><p>合同类必须提供验证功能，但他们也可以选择提供帮助功能来简化其使用。大多数合同提供的一个简单的函数类是生成函数，它可以创建或修改交易以执行某些操作（操作通常可以 1:1 映射到命令，但不一定如此）。</p>
 <p>生成可能涉及复杂的逻辑。例如，现金合同有一个<code>generateSpend</code>方法，给定一组现金状态并选择一种方法将它们组合在一起以满足发送的金额。在我们正在使用的不可变状态模型中，账单（状态）只能被创建和删除，但从未被修改过。因此，当我们只有900美元和500美元需要将两种状态结合在一起时，发送1200美元，然后创建1200美元和200美元的两种新输出状态。后一种状态被称为变化，并且是任何使用比特币的人都应该熟悉的概念。</p>
 <p>作为另一个例子，我们可以想象实现网络算法的代码可能会产生复杂的交易，这些交易必须由很多人签名。虽然这样的代码对于单个实用方法来说可能太大（它可能更像一个模块），但基本概念是相同的：使用复杂逻辑准备交易。</p>
@@ -2278,10 +2519,10 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <p>您可以通过检查商业票据单元测试来了解交易流程构建的不同阶段。</p>
 <h2 id="如何构建和传播多方交易"><a href="#如何构建和传播多方交易" class="headerlink" title="如何构建和传播多方交易"></a>如何构建和传播多方交易</h2><p>好的，现在我们知道如何定义分类账的规则，并且我们知道如何构建满足这些规则的交易……并且如果我们所做的只是维护我们自己的数据就足够了。但我们不是：Corda是关于保持许多不同的方面彼此同步。</p>
 <p>在经典的区块链系统中，所有数据都传输给每个人，如果您想要做一些奇特的事情，比如多方交易，那么您就是自己的。在Corda数据只传输给有需要的人，多方交易是一种生活方式，所以我们为管理他们提供了很多支持。</p>
-<p>您可以了解交易如何在同级之间移动，并通过单独的教程“<a href="https://docs.corda.net/head/flow-state-machines.html" target="_blank" rel="noopener">编写流程</a>”中的构建签名公证-广播流程进行。</p>
+<p>您可以了解交易如何在同级之间移动，并通过单独的教程“<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2Zsb3ctc3RhdGUtbWFjaGluZXMuaHRtbA==" title="https://docs.corda.net/head/flow-state-machines.html">编写流程<i class="fa fa-external-link"></i></span>”中的构建签名公证-广播流程进行。</p>
 <h2 id="非资产导向的智能合约"><a href="#非资产导向的智能合约" class="headerlink" title="非资产导向的智能合约"></a>非资产导向的智能合约</h2><p>尽管本教程介绍了如何实施自有资产，但并不要求状态和代码合同 必须关心资产的所有权。把状态视为代表有关世界的有用事实，并且（代码）合约是强加关于事实如何结合以产生新事实的逻辑关​​系最好。<b style="color:blue">或者，您可以想象，状态就像关系数据库中的行一样，合约就像存储过程和关系约束。</b></p>
-<p>在编写处理交易类实体而不是资产类实体的合约时，您可能希望参考“<a href="https://docs.corda.net/head/contract-irs.html" target="_blank" rel="noopener">利率掉期交易</a>”和随附的源代码。虽然所有概念都是相同的，但交易通常不是可拆分的或可合并的，因此您不必担心很多关于状态分组的问题。注：关于利率掉期交易可以参见<a href="https://zh.wikipedia.org/wiki/%E5%88%A9%E7%8E%87%E6%8E%89%E6%9C%9F%E4%BA%A4%E6%98%93" target="_blank" rel="noopener">维基百科</a>，缩写IRS。</p>
-<h2 id="在特定的时间让事情发生"><a href="#在特定的时间让事情发生" class="headerlink" title="在特定的时间让事情发生"></a>在特定的时间让事情发生</h2><p>如果您可以对节点进行编程，使其在成熟后立即自动兑换商业票据，那将会很不错。Corda为各状态宣传将来发生的预定事件提供了一种途径。虽然这些信息在默认情况下被忽略，但如果相应的Cordapp已在您的节点中安装并处于活动状态，并且您的保管库认为该状态是相关的（例如因为您拥有该状态），则节点可自动开始创建交易的过程并贯穿整个生命周期。您可以在文章“ <a href="https://docs.corda.net/head/event-scheduling.html" target="_blank" rel="noopener">事件日程安排</a> ”中了解更多。</p>
+<p>在编写处理交易类实体而不是资产类实体的合约时，您可能希望参考“<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2NvbnRyYWN0LWlycy5odG1s" title="https://docs.corda.net/head/contract-irs.html">利率掉期交易<i class="fa fa-external-link"></i></span>”和随附的源代码。虽然所有概念都是相同的，但交易通常不是可拆分的或可合并的，因此您不必担心很多关于状态分组的问题。注：关于利率掉期交易可以参见<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg4JUE5JUU3JThFJTg3JUU2JThFJTg5JUU2JTlDJTlGJUU0JUJBJUE0JUU2JTk4JTkz" title="https://zh.wikipedia.org/wiki/%E5%88%A9%E7%8E%87%E6%8E%89%E6%9C%9F%E4%BA%A4%E6%98%93">维基百科<i class="fa fa-external-link"></i></span>，缩写IRS。</p>
+<h2 id="在特定的时间让事情发生"><a href="#在特定的时间让事情发生" class="headerlink" title="在特定的时间让事情发生"></a>在特定的时间让事情发生</h2><p>如果您可以对节点进行编程，使其在成熟后立即自动兑换商业票据，那将会很不错。Corda为各状态宣传将来发生的预定事件提供了一种途径。虽然这些信息在默认情况下被忽略，但如果相应的Cordapp已在您的节点中安装并处于活动状态，并且您的保管库认为该状态是相关的（例如因为您拥有该状态），则节点可自动开始创建交易的过程并贯穿整个生命周期。您可以在文章“ <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2V2ZW50LXNjaGVkdWxpbmcuaHRtbA==" title="https://docs.corda.net/head/event-scheduling.html">事件日程安排<i class="fa fa-external-link"></i></span> ”中了解更多。</p>
 <h2 id="产权负担"><a href="#产权负担" class="headerlink" title="产权负担"></a>产权负担</h2><p>所有合同状态可能最多由另一个状态担保，我们称之为产权负担。</p>
 <p>如果存在这种负债状态，则会强制对设保状态进行额外的控制，因为在交易执行期间也会验证产权状态合同。例如，合同状态可能会受到时间锁定合同状态的影响; 那么状态只能在一个交易中进行处理，以验证在保留时间锁定中指定的时间已过。</p>
 <p>设保状态指的是按索引产生的负担，而所提到的负债状态是创造担保状态的同一交易中特定位置上的输出状态。请注意，正在使用的已设置状态必须在同一交易中消耗其负担，否则交易无效。</p>
@@ -2432,12 +2673,12 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/06/08/密码学/数字证书基础知识/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/密码学/数字证书基础知识.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2449,16 +2690,19 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/06/08/密码学/数字证书基础知识/" class="post-title-link" itemprop="url">数字证书基础知识</a>
+                <a href="/密码学/数字证书基础知识.html" class="post-title-link" itemprop="url">数字证书基础知识</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2512,13 +2756,34 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.3k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -2538,7 +2803,7 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
       
         
           
-            <p>关于数字证书，一定会想起Https，其实Https是基于<a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">SSL/TLS</a>的。SSL/TLS其实不止可以用于HTTP，任何采用TCP协议的数据通信都可以采用SSL/TLS进行传输，比如FTP。只是就当前而言，SSL/TLS最为广泛的应用在于HTTPS。当然想起SSL，大家一定还会想起RSA，接着就是SSH了。</p>
+            <p>关于数字证书，一定会想起Https，其实Https是基于<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvVHJhbnNwb3J0X0xheWVyX1NlY3VyaXR5" title="https://en.wikipedia.org/wiki/Transport_Layer_Security">SSL/TLS<i class="fa fa-external-link"></i></span>的。SSL/TLS其实不止可以用于HTTP，任何采用TCP协议的数据通信都可以采用SSL/TLS进行传输，比如FTP。只是就当前而言，SSL/TLS最为广泛的应用在于HTTPS。当然想起SSL，大家一定还会想起RSA，接着就是SSH了。</p>
 <h2 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h2><p>这里需要提到公私钥的密码体制了，这个网上的资料有很多就不多说明了。</p>
 <h2 id="关于HTTPS"><a href="#关于HTTPS" class="headerlink" title="关于HTTPS"></a>关于HTTPS</h2><p>其实客户机加密数据发送给服务器，由于只有服务器才有私钥，所以这个过程是没有任何问题的。但是反过来服务器加密数据发送给客户机，由于公钥是公开的这个过程就有问题了，因为大家都可以看到内容。</p>
 <p>另外如果有人冒充服务器，让用户替换了自己的公钥，这样也会遭受中间人攻击。所以用户也需要验证公钥是不是相应服务器的公钥，所以就出现了数据证书。</p>
@@ -2558,10 +2823,10 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <li>Signature algorithm (签名所使用的算法)</li>
 <li>Thumbprint, Thumbprint algorithm (指纹以及指纹算法)</li>
 </ul>
-<p>当然这里我们不得不提到根证书，一般系统都是信任根证书，否则就不存在数字证书的合法性了。我们都知道CA机构是分层级的，包括根证书(Root Certificate)、中间证书(Intermediate Certificate)以及最底层的网站证书。其中根证书签署中间证书，中间证书在签署最底层的网站证书，由此组成一个证书链(Certificate Chain)。整个对证书的颁发、管理、认证组成了一整套基础设施——<a href="https://en.wikipedia.org/wiki/Public_key_infrastructure" target="_blank" rel="noopener">PKI</a>。</p>
+<p>当然这里我们不得不提到根证书，一般系统都是信任根证书，否则就不存在数字证书的合法性了。我们都知道CA机构是分层级的，包括根证书(Root Certificate)、中间证书(Intermediate Certificate)以及最底层的网站证书。其中根证书签署中间证书，中间证书在签署最底层的网站证书，由此组成一个证书链(Certificate Chain)。整个对证书的颁发、管理、认证组成了一整套基础设施——<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvUHVibGljX2tleV9pbmZyYXN0cnVjdHVyZQ==" title="https://en.wikipedia.org/wiki/Public_key_infrastructure">PKI<i class="fa fa-external-link"></i></span>。</p>
 <p>其实这样的分层是通过公钥的嵌套签名实现的层级关系。</p>
 <h2 id="关于如何发布证书"><a href="#关于如何发布证书" class="headerlink" title="关于如何发布证书"></a>关于如何发布证书</h2><p>使用java的keytool工具可以生成相应的公私钥，还可以向CA机构购买证书服务。当然我们也可以自建自己的证书机构，只是不会有人承认而已，而且还要用户将我们的证书放入操作系统的信任列表中，这样实现起来比较麻烦。这里就不做更多说明了。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/davenkin/p/digital-certificate.html" target="_blank" rel="noopener">数字证书学习笔记</a><br><a href="http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="noopener">数字签名是什么？</a> 阮一峰的博客一般都是清晰好懂的。<br><a href="http://www.cnblogs.com/JeffreySun/archive/2010/06/24/1627247.html" target="_blank" rel="noopener">数字证书原理</a></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><span class="exturl" data-url="aHR0cDovL3d3dy5jbmJsb2dzLmNvbS9kYXZlbmtpbi9wL2RpZ2l0YWwtY2VydGlmaWNhdGUuaHRtbA==" title="http://www.cnblogs.com/davenkin/p/digital-certificate.html">数字证书学习笔记<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTEvMDgvd2hhdF9pc19hX2RpZ2l0YWxfc2lnbmF0dXJlLmh0bWw=" title="http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html">数字签名是什么？<i class="fa fa-external-link"></i></span> 阮一峰的博客一般都是清晰好懂的。<br><span class="exturl" data-url="aHR0cDovL3d3dy5jbmJsb2dzLmNvbS9KZWZmcmV5U3VuL2FyY2hpdmUvMjAxMC8wNi8yNC8xNjI3MjQ3Lmh0bWw=" title="http://www.cnblogs.com/JeffreySun/archive/2010/06/24/1627247.html">数字证书原理<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -2643,7 +2908,7 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   
     <img class="site-author-image" itemprop="image"
-      src="/images/user-avatar"
+      src="/images/user-avatar.jpg"
       alt="Gavin Zhang"/>
   
   <p class="site-author-name" itemprop="name">Gavin Zhang</p>
@@ -2957,7 +3222,7 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 <!-- rss -->
 
   <div class="feed-link motion-element">
-    <a href="https://www.gitbook.com/" rel="alternate">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
       <i class="fa fa-rss"></i>RSS
     </a>
   </div>
@@ -2976,12 +3241,22 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
       
         
       
-        <a href="https://github.com/yourname" title="GitHub &rarr; https://github.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
       </span>
     
   </div>
 
 
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
 
 
 
@@ -3007,32 +3282,70 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Author</span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">819k</span>
+  
 
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:25</span>
   
 </div>
 
 
-  <div class="powered-by">由 Gavin 强力驱动 v3.5.0</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
 
 
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -3141,12 +3454,45 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
   <script src="/js/next-boot.js?v=7.2.0"></script>
 
   
+  <script src="/js/js.cookie.js?v=7.2.0"></script>
+  <script src="/js/scroll-cookie.js?v=7.2.0"></script>
+
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
 
   
 
   
+  
+  
 
   
+    
+      
+    
+  
+
+  
+  
+  
+    <script src="/lib/quicklink/quicklink.umd.js"></script>
+    <script>
+      
+        window.addEventListener('load', () => {
+      
+        quicklink({
+          timeout: 3000,
+          priority: true,
+          ignores: [uri => uri.includes('#'),uri => uri == 'http://cordate.github.io/',]
+        });
+      
+        });
+      
+    </script>
+  
+
 
   
 
@@ -3482,6 +3828,71 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
 
   
 
@@ -3497,14 +3908,8 @@ return serviceHub.signInitialTransaction(builder, ourSigners.single())
 
   
 
-  
 
   
 
-  
-
-
-  
-
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

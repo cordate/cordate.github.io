@@ -47,13 +47,13 @@
 <link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
 
 
   <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
@@ -72,7 +72,7 @@
     version: '7.2.0',
     sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="https://www.gitbook.com/" title="柳絮纷飞" type="application/atom+xml"/>
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
 
 
 
@@ -123,7 +123,7 @@
 </script>
 
   
-  <title>柳絮纷飞</title>
+  <title>柳絮纷飞 - Gavin的个人博客</title>
   
 
 
@@ -189,7 +189,7 @@
     </div>
     
       
-        <p class="site-subtitle">Gavin的个人博客</p>
+        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
       
     
     
@@ -389,6 +389,13 @@
     </header>
 
     
+  
+  
+
+  
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
 
 
     <main id="main" class="main">
@@ -414,12 +421,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/07/java/Java引用Reference学习/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/Java引用Reference学习.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -431,16 +438,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/07/java/Java引用Reference学习/" class="post-title-link" itemprop="url">Java引用Reference学习</a>
+                <a href="/java/Java引用Reference学习.html" class="post-title-link" itemprop="url">Java引用Reference学习</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -511,13 +521,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">10k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">9 分钟</span>
+            </span>
           
 
           
@@ -570,7 +601,7 @@
 <p>Finalizer的构造函数是private的，也就是不能通过new 来生成一个Fianlizer reference。只能通过静态的register方法来生成。同时Finalizer有个静态字段unfinalized，维护了一个未执行finalize方法的reference列表，在构造函数中通过add()方法把Finalizer引用本身加入到unfinalized列表中，同时关联finalizee和queue,实现通知机制。维护静态字段unfinalized的目的是为了一直保持对未未执行finalize方法的reference的强引用，防止被gc回收掉。</p>
 <p>那么register是被VM何时调用的呢？JVM通过VM参数 RegisterFinalizersAtInit 的值来确定何时调用register，RegisterFinalizersAtInit默认为true,则会在构造函数返回之前调用。</p>
 <h3 id="何时入queue"><a href="#何时入queue" class="headerlink" title="何时入queue"></a>何时入queue</h3><p>当一个finalizee 只剩Finalizer引用，没有其他引用时，需要被回收了，GC就会把该finalizee对应的reference放到Finalizer的refereneQueue中,等待FinalizerThread来执行finalizee的finalize方法，然后finalizee对象才能被GC回收。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://www.androidstar.cn/java%E5%AD%A6%E4%B9%A0%E6%95%99%E7%A8%8B%E4%B9%8Breference%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">java学习教程之Reference详解</a><br><a href="http://blog.csdn.net/mazhimazh/article/details/19752475" target="_blank" rel="noopener">Java 7之基础 - 强引用、弱引用、软引用、虚引用</a><br><a href="http://blog.csdn.net/u010412719/article/details/52035792" target="_blank" rel="noopener">《Java源码分析》：ReferenceQueue、Reference及其子类</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cDovL3d3dy5hbmRyb2lkc3Rhci5jbi9qYXZhJUU1JUFEJUE2JUU0JUI5JUEwJUU2JTk1JTk5JUU3JUE4JThCJUU0JUI5JThCcmVmZXJlbmNlJUU4JUFGJUE2JUU4JUE3JUEzLw==" title="http://www.androidstar.cn/java%E5%AD%A6%E4%B9%A0%E6%95%99%E7%A8%8B%E4%B9%8Breference%E8%AF%A6%E8%A7%A3/">java学习教程之Reference详解<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF6aGltYXpoL2FydGljbGUvZGV0YWlscy8xOTc1MjQ3NQ==" title="http://blog.csdn.net/mazhimazh/article/details/19752475">Java 7之基础 - 强引用、弱引用、软引用、虚引用<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMDQxMjcxOS9hcnRpY2xlL2RldGFpbHMvNTIwMzU3OTI=" title="http://blog.csdn.net/u010412719/article/details/52035792">《Java源码分析》：ReferenceQueue、Reference及其子类<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -629,12 +660,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/深入理解System类及系统启动/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/深入理解System类及系统启动.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -646,16 +677,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/06/java/深入理解System类及系统启动/" class="post-title-link" itemprop="url">深入理解System类及系统启动</a>
+                <a href="/java/深入理解System类及系统启动.html" class="post-title-link" itemprop="url">深入理解System类及系统启动</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -726,13 +760,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">11k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">10 分钟</span>
+            </span>
           
 
           
@@ -898,7 +953,7 @@
 <p>这里面好像是win32的系统。具体还是看源码吧，本地方法实在没发看，或许要反编译jvm.dll文件。</p>
 <h2 id="setJavaLangAccess"><a href="#setJavaLangAccess" class="headerlink" title="setJavaLangAccess"></a>setJavaLangAccess</h2><p>来看一下这个方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static void setJavaLangAccess() &#123;</span><br><span class="line">    // Allow privileged classes outside of java.lang</span><br><span class="line">    sun.misc.SharedSecrets.setJavaLangAccess(new sun.misc.JavaLangAccess()&#123;</span><br><span class="line">        public sun.reflect.ConstantPool getConstantPool(Class klass) &#123;</span><br><span class="line">            return klass.getConstantPool();</span><br><span class="line">        &#125;</span><br><span class="line">        public void setAnnotationType(Class klass, AnnotationType type) &#123;</span><br><span class="line">            klass.setAnnotationType(type);</span><br><span class="line">        &#125;</span><br><span class="line">        public AnnotationType getAnnotationType(Class klass) &#123;</span><br><span class="line">            return klass.getAnnotationType();</span><br><span class="line">        &#125;</span><br><span class="line">        public &lt;E extends Enum&lt;E&gt;&gt;</span><br><span class="line">                E[] getEnumConstantsShared(Class&lt;E&gt; klass) &#123;</span><br><span class="line">            return klass.getEnumConstantsShared();</span><br><span class="line">        &#125;</span><br><span class="line">        public void blockedOn(Thread t, Interruptible b) &#123;</span><br><span class="line">            t.blockedOn(b);</span><br><span class="line">        &#125;</span><br><span class="line">        public void registerShutdownHook(int slot, boolean registerShutdownInProgress, Runnable hook) &#123;</span><br><span class="line">            Shutdown.add(slot, registerShutdownInProgress, hook);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStackTraceDepth(Throwable t) &#123;</span><br><span class="line">            return t.getStackTraceDepth();</span><br><span class="line">        &#125;</span><br><span class="line">        public StackTraceElement getStackTraceElement(Throwable t, int i) &#123;</span><br><span class="line">            return t.getStackTraceElement(i);</span><br><span class="line">        &#125;</span><br><span class="line">        public int getStringHash32(String string) &#123;</span><br><span class="line">            return string.hash32();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>关于这个类的使用，可以看一下我的另一篇博客：<a href="/2018/03/06/java/SharedSecrets深入理解/">SharedSecrets深入理解</a>, 可以看一下里面的JavaLangAccess的实例。</p>
-<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><a href="http://www.cnblogs.com/skywang12345/p/io_09.html" target="_blank" rel="noopener">FileDescriptor总结</a></p>
+<h2 id="引用和参考"><a href="#引用和参考" class="headerlink" title="引用和参考"></a>引用和参考</h2><p><span class="exturl" data-url="aHR0cDovL3d3dy5jbmJsb2dzLmNvbS9za3l3YW5nMTIzNDUvcC9pb18wOS5odG1s" title="http://www.cnblogs.com/skywang12345/p/io_09.html">FileDescriptor总结<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -957,12 +1012,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/SharedSecrets深入理解/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/SharedSecrets深入理解.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -974,16 +1029,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/06/java/SharedSecrets深入理解/" class="post-title-link" itemprop="url">SharedSecrets深入理解</a>
+                <a href="/java/SharedSecrets深入理解.html" class="post-title-link" itemprop="url">SharedSecrets深入理解</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1054,13 +1112,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">7.8k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">7 分钟</span>
+            </span>
           
 
           
@@ -1080,7 +1159,7 @@
       
         
           
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。<a href="http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java" target="_blank" rel="noopener">http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java</a> 这个就是这个类的内容。一开始没有懂这里面的意思，那么现在我们来深入理解一下。</p>
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看JDK的一些源码，发现一些类总是会使用到SharedSecrets这个类，发现这不是JDK API里面的类，原来在dt.jar包里面。但是看了源码之后总觉得不是很明白，此类其实没有太多的注释说明。<span class="exturl" data-url="aHR0cDovL2hnLm9wZW5qZGsuamF2YS5uZXQvamRrOC9qZGs4L2pkay9maWxlL3RpcC9zcmMvc2hhcmUvY2xhc3Nlcy9zdW4vbWlzYy9TaGFyZWRTZWNyZXRzLmphdmE=" title="http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java">http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/tip/src/share/classes/sun/misc/SharedSecrets.java<i class="fa fa-external-link"></i></span> 这个就是这个类的内容。一开始没有懂这里面的意思，那么现在我们来深入理解一下。</p>
 <h2 id="从属性开始"><a href="#从属性开始" class="headerlink" title="从属性开始"></a>从属性开始</h2><p>我们来看一下这个类的属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SharedSecrets &#123;</span><br><span class="line">    private static final Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line">    private static JavaUtilJarAccess javaUtilJarAccess;</span><br><span class="line">    private static JavaLangAccess javaLangAccess;</span><br><span class="line">    private static JavaIOAccess javaIOAccess;</span><br><span class="line">    private static JavaNetAccess javaNetAccess;</span><br><span class="line">    private static JavaNetHttpCookieAccess javaNetHttpCookieAccess;</span><br><span class="line">    private static JavaNioAccess javaNioAccess;</span><br><span class="line">    private static JavaIOFileDescriptorAccess javaIOFileDescriptorAccess;</span><br><span class="line">    private static JavaSecurityProtectionDomainAccess javaSecurityProtectionDomainAccess;</span><br><span class="line">    private static JavaSecurityAccess javaSecurityAccess;</span><br><span class="line">    private static JavaUtilZipFileAccess javaUtilZipFileAccess;</span><br><span class="line">    private static JavaAWTAccess javaAWTAccess;</span><br></pre></td></tr></table></figure></p>
 <p>然后再去看看具体方法，发现都是这个类的getter和setter方法，具体看起来是没有啥可理解的。那么具体是什么意思呢？</p>
 <h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p>那么我们来解释一下，就看一下注释里面的说明。</p>
@@ -1098,7 +1177,7 @@
 <p>执行结果，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">org.apache.ibatis.logging.testLang.testPrint(testLang.java:12)</span><br><span class="line">org.apache.ibatis.logging.LogFactoryTest.yumsTest(LogFactoryTest.java:52)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)</span><br><span class="line">org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)</span><br><span class="line">org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)</span><br><span class="line">org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)</span><br><span class="line">org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)</span><br><span class="line">org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)</span><br><span class="line">org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)</span><br><span class="line">org.junit.runners.ParentRunner.run(ParentRunner.java:309)</span><br><span class="line">org.junit.runner.JUnitCore.run(JUnitCore.java:160)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)</span><br><span class="line">com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:42)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:262)</span><br><span class="line">com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:84)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:497)</span><br><span class="line">com.intellij.rt.execution.application.AppMain.main(AppMain.java:147)</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
 <p>我们会发现代码输出了所有JVM栈帧中的实例对象的类名。也就是说我们使用JavaLangAccess和SharedSecrets可以获取栈帧中的所有实例对象的类名称，接下来我们需要剔除掉不可能是调用类的名字。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们发现SharedSecrets这个类挺有趣的，但是注意这个类只是工具，具体的实现都是通过属性来完成，而属性的填充可能是JVM在加载类的时候填入的，所以只要了解接口的作用，我们只要取得里面的接口实例来做一些我们觉得好玩的事情。这就是这个类所不同的地方，凡是此类不能防止set方法只执行一次，所以要在setter方法中做限制，我们发现有些是做了限制的，有些没有。我觉得java8引入函数式编程之后，这个方式或许应该被替代了。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="http://blog.csdn.net/yums467/article/details/53005292" target="_blank" rel="noopener">使用JavaLangAccess和SharedSecrets来获取JVM中的实例</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQveXVtczQ2Ny9hcnRpY2xlL2RldGFpbHMvNTMwMDUyOTI=" title="http://blog.csdn.net/yums467/article/details/53005292">使用JavaLangAccess和SharedSecrets来获取JVM中的实例<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -1157,12 +1236,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/SecurityManager深入学习/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/SecurityManager深入学习.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1174,16 +1253,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/06/java/SecurityManager深入学习/" class="post-title-link" itemprop="url">SecurityManager深入学习</a>
+                <a href="/java/SecurityManager深入学习.html" class="post-title-link" itemprop="url">SecurityManager深入学习</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1254,13 +1336,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">19k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">18 分钟</span>
+            </span>
           
 
           
@@ -1317,7 +1420,7 @@
 <p>动态权限是在权限检查时由生效的策略所授予的、并由 ProtectionDomain 隐式地处理。对 ProtectionDomain 调用 implies() 方法时（实质上是对权限进行检查时），它调用安装的 Policy 类的 getPolicyNoCheck() 方法。因而 Policy 类提供了刷新所授予的一组权限并向调用 ProtectionDomain 返回这个刷新的权限的可能。这保证了针对在构造时提供的 PermissionCollection 和在那一瞬间绑定的 Policy 的组合进行权限检查。</p>
 <p>关于Policy的加载，我们可以通过Policy的静态方法来一探究竟：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">static Policy getPolicyNoCheck()</span><br><span class="line">&#123;</span><br><span class="line">    // 默认是没有Policy的</span><br><span class="line">    PolicyInfo pi = policy.get();</span><br><span class="line">    // Use double-check idiom to avoid locking if system-wide policy is</span><br><span class="line">    // already initialized</span><br><span class="line">    // policy是空的，或没有初始化</span><br><span class="line">    if (pi.initialized == false || pi.policy == null) &#123;</span><br><span class="line">        // 同步加锁，可以对类加锁</span><br><span class="line">        synchronized (Policy.class) &#123;</span><br><span class="line">            // 再取一遍，防止出错</span><br><span class="line">            PolicyInfo pinfo = policy.get();</span><br><span class="line">            if (pinfo.policy == null) &#123;</span><br><span class="line">                String policy_class = AccessController.doPrivileged(</span><br><span class="line">                    new PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                    public String run() &#123;</span><br><span class="line">                        // 这里我们发现是从policy.provider属性中取得policy_class</span><br><span class="line">                        return Security.getProperty(&quot;policy.provider&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">                if (policy_class == null) &#123;</span><br><span class="line">                    // 如果policy.provider属性为空，那么默认使用sun.security.provider.PolicyFile</span><br><span class="line">                    policy_class = &quot;sun.security.provider.PolicyFile&quot;;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                try &#123;</span><br><span class="line">                    // 这里使用policyProvider来创建实例</span><br><span class="line">                    pinfo = new PolicyInfo(</span><br><span class="line">                        (Policy) Class.forName(policy_class).newInstance(),</span><br><span class="line">                        true);</span><br><span class="line">                &#125; catch (Exception e) &#123;</span><br><span class="line">                    /*</span><br><span class="line">                        * The policy_class seems to be an extension</span><br><span class="line">                        * so we have to bootstrap loading it via a policy</span><br><span class="line">                        * provider that is on the bootclasspath.</span><br><span class="line">                        * If it loads then shift gears to using the configured</span><br><span class="line">                        * provider.</span><br><span class="line">                        *</span><br><span class="line">                        * 如果policy_class是一个扩展类，那么我们不得不通过一个policy provider加载，在bootclasspath上。</span><br><span class="line">                        * 如果它加载了，那么需要换挡要使用配置</span><br><span class="line">                        */</span><br><span class="line"></span><br><span class="line">                    // install the bootstrap provider to avoid recursion</span><br><span class="line">                    // 如果创建失败了，还是使用PolicyFile这个类来创建</span><br><span class="line">                    Policy polFile = new sun.security.provider.PolicyFile();</span><br><span class="line">                    pinfo = new PolicyInfo(polFile, false);</span><br><span class="line">                    // 设置policyInfo</span><br><span class="line">                    policy.set(pinfo);</span><br><span class="line"></span><br><span class="line">                    final String pc = policy_class;</span><br><span class="line">                    Policy pol = AccessController.doPrivileged(</span><br><span class="line">                        new PrivilegedAction&lt;Policy&gt;() &#123;</span><br><span class="line">                        public Policy run() &#123;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                ClassLoader cl =</span><br><span class="line">                                        ClassLoader.getSystemClassLoader();</span><br><span class="line">                                // we want the extension loader</span><br><span class="line">                                ClassLoader extcl = null;</span><br><span class="line">                                // 我们需要扩展类加载器</span><br><span class="line">                                while (cl != null) &#123;</span><br><span class="line">                                    extcl = cl;</span><br><span class="line">                                    cl = cl.getParent();</span><br><span class="line">                                &#125;</span><br><span class="line">                                // 加载policy_class类</span><br><span class="line">                                return (extcl != null ? (Policy)Class.forName(</span><br><span class="line">                                        pc, true, extcl).newInstance() : null);</span><br><span class="line">                            &#125; catch (Exception e) &#123;</span><br><span class="line">                                if (debug != null) &#123;</span><br><span class="line">                                    debug.println(&quot;policy provider &quot; +</span><br><span class="line">                                                pc +</span><br><span class="line">                                                &quot; not available&quot;);</span><br><span class="line">                                    e.printStackTrace();</span><br><span class="line">                                &#125;</span><br><span class="line">                                return null;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">                    /*</span><br><span class="line">                        * if it loaded install it as the policy provider. Otherwise</span><br><span class="line">                        * continue to use the system default implementation</span><br><span class="line">                        */</span><br><span class="line">                    if (pol != null) &#123;</span><br><span class="line">                        pinfo = new PolicyInfo(pol, true);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        if (debug != null) &#123;</span><br><span class="line">                            debug.println(&quot;using sun.security.provider.PolicyFile&quot;);</span><br><span class="line">                        &#125;</span><br><span class="line">                        pinfo = new PolicyInfo(polFile, true);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                policy.set(pinfo);</span><br><span class="line">            &#125;</span><br><span class="line">            return pinfo.policy;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pi.policy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><b style="color:red">我们其实可以通过指定policy.provider属性来切换Policy的生成，可以从数据库中、二进制文件、ASCII文件等等获取，默认是PolicyFile实现。关于Policy文件的读取路径和解析，可以查看类PolicyFile的实现，由于里面代码量比较大，而且这个类很少使用，所以我决定不深入研究了，具体怎么用网上找找资料就能解决了。</b></p>
-<p>关于policy文件如何进行编写处理的网站如下所示：<a href="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/" target="_blank" rel="noopener">如何配置Policy文件进行Java安全策略的设置</a></p>
+<p>关于policy文件如何进行编写处理的网站如下所示：<span class="exturl" data-url="aHR0cHM6Ly9qaXNodXN1aXNob3VqaS5naXRodWIuaW8vMjAxNy8wNS8wOS8lRTUlQTYlODIlRTQlQkQlOTUlRTklODUlOEQlRTclQkQlQUVQb2xpY3klRTYlOTYlODclRTQlQkIlQjYlRTglQkYlOUIlRTglQTElOENKYXZhJUU1JUFFJTg5JUU1JTg1JUE4JUU3JUFEJTk2JUU3JTk1JUE1JUU3JTlBJTg0JUU4JUFFJUJFJUU3JUJEJUFFLm1kLyVFNSVBNiU4MiVFNCVCRCU5NSVFOSU4NSU4RCVFNyVCRCVBRVBvbGljeSVFNiU5NiU4NyVFNCVCQiVCNiVFOCVCRiU5QiVFOCVBMSU4Q0phdmElRTUlQUUlODklRTUlODUlQTglRTclQUQlOTYlRTclOTUlQTUlRTclOUElODQlRTglQUUlQkUlRTclQkQlQUUv" title="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/">如何配置Policy文件进行Java安全策略的设置<i class="fa fa-external-link"></i></span></p>
 <h2 id="运行时访问检查"><a href="#运行时访问检查" class="headerlink" title="运行时访问检查"></a>运行时访问检查</h2><p>在默认情况下不安装安全管理器，必须通过一个在启动时传递给 JVM 的、名为 java.security.manager 的环境变量显式地指定。任何应用程序都可找到安装的 SecurityManager 并调用它相应的 check<xxx> 方法。如果所要求的权限在给定运行时上下文中是授予的，那么调用将无声地返回（void）。如果权限没有授予，那么将抛出一个 java.security.AccessControlException 。</xxx></p>
 <p>在 Java 1.1 的时代， SecurityManager 通过其内部逻辑负责管理所有权限本身。因此，任何需要自定义逻辑进行访问决定的应用程序都必须实现并安装一个自定义的 SecurityManager 。Java 2 平台安全体系结构通过引入一个名为 AccessController 的新类使这一切变得简单了，并更具有可扩展性。这个类的目的与 SecurityManager 是一样的，即它负责做出访问决定。当然， 为了向后兼容性保留了 SecurityManager 类，但是其更新的实现委派给了底层的 AccessController 。对 SecurityManager 类进行的所有 check<xxx> 方法调用都解释为相应的 Permission 对象，并将它作为输入参数传递给 AccessController 类的 checkPermission() 方法。</xxx></p>
 <h3 id="Java-程序中的执行线程"><a href="#Java-程序中的执行线程" class="headerlink" title="Java 程序中的执行线程"></a>Java 程序中的执行线程</h3><p>在 Java 程序的执行过程中，可能需要在不同的时间访问“受保护的”资源。当我谈到执行 Java 程序时，我的意思是在特定类 C 1 中（因而在特定的方法中，如 main() ）中启动、通过类 C 2 到 C n-1 、并“结束”于 C n 的执行线程。下面是一个 Java 程序执行的典型控制流程：</p>
@@ -1358,7 +1461,7 @@
 <p>为了能够将操作作为 Subject 执行，必须在调用堆 栈中将 Subject引入（或者注入）ProtectionDomain 。这是在一个名为 DomainCombiner 的专用接口的帮助下实现的，我将在开始 doAs() 和 doAsPrivileged() 方法的内幕之前介绍这个接口。</p>
 <h3 id="DomainCombiner"><a href="#DomainCombiner" class="headerlink" title="DomainCombiner"></a>DomainCombiner</h3><p>如前所述，对于一个 AccessControlContext (一个调用堆栈），在 JAAS 中将 Subject 注入堆栈中的 ProtectionDomain 是通过实现 DomainCombiner 接口（一个特定的实现是 SubjectDomainCombiner ）所处理的。</p>
 <p>注入是在将 SubjectDomainCombiner 作为构造函数参数传递以构建 AccessControlContext 时执行的。（作为参数传递给 doAs 调用的 Subject 被封装到 SubjectDomainCombiner 对象中，这种封装是在创建后者时，将 Subject 作为构造函数参数传递而完成的。）不过，真正的工作是在 SubjectDomainCombiner 的 combine() 方法中完成的。您将在稍后看到在这个方法中所发生的过程。</p>
-<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><a href="https://www.ibm.com/developerworks/cn/java/j-javaauth/" target="_blank" rel="noopener">Java 授权内幕</a><br><a href="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/" target="_blank" rel="noopener">如何配置Policy文件进行Java安全策略的设置</a><br><a href="https://www.cnblogs.com/youxia/p/java006.html" target="_blank" rel="noopener">JAAS 是个什么梗</a><br><a href="http://www.cnblogs.com/youxia/p/java004.html" target="_blank" rel="noopener">使用 SecurityManager 和 Policy File 管理 Java 程序的权限</a></p>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuaWJtLmNvbS9kZXZlbG9wZXJ3b3Jrcy9jbi9qYXZhL2otamF2YWF1dGgv" title="https://www.ibm.com/developerworks/cn/java/j-javaauth/">Java 授权内幕<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9qaXNodXN1aXNob3VqaS5naXRodWIuaW8vMjAxNy8wNS8wOS8lRTUlQTYlODIlRTQlQkQlOTUlRTklODUlOEQlRTclQkQlQUVQb2xpY3klRTYlOTYlODclRTQlQkIlQjYlRTglQkYlOUIlRTglQTElOENKYXZhJUU1JUFFJTg5JUU1JTg1JUE4JUU3JUFEJTk2JUU3JTk1JUE1JUU3JTlBJTg0JUU4JUFFJUJFJUU3JUJEJUFFLm1kLyVFNSVBNiU4MiVFNCVCRCU5NSVFOSU4NSU4RCVFNyVCRCVBRVBvbGljeSVFNiU5NiU4NyVFNCVCQiVCNiVFOCVCRiU5QiVFOCVBMSU4Q0phdmElRTUlQUUlODklRTUlODUlQTglRTclQUQlOTYlRTclOTUlQTUlRTclOUElODQlRTglQUUlQkUlRTclQkQlQUUv" title="https://jishusuishouji.github.io/2017/05/09/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE.md/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEPolicy%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CJava%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E7%BD%AE/">如何配置Policy文件进行Java安全策略的设置<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20veW91eGlhL3AvamF2YTAwNi5odG1s" title="https://www.cnblogs.com/youxia/p/java006.html">JAAS 是个什么梗<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy5jbmJsb2dzLmNvbS95b3V4aWEvcC9qYXZhMDA0Lmh0bWw=" title="http://www.cnblogs.com/youxia/p/java004.html">使用 SecurityManager 和 Policy File 管理 Java 程序的权限<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -1417,12 +1520,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/06/java/Java的SPI机制/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/Java的SPI机制.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1434,16 +1537,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/06/java/Java的SPI机制/" class="post-title-link" itemprop="url">Java的SPI机制</a>
+                <a href="/java/Java的SPI机制.html" class="post-title-link" itemprop="url">Java的SPI机制</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1514,13 +1620,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">12k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">11 分钟</span>
+            </span>
           
 
           
@@ -1614,12 +1741,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/JVM系统底层运行参数/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/JVM系统底层运行参数.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1631,16 +1758,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/05/java/JVM系统底层运行参数/" class="post-title-link" itemprop="url">JVM系统底层运行参数</a>
+                <a href="/java/JVM系统底层运行参数.html" class="post-title-link" itemprop="url">JVM系统底层运行参数</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1711,13 +1841,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.7k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -1741,7 +1892,7 @@
 <h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123; </span><br><span class="line">    String a = sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String b = sun.misc.VM.getSavedProperty(&quot;high&quot;); </span><br><span class="line">    String c = System.getProperty(&quot;java.lang.Integer.IntegerCache.high&quot;); </span><br><span class="line">    String d = System.getProperty(&quot;high&quot;); </span><br><span class="line"></span><br><span class="line">    System.err.println(a); </span><br><span class="line">    System.err.println(b); </span><br><span class="line">    System.err.println(c); </span><br><span class="line">    System.err.println(d); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>加入java命令执行时设置的值是这样的：<code>-Djava.lang.Integer.IntegerCache.high=250 -Dhigh=250</code>,输出的结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">250 </span><br><span class="line">250 </span><br><span class="line">null </span><br><span class="line">250</span><br></pre></td></tr></table></figure></p>
 <p>那么问题来了，为何System.getProperty(“java.lang.Integer.IntegerCache.high”); 是null呢？</p>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>其实上面的<code>java.lang.Integer.IntegerCache.high</code>是用来设置HotSpot VM上Integer的autobox（自动装箱缓存大小配置）范围的。详细参考：<a href="http://rednaxelafx.iteye.com/blog/680746" target="_blank" rel="noopener">http://rednaxelafx.iteye.com/blog/680746</a></p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>其实上面的<code>java.lang.Integer.IntegerCache.high</code>是用来设置HotSpot VM上Integer的autobox（自动装箱缓存大小配置）范围的。详细参考：<span class="exturl" data-url="aHR0cDovL3JlZG5heGVsYWZ4Lml0ZXllLmNvbS9ibG9nLzY4MDc0Ng==" title="http://rednaxelafx.iteye.com/blog/680746">http://rednaxelafx.iteye.com/blog/680746<i class="fa fa-external-link"></i></span></p>
 <p>使用<code>sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);</code>来获取这个参数值，而不是通过<code>System.getProperty()</code>.</p>
 <p>通常，HotSpot VM所接收的特定的VM参数都是通过-XX:前缀的命令行参数指定的，而传给Java层的system property则是通过-D前缀的参数来指定。</p>
 <p>在系统初始化的时候，JVM调用<code>java.lang.System.initializeSystemClass()</code>来初始化System类，而它进一步调用的<br><code>java.lang.System.initProperties()</code>会调用到JVM的<code>JVM_InitProperties()</code>函数，来从JVM那边把-D参数都拿到System.properties里。</p>
@@ -1805,12 +1956,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/Java中一些实用类/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/Java中一些实用类.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -1822,16 +1973,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/05/java/Java中一些实用类/" class="post-title-link" itemprop="url">Java中一些实用类</a>
+                <a href="/java/Java中一些实用类.html" class="post-title-link" itemprop="url">Java中一些实用类</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -1902,13 +2056,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">232</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -1990,12 +2165,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/java/java-Set学习/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/java/java-Set学习.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2007,16 +2182,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/05/java/java-Set学习/" class="post-title-link" itemprop="url">java Set学习</a>
+                <a href="/java/java-Set学习.html" class="post-title-link" itemprop="url">java Set学习</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2087,13 +2265,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">3.3k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
           
 
           
@@ -2131,7 +2330,7 @@
 <p>TreeSet是基于TreeMap实现的。TreeSet中的元素支持2种排序方式：自然排序 或者 根据创建TreeSet 时提供的 Comparator 进行排序。这取决于使用的构造方法。</p>
 <p>TreeSet为基本操作（add、remove 和 contains）提供受保证的 log(n) 时间开销。<br>另外，TreeSet是非同步的。 它的iterator 方法返回的迭代器是fail-fast的。</p>
 <p>具体可以查看TreeSet的源码进行解读。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://blog.csdn.net/mawming/article/details/52438387" target="_blank" rel="noopener">Java 之EnumSet与EnumMap</a><br><a href="https://www.ibm.com/developerworks/cn/java/j-lo-tree/index.html" target="_blank" rel="noopener">通过分析 JDK 源代码研究 TreeMap 红黑树算法实现</a></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF3bWluZy9hcnRpY2xlL2RldGFpbHMvNTI0MzgzODc=" title="http://blog.csdn.net/mawming/article/details/52438387">Java 之EnumSet与EnumMap<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuaWJtLmNvbS9kZXZlbG9wZXJ3b3Jrcy9jbi9qYXZhL2otbG8tdHJlZS9pbmRleC5odG1s" title="https://www.ibm.com/developerworks/cn/java/j-lo-tree/index.html">通过分析 JDK 源代码研究 TreeMap 红黑树算法实现<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -2190,12 +2389,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/数据结构/红黑树/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/数据结构/红黑树.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2207,16 +2406,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/05/数据结构/红黑树/" class="post-title-link" itemprop="url">红黑树（RB-Tree）</a>
+                <a href="/数据结构/红黑树.html" class="post-title-link" itemprop="url">红黑树（RB-Tree）</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2270,13 +2472,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.5k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
           
 
           
@@ -2343,7 +2566,7 @@
 <li>内侧子孙节点。</li>
 </ul>
 <h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p>红可以变黑，但是必须是双红变黑，否则的确解决了红红冲突，但是会出现每条链上黑色的果树就会不一致。另外上下层的黑色和红色可以互换。这样本层路径的黑色数量也不会改变。红红变换可能需要多次的红红冲突解决才能重新让整棵树维护成红黑树。详细还是查看引用。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="http://www.cnblogs.com/skywang12345/p/3245399.html" target="_blank" rel="noopener">红黑树(一)之 原理和算法详细介绍</a><br><a href="http://blog.csdn.net/wzq6578702/article/details/44946729" target="_blank" rel="noopener">红黑树原理（RB-Tree Principle）</a><br><a href="http://blog.csdn.net/v_JULY_v/article/details/6105630" target="_blank" rel="noopener">教你初步了解红黑树</a></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><span class="exturl" data-url="aHR0cDovL3d3dy5jbmJsb2dzLmNvbS9za3l3YW5nMTIzNDUvcC8zMjQ1Mzk5Lmh0bWw=" title="http://www.cnblogs.com/skywang12345/p/3245399.html">红黑树(一)之 原理和算法详细介绍<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd3pxNjU3ODcwMi9hcnRpY2xlL2RldGFpbHMvNDQ5NDY3Mjk=" title="http://blog.csdn.net/wzq6578702/article/details/44946729">红黑树原理（RB-Tree Principle）<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdl9KVUxZX3YvYXJ0aWNsZS9kZXRhaWxzLzYxMDU2MzA=" title="http://blog.csdn.net/v_JULY_v/article/details/6105630">教你初步了解红黑树<i class="fa fa-external-link"></i></span></p>
 
           
         
@@ -2402,12 +2625,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/2018/03/05/golang/golang的包组织方式/"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/golang/golang的包组织方式.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
       <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -2419,16 +2642,19 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2018/03/05/golang/golang的包组织方式/" class="post-title-link" itemprop="url">golang的包组织方式</a>
+                <a href="/golang/golang的包组织方式.html" class="post-title-link" itemprop="url">golang的包组织方式</a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
 
           
           
@@ -2482,13 +2708,34 @@
           
           
 
+          <!-- 页面访问量统计 -->
           
 
           
 
           <br/>
           
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1k</span>
+            </span>
+          
 
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
           
 
           
@@ -2600,7 +2847,7 @@
 <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   
     <img class="site-author-image" itemprop="image"
-      src="/images/user-avatar"
+      src="/images/user-avatar.jpg"
       alt="Gavin Zhang"/>
   
   <p class="site-author-name" itemprop="name">Gavin Zhang</p>
@@ -2914,7 +3161,7 @@
 <!-- rss -->
 
   <div class="feed-link motion-element">
-    <a href="https://www.gitbook.com/" rel="alternate">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
       <i class="fa fa-rss"></i>RSS
     </a>
   </div>
@@ -2933,12 +3180,22 @@
       
         
       
-        <a href="https://github.com/yourname" title="GitHub &rarr; https://github.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
       </span>
     
   </div>
 
 
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
 
 
 
@@ -2964,32 +3221,70 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Author</span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">819k</span>
+  
 
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:25</span>
   
 </div>
 
 
-  <div class="powered-by">由 Gavin 强力驱动 v3.5.0</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.2.0</div>
 
 
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -3098,12 +3393,45 @@
   <script src="/js/next-boot.js?v=7.2.0"></script>
 
   
+  <script src="/js/js.cookie.js?v=7.2.0"></script>
+  <script src="/js/scroll-cookie.js?v=7.2.0"></script>
+
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
 
   
 
   
+  
+  
 
   
+    
+      
+    
+  
+
+  
+  
+  
+    <script src="/lib/quicklink/quicklink.umd.js"></script>
+    <script>
+      
+        window.addEventListener('load', () => {
+      
+        quicklink({
+          timeout: 3000,
+          priority: true,
+          ignores: [uri => uri.includes('#'),uri => uri == 'http://cordate.github.io/page/10/',]
+        });
+      
+        });
+      
+    </script>
+  
+
 
   
 
@@ -3439,6 +3767,71 @@
   
 
   
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
 
   
 
@@ -3454,14 +3847,8 @@
 
   
 
-  
 
   
 
-  
-
-
-  
-
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

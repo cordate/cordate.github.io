@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="Hello WorldCorDapps是安装在一个或多个Corda节点上的插件，并使节点的所有者能够使节点执行一些新的过程 - 从发行债券工具到做餐馆预订。 用例我们的CorDapp将对账单进行模拟。IOU–“IO（我们）（YO）U”的简称 - 记录了一个人欠给他人一笔钱的事实。很明显，这是我们只想在贷款人和借款人之间需要知道的基础上进行沟通的敏感信息。幸运的是，这是Corda擅长的领域之一。由于">
+<meta name="keywords" content="corda,r3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Corda教程 - hello world">
+<meta property="og:url" content="http://cordate.github.io/blockchain/corda/Corda教程-hello world.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="Hello WorldCorDapps是安装在一个或多个Corda节点上的插件，并使节点的所有者能够使节点执行一些新的过程 - 从发行债券工具到做餐馆预订。 用例我们的CorDapp将对账单进行模拟。IOU–“IO（我们）（YO）U”的简称 - 记录了一个人欠给他人一笔钱的事实。很明显，这是我们只想在贷款人和借款人之间需要知道的基础上进行沟通的敏感信息。幸运的是，这是Corda擅长的领域之一。由于">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://docs.corda.net/releases/release-V3.1/_images/tutorial-state.png">
+<meta property="og:image" content="https://docs.corda.net/releases/release-V3.1/_images/simple-tutorial-flow.png">
+<meta property="og:image" content="https://docs.corda.net/head/_images/simple-tutorial-transaction.png">
+<meta property="og:image" content="https://docs.corda.net/head/_images/simple-tutorial-transaction-2.png">
+<meta property="og:updated_time" content="2018-06-07T13:09:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Corda教程 - hello world">
+<meta name="twitter:description" content="Hello WorldCorDapps是安装在一个或多个Corda节点上的插件，并使节点的所有者能够使节点执行一些新的过程 - 从发行债券工具到做餐馆预订。 用例我们的CorDapp将对账单进行模拟。IOU–“IO（我们）（YO）U”的简称 - 记录了一个人欠给他人一笔钱的事实。很明显，这是我们只想在贷款人和借款人之间需要知道的基础上进行沟通的敏感信息。幸运的是，这是Corda擅长的领域之一。由于">
+<meta name="twitter:image" content="https://docs.corda.net/releases/release-V3.1/_images/tutorial-state.png">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="http://cordate.github.io/blockchain/corda/Corda教程-hello world"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>Corda教程 - hello world | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柳絮纷飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br/>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>公益 404</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br/>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/blockchain/corda/Corda教程-hello world.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Corda教程 - hello world
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-06-07 17:20:35 / 修改时间：21:09:52" itemprop="dateCreated datePublished" datetime="2018-06-07T17:20:35+08:00">2018-06-07</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">20k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">18 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h2><p>CorDapps是安装在一个或多个Corda节点上的插件，并使节点的所有者能够使节点执行一些新的过程 - 从发行债券工具到做餐馆预订。</p>
+<h3 id="用例"><a href="#用例" class="headerlink" title="用例"></a>用例</h3><p>我们的CorDapp将对账单进行模拟。IOU–“IO（我们）（YO）U”的简称 - 记录了一个人欠给他人一笔钱的事实。很明显，这是我们只想在贷款人和借款人之间需要知道的基础上进行沟通的敏感信息。幸运的是，这是Corda擅长的领域之一。由于区块链平台的规范，Corda可以轻松地让一小组人员就共享事实达成一致，而无需与网络上的其他人分享这一事实。</p>
+<p>为了提供任何有用的功能，我们的CorDapp至少需要两个东西：</p>
+<ul>
+<li>状态，Corda节点达成共识的共同事实，然后存储在分类账上</li>
+<li>流程，封装了执行特定分类帐更新的过程</li>
+</ul>
+<p>我们的IOU CorDapp也不例外。它将定义一个状态和一个流程：</p>
+<h3 id="IOUState"><a href="#IOUState" class="headerlink" title="IOUState"></a>IOUState</h3><p>我们的状态将是<code>IOUState</code>。它将存储借条的价值，以及贷款人和借款人的身份。我们可以想象<code>IOUState</code>如下：<br><img src="https://docs.corda.net/releases/release-V3.1/_images/tutorial-state.png" alt=""></p>
+<h3 id="IOUFlow"><a href="#IOUFlow" class="headerlink" title="IOUFlow"></a>IOUFlow</h3><p>我们的流程将是<code>IOUFlow</code>。此流程将完全自动化将新IOU发放到分类账的过程。它由以下步骤组成：<br><img src="https://docs.corda.net/releases/release-V3.1/_images/simple-tutorial-flow.png" alt=""></p>
+<p>在传统的分布式账本系统中，所有数据都被广播给每个网络参与者，您不需要考虑数据流 - 只需打包分类账更新并将其发送给网络上的其他人即可。但在Corda，隐私是核心焦点，流程使我们能够在同意分类账更新的过程中仔细控制谁看到了什么。</p>
+<h3 id="CorDapp模板"><a href="#CorDapp模板" class="headerlink" title="CorDapp模板"></a>CorDapp模板</h3><p>编写新的CorDapp时，通常需要将其基于标准模板：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUtamF2YQ==" title="https://github.com/corda/cordapp-template-java">Java的Cordapp模板<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhcHAtdGVtcGxhdGUta290bGlu" title="https://github.com/corda/cordapp-template-kotlin">kotlin的Cordapp模板<i class="fa fa-external-link"></i></span></li>
+</ul>
+<p>Cordapp模板为开发CorDapp提供了必需的样板，并允许您将CorDapp快速部署到虚拟节点的本地测试网络上，以测试其功能。</p>
+<p>CorDapps可以用Java和Kotlin编写，并且将在本教程中以两种语言提供代码。</p>
+<p>请注意，不需要下载和安装Corda本身。Corda V1.0所需的库将从一个在线Maven仓库自动下载。</p>
+<h4 id="下载模板"><a href="#下载模板" class="headerlink" title="下载模板"></a>下载模板</h4><p>要下载模板，请在要下载CorDapp模板的目录中打开终端窗口，然后运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/corda/cordapp-template-java.git ;  cd cordapp-template-java</span><br></pre></td></tr></table></figure></p>
+<p><em>要么</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/corda/cordapp-template-kotlin.git ;  cd cordapp-template-kotlin</span><br></pre></td></tr></table></figure></p>
+<h4 id="在IntelliJ中打开模板"><a href="#在IntelliJ中打开模板" class="headerlink" title="在IntelliJ中打开模板"></a>在IntelliJ中打开模板</h4><p>下载模板后，按照以下说明在IntelliJ中打开它：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC90dXRvcmlhbC1jb3JkYXBwLmh0bWwjb3BlbmluZy10aGUtZXhhbXBsZS1jb3JkYXBwLWluLWludGVsbGlq44CC" title="https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。">https://docs.corda.net/tutorial-cordapp.html#opening-the-example-cordapp-in-intellij。<i class="fa fa-external-link"></i></span></p>
+<h4 id="模板结构"><a href="#模板结构" class="headerlink" title="模板结构"></a>模板结构</h4><p>该模板有许多文件，但我们可以忽略其中的大部分。我们只会修改以下文件：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对于kotlin</span></span><br><span class="line"><span class="comment">// 1. The state</span></span><br><span class="line">cordapp-contracts-states/src/main/kotlin/com/template/StatesAndContracts.kt</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. The flow</span></span><br><span class="line">cordapp/src/main/kotlin/com/template/App.kt</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对于java</span></span><br><span class="line"><span class="comment">// 1. The state</span></span><br><span class="line">cordapp-contracts-states/src/main/java/com/template/TemplateState.java</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. The flow</span></span><br><span class="line">cordapp/src/main/java/com/template/TemplateFlow.java</span><br></pre></td></tr></table></figure>
+<h4 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h4><p>为了防止以后出现构建错误，我们应该在开始之前删除以下文件：</p>
+<ul>
+<li>Java的： <code>cordapp/src/main/java/com/template/TemplateClient.java</code></li>
+<li>kotlin： <code>cordapp/src/main/kotlin/com/template/Client.kt</code><h4 id="迄今取得进展"><a href="#迄今取得进展" class="headerlink" title="迄今取得进展"></a>迄今取得进展</h4>我们现在有一个模板，可以用来定义我们的IOU CorDapp。我们先来定义一下<code>IOUState</code>。<h3 id="编写状态"><a href="#编写状态" class="headerlink" title="编写状态"></a>编写状态</h3>在Corda，分类帐上的共享事实以状态表示。我们的第一个任务是定义一个新的状态类型来表示IOU。<h4 id="ContractState接口"><a href="#ContractState接口" class="headerlink" title="ContractState接口"></a>ContractState接口</h4>Corda状态是实现ContractState接口的类的任何实例。<code>ContractState</code>接口被定义为如下：<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ContractState</span> </span>&#123;</span><br><span class="line">    <span class="comment">// The list of entities considered to have a stake in this state.</span></span><br><span class="line">    <span class="keyword">val</span> participants: List&lt;AbstractParty&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以看到<code>ContractState</code>接口只有一个字段<code>participants</code>。<code>participants</code>是这个状态相关的实体列表。</p>
+<p>除此之外，我们的状态可以自由定义它需要的任何字段，方法，帮助者或内部类，以准确地表示分类账上给定类型的共享事实。</p>
+<h4 id="建模IOUs"><a href="#建模IOUs" class="headerlink" title="建模IOUs"></a>建模IOUs</h4><p>我们应该如何在账本上定义代表借据？除了实现ContractState 接口之外，我们<code>IOUState</code>还需要属性来跟踪IOU的相关特性：</p>
+<ul>
+<li>IOU的价值</li>
+<li>借条的贷方</li>
+<li>借条的借款人</li>
+</ul>
+<p>还有更多可以包含的领域，比如IOU的货币，但现在让我们忽略它们。稍后添加它们通常就像为您的类定义添加附加属性一样简单。</p>
+<h4 id="定义IOUState"><a href="#定义IOUState" class="headerlink" title="定义IOUState"></a>定义IOUState</h4><p>让我们开始打开<code>TemplateState.java</code>（对于Java）或<code>StatesAndContracts.kt</code>（对于Kotlin）并更新 <code>TemplateState</code>以定义<code>IOUState</code>：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add these imports:</span></span><br><span class="line"><span class="keyword">import</span> net.corda.core.identity.Party</span><br><span class="line"></span><br><span class="line"><span class="comment">// Replace TemplateState's definition with:</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IOUState</span></span>(<span class="keyword">val</span> value: <span class="built_in">Int</span>,</span><br><span class="line">               <span class="keyword">val</span> lender: Party,</span><br><span class="line">               <span class="keyword">val</span> borrower: Party) : ContractState &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> participants <span class="keyword">get</span>() = listOf(lender, borrower)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果你使用Java，你还需要重命名<code>TemplateState.java</code>为<code>IOUState.java</code>。</p>
+<p>为了定义IOUState，我们做了以下更改：</p>
+<ul>
+<li>我们已将<code>TemplateState</code>类重新命名为<code>IOUState</code></li>
+<li>我们已经为Java 添加了属性<code>value</code>，<code>lender</code>以及<code>borrower</code>, Java中所需的getter和setter。<ul>
+<li><code>value</code>是类型的<code>int</code>（在Java中）/ <code>Int</code>（在Kotlin中）</li>
+<li><code>lender</code>并且<code>borrower</code>是类型<code>Party</code><ul>
+<li><code>Party</code>是一种内置的Corda类型，表示网络上的实体</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>我们已经覆盖<code>participants</code>返回<code>lender</code>和<code>borrower</code>的列表<ul>
+<li><code>participants</code> 是应该被通知创建或消费这个状态的所有各方的名单</li>
+</ul>
+</li>
+</ul>
+<p>我们发放到分类账上的借条只是这个类的实例。</p>
+<h4 id="合同怎么处理？"><a href="#合同怎么处理？" class="headerlink" title="合同怎么处理？"></a>合同怎么处理？</h4><p>如果您已阅读白皮书或重要概念部分，您会知道每个州都有一个关联合同，该合同会对状态随着时间的推移而产生不变量。包括合同对于我们的第一个CorDapp并不重要，所以我们现在只使用由模板定义的空白<code>TemplateContract</code>和<code>TemplateContract.Commands.Action</code>命令。在下一个教程中，我们将实施我们自己的合约和命令。</p>
+<h3 id="编写流程"><a href="#编写流程" class="headerlink" title="编写流程"></a>编写流程</h3><p>流程会对节点可以执行的一系列步骤进行编码，以实现特定的分类帐更新。通过在节点上安装新的流程，我们允许节点处理新的业务流程。我们定义的流程将允许节点发放 IOUState到分类帐上。</p>
+<h4 id="流程轮廓"><a href="#流程轮廓" class="headerlink" title="流程轮廓"></a>流程轮廓</h4><p>我们的流程目标是协调一项借条发行交易。Corda中的交易是更新分类账的变更的原子单位。每笔交易都是将零个或多个现有状态标记为历史（输入），同时创建零个或多个新状态（输出）的建议。</p>
+<p>创建这个交易并将其应用于分类帐的过程将由IOU的贷方进行，并且需要执行以下步骤：</p>
+<ol>
+<li>将发行新IOU的交易提案建立在分类帐上</li>
+<li>签署交易提案</li>
+<li>记录交易</li>
+<li>将交易发送给借条人，以便他们也可以记录</li>
+</ol>
+<p>在此阶段，我们不要求借款人批准和签署IOU发行交易。当我们在下一个教程中查看合约时，我们将能够施加这个要求。</p>
+<h5 id="支流"><a href="#支流" class="headerlink" title="支流"></a>支流</h5><p>Corda中很常见诸如记录交易或向交易对手发送交易等任务。Corda不是强迫每个开发人员重新实现自己的逻辑来处理这些任务，而是提供了许多库流程来处理这些任务。我们将这些流程调用到较大流程的上下文中，以处理可重复的任务子流程 。</p>
+<p>在我们的案例中，我们可以使用IOU发行流程的步骤3和步骤4自动化<code>FinalityFlow</code>。</p>
+<h4 id="FlowLogic"><a href="#FlowLogic" class="headerlink" title="FlowLogic"></a>FlowLogic</h4><p>所有的流程都必须继承<code>FlowLogic</code>。然后通过重写<code>FlowLogic.call</code>来定义流程采取的步骤。</p>
+<p>让我们在<code>TemplateFlow.java</code>或<code>App.kt</code>中定义我们的<code>IOUFlow</code>。删除模板（<code>Initiator</code>和<code>Responder</code>）中的两个现有流程，并将其替换为以下内容：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add these imports:</span></span><br><span class="line"><span class="keyword">import</span> net.corda.core.contracts.Command</span><br><span class="line"><span class="keyword">import</span> net.corda.core.identity.Party</span><br><span class="line"><span class="keyword">import</span> net.corda.core.transactions.TransactionBuilder</span><br><span class="line"><span class="keyword">import</span> net.corda.core.utilities.ProgressTracker</span><br><span class="line"></span><br><span class="line"><span class="comment">// Replace TemplateFlow's definition with:</span></span><br><span class="line"><span class="meta">@InitiatingFlow</span></span><br><span class="line"><span class="meta">@StartableByRPC</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IOUFlow</span></span>(<span class="keyword">val</span> iouValue: <span class="built_in">Int</span>,</span><br><span class="line">              <span class="keyword">val</span> otherParty: Party) : FlowLogic&lt;<span class="built_in">Unit</span>&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** The progress tracker provides checkpoints indicating the progress of the flow to observers. */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> progressTracker = ProgressTracker()</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** The flow logic is encapsulated within the call() method. */</span></span><br><span class="line">    <span class="meta">@Suspendable</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// We retrieve the notary identity from the network map.</span></span><br><span class="line">        <span class="keyword">val</span> notary = serviceHub.networkMapCache.notaryIdentities[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We create the transaction components.</span></span><br><span class="line">        <span class="keyword">val</span> outputState = IOUState(iouValue, ourIdentity, otherParty)</span><br><span class="line">        <span class="keyword">val</span> cmd = Command(TemplateContract.Commands.Action(), ourIdentity.owningKey)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We create a transaction builder and add the components.</span></span><br><span class="line">        <span class="keyword">val</span> txBuilder = TransactionBuilder(notary = notary)</span><br><span class="line">                .addOutputState(outputState, TEMPLATE_CONTRACT_ID)</span><br><span class="line">                .addCommand(cmd)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We sign the transaction.</span></span><br><span class="line">        <span class="keyword">val</span> signedTx = serviceHub.signInitialTransaction(txBuilder)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We finalise the transaction.</span></span><br><span class="line">        subFlow(FinalityFlow(signedTx))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果你使用Java，你还需要重命名<code>TemplateFlow.java</code>为<code>IOUFlow.java</code>。我们一步一步浏览这段代码。</p>
+<p>我们已经定义了自己的<code>FlowLogic</code>重写了<code>FlowLogic.call</code>。<code>FlowLogic.call</code>有一个返回类型，必须匹配传递给它的类型参数<code>FlowLogic</code>- 这是通过运行流程返回的类型。</p>
+<p><code>FlowLogic</code>子类可以有选择地使用构造函数参数，这些参数可以用作<code>FlowLogic.call</code>的参数。在我们的案例中，我们有两个：</p>
+<ul>
+<li><code>iouValue</code>，这是发行借据的价值</li>
+<li><code>otherParty</code>，借条的借款人（运行该流程的节点是贷方）</li>
+</ul>
+<p><code>FlowLogic.call</code>被注解<code>@Suspendable</code> - <b style="color:Red">这可以让流程在遇到长时间运行的操作时被检查并指向并序列化到磁盘，从而允许您的节点继续运行其他流程。忘记这个注解将导致一些非常奇怪的错误信息！</b></p>
+<p>在<code>FlowLogic</code>子类本身上还有更多的注释：</p>
+<ul>
+<li><code>@InitiatingFlow</code> 意味着该流程可以由节点直接启动</li>
+<li><code>@StartableByRPC</code> 允许节点所有者通过RPC调用启动此流程</li>
+</ul>
+<p>我们来看看<code>FlowLogic.call</code>它自己的步骤。这是我们实际描述发行<code>IOUState</code>到分类账的程序的地方。</p>
+<h5 id="选择一个公证人"><a href="#选择一个公证人" class="headerlink" title="选择一个公证人"></a>选择一个公证人</h5><p>每笔交易都需要一名公证人来防止双重花费，并担任时间戳管理机构。我们在流程中做的第一件事是从节点的<code>ServiceHub</code>检索一个公证人。<code>ServiceHub.networkMapCache</code>提供有关网络上其他节点以及它们提供的服务的信息。</p>
+<p>注意: 无论何时我们需要流程中的信息 - 无论是关于我们自己的节点的身份，节点的本地存储还是网络的其余部分，我们通常都会通过节点的<code>ServiceHub</code>获取它。</p>
+<h5 id="建立交易"><a href="#建立交易" class="headerlink" title="建立交易"></a>建立交易</h5><p>我们将分两步建立交易提案：</p>
+<ul>
+<li>创建交易的组件</li>
+<li>将这些组件添加到交易生成器</li>
+</ul>
+<h5 id="交易项目"><a href="#交易项目" class="headerlink" title="交易项目"></a>交易项目</h5><p>我们的交易将具有以下结构：<br><img src="https://docs.corda.net/head/_images/simple-tutorial-transaction.png" alt=""></p>
+<ul>
+<li>输出<code>IOUState</code>的右侧表示我们将添加到分类账的状态。如您所见，没有任何输入 - 我们在创建IOU时不会消耗任何现有账本状态</li>
+<li><code>Action</code>是将借条人列为签署人的命令</li>
+</ul>
+<p>我们已经讨论过了<code>IOUState</code>，但我们还没有看过命令。命令有两个功能：</p>
+<ul>
+<li>它们表明交易的意图 - 发行，转让，赎回，撤销。当我们在下一个教程中讨论合同时，这将是至关重要的</li>
+<li>它们允许我们为交易定义所需的签名者。例如，IOU的创建可能只需要贷方的签名，而IOU的转移可能需要IOU的借款人和贷方的签名</li>
+</ul>
+<p>每个<code>Command</code>包含一个命令类型和一个公钥列表。现在，我们使用预先定义的<code>TemplateContract.Action</code>作为命令类型，并将贷方列为唯一的公钥。这意味着为使交易有效，贷款人必须签署交易。</p>
+<h5 id="创建一个事务生成器"><a href="#创建一个事务生成器" class="headerlink" title="创建一个事务生成器"></a>创建一个事务生成器</h5><p>要真正建立拟议的交易，我们需要一个<code>TransactionBuilder</code>。这是一个可变的交易类，我们可以在其中添加输入，输出，命令以及交易所需的任何其他项目。我们创建一个<code>TransactionBuilder</code>使用我们早先检索的公证人。</p>
+<p>一旦我们有了<code>TransactionBuilder</code>，我们添加我们的组件：</p>
+<ul>
+<li>该命令直接使用<code>TransactionBuilder.addCommand</code>添加 </li>
+<li>输出<code>IOUState</code>使用<code>TransactionBuilder.addOutputState</code>添加。除了输出状态本身外，这种方法还要参考管理状态演变随时间推移的合约。在这里，我们传递了一个对其没有限制的<code>TemplateContract</code>引用。我们将在下一个教程中定义一个强制约束的合约</li>
+</ul>
+<h5 id="签署交易"><a href="#签署交易" class="headerlink" title="签署交易"></a>签署交易</h5><p>现在我们有一个有效的交易提案，我们需要签署它。交易一旦签署，任何人都无法修改交易而不会使此签名无效。这有效地使交易不可变。</p>
+<p>我们用<code>ServiceHub.toSignedTransaction</code>签名交易，它返回一个<code>SignedTransaction</code>。<code>SignedTransaction</code>是将交易与该交易上的签名列表配对的对象。</p>
+<h5 id="完成交易"><a href="#完成交易" class="headerlink" title="完成交易"></a>完成交易</h5><p>我们现在有一个有效的签名交易。剩下要做的就是让所有相关方都记录下来。通过这样做，它将成为分类账的永久部分。如上所述，我们将使用一个内置的<code>FinalityFlow</code>流程自动处理这个过程。<code>FinalityFlow</code>完全自动化的过程：</p>
+<ul>
+<li>如果需要，公证交易（即如果交易包含输入 和/或 时间窗口）</li>
+<li>将它记录在我们的Vault中</li>
+<li>将它发送给其他参与者（即贷方）以供他们进行记录</li>
+</ul>
+<h3 id="运行我们的CorDapp"><a href="#运行我们的CorDapp" class="headerlink" title="运行我们的CorDapp"></a>运行我们的CorDapp</h3><p>现在我们已经编写了一个CorDapp，现在是通过在一些真正的Corda节点上运行它来测试它的时候了。</p>
+<h4 id="部署我们的CorDapp"><a href="#部署我们的CorDapp" class="headerlink" title="部署我们的CorDapp"></a>部署我们的CorDapp</h4><p>我们来看看我们要部署的节点。打开项目的build.gradle文件并向下滚动到<code>task deployNodes</code>部分。本节定义了三个节点。有两个标准节点（<code>PartyA</code>和<code>PartyB</code> ），<b style="color:red">以及运行网络map服务并公布验证公证服务的特殊网络map/公证节点。</b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [&apos;jar&apos;]) &#123;</span><br><span class="line">    directory &quot;./build/nodes&quot;</span><br><span class="line">    node &#123;</span><br><span class="line">        name &quot;O=Notary,L=London,C=GB&quot;</span><br><span class="line">        notary = [validating : true]</span><br><span class="line">        p2pPort 10002</span><br><span class="line">        rpcPort 10003</span><br><span class="line">        cordapps = [&quot;net.corda:corda-finance:$corda_release_version&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name &quot;O=PartyA,L=London,C=GB&quot;</span><br><span class="line">        p2pPort 10005</span><br><span class="line">        rpcPort 10006</span><br><span class="line">        webPort 10007</span><br><span class="line">        cordapps = [&quot;net.corda:corda-finance:$corda_release_version&quot;]</span><br><span class="line">        rpcUsers = [[ user: &quot;user1&quot;, &quot;password&quot;: &quot;test&quot;, &quot;permissions&quot;: [&quot;ALL]]]</span><br><span class="line">    &#125;</span><br><span class="line">    node &#123;</span><br><span class="line">        name &quot;O=PartyB,L=New York,C=US&quot;</span><br><span class="line">        p2pPort 10008</span><br><span class="line">        rpcPort 10009</span><br><span class="line">        webPort 10010</span><br><span class="line">        sshdPort 10024</span><br><span class="line">        cordapps = [&quot;net.corda:corda-finance:$corda_release_version&quot;]</span><br><span class="line">        rpcUsers = [[ user: &quot;user1&quot;, &quot;password&quot;: &quot;test&quot;, &quot;permissions&quot;: [&quot;ALL&quot;]]]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以使用Gradle 来运行<code>deployNodes</code>任务。对于每个节点定义，Gradle将：</p>
+<ul>
+<li>将项目的源文件打包到一个CorDapp jar中</li>
+<li><code>build/nodes</code>使用我们已安装的CorDapp创建一个新节点</li>
+</ul>
+<p>我们现在可以通过从项目的根目录运行以下命令来完成此操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew clean deployNodes</span><br></pre></td></tr></table></figure></p>
+<h4 id="运行节点"><a href="#运行节点" class="headerlink" title="运行节点"></a>运行节点</h4><p>运行<code>deployNodes</code>将构建<code>build/nodes</code>下的节点。如果我们导航到其中一个文件夹，我们将看到三个节点文件夹。每个节点文件夹具有以下结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|____corda.jar                     // The runnable node</span><br><span class="line">|____corda-webserver.jar           // The node&apos;s webserver</span><br><span class="line">|____node.conf                     // The node&apos;s configuration file</span><br><span class="line">|____cordapps</span><br><span class="line">|____java/kotlin-source-0.1.jar  // Our IOU CorDapp</span><br></pre></td></tr></table></figure></p>
+<p>我们通过从项目的根目录运行以下命令来启动节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">build/nodes/runnodes</span><br></pre></td></tr></table></figure></p>
+<h4 id="与节点交互"><a href="#与节点交互" class="headerlink" title="与节点交互"></a>与节点交互</h4><p>现在我们的节点正在运行，让我们命令其中一个通过开启我们的<code>IOUFlow</code>创建一个借条。在更大的应用程序中，我们通常会提供一个位于节点顶部的Web API。在这里，为了简单起见，我们将通过其内置的CRaSH shell与节点进行交互。</p>
+<p>转到显示<code>PartyA</code>的CRaSH shell的终端窗口。键入<code>help</code>将显示可用命令的列表。</p>
+<p>注意: 本地终端shell只能在开发模式下使用。在生产环境中，可以启用SSH服务器。有关SSH和如何连接的更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3NoZWxsLmh0bWw=" title="https://docs.corda.net/head/shell.html">Shell<i class="fa fa-external-link"></i></span>页面。</p>
+<p>我们想用PartyB创建一个99的欠条。我们开始<code>IOUFlow</code>输入：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Kotlin</span><br><span class="line">start IOUFlow iouValue: 99, otherParty: "O=PartyB,L=New York,C=US"</span><br><span class="line">// Java</span><br><span class="line">start IOUFlow arg0: 99, arg1: "O=PartyB,L=New York,C=US"</span><br></pre></td></tr></table></figure></p>
+<p>这个单一命令将导致PartyA和PartyB自动同意一个借条。这是流程框架的一大优势 - 它允许您将复杂的协商和更新过程减少为单个函数调用。</p>
+<p>如果这个流程奏效了，它应该在PartyA和PartyB的Vault里记录一条新的借条。让我们检查。</p>
+<p>我们可以运行以下命令来检查每个节点的vault的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run vaultQuery contractStateType: com.template.IOUState</span><br></pre></td></tr></table></figure></p>
+<p>PartyA和PartyB的保险库都应显示以下输出：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">states:</span><br><span class="line">- state:</span><br><span class="line">    data:</span><br><span class="line">      value: 99</span><br><span class="line">      lender: "C=GB,L=London,O=PartyA"</span><br><span class="line">      borrower: "C=US,L=New York,O=PartyB"</span><br><span class="line">      participants:</span><br><span class="line">      - "C=GB,L=London,O=PartyA"</span><br><span class="line">      - "C=US,L=New York,O=PartyB"</span><br><span class="line">    contract: "com.template.contract.IOUContract"</span><br><span class="line">    notary: "C=GB,L=London,O=Notary"</span><br><span class="line">    encumbrance: null</span><br><span class="line">    constraint:</span><br><span class="line">      attachmentId: "F578320232CAB87BB1E919F3E5DB9D81B7346F9D7EA6D9155DC0F7BA8E472552"</span><br><span class="line">  ref:</span><br><span class="line">    txhash: "5CED068E790A347B0DD1C6BB5B2B463406807F95E080037208627565E6A2103B"</span><br><span class="line">    index: 0</span><br><span class="line">statesMetadata:</span><br><span class="line">- ref:</span><br><span class="line">    txhash: "5CED068E790A347B0DD1C6BB5B2B463406807F95E080037208627565E6A2103B"</span><br><span class="line">    index: 0</span><br><span class="line">  contractStateClassName: "com.template.state.IOUState"</span><br><span class="line">  recordedTime: 1506415268.875000000</span><br><span class="line">  consumedTime: null</span><br><span class="line">  status: "UNCONSUMED"</span><br><span class="line">  notary: "C=GB,L=London,O=Notary"</span><br><span class="line">  lockId: null</span><br><span class="line">  lockUpdateTime: 1506415269.548000000</span><br><span class="line">totalStatesAvailable: -1</span><br><span class="line">stateTypes: "UNCONSUMED"</span><br><span class="line">otherResults: []</span><br></pre></td></tr></table></figure></p>
+<p>这是发放IOUState到分类帐上的交易。</p>
+<h4 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h4><p>我们已经编写了一个简单的CorDapp，允许将欠款发放到账本上。我们的CorDapp由两个关键部分组成：</p>
+<ul>
+<li>IOUState在账本上代表欠条</li>
+<li>IOUFlow，编排商定分类帐一张欠条的创作过程</li>
+</ul>
+<p>完成本教程后，您的CorDapp应该如下所示：</p>
+<ul>
+<li>Java：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDEtc29sdXRpb24tamF2YQ==" title="https://github.com/corda/corda-tut1-solution-java">https://github.com/corda/corda-tut1-solution-java<i class="fa fa-external-link"></i></span></li>
+<li>Kotlin：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDEtc29sdXRpb24ta290bGlu" title="https://github.com/corda/corda-tut1-solution-kotlin">https://github.com/corda/corda-tut1-solution-kotlin<i class="fa fa-external-link"></i></span></li>
+</ul>
+<h4 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h4><p>我们可以对这个CorDapp进行一些改进：</p>
+<ul>
+<li>我们应该使用合同测试和流程测试框架添加单元测试</li>
+<li>我们应该IOUState.value从一个整数变为适当的一种货币</li>
+<li>我们可以添加一个API，以便与CorDapp进行交互</li>
+</ul>
+<p>但现在，最大的优先事项是<code>IOUContract</code>在每个<code>IOUState</code>时间段的演变中增加强加的限制 。这将是我们下一篇教程的重点。</p>
+<h2 id="Hello-World-V2-合约约束"><a href="#Hello-World-V2-合约约束" class="headerlink" title="Hello World V2 - 合约约束"></a>Hello World V2 - 合约约束</h2><p>注意： 本教程扩展了上一篇的Hello，World教程中构建的CorDapp 。</p>
+<p>在Hello，World教程中，我们构建了一个CorDapp，允许我们在账本上对IOU进行建模。我们的CorDapp由两个元素组成：</p>
+<ul>
+<li><code>IOUState</code>在账本上代表欠条</li>
+<li><code>IOUFlow</code>，编排商定分类帐一张欠条的创作过程</li>
+</ul>
+<p>然而，我们的CorDapp并未对随着时间的推移对账簿上的借条发展施加任何限制。任何人都可以自由地在任何一方之间创造任何价值的欠条。</p>
+<p>在本教程中，我们将编写一份合约，对IOUState可能随时间变化的规则制定规则。反过来，这将需要对前一教程中定义的流程进行一些小的更改。</p>
+<h3 id="编写合约"><a href="#编写合约" class="headerlink" title="编写合约"></a>编写合约</h3><p>很容易想象大多数CorDapps会想要对它们的状态随着时间的推移施加一些限制：</p>
+<ul>
+<li>现金类的CorDapp不会希望允许用户无限制地创建生成资金的交易（至少在没有中央银行或商业银行参与的情况下）</li>
+<li>贷款类的CorDapp可能不希望允许创建负值贷款</li>
+<li>资产交易的CorDapp不会允许用户在没有交易对手同意的情况下完成交易</li>
+</ul>
+<p>在Corda，我们对各状态如何使用合约进行限制。</p>
+<p>注意：Corda的合约与其他分布式账本平台的智能合约有很大不同。它们不是表示当前世界状态的有状态对象。相反，像真实世界的合约一样，他们只是对允许的交易类型施加规则。</p>
+<p>每个状态都有相关的合约。如果交易不符合交易中每个输入和输出状态的合约，则交易无效。</p>
+<h3 id="合约接口"><a href="#合约接口" class="headerlink" title="合约接口"></a>合约接口</h3><p>就像每个Corda状态必须实现<code>ContractState</code>接口一样，每个合约都必须实现 <code>Contract</code>接口：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Contract</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Implements the contract constraints in code.</span></span><br><span class="line">    <span class="meta">@Throws(IllegalArgumentException::class)</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">verify</span><span class="params">(tx: <span class="type">LedgerTransaction</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到，Contract它通过一个verify将交易作为输入的函数来表达它的约束，并且：</p>
+<ul>
+<li>抛出一个，IllegalArgumentException如果它拒绝交易提议</li>
+<li>如果它接受交易提议，则无提示返回</li>
+</ul>
+<h4 id="控制IOU演变"><a href="#控制IOU演变" class="headerlink" title="控制IOU演变"></a>控制IOU演变</h4><p><code>IOUState</code>一个好的合约会是什么样子？没有正确或错误的答案 - 这取决于你希望你的CorDapp如何表现。</p>
+<p>对于我们的CorDapp，让我们强加一下我们只想允许创建IOU的限制。我们不希望节点转让它们或将它们兑换为现金。强制执行此行为的一种方法是强加以下限制：</p>
+<ul>
+<li>涉及IOU的交易必须消耗零输入，并创建一个类型<code>IOUState</code>的输出 </li>
+<li>交易还应该包括一个<code>Create</code>命令，表明交易的意图（更多的命令很快）</li>
+</ul>
+<p>我们可能还想对发布<code>IOUState</code>的属性施加一些限制：</p>
+<ul>
+<li>其价值必须是非负的</li>
+<li>贷款人和借款人不能是同一个实体</li>
+</ul>
+<p>最后，我们要强制限制谁需要签署交易：</p>
+<ul>
+<li>借条的放款人必须签字</li>
+<li>借条的借款人必须签字</li>
+</ul>
+<p>我们可以将这一交易描述如下：<br><img src="https://docs.corda.net/head/_images/simple-tutorial-transaction-2.png" alt=""></p>
+<h4 id="定义IOUContract"><a href="#定义IOUContract" class="headerlink" title="定义IOUContract"></a>定义IOUContract</h4><p>我们来写一个强制执行这些约束的合约。我们将通过修改<code>TemplateContract.java</code>或 <code>StatesAndContracts.kt</code>更新<code>TemplateContract</code>来定义一个<code>IOUContract</code>：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add these imports:</span></span><br><span class="line"><span class="keyword">import</span> net.corda.core.contracts.*</span><br><span class="line"></span><br><span class="line"><span class="comment">// Replace IOUContract's contract ID and definition with:</span></span><br><span class="line">const <span class="keyword">val</span> IOU_CONTRACT_ID = <span class="string">"com.template.IOUContract"</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IOUContract</span> : <span class="type">Contract &#123;</span></span></span><br><span class="line">    <span class="comment">// Our Create command.</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Create</span> : <span class="type">CommandData</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">verify</span><span class="params">(tx: <span class="type">LedgerTransaction</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> command = tx.commands.requireSingleCommand&lt;Create&gt;()</span><br><span class="line"></span><br><span class="line">        requireThat &#123;</span><br><span class="line">            <span class="comment">// Constraints on the shape of the transaction.</span></span><br><span class="line">            <span class="string">"No inputs should be consumed when issuing an IOU."</span> using (tx.inputs.isEmpty())</span><br><span class="line">            <span class="string">"There should be one output state of type IOUState."</span> using (tx.outputs.size == <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// IOU-specific constraints.</span></span><br><span class="line">            <span class="keyword">val</span> <span class="keyword">out</span> = tx.outputsOfType&lt;IOUState&gt;().single()</span><br><span class="line">            <span class="string">"The IOU's value must be non-negative."</span> using (<span class="keyword">out</span>.value &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="string">"The lender and the borrower cannot be the same entity."</span> using (<span class="keyword">out</span>.lender != <span class="keyword">out</span>.borrower)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Constraints on the signers.</span></span><br><span class="line">            <span class="string">"There must be two signers."</span> using (command.signers.toSet().size == <span class="number">2</span>)</span><br><span class="line">            <span class="string">"The borrower and lender must be signers."</span> using (command.signers.containsAll(listOf(</span><br><span class="line">                    <span class="keyword">out</span>.borrower.owningKey, <span class="keyword">out</span>.lender.owningKey)))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果你使用Java，你还需要重命名<code>TemplateContract.java</code>为<code>IOUContract.java</code>。</p>
+<h4 id="Create命令"><a href="#Create命令" class="headerlink" title="Create命令"></a>Create命令</h4><p>我们添加到合同中的第一件事是一个命令。命令有两个功能：</p>
+<ul>
+<li>它们表明交易的意图，使我们能够对不同类型的交易进行不同的验证。例如，建议设立借条的交易可能必须满足兑换欠条的不同约束</li>
+<li>它们允许我们为交易定义所需的签名者。例如，IOU的创建可能只需要贷方的签名，而IOU的转移可能需要IOU的借款人和贷方的签名</li>
+</ul>
+<p>我们的合约有一个命令，一个<code>Create</code>命令。<b style="color:red">所有命令都必须实现该<code>CommandData</code>接口。</b></p>
+<p>该<code>CommandData</code>接口是命令的简单标记接口。实际上，它的声明只有两个单词（Kotlin接口不需要body）：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CommandData</span></span></span><br></pre></td></tr></table></figure></p>
+<h4 id="验证逻辑"><a href="#验证逻辑" class="headerlink" title="验证逻辑"></a>验证逻辑</h4><p>我们的合约还需要通过实现<code>verify</code>来定义实际的合同约束。我们写这个verify函数的目标 是编写一个函数，给定一个交易：</p>
+<ul>
+<li>如果交易被认为是无效的，则抛出异常<code>IllegalArgumentException</code></li>
+<li>如果该交易被认为是有效就不要抛出一个异常</li>
+</ul>
+<p>在决定交易是否有效时，该<code>verify</code>方法只能访问交易的内容：</p>
+<ul>
+<li><code>tx.inputs</code>，其中列出了输入</li>
+<li><code>tx.outputs</code>，其中列出了输出</li>
+<li><code>tx.commands</code>，其中列出了命令及其相关的签名者</li>
+</ul>
+<p>以及交易的附件和时间窗口，我们不会在这里使用。</p>
+<p>基于上面列举的约束条件，<code>verify</code>如果满足以下任一条件，我们需要编写一个拒绝交易的函数：</p>
+<ul>
+<li><b style="color:red">该交易不包含<code>Create</code>命令</b></li>
+<li>交易有输入</li>
+<li>交易没有确切的一个输出</li>
+<li>借据本身是无效的</li>
+<li>交易不需要贷方的签名</li>
+</ul>
+<h4 id="命令约束"><a href="#命令约束" class="headerlink" title="命令约束"></a>命令约束</h4><p>我们的第一个约束是围绕交易的命令。我们使用Corda的<code>requireSingleCommand</code>功能来测试单个<code>Create</code>命令的存在。</p>
+<p>如果该<code>Create</code>命令不存在，或者该交易有多个<code>Create</code>命令，则将抛出异常并且合同验证将失败。</p>
+<h4 id="交易限制"><a href="#交易限制" class="headerlink" title="交易限制"></a>交易限制</h4><p>我们还希望我们的交易没有输入，只有单一输出 - 发行交易。</p>
+<p>为了施加这个以及随后的限制，我们使用了<code>Corda</code>的内置<code>requireThat</code>模块。<code>requireThat</code>提供了一种简洁的方式来编写以下内容：</p>
+<ul>
+<li>如果右侧的条件不计算为真…</li>
+<li>… IllegalArgumentException在左侧抛出消息</li>
+</ul>
+<p>像以前一样，抛出此异常的行为会导致交易被视为无效。</p>
+<h4 id="借条限制"><a href="#借条限制" class="headerlink" title="借条限制"></a>借条限制</h4><p>我们想要对其IOUState本身施加两个约束：</p>
+<ul>
+<li>其价值必须是非负的</li>
+<li>贷款人和借款人不能是同一个实体</li>
+</ul>
+<p>我们将这些约束与以前一样强加在同一个<code>requireThat</code>块中。</p>
+<p>你可以看到，我们不仅限于在<code>requireThat</code>块中编写约束。我们也可以编写其他语句 - 在这种情况下，提取交易的单个<code>IOUState</code>元素并将其分配给一个变量。</p>
+<h4 id="签名者约束"><a href="#签名者约束" class="headerlink" title="签名者约束"></a>签名者约束</h4><p>最后，我们要求贷款人和借款人都是交易中必需的签名人。交易所需的签名者等于命令中列出的所有签名者的联合。因此，我们从<code>Create</code>早先检索的命令中提取签名者。</p>
+<p>这是一个绝对必要的约束 - 它确保在没有<code>IOUState</code>贷方和借方节点的明确同意的情况下在账本上不能创建账户。</p>
+<h4 id="目前取得进展"><a href="#目前取得进展" class="headerlink" title="目前取得进展"></a>目前取得进展</h4><p>我们现在已经写了一个<code>IOUContract</code>限制每个<code>IOUState</code>时间的演变：</p>
+<ul>
+<li>一个<code>IOUState</code>只能被创建，不转移或赎回</li>
+<li>创建一个<code>IOUState</code>无需输入，一个<code>IOUState</code>输出和一个 <code>Create</code>命令的发布事务</li>
+<li>将<code>IOUState</code>通过发行交易创建必须有一个非负值，贷款人与借款人必须是不同的实体</li>
+</ul>
+<p>接下来，我们将更新IOUFlow它，以便在发放IOUState到分类账时遵守这些合同约束。</p>
+<h3 id="更新流程"><a href="#更新流程" class="headerlink" title="更新流程"></a>更新流程</h3><p>我们现在需要更新我们的流程来实现三件事情：</p>
+<ul>
+<li>验证我们构建的交易提案是否满足<code>IOUContract</code>约束条件</li>
+<li>更新贷款方的流程以请求借款人的签名</li>
+<li>为响应贷方签名请求的借款人创建一个响应流程</li>
+</ul>
+<p>我们将通过修改我们在前一教程中编写的流程来实现这一点。</p>
+<h4 id="验证交易"><a href="#验证交易" class="headerlink" title="验证交易"></a>验证交易</h4><p>在<code>IOUFlow.java</code>或者<code>App.kt中</code>，将imports块更改为以下内容：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> co.paralleluniverse.fibers.Suspendable</span><br><span class="line"><span class="keyword">import</span> net.corda.core.contracts.Command</span><br><span class="line"><span class="keyword">import</span> net.corda.core.contracts.StateAndContract</span><br><span class="line"><span class="keyword">import</span> net.corda.core.flows.CollectSignaturesFlow</span><br><span class="line"><span class="keyword">import</span> net.corda.core.flows.FinalityFlow</span><br><span class="line"><span class="keyword">import</span> net.corda.core.flows.FlowLogic</span><br><span class="line"><span class="keyword">import</span> net.corda.core.flows.InitiatingFlow</span><br><span class="line"><span class="keyword">import</span> net.corda.core.flows.StartableByRPC</span><br><span class="line"><span class="keyword">import</span> net.corda.core.identity.Party</span><br><span class="line"><span class="keyword">import</span> net.corda.core.transactions.TransactionBuilder</span><br><span class="line"><span class="keyword">import</span> net.corda.core.utilities.ProgressTracker</span><br></pre></td></tr></table></figure></p>
+<p>在从网络中检索公证人的身份之后，通过更改代码进行更新<code>IOUFlow.call</code>，如下所示：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// We create a transaction builder.</span></span><br><span class="line"><span class="keyword">val</span> txBuilder = TransactionBuilder(notary = notary)</span><br><span class="line"></span><br><span class="line"><span class="comment">// We create the transaction components.</span></span><br><span class="line"><span class="keyword">val</span> outputState = IOUState(iouValue, ourIdentity, otherParty)</span><br><span class="line"><span class="keyword">val</span> outputContractAndState = StateAndContract(outputState, IOU_CONTRACT_ID)</span><br><span class="line"><span class="keyword">val</span> cmd = Command(IOUContract.Create(), listOf(ourIdentity.owningKey, otherParty.owningKey))</span><br><span class="line"></span><br><span class="line"><span class="comment">// We add the items to the builder.</span></span><br><span class="line">txBuilder.withItems(outputContractAndState, cmd)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Verifying the transaction.</span></span><br><span class="line">txBuilder.verify(serviceHub)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Signing the transaction.</span></span><br><span class="line"><span class="keyword">val</span> signedTx = serviceHub.signInitialTransaction(txBuilder)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Creating a session with the other party.</span></span><br><span class="line"><span class="keyword">val</span> otherpartySession = initiateFlow(otherParty)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Obtaining the counterparty's signature.</span></span><br><span class="line"><span class="keyword">val</span> fullySignedTx = subFlow(CollectSignaturesFlow(signedTx, listOf(otherpartySession), CollectSignaturesFlow.tracker()))</span><br><span class="line"></span><br><span class="line"><span class="comment">// Finalising the transaction.</span></span><br><span class="line">subFlow(FinalityFlow(fullySignedTx))</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:red">在原始的CorDapp中，我们通过调用一个称为<code>FinalityFlow</code>子流程的内置流来自动化对交易进行公证处理并将其记录到每个参与者的库中</b>。我们将使用另一个预定义的流程<code>CollectSignaturesFlow</code>来收集借款人的签名。</p>
+<p>首先，我们需要更新命令。我们现在正在使用<code>IOUContract.Create</code>，而不是 <code>TemplateContract.Commands.Action</code>。我们也希望根据合同约束将借款人变成必需的签名人。这与将借款人的公钥添加到交易的命令一样简单。</p>
+<p>我们还需要使用对旧的<code>IOUContract</code>的引用将输出状态添加到交易中，而不是旧的<code>TemplateContract</code>。</p>
+<p>现在我们的状态是由一个真实的合约来管理的，我们希望在开始签署过程之前检查我们的交易提案是否满足这些要求。我们通过调用<code>TransactionBuilder.verify</code>我们的交易建议来完成此工作，然后再添加我们的签名来完成。</p>
+<h4 id="请求借款人的签名"><a href="#请求借款人的签名" class="headerlink" title="请求借款人的签名"></a>请求借款人的签名</h4><p>我们现在需要与借款人沟通，要求他们签署交易。无论何时您想在流程环境中与另一方进行交流，您首先需要与他们建立流程会话。如果交易对手已经注册<code>FlowLogic</code>以响应<code>FlowLogic</code>发起会话，则将建立会话。这两个<code>FlowLogic</code>实例之间的所有通信都将作为本次会话的一部分。</p>
+<p>一旦我们与借款人建立会话，我们就会使用<code>CollectSignaturesFlow</code>收集借款人的签名，这需要：</p>
+<ul>
+<li>由流程发起人签署的交易</li>
+<li>流程发起人与所需签署人之间的流程会话列表</li>
+</ul>
+<p>并返回由所有必填签名者签署的交易。</p>
+<p>然后，我们可以将这个完全签署的交易传递给<code>FinalityFlow</code>。</p>
+<h4 id="创建借款人的流程"><a href="#创建借款人的流程" class="headerlink" title="创建借款人的流程"></a>创建借款人的流程</h4><p>在出借方方面，我们使用的<code>CollectSignaturesFlow</code>自动收集签名。为了让贷款人作出回应，我们还需要编写一个回应流程。在Java中的<code>IOUFlowResponder.java</code>新文件或Kotlin中的<code>App.kt</code>文件中，添加以下类：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add these imports:</span></span><br><span class="line"><span class="keyword">import</span> net.corda.core.contracts.requireThat</span><br><span class="line"><span class="keyword">import</span> net.corda.core.transactions.SignedTransaction</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define IOUFlowResponder:</span></span><br><span class="line"><span class="meta">@InitiatedBy(IOUFlow::class)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IOUFlowResponder</span></span>(<span class="keyword">val</span> otherPartySession: FlowSession) : FlowLogic&lt;<span class="built_in">Unit</span>&gt;() &#123;</span><br><span class="line">    <span class="meta">@Suspendable</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> signTransactionFlow = <span class="keyword">object</span> : SignTransactionFlow(otherPartySession, SignTransactionFlow.tracker()) &#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">checkTransaction</span><span class="params">(stx: <span class="type">SignedTransaction</span>)</span></span> = requireThat &#123;</span><br><span class="line">                <span class="keyword">val</span> output = stx.tx.outputs.single().<span class="keyword">data</span></span><br><span class="line">                <span class="string">"This must be an IOU transaction."</span> using (output <span class="keyword">is</span> IOUState)</span><br><span class="line">                <span class="keyword">val</span> iou = output <span class="keyword">as</span> IOUState</span><br><span class="line">                <span class="string">"The IOU's value can't be too high."</span> using (iou.value &lt; <span class="number">100</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        subFlow(signTransactionFlow)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>与<code>IOUFlow</code>一样，我们的<code>IOUFlowResponder</code>流程是一个<code>FlowLogic</code>子类, 重写了<code>FlowLogic.call</code>。</p>
+<p>该流程使用<code>InitiatedBy</code>(<code>IOUFlow.class</code>)注解，这意味着您的节点将在从<code>Initiator</code>另一个节点上运行的实例接收到消息时调用<code>IOUFlowResponder.call</code> 。<code>IOUFlow</code>的这条消息会是什么？如果我们看一下<code>CollectSignaturesFlow</code>定义，我们可以看到我们将被发送一个<code>SignedTransaction</code>，并且预计将通过该交易发回我们的签名。</p>
+<p>我们可以编写自己的流程来处理这个过程。但是，也有一个预定义的流程<code>SignTransactionFlow</code>可以自动处理流程。唯一的问题是<code>SignTransactionFlow</code>是一个抽象类 - 我们必须继承它并重写<code>SignTransactionFlow.checkTransaction</code>。</p>
+<h4 id="CheckTransactions"><a href="#CheckTransactions" class="headerlink" title="CheckTransactions"></a>CheckTransactions</h4><p><code>SignTransactionFlow</code>将在签署之前自动验证交易及其签名。但是，仅仅因为交易在合同中有效并不意味着我们一定要签名。如果我们不想处理有问题的交易对手，或者价值太高，或者我们对交易结构不满意，该怎么办？</p>
+<p>重写<code>SignTransactionFlow.checkTransaction</code>允许我们定义这些额外的检查。在我们的案例中，我们正在检查：</p>
+<ul>
+<li>交易涉及的<code>IOUState</code> - 确保<code>IOUContract</code>将运行以验证交易</li>
+<li>借条的价值低于一定数额（在这种情况下为100）</li>
+</ul>
+<p>如果这些条件中的任何一个都不符合，我们将不签署交易 - 即使交易及其签名在合同中有效。</p>
+<p>一旦我们定义了<code>SignTransactionFlow</code>子类，我们就会调用<code>FlowLogic.subFlow</code>，并且与借方和贷方的流程自动进行通信。</p>
+<h4 id="结论-1"><a href="#结论-1" class="headerlink" title="结论"></a>结论</h4><p>我们现在已经更新了流程，以验证交易并收集贷方签名，符合中定义的<code>IOUContract</code>约束条件。我们现在可以使用与之前相同的说明重新运行我们更新的CorDapp 。</p>
+<p>我们的CorDapp现在对发行IOU进行限制。最重要的是，借款发行现在需要借款人和借款人达成协议，然后才能在账本上创建借条。这样可以防止贷款人或借款人以一种只有利于自己的方式单方面更新分类账。</p>
+<p>完成本教程后，您的CorDapp应该如下所示：</p>
+<ul>
+<li>Java：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDItc29sdXRpb24tamF2YQ==" title="https://github.com/corda/corda-tut2-solution-java">https://github.com/corda/corda-tut2-solution-java<i class="fa fa-external-link"></i></span></li>
+<li>Kotlin：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRhL2NvcmRhLXR1dDItc29sdXRpb24ta290bGlu" title="https://github.com/corda/corda-tut2-solution-kotlin">https://github.com/corda/corda-tut2-solution-kotlin<i class="fa fa-external-link"></i></span></li>
+</ul>
+<p>你现在应该准备开发你自己的CorDapps。您也可以在这里找到样品CorDapps的列表 。在编写CorDapps时，您还需要了解有关Corda API的更多信息 。</p>
+<h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL2hlbGxvLXdvcmxkLWludHJvZHVjdGlvbi5odG1s" title="https://docs.corda.net/head/hello-world-introduction.html">Hello, World!<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9oZWFkL3R1dC10d28tcGFydHktaW50cm9kdWN0aW9uLmh0bWw=" title="https://docs.corda.net/head/tut-two-party-introduction.html">Hello, World! Pt.2 - Contract constraints<i class="fa fa-external-link"></i></span></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="http://cordate.github.io/blockchain/corda/Corda教程-hello world.html" title="Corda教程 - hello world">http://cordate.github.io/blockchain/corda/Corda教程-hello world.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/corda/" rel="tag"><i class="fa fa-tag"></i> corda</a>
+          
+            <a href="/tags/r3/" rel="tag"><i class="fa fa-tag"></i> r3</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blockchain/corda/Corda-networks.html" rel="next" title="Corda networks">
+                <i class="fa fa-chevron-left"></i> Corda networks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/密码学/数字证书基础知识.html" rel="prev" title="数字证书基础知识">
+                数字证书基础知识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hello-World"><span class="nav-number">1.</span> <span class="nav-text">Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用例"><span class="nav-number">1.1.</span> <span class="nav-text">用例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IOUState"><span class="nav-number">1.2.</span> <span class="nav-text">IOUState</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IOUFlow"><span class="nav-number">1.3.</span> <span class="nav-text">IOUFlow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CorDapp模板"><span class="nav-number">1.4.</span> <span class="nav-text">CorDapp模板</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下载模板"><span class="nav-number">1.4.1.</span> <span class="nav-text">下载模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在IntelliJ中打开模板"><span class="nav-number">1.4.2.</span> <span class="nav-text">在IntelliJ中打开模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模板结构"><span class="nav-number">1.4.3.</span> <span class="nav-text">模板结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#清理"><span class="nav-number">1.4.4.</span> <span class="nav-text">清理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#迄今取得进展"><span class="nav-number">1.4.5.</span> <span class="nav-text">迄今取得进展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写状态"><span class="nav-number">1.5.</span> <span class="nav-text">编写状态</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ContractState接口"><span class="nav-number">1.5.1.</span> <span class="nav-text">ContractState接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#建模IOUs"><span class="nav-number">1.5.2.</span> <span class="nav-text">建模IOUs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义IOUState"><span class="nav-number">1.5.3.</span> <span class="nav-text">定义IOUState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#合同怎么处理？"><span class="nav-number">1.5.4.</span> <span class="nav-text">合同怎么处理？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写流程"><span class="nav-number">1.6.</span> <span class="nav-text">编写流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#流程轮廓"><span class="nav-number">1.6.1.</span> <span class="nav-text">流程轮廓</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#支流"><span class="nav-number">1.6.1.1.</span> <span class="nav-text">支流</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FlowLogic"><span class="nav-number">1.6.2.</span> <span class="nav-text">FlowLogic</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#选择一个公证人"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">选择一个公证人</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#建立交易"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">建立交易</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#交易项目"><span class="nav-number">1.6.2.3.</span> <span class="nav-text">交易项目</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个事务生成器"><span class="nav-number">1.6.2.4.</span> <span class="nav-text">创建一个事务生成器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#签署交易"><span class="nav-number">1.6.2.5.</span> <span class="nav-text">签署交易</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#完成交易"><span class="nav-number">1.6.2.6.</span> <span class="nav-text">完成交易</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行我们的CorDapp"><span class="nav-number">1.7.</span> <span class="nav-text">运行我们的CorDapp</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#部署我们的CorDapp"><span class="nav-number">1.7.1.</span> <span class="nav-text">部署我们的CorDapp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行节点"><span class="nav-number">1.7.2.</span> <span class="nav-text">运行节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#与节点交互"><span class="nav-number">1.7.3.</span> <span class="nav-text">与节点交互</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结论"><span class="nav-number">1.7.4.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下一步"><span class="nav-number">1.7.5.</span> <span class="nav-text">下一步</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hello-World-V2-合约约束"><span class="nav-number">2.</span> <span class="nav-text">Hello World V2 - 合约约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编写合约"><span class="nav-number">2.1.</span> <span class="nav-text">编写合约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合约接口"><span class="nav-number">2.2.</span> <span class="nav-text">合约接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#控制IOU演变"><span class="nav-number">2.2.1.</span> <span class="nav-text">控制IOU演变</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义IOUContract"><span class="nav-number">2.2.2.</span> <span class="nav-text">定义IOUContract</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Create命令"><span class="nav-number">2.2.3.</span> <span class="nav-text">Create命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证逻辑"><span class="nav-number">2.2.4.</span> <span class="nav-text">验证逻辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#命令约束"><span class="nav-number">2.2.5.</span> <span class="nav-text">命令约束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#交易限制"><span class="nav-number">2.2.6.</span> <span class="nav-text">交易限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#借条限制"><span class="nav-number">2.2.7.</span> <span class="nav-text">借条限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#签名者约束"><span class="nav-number">2.2.8.</span> <span class="nav-text">签名者约束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目前取得进展"><span class="nav-number">2.2.9.</span> <span class="nav-text">目前取得进展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新流程"><span class="nav-number">2.3.</span> <span class="nav-text">更新流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#验证交易"><span class="nav-number">2.3.1.</span> <span class="nav-text">验证交易</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求借款人的签名"><span class="nav-number">2.3.2.</span> <span class="nav-text">请求借款人的签名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建借款人的流程"><span class="nav-number">2.3.3.</span> <span class="nav-text">创建借款人的流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CheckTransactions"><span class="nav-number">2.3.4.</span> <span class="nav-text">CheckTransactions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结论-1"><span class="nav-number">2.3.5.</span> <span class="nav-text">结论</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原文"><span class="nav-number">3.</span> <span class="nav-text">原文</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">819k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:25</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+  <script src="/js/js.cookie.js?v=7.2.0"></script>
+  <script src="/js/scroll-cookie.js?v=7.2.0"></script>
+
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+  
+  
+
+  
+
+  
+  
+  
+
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
