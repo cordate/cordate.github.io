@@ -176,39 +176,13 @@
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">柳絮纷飞</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-    
-      
-        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
-      
-    
-    
-  </div>
-
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
-</div>
+      <div class="header-inner">
 
 
 
-<nav class="site-nav">
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
   
-    <ul id="menu" class="menu">
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
       
         
         
@@ -217,13 +191,12 @@
           <li class="menu-item menu-item-home">
 
     
+
     
       
     
 
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
 
   </li>
         
@@ -233,13 +206,12 @@
           <li class="menu-item menu-item-about">
 
     
+
     
       
     
 
-    
-
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
 
   </li>
         
@@ -249,13 +221,12 @@
           <li class="menu-item menu-item-tags">
 
     
+
     
       
     
 
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>标签</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
 
   </li>
         
@@ -265,13 +236,12 @@
           <li class="menu-item menu-item-categories">
 
     
+
     
       
     
 
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
 
   </li>
         
@@ -281,13 +251,12 @@
           <li class="menu-item menu-item-archives">
 
     
+
     
       
     
 
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
 
   </li>
         
@@ -297,13 +266,12 @@
           <li class="menu-item menu-item-schedule">
 
     
+
     
       
     
 
-    
-
-    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br/>日程表</a>
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a>
 
   </li>
         
@@ -313,13 +281,12 @@
           <li class="menu-item menu-item-sitemap">
 
     
+
     
       
     
 
-    
-
-    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>站点地图</a>
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a>
 
   </li>
         
@@ -329,13 +296,12 @@
           <li class="menu-item menu-item-commonweal">
 
     
+
     
       
     
 
-    
-
-    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>公益 404</a>
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a>
 
   </li>
 
@@ -346,16 +312,18 @@
             <a href="javascript:;" class="popup-trigger">
           
             
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br/>搜索</a>
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
         </li>
       
     </ul>
   
 
+<!--
   
     
 
   
+-->
 
   
     <div class="site-search">
@@ -407,7 +375,6 @@
   <section id="posts" class="posts-expand">
     
       
-
   
 
   
@@ -416,26 +383,34 @@
 
   
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal post-box" itemscope itemtype="http://schema.org/Article"> 
   
   
   
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/hello-world.html"/>
+    <div class="post-block"> 
+      <!-- 文章的meta信息不显示 --> 
+      <link itemprop="mainEntityOfPage" href="http://cordate.github.io/hello-world.html"/>
+      <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <meta itemprop="name" content="Author"/>
+        <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+        <meta itemprop="image" content="/images/user-avatar.jpg"/>
+      </span>
+      <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+        <meta itemprop="name" content="柳絮纷飞"/>
+      </span>
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Author"/>
-      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
-      <meta itemprop="image" content="/images/user-avatar.jpg"/>
-    </span>
+      <!-- 图片显示 -->
+      <div class="frame">
+        <a href="/hello-world.html">
+          
+            <img src="/images/blog/bench-park.jpg" alt="背景图" />
+          
+        </a>
+      </div>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柳絮纷飞"/>
-    </span>
-
-    
-      <header class="post-header">
-
+      <!-- 标题，这里面会自动生成一个H2的标题 -->
+      
+        <header class="post-header">
         
         
           <h2 class="post-title" itemprop="name headline">
@@ -444,14 +419,47 @@
                 <a href="/hello-world.html" class="post-title-link" itemprop="url">Hexo使用攻略</a>
               
             
+            <div class="post-meta" style="display: inline">
+              
+            </div>
           </h2>
         
+        </header>
+      
 
-        <div class="post-meta">
+      <!-- 文章大概内容 -->
+      
+      
+      
+      <div class="post-body" itemprop="articleBody">
 
-          <!-- 置顶的实现 -->
-          
+        
+        
 
+        
+          <a href="/hello-world.html">
+            
+              
+                <p>
+                  Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+机器先安装好node即可。运行下面的安装命令。npm install -g hexo-cli
+cd 相应目录h
+                  ...
+                </p>
+              <!--noindex-->
+              
+              <!--/noindex-->
+            
+          </a>
+        
+      </div>
+      <!-- 文章大概内容结束 -->
+
+      <!-- hexo包的一层 -->
+      
+      <header class="post-header">
+        <!-- 尾部信息说明 -->
+        <div class="post-meta details">
           
           
           
@@ -484,7 +492,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-20 05:21:29" itemprop="dateModified" datetime="2019-07-20T05:21:29+08:00">2019-07-20</time>
+                <time title="修改时间：2019-07-20 13:26:17" itemprop="dateModified" datetime="2019-07-20T13:26:17+08:00">2019-07-20</time>
               </span>
             
           
@@ -499,12 +507,11 @@
           
           
 
-          <!-- 页面访问量统计 -->
           
 
           
 
-          <br/>
+           
           
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -530,79 +537,10 @@
           
 
           
-
         </div>
       </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvLw==" title="https://hexo.io/">Hexo<i class="fa fa-external-link"></i></span>! This is your very first post. Check <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3Mv" title="https://hexo.io/docs/">documentation<i class="fa fa-external-link"></i></span> for more info. If you get any problems when using Hexo, you can find the answer in <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3MvdHJvdWJsZXNob290aW5nLmh0bWw=" title="https://hexo.io/docs/troubleshooting.html">troubleshooting<i class="fa fa-external-link"></i></span> or you can ask me on <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hleG9qcy9oZXhvL2lzc3Vlcw==" title="https://github.com/hexojs/hexo/issues">GitHub<i class="fa fa-external-link"></i></span>.</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>机器先安装好node即可。运行下面的安装命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
-<h2 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h2><h3 id="初始化目录"><a href="#初始化目录" class="headerlink" title="初始化目录"></a>初始化目录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> 相应目录</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3Mvd3JpdGluZy5odG1s" title="https://hexo.io/docs/writing.html">Writing<i class="fa fa-external-link"></i></span></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3Mvc2VydmVyLmh0bWw=" title="https://hexo.io/docs/server.html">Server<i class="fa fa-external-link"></i></span></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3MvZ2VuZXJhdGluZy5odG1s" title="https://hexo.io/docs/generating.html">Generating<i class="fa fa-external-link"></i></span></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL2RvY3MvZGVwbG95bWVudC5odG1s" title="https://hexo.io/docs/deployment.html">Deployment<i class="fa fa-external-link"></i></span></p>
-<h2 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h2><p>下载相应主题到theme目录，然后更改_config.js文件中的主题配置即可，名称theme的文件夹名即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: hexo-theme-next</span><br></pre></td></tr></table></figure></p>
-<h2 id="更改网站的信息"><a href="#更改网站的信息" class="headerlink" title="更改网站的信息"></a>更改网站的信息</h2><p>在_config.js中更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Site</span><br><span class="line">title: 柳絮纷飞</span><br><span class="line">subtitle: Gavin的个人博客</span><br><span class="line">description: 一个孤独的开发者，正在互联网公司踩坑</span><br><span class="line">author: Gavin Zhang</span><br><span class="line">language: zh-CN</span><br><span class="line">timezone: Asia/Shanghai</span><br></pre></td></tr></table></figure></p>
-<h2 id="添加新的菜单页"><a href="#添加新的菜单页" class="headerlink" title="添加新的菜单页"></a>添加新的菜单页</h2><p><span class="exturl" data-url="aHR0cHM6Ly9saW5saWYuZ2l0aHViLmlvLzIwMTcvMDUvMjcvSGV4byVFNCVCRCVCRiVFNyU5NCVBOCVFNiU5NCVCQiVFNyU5NSVBNS0lRTYlQjclQkIlRTUlOEElQTAlRTUlODglODYlRTclQjElQkIlRTUlOEYlOEElRTYlQTAlODclRTclQUQlQkUv" title="https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/">https://linlif.github.io/2017/05/27/Hexo%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5-%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E5%8F%8A%E6%A0%87%E7%AD%BE/<i class="fa fa-external-link"></i></span></p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9kdXJhbnQzNS5naXRodWIuaW8vMjAxNi8wMS8yNi9oZXhvXyVFNiVCNyVCQiVFNSU4QSVBMGFib3V0JUU1JUFGJUJDJUU4JTg4JUFBJUU2JUEwJThGLw==" title="https://durant35.github.io/2016/01/26/hexo_%E6%B7%BB%E5%8A%A0about%E5%AF%BC%E8%88%AA%E6%A0%8F/">https://durant35.github.io/2016/01/26/hexo_%E6%B7%BB%E5%8A%A0about%E5%AF%BC%E8%88%AA%E6%A0%8F/<i class="fa fa-external-link"></i></span></p>
-<h2 id="安装三方的插件（hexo已集成）"><a href="#安装三方的插件（hexo已集成）" class="headerlink" title="安装三方的插件（hexo已集成）"></a>安装三方的插件（hexo已集成）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; git clone https://github.com/theme-next/theme-next-canvas-nest source/lib/canvas-nest</span><br></pre></td></tr></table></figure>
-<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zOTM0NTM4NC9hcnRpY2xlL2RldGFpbHMvODA1NDQ2NjA=" title="https://blog.csdn.net/weixin_39345384/article/details/80544660">https://blog.csdn.net/weixin_39345384/article/details/80544660<i class="fa fa-external-link"></i></span></p>
-<h2 id="hexo使用说明"><a href="#hexo使用说明" class="headerlink" title="hexo使用说明"></a>hexo使用说明</h2><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC84NTE5MjYyNmZhZjM=" title="https://www.jianshu.com/p/85192626faf3">Github+Hexo一站式部署个人博客(原创)<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81OGViMmZkMmEwYmI5ZjAwNjkyOGY4YzcjaGVhZGluZy0yMQ==" title="https://juejin.im/post/58eb2fd2a0bb9f006928f8c7#heading-21">hexo高阶教程：next主题优化之加入网易云音乐、网易云跟帖、炫酷动态背景、自定义样式，打造属于你自己的定制化博客<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81OTBiNDUxYTBjZTQ2MzAwNTg4YzQzYTAjaGVhZGluZy0w" title="https://juejin.im/post/590b451a0ce46300588c43a0#heading-0">hexo高阶教程：教你怎么让你的hexo博客在搜索引擎中排第一<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9mMDY4YjhhMzZkODQ=" title="https://www.jianshu.com/p/f068b8a36d84">Hexo 博客 之 简要美化<i class="fa fa-external-link"></i></span></p>
-
-          
-        
       
     </div>
-
-    
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
   </article>
 
 
@@ -1019,7 +957,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-21</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1202,34 +1140,6 @@
   
 
   
-  
-  
-
-  
-    
-      
-    
-  
-
-  
-  
-  
-    <script src="/lib/quicklink/quicklink.umd.js"></script>
-    <script>
-      
-        window.addEventListener('load', () => {
-      
-        quicklink({
-          timeout: 3000,
-          priority: true,
-          ignores: [uri => uri.includes('#'),uri => uri == 'http://cordate.github.io/page/12/',]
-        });
-      
-        });
-      
-    </script>
-  
-
 
   
 

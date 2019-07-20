@@ -96,8 +96,8 @@
   <meta name="description" content="最小二乘学习法这是一个有监督回归的学习方法。我们将对以d维实向量x作为输入、以实数值y作为输出的函数y=f(x)的学习匹配。但是一般输出样本yi的真实值f(xi)中经常会存在噪声。 说明最小二乘学习法是对模型的输出fθ(xi)和训练集输出{yi}ni=1的平方差： 为最小的参数θ进行学习： “LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对JLS进行微分时得到的2">
 <meta name="keywords" content="机器学习,knn,图解机器学习">
 <meta property="og:type" content="article">
-<meta property="og:title" content="图解机器学习-最小二乘学习法.md">
-<meta property="og:url" content="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md.html">
+<meta property="og:title" content="图解机器学习-最小二乘学习法">
+<meta property="og:url" content="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法.html">
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="最小二乘学习法这是一个有监督回归的学习方法。我们将对以d维实向量x作为输入、以实数值y作为输出的函数y=f(x)的学习匹配。但是一般输出样本yi的真实值f(xi)中经常会存在噪声。 说明最小二乘学习法是对模型的输出fθ(xi)和训练集输出{yi}ni=1的平方差： 为最小的参数θ进行学习： “LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对JLS进行微分时得到的2">
 <meta property="og:locale" content="zh-CN">
@@ -110,9 +110,9 @@
 <meta property="og:image" content="https://latex.codecogs.com/gif.latex?\Phi&space;^T\Phi&space;\theta&space;=\Phi&space;^Ty">
 <meta property="og:image" content="https://latex.codecogs.com/gif.latex?\hat{\theta}_{LS}=\Phi^\dagger&space;y">
 <meta property="og:image" content="https://latex.codecogs.com/gif.latex?\Phi^\dagger&space;=&space;(\Phi^T\Phi)^{-1}\Phi^T">
-<meta property="og:updated_time" content="2019-07-19T21:14:47.075Z">
+<meta property="og:updated_time" content="2019-07-20T15:35:43.358Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="图解机器学习-最小二乘学习法.md">
+<meta name="twitter:title" content="图解机器学习-最小二乘学习法">
 <meta name="twitter:description" content="最小二乘学习法这是一个有监督回归的学习方法。我们将对以d维实向量x作为输入、以实数值y作为输出的函数y=f(x)的学习匹配。但是一般输出样本yi的真实值f(xi)中经常会存在噪声。 说明最小二乘学习法是对模型的输出fθ(xi)和训练集输出{yi}ni=1的平方差： 为最小的参数θ进行学习： “LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对JLS进行微分时得到的2">
 <meta name="twitter:image" content="https://latex.codecogs.com/gif.latex?J_{LS}(\theta&space;)=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2">
 
@@ -124,7 +124,7 @@
 
   
   
-  <link rel="canonical" href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md"/>
+  <link rel="canonical" href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法"/>
 
 
 
@@ -135,7 +135,7 @@
 </script>
 
   
-  <title>图解机器学习-最小二乘学习法.md | 柳絮纷飞</title>
+  <title>图解机器学习-最小二乘学习法 | 柳絮纷飞</title>
   
 
 
@@ -187,39 +187,13 @@
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">柳絮纷飞</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-    
-      
-        <h1 class="site-subtitle" itemprop="description">Gavin的个人博客</h1>
-      
-    
-    
-  </div>
-
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
-</div>
+      <div class="header-inner">
 
 
 
-<nav class="site-nav">
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
   
-    <ul id="menu" class="menu">
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
       
         
         
@@ -228,13 +202,12 @@
           <li class="menu-item menu-item-home">
 
     
+
     
       
     
 
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
 
   </li>
         
@@ -244,13 +217,12 @@
           <li class="menu-item menu-item-about">
 
     
+
     
       
     
 
-    
-
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
 
   </li>
         
@@ -260,13 +232,12 @@
           <li class="menu-item menu-item-tags">
 
     
+
     
       
     
 
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br/>标签</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
 
   </li>
         
@@ -276,13 +247,12 @@
           <li class="menu-item menu-item-categories">
 
     
+
     
       
     
 
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br/>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
 
   </li>
         
@@ -292,13 +262,12 @@
           <li class="menu-item menu-item-archives">
 
     
+
     
       
     
 
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
 
   </li>
         
@@ -308,13 +277,12 @@
           <li class="menu-item menu-item-schedule">
 
     
+
     
       
     
 
-    
-
-    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br/>日程表</a>
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a>
 
   </li>
         
@@ -324,13 +292,12 @@
           <li class="menu-item menu-item-sitemap">
 
     
+
     
       
     
 
-    
-
-    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br/>站点地图</a>
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a>
 
   </li>
         
@@ -340,13 +307,12 @@
           <li class="menu-item menu-item-commonweal">
 
     
+
     
       
     
 
-    
-
-    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br/>公益 404</a>
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a>
 
   </li>
 
@@ -357,16 +323,18 @@
             <a href="javascript:;" class="popup-trigger">
           
             
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br/>搜索</a>
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
         </li>
       
     </ul>
   
 
+<!--
   
     
 
   
+-->
 
   
     <div class="site-search">
@@ -429,12 +397,19 @@
     <div class="reading-progress-bar"></div>
   
 
+  
+    
+      
+      <img src="http://pic37.nipic.com/20140113/8800276_184927469000_2.png" alt="背景图" width="100%"/>
+    
+  
+
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md.html"/>
+    <link itemprop="mainEntityOfPage" href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法.html"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Author"/>
@@ -451,7 +426,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">图解机器学习-最小二乘学习法.md
+          <h2 class="post-title" itemprop="name headline">图解机器学习-最小二乘学习法
 
               
             
@@ -461,10 +436,6 @@
         <div class="post-meta">
 
           <!-- 置顶的实现 -->
-          
-            <i class="fa fa-thumb-tack"></i>
-            <font color=ff6800>置顶</font>
-            <span class="post-meta-divider">|</span>
           
 
           
@@ -499,7 +470,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-20 05:14:47" itemprop="dateModified" datetime="2019-07-20T05:14:47+08:00">2019-07-20</time>
+                <time title="修改时间：2019-07-20 23:35:43" itemprop="dateModified" datetime="2019-07-20T23:35:43+08:00">2019-07-20</time>
               </span>
             
           
@@ -552,7 +523,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">553</span>
+              <span title="本文字数">552</span>
             </span>
           
 
@@ -587,7 +558,6 @@
 <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>最小二乘学习法是对模型的输出f<sub>θ</sub>(x<sub>i</sub>)和训练集输出{y<sub>i</sub>}<sup>n</sup><sub>i=1</sub>的平方差：<br><img src="https://latex.codecogs.com/gif.latex?J_{LS}(\theta&space;)=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2" title="J_{LS}(\theta )=\frac{1}{2}\sum_{i=1}^{n}(f_\theta(x_i)-y_i)^2"></p>
 <p>为最小的参数θ进行学习：<br><img src="https://latex.codecogs.com/gif.latex?\hat{\theta&space;}_{LS}=\underset{\theta}{argmin}\:&space;J_{LS}(\theta)" title="\hat{\theta }_{LS}=\underset{\theta}{argmin}\: J_{LS}(\theta)"></p>
 <p>“LS”是Least Squares的缩写。上面之所以加上1/2的系数，是为了约去对J<sub>LS</sub>进行微分时得到的2.平方误差(f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>)<sup>2</sup>是残差f<sub>θ</sub>(x<sub>i</sub>)-y<sub>i</sub>的L<sub>2</sub>范数。所以最小二乘法也称为L<sub>2</sub>损失最小化学习法。</p>
-<a id="more"></a>
 <p>如果使用线性模型：<br><img src="https://latex.codecogs.com/gif.latex?f_\theta&amp;space;(x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi&amp;space;(x)" title="f_\theta (x)=\sum_{j=1}^{b}\theta_{j}\phi_{j}(x)=\theta^{T}\phi (x)"><br>的话，那么训练样本的平方差J<sub>LS</sub>就能够表示为下述形式。<br><img src="https://latex.codecogs.com/gif.latex?J_{LS}(\theta)=\frac{1}{2}\left&space;\|&space;\Phi&space;\theta&space;-y&space;\right&space;\|^2" title="J_{LS}(\theta)=\frac{1}{2}\left \| \Phi \theta -y \right \|^2"><br>在这里，y=(y<sub>1</sub>,···y<sub>n</sub>)<sup>T</sup>是训练输出的n维向量，Φ是下面定义的n × b阶矩阵，也称为设计矩阵。<br><img src="https://latex.codecogs.com/gif.latex?\Phi=\begin{bmatrix}&space;\phi&space;_1(x_1)&space;&&space;\cdots&space;&&space;\phi&space;_b(x_1)&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\phi&space;_1(x_n)&space;&&space;\cdots&space;&&space;\phi&space;_b(x_n)&space;\end{bmatrix}" title="\Phi=\begin{bmatrix} \phi _1(x_1) & \cdots & \phi _b(x_1) \\ \vdots & \ddots & \vdots \\ \phi _1(x_n) & \cdots & \phi _b(x_n) \end{bmatrix}"></p>
 <p><b style="color:red">将结果变成一个矩阵进行统一处理而已！</b></p>
 <p>训练样本的平方差J<sub>LS</sub>的参数向量θ的偏微分▽<sub>θ</sub>J<sub>LS</sub>以<br><img src="https://latex.codecogs.com/gif.latex?\triangledown_{\theta&space;}J_{LS}=\begin{pmatrix}&space;\frac{\partial&space;J_{LS}}{\partial\theta_1}&space;&&space;\cdots&space;&&space;\frac{\partial&space;J_{LS}}{\partial\theta_b}&space;\end{pmatrix}^T=\Phi&space;^T\Phi&space;\theta&space;-\Phi&space;^Ty" title="\triangledown_{\theta }J_{LS}=\begin{pmatrix} \frac{\partial J_{LS}}{\partial\theta_1} & \cdots & \frac{\partial J_{LS}}{\partial\theta_b} \end{pmatrix}^T=\Phi ^T\Phi \theta -\Phi ^Ty"></p>
@@ -632,7 +602,7 @@
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md.html" title="图解机器学习-最小二乘学习法.md">http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法-md.html</a>
+    <a href="http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法.html" title="图解机器学习-最小二乘学习法">http://cordate.github.io/机器学习/图解机器学习-最小二乘学习法.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
@@ -1180,7 +1150,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-20</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-21</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1367,15 +1337,6 @@
   
 
   
-  
-  
-
-  
-
-  
-  
-  
-
 
   
 
