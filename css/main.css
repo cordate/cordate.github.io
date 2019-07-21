@@ -429,15 +429,15 @@ td {
 }
 th,
 td {
-  border: 1px solid #ddd;
-  border-bottom: 3px solid #ddd;
+  border: 2px solid #bbb;
+  border-bottom: 3px solid #bbb;
 }
 th {
   padding-bottom: 10px;
   font-weight: 700;
 }
 td {
-  border-bottom-width: 1px;
+  border-bottom-width: 2px;
 }
 html,
 body {
@@ -965,15 +965,15 @@ pre .javascript .function {
 }
 .post-body .tabs ul.nav-tabs li.tab.active {
   border-top: 3px solid #fc6423;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #bbb;
   border-bottom: 1px solid transparent;
-  border-left: 1px solid #ddd;
+  border-left: 1px solid #bbb;
 }
 @media (max-width: 413px) {
   .post-body .tabs ul.nav-tabs li.tab.active {
-    border-top: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
     border-left: 3px solid #fc6423;
   }
 }
@@ -982,7 +982,7 @@ pre .javascript .function {
   color: #268bd2;
 }
 .post-body .tabs .tab-content .tab-pane {
-  border: 1px solid #ddd;
+  border: 1px solid #bbb;
   padding: 20px 20px 0 20px;
 }
 .post-body .tabs .tab-content .tab-pane:not(.active) {
@@ -1265,15 +1265,17 @@ pre .javascript .function {
   opacity: 0;
 }
 .navbar.sticky {
-  position: fixed;
+  position: absolute;
   top: 0;
+  left: 0;
   right: 0;
-  z-index: 998;
+  z-index: 10;
   margin: 0 !important;
   margin: 0px;
   border: 0;
   border-radius: 0;
-  background-color: #535ba0;
+  background-color: #364050;
+  background-image: url("/images/bg1.png");
   padding: 0;
   width: 100%;
 }
@@ -1300,70 +1302,14 @@ nav .menu {
 .menu-item-active.menu-item a,
 ul.menu .menu-item a:hover {
   color: #268bd2;
-  border: 0;
+  border-color: #268bd2;
 }
-.github-corner :hover .octo-arm {
-  animation: octocat-wave 560ms ease-in-out;
+.container div.header-inner {
+  width: 100%;
+  padding: 0;
 }
-.github-corner > svg {
-  fill: #364050;
-  color: #fff;
-  position: absolute;
-  top: 0;
-  border: 0;
-  right: 0;
-}
-@media (max-width: 991px) {
-  .github-corner .github-corner:hover .octo-arm {
-    animation: none;
-  }
-  .github-corner .github-corner .octo-arm {
-    animation: octocat-wave 560ms ease-in-out;
-  }
-}
-@-moz-keyframes octocat-wave {
-  0%, 100% {
-    transform: rotate(0);
-  }
-  20%, 60% {
-    transform: rotate(-25deg);
-  }
-  40%, 80% {
-    transform: rotate(10deg);
-  }
-}
-@-webkit-keyframes octocat-wave {
-  0%, 100% {
-    transform: rotate(0);
-  }
-  20%, 60% {
-    transform: rotate(-25deg);
-  }
-  40%, 80% {
-    transform: rotate(10deg);
-  }
-}
-@-o-keyframes octocat-wave {
-  0%, 100% {
-    transform: rotate(0);
-  }
-  20%, 60% {
-    transform: rotate(-25deg);
-  }
-  40%, 80% {
-    transform: rotate(10deg);
-  }
-}
-@keyframes octocat-wave {
-  0%, 100% {
-    transform: rotate(0);
-  }
-  20%, 60% {
-    transform: rotate(-25deg);
-  }
-  40%, 80% {
-    transform: rotate(10deg);
-  }
+.header {
+  margin-bottom: 50px;
 }
 .post-body {
   overflow-wrap: break-word;
@@ -2015,7 +1961,7 @@ ul.menu .menu-item a:hover {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff61c4;
+  background: #796b1f;
 }
 .feed-link,
 .chat {

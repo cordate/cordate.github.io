@@ -101,10 +101,13 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="Paxos协议/算法是分布式系统中比较重要的协议，它有多重要呢？ &amp;lt;分布式系统的事务处理&amp;gt;：  Google Chubby的作者Mike Burrows说过这个世界上只有一种一致性算法，那就是Paxos，其它的算法都是残次品。  &amp;lt;大规模分布式存储系统&amp;gt;：  理解了这两个分布式协议之后(Paxos/2PC)，学习其他分布式协议会变得相当容易。  前言记得一年前去看Paxos">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-20T14:18:28.495Z">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/basicPaxos%E6%B6%88%E6%81%AF%E6%B5%81.png?raw=true">
+<meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/paxos%E5%8D%8F%E8%AE%AE.png?raw=true">
+<meta property="og:updated_time" content="2019-07-21T05:26:32.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Paxos协议详解">
 <meta name="twitter:description" content="Paxos协议/算法是分布式系统中比较重要的协议，它有多重要呢？ &amp;lt;分布式系统的事务处理&amp;gt;：  Google Chubby的作者Mike Burrows说过这个世界上只有一种一致性算法，那就是Paxos，其它的算法都是残次品。  &amp;lt;大规模分布式存储系统&amp;gt;：  理解了这两个分布式协议之后(Paxos/2PC)，学习其他分布式协议会变得相当容易。  前言记得一年前去看Paxos">
+<meta name="twitter:image" content="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/basicPaxos%E6%B6%88%E6%81%AF%E6%B5%81.png?raw=true">
 
 
 
@@ -177,7 +180,21 @@
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
 
 
 
@@ -319,12 +336,10 @@
     </ul>
   
 
-<!--
   
     
 
   
--->
 
   
     <div class="site-search">
@@ -358,13 +373,6 @@
     </header>
 
     
-  
-  
-
-  
-
-  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
-
 
 
     <main id="main" class="main">
@@ -389,7 +397,8 @@
 
   
     
-      <img src="/images/blog/bench-park.jpg" alt="背景图" width="100%" />
+      
+      <img src="/images/blog/paxos协议.jpeg" alt="背景图" width="100%"/>
     
   
 
@@ -463,7 +472,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-20 22:18:28" itemprop="dateModified" datetime="2019-07-20T22:18:28+08:00">2019-07-20</time>
+                <time title="修改时间：2019-07-21 13:26:32" itemprop="dateModified" datetime="2019-07-21T13:26:32+08:00">2019-07-21</time>
               </span>
             
           
@@ -569,6 +578,7 @@
 <li>Commit阶段后者认同前者</li>
 <li>最终少数服从多数</li>
 </ol>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/basicPaxos%E6%B6%88%E6%81%AF%E6%B5%81.png?raw=true" alt=""></p>
 <h2 id="算法的说明"><a href="#算法的说明" class="headerlink" title="算法的说明"></a>算法的说明</h2><p><b style="color:red">首先将议员的角色分为proposers，acceptors，和learners（允许身兼数职）</b>。proposers提出提案，提案信息包括提案编号和提议的value；acceptor收到提案后可以<b style="color:red">接受</b>（accept）提案，若提案获得多数acceptors的接受，则称该提案被<b style="color:red">批准（chosen）</b>；learners只能<b style="color:red">“学习”</b>被批准的提案。划分角色后，就可以更精确的定义问题：</p>
 <ul>
 <li><b style="color:red">决议（value）</b>只有在被proposers提出后才能被批准（未经批准的决议称为“提案（proposal）”）；</li>
@@ -576,6 +586,7 @@
 <li>learners只能获得<b style="color:red">被批准（chosen）</b>的value。</li>
 </ul>
 <p>另外还需要保证progress。这一点以后再讨论。作者通过不断加强上述3个约束（主要是第二个）获得了Paxos算法。</p>
+<p><img src="https://github.com/gavin-account/blog-pics/blob/master/%E7%AE%97%E6%B3%95/paxos%E5%8D%8F%E8%AE%AE.png?raw=true" alt=""></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P1：一个acceptor必须接受（accept）第一次收到的提案。</span><br></pre></td></tr></table></figure>
 <p>这个比较好理解。（但是这里忽略了预提交阶段的事情了）。然后下面就是后者认同前者了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2：一旦一个具有value v的提案被批准（chosen），那么之后批准（chosen）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
 <p>这个是对接收者后者认同前者的说明，但是貌似只是对一个acceptor有约束，所以必须成为所有acceptors的共识，于是有了P2a。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">P2a：一旦一个具有value v的提案被批准（chosen），那么之后任何acceptor再次接受（accept）的提案必须具有value v。</span><br></pre></td></tr></table></figure></p>
@@ -1191,7 +1202,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">819k</span>
+    <span title="站点总字数">820k</span>
   
 
   

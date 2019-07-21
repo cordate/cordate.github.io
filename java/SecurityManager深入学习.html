@@ -102,7 +102,7 @@
 <meta property="og:description" content="简介SecurityManager在Java中被用来检查应用程序是否能访问一些有限的资源，例如文件、套接字(socket)等等。它可以用在那些具有高安全性要求的应用程序中。通过打开这个功能， 我们的系统资源可以只允许进行安全的操作。 当Java虚拟机启动时，它首先通过检查系统属性java.security.manager来确定SecurityManager是否打开了。如果打开了，那么Securit">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://github.com/gavin-account/blog-pics/blob/master/java/JAAS%E5%85%B8%E5%9E%8B%E8%B0%83%E7%94%A8%E5%A0%86%E6%A0%88%E7%9A%84%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7.gif?raw=true">
-<meta property="og:updated_time" content="2018-05-30T07:58:38.000Z">
+<meta property="og:updated_time" content="2019-07-21T13:50:53.202Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SecurityManager深入学习">
 <meta name="twitter:description" content="简介SecurityManager在Java中被用来检查应用程序是否能访问一些有限的资源，例如文件、套接字(socket)等等。它可以用在那些具有高安全性要求的应用程序中。通过打开这个功能， 我们的系统资源可以只允许进行安全的操作。 当Java虚拟机启动时，它首先通过检查系统属性java.security.manager来确定SecurityManager是否打开了。如果打开了，那么Securit">
@@ -179,7 +179,21 @@
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
 
 
 
@@ -321,12 +335,10 @@
     </ul>
   
 
-<!--
   
     
 
   
--->
 
   
     <div class="site-search">
@@ -360,13 +372,6 @@
     </header>
 
     
-  
-  
-
-  
-
-  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3l1ZXhpYWhhbmRhbw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
-
 
 
     <main id="main" class="main">
@@ -391,7 +396,8 @@
 
   
     
-      <img src="/images/blog/bench-park.jpg" alt="背景图" width="100%" />
+      
+      <img src="/images/blog/java.jpeg" alt="背景图" width="100%"/>
     
   
 
@@ -461,7 +467,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-05-30 15:58:38" itemprop="dateModified" datetime="2018-05-30T15:58:38+08:00">2018-05-30</time>
+                <time title="修改时间：2019-07-21 21:50:53" itemprop="dateModified" datetime="2019-07-21T21:50:53+08:00">2019-07-21</time>
               </span>
             
           
@@ -1231,7 +1237,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">819k</span>
+    <span title="站点总字数">820k</span>
   
 
   
