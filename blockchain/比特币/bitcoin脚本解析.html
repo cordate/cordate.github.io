@@ -1,1 +1,2631 @@
-<!-- build time:Mon Jul 22 2019 22:26:14 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion" lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"><link rel="stylesheet" href="/css/main.css?v=7.2.0"><link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0"><link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222"><script id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"7.2.0",sidebar:{position:"left",display:"always",offset:12,onmobile:!1},back2top:{enable:!0,sidebar:!1,scrollpercent:!0},copycode:{enable:!0,show_result:!0,style:"mac"},fancybox:!1,fastclick:!1,lazyload:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}},translation:{copy_button:"复制",copy_success:"复制成功",copy_failure:"复制失败"}}</script><meta name="description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678"><meta name="keywords" content="比特币,bitcoin,脚本"><meta property="og:type" content="article"><meta property="og:title" content="bitcoin脚本解析"><meta property="og:url" content="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html"><meta property="og:site_name" content="柳絮纷飞"><meta property="og:description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678"><meta property="og:locale" content="zh-CN"><meta property="og:updated_time" content="2019-07-21T14:31:45.064Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="bitcoin脚本解析"><meta name="twitter:description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678"><link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"><link rel="canonical" href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析"><script id="page.configurations">CONFIG.page={sidebar:""}</script><title>bitcoin脚本解析 | 柳絮纷飞</title><noscript><style>.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.use-motion .logo-line-before i{left:initial}.use-motion .logo-line-after i{right:initial}</style></noscript></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"></div><div class="site-nav-toggle"><button aria-label="切换导航栏"><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation"><ul id="menu" class="menu nav navbar-nav hidden-sm"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a></li><li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i> </span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"><input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><div class="reading-progress-bar"></div><img src="/images/blog/比特币2.jpeg" alt="背景图" width="100%"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Author"><meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"><meta itemprop="image" content="/images/user-avatar.jpg"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="柳絮纷飞"></span><header class="post-header"><h2 class="post-title" itemprop="name headline">bitcoin脚本解析</h2><div class="post-meta"><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-03-17 00:08:08" itemprop="dateCreated datePublished" datetime="2018-03-17T00:08:08+08:00">2018-03-17</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-check-o"></i> </span><span class="post-meta-item-text">更新于</span> <time title="修改时间：2019-07-21 22:31:45" itemprop="dateModified" datetime="2019-07-21T22:31:45+08:00">2019-07-21</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i> </span><span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span> ， <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-eye"></i> 阅读次数： <span class="busuanzi-value" id="busuanzi_value_page_pv"></span></span></span><br><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i> </span><span class="post-meta-item-text">本文字数：</span> <span title="本文字数">8.3k</span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i> </span><span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">8 分钟</span></span></div></header><div class="post-body" itemprop="articleBody"><p>在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。</p><p>在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public enum ScriptType &#123;</span><br><span class="line">    NO_TYPE,</span><br><span class="line">    P2PKH,</span><br><span class="line">    PUB_KEY,</span><br><span class="line">    P2SH</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>再看一下脚本的验证类型吧！<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum VerifyFlag &#123;</span><br><span class="line">    P2SH, // Enable BIP16-style subscript evaluation.</span><br><span class="line">    STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.</span><br><span class="line">    DERSIG, // Passing a non-strict-DER signature to a checksig operation causes script failure (softfork safe, BIP66 rule 1)</span><br><span class="line">    LOW_S, // Passing a non-strict-DER signature or one with S &gt; order/2 to a checksig operation causes script failure</span><br><span class="line">    NULLDUMMY, // Verify dummy stack item consumed by CHECKMULTISIG is of zero-length.</span><br><span class="line">    SIGPUSHONLY, // Using a non-push operator in the scriptSig causes script failure (softfork safe, BIP62 rule 2).</span><br><span class="line">    MINIMALDATA, // Require minimal encodings for all push operations</span><br><span class="line">    DISCOURAGE_UPGRADABLE_NOPS, // Discourage use of NOPs reserved for upgrades (NOP1-10)</span><br><span class="line">    CLEANSTACK, // Require that only a single stack element remains after evaluation.</span><br><span class="line">    CHECKLOCKTIMEVERIFY, // Enable CHECKLOCKTIMEVERIFY operation</span><br><span class="line">    CHECKSEQUENCEVERIFY // Enable CHECKSEQUENCEVERIFY operation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><h2 id="命令简介"><a href="#命令简介" class="headerlink" title="命令简介"></a>命令简介</h2><h3 id="常数"><a href="#常数" class="headerlink" title="常数"></a>常数</h3><p>当我们说脚本的时候，经常省略了这些把数字压入堆栈的关键字。</p><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_0,OP_FALSE</td><td>0</td><td>0×00</td><td>无</td><td>空</td><td>一个字节空串被推到堆栈中(并非no-op操作，有一个元素压入堆栈)</td></tr><tr><td>N/A</td><td>1-75</td><td>0×01-0x4b</td><td>(特殊)</td><td>数据</td><td>下一个操作码字节是要被压入堆栈的数据</td></tr><tr><td>OP_PUSHDATA1</td><td>76</td><td>0x4c</td><td>(特殊)</td><td>数据</td><td>下一字节是要被压入堆栈的数据的长度</td></tr><tr><td>OP_PUSHDATA2</td><td>77</td><td>0x4d</td><td>(特殊)</td><td>数据</td><td>下两个字节是要被压入堆栈的数据的长度</td></tr><tr><td>OP_PUSHDATA4</td><td>78</td><td>0x4e</td><td>(特殊)</td><td>数据</td><td>下四个字节是要被压入堆栈的数据的长度</td></tr><tr><td>OP_1NEGATE</td><td>79</td><td>0x4f</td><td>无</td><td>-1</td><td>数字-1被压入堆栈</td></tr><tr><td>OP_1,OP_TRUE</td><td>81</td><td>0×51</td><td>无</td><td>1</td><td>数字1被压入堆栈</td></tr><tr><td>OP_2-OP_16</td><td>82-96</td><td>0×52-0×60</td><td>无</td><td>2-16</td><td>与关键名相对应的数字被压入堆栈</td></tr></tbody></table><h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_NOP</td><td>97</td><td>0×61</td><td>无</td><td>无</td><td>无任何操作</td></tr><tr><td>OP_IF</td><td>99</td><td>0×63</td><td><expression>if [statements] [else [statements]]* endif</expression></td><td>–</td><td>如果栈项元素值不为0，语句将被执行，栈项元素值被删除。</td></tr><tr><td>OP_NOTIF</td><td>100</td><td>0×64</td><td><expression>if [statements] [else [statements]]* endif</expression></td><td>—</td><td>如果栈项元素值为0，语句将被执行，栈项元素值被删除。</td></tr><tr><td>OP_ELSE</td><td>103</td><td>0×67</td><td><expression>if [statements] [else [statements]]* endif</expression></td><td>—</td><td>如果前述的OP_IF或 OP_NOTIF或OP_ELSE 未被执行，这些语句就会被执行；如果前述的OP_IF或 OP_NOTIF或OP_ELSE被执行，这些语句就不会被执行</td></tr><tr><td>OP_ENDIF</td><td>104</td><td>0×68</td><td><expression>if [statements] [else [statements]]* endif</expression></td><td>—</td><td>结束if/else语言块</td></tr><tr><td>OP_VERIFY</td><td>105</td><td>0×69</td><td>True / false</td><td>无 / False</td><td>如果栈项元素值非真，则标记交易无效。True会被删除，False不会被删除。</td></tr><tr><td>OP_RETURN</td><td>106</td><td>0x6a</td><td>无</td><td>无</td><td>标记交易无效</td></tr></tbody></table><h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_TOALTSTACK</td><td>107</td><td>0x6b</td><td>x1</td><td>(alt)x1</td><td>把输入压入辅堆栈的项部，从主堆栈删除。</td></tr><tr><td>OP_FROMALTSTACK</td><td>108</td><td>0x6c</td><td>(alt)x1</td><td>x1</td><td>把输入压入主堆栈的项部，从辅堆栈删除。</td></tr><tr><td>OP_IFDUP</td><td>115</td><td>0×73</td><td>x</td><td>x / x x</td><td>如果栈项元素值不为0，复制该元素值</td></tr><tr><td>OP_DEPTH</td><td>116</td><td>0×74</td><td>无</td><td>&lt;堆栈大小&gt;</td><td>把堆栈元素个数压入堆栈</td></tr><tr><td>OP_DROP</td><td>117</td><td>0×75</td><td>x</td><td>无</td><td>删除栈顶元素</td></tr><tr><td>OP_DUP</td><td>118</td><td>0×76</td><td>x</td><td>x x</td><td>复制栈顶元素</td></tr><tr><td>OP_NIP</td><td>119</td><td>0×77</td><td>x1 x2</td><td>x2</td><td>删除栈顶的下一个元素</td></tr><tr><td>OP_OVER</td><td>120</td><td>0×78</td><td>x1 x2</td><td>x1 x2 x1</td><td>复制栈顶的下一个元素到栈顶</td></tr><tr><td>OP_PICK</td><td>121</td><td>0×79</td><td>xn … x2 x1 x0<n></n></td><td>xn … x2 x1 x0 xn</td><td>把堆栈的第n个元素拷贝到栈顶</td></tr><tr><td>OP_ROLL</td><td>122</td><td>0x7a</td><td>xn … x2 x1 x0<n></n></td><td>… x2 x1 x0 xn</td><td>把堆栈的第n个元素移动到栈顶</td></tr><tr><td>OP_ROT</td><td>123</td><td>0x7b</td><td>x1 x2 x3</td><td>x2 x3 x1</td><td>栈顶的三个元素向左翻转</td></tr><tr><td>OP_SWAP</td><td>124</td><td>0x7c</td><td>x1 x2</td><td>x2 x1</td><td>栈顶的两个元素交换</td></tr><tr><td>OP_TUCK</td><td>125</td><td>0x7d</td><td>x1 x2</td><td>x2 x1 x2</td><td>把栈顶元素拷贝并插入到栈顶下一个元素之后。注意：原文为“插入到栈顶下一个元素之前”，可能有误，翻译时改为“之后”</td></tr><tr><td>OP_2DROP</td><td>109</td><td>0x6d</td><td>x1 x2</td><td>无</td><td>删除栈顶两个元素</td></tr><tr><td>OP_2DUP</td><td>110</td><td>0x6e</td><td>x1 x2</td><td>x1 x2 x1 x2</td><td>复制栈顶两个元素</td></tr><tr><td>OP_3DUP</td><td>111</td><td>0x6f</td><td>x1 x2 x3</td><td>x1 x2 x3 x1 x2 x3</td><td>复制栈顶三个元素</td></tr><tr><td>OP_2OVER</td><td>112</td><td>0×70</td><td>x1 x2 x3 x4</td><td>x1 x2 x3 x4 x1 x2</td><td>把栈底的两个元素拷贝到栈顶</td></tr><tr><td>OP_2ROT</td><td>113</td><td>0×71</td><td>x1 x2 x3 x4 x5 x6</td><td>x3 x4 x5 x6 x1 x2</td><td>以一对元素为单位，向左翻转。注意：原文大意“把第五和第六元素移动到栈顶”，明显有误</td></tr><tr><td>OP_2SWAP</td><td>114</td><td>0×72</td><td>x1 x2 x3 x4 x3 x4</td><td>x1 x2</td><td>以一对元素为单位，交换栈顶的两对元素的位置。</td></tr></tbody></table><h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_CAT</td><td>126</td><td>0x7e</td><td>x1 x2</td><td>out</td><td>连接两个字符串，已禁用</td></tr><tr><td>OP_SUBSTR</td><td>127</td><td>0x7f</td><td>in begin size</td><td>out</td><td>返回字符串的一部分，已禁用</td></tr><tr><td>OP_LEFT</td><td>128</td><td>0×80</td><td>in size</td><td>out</td><td>在一个字符串中保留左边指定长度的子串，已禁用</td></tr><tr><td>OP_RIGHT</td><td>129</td><td>0×81</td><td>in size</td><td>out</td><td>在一个字符串中保留右边指定长度的子串，已禁用</td></tr><tr><td>OP_SIZE</td><td>130</td><td>0×82</td><td>in</td><td>in size</td><td>把栈顶元素的字符串长度压入堆栈(无需弹出元素)</td></tr></tbody></table><h3 id="位逻辑"><a href="#位逻辑" class="headerlink" title="位逻辑"></a>位逻辑</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_INVERT</td><td>131</td><td>0×83</td><td>in</td><td>out</td><td>所有输入的位取反，已禁用.</td></tr><tr><td>OP_AND</td><td>132</td><td>0×84</td><td>x1 x2</td><td>out</td><td>对输入的所有位进行布尔与运算，已禁用</td></tr><tr><td>OP_OR</td><td>133</td><td>0×85</td><td>x1 x2</td><td>out</td><td>对输入的每一位进行布尔或运算，已禁用</td></tr><tr><td>OP_XOR</td><td>134</td><td>0×86</td><td>x1 x2</td><td>out</td><td>对输入的每一位进行布尔异或运算，已禁用</td></tr><tr><td>OP_EQUAL</td><td>135</td><td>0×87</td><td>x1 x2</td><td>True / false</td><td>如果输入的两个数相等，返回1，否则返回0。</td></tr><tr><td>OP_EQUALVERIFY</td><td>136</td><td>0×88</td><td>x1 x2</td><td>True / false</td><td>与OP_EQUAL一样，之后运行OP_VERIFY 。</td></tr></tbody></table><h3 id="算术逻辑"><a href="#算术逻辑" class="headerlink" title="算术逻辑"></a>算术逻辑</h3><p>注意：算术逻辑的输入限于有符号32位长整数，但输出有可能会溢出。</p><p>如果任何命令的输入值长度超过4字节，脚本必须中止和失败返回。如果标记为已禁用的操作码出现在交易中，也必须终止和失败返回</p><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_1ADD</td><td>139</td><td>0x8b</td><td>in</td><td>out</td><td>输入值加1</td></tr><tr><td>OP_1SUB</td><td>140</td><td>0x8c</td><td>in</td><td>out</td><td>输入值减1</td></tr><tr><td>OP_2MUL</td><td>141</td><td>0x8d</td><td>in</td><td>out</td><td>输入值乘2，已禁用</td></tr><tr><td>OP_2DIV</td><td>142</td><td>0x8e</td><td>in</td><td>out</td><td>输入值除2，已禁用</td></tr><tr><td>OP_NEGATE</td><td>143</td><td>0x8f</td><td>in</td><td>out</td><td>输入值符号取反</td></tr><tr><td>OP_ABS</td><td>144</td><td>0×90</td><td>in</td><td>out</td><td>输入值符号取正</td></tr><tr><td>OP_NOT</td><td>145</td><td>0×91</td><td>in</td><td>out</td><td>如果输入值为0或1，则输出1或0；否则输出0。I</td></tr><tr><td>OP_0NOTEQUAL</td><td>146</td><td>0×92</td><td>in</td><td>out</td><td>输入值为0输出0；否则输出1。</td></tr><tr><td>OP_ADD</td><td>147</td><td>0×93</td><td>a b</td><td>out</td><td>输出a+b</td></tr><tr><td>OP_SUB</td><td>148</td><td>0×94</td><td>a b</td><td>out</td><td>输出a-b</td></tr><tr><td>OP_MUL</td><td>149</td><td>0×95</td><td>a b</td><td>out</td><td>输出a*b，已禁用</td></tr><tr><td>OP_DIV</td><td>150</td><td>0×96</td><td>a b</td><td>out</td><td>输出a/b, 已禁用</td></tr><tr><td>OP_MOD</td><td>151</td><td>0×97</td><td>a b</td><td>out</td><td>输出a/b的余数，已禁用</td></tr><tr><td>OP_LSHIFT</td><td>152</td><td>0×98</td><td>a b</td><td>out</td><td>把a向左移动b位，保留符号，已禁用</td></tr><tr><td>OP_RSHIFT</td><td>153</td><td>0×99</td><td>a b</td><td>out</td><td>把a向右移动b位，保留符号，已禁用</td></tr><tr><td>OP_BOOLAND</td><td>154</td><td>0x9a</td><td>a b</td><td>out</td><td>如果a和b都不为0，输出1，否则输出0</td></tr><tr><td>OP_BOOLOR</td><td>155</td><td>0x9b</td><td>a b</td><td>out</td><td>如果a或b不为0，输出1，否则输出0</td></tr><tr><td>OP_NUMEQUAL</td><td>156</td><td>0x9c</td><td>a b</td><td>out</td><td>如果a=b则输出1，否则输出0。</td></tr><tr><td>OP_NUMEQUALVERIFY</td><td>157</td><td>0x9d</td><td>a b</td><td>out</td><td>与OP_NUMEQUAL一样，之后要运行OP_VERIFY</td></tr><tr><td>OP_NUMNOTEQUAL</td><td>158</td><td>0x9e</td><td>a b</td><td>out</td><td>如果a!=b则输出1，否则输出0。</td></tr><tr><td>OP_LESSTHAN</td><td>159</td><td>0x9f</td><td>a b</td><td>out</td><td>如果a&lt;b则输出1，否则输出0。</td></tr><tr><td>OP_GREATERTHAN</td><td>160</td><td>0xa0</td><td>a b</td><td>out</td><td>如果a&gt;b则输出1，否则输出0。</td></tr><tr><td>OP_LESSTHANOREQUAL</td><td>161</td><td>0xa1</td><td>a b</td><td>out</td><td>如果a&lt;=b则输出1，否则输出0</td></tr><tr><td>OP_GREATERTHANOREQUAL</td><td>162</td><td>0xa2</td><td>a b</td><td>out</td><td>如果a&gt;=b则输出1，否则输出0</td></tr><tr><td>OP_MIN</td><td>163</td><td>0xa3</td><td>a b</td><td>out</td><td>输出a,b中的最小值</td></tr><tr><td>OP_MAX</td><td>164</td><td>0xa4</td><td>a b</td><td>out</td><td>输出a,b中的最大值</td></tr><tr><td>OP_WITHIN</td><td>165</td><td>0xa5</td><td>x min max</td><td>out</td><td>如果x在min和max之间，则输出1，否则输出</td></tr></tbody></table><h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>输入</th><th>输出</th><th>描述</th></tr></thead><tbody><tr><td>OP_RIPEMD160</td><td>166</td><td>0xa6</td><td>in</td><td>hash</td><td>输入用RIPEMD-160算法HASH</td></tr><tr><td>OP_SHA1</td><td>167</td><td>0xa7</td><td>in</td><td>hash</td><td>输入用SHA-1算法HASH.</td></tr><tr><td>OP_SHA256</td><td>168</td><td>0xa8</td><td>in</td><td>hash</td><td>输入用SHA-256算法HASH.</td></tr><tr><td>OP_HASH160</td><td>169</td><td>0xa9</td><td>in</td><td>hash</td><td>输入被HASH两次，先用 SHA-256，再用 RIPEMD-160.</td></tr><tr><td>OP_HASH256</td><td>170</td><td>0xaa</td><td>in</td><td>hash</td><td>输入用SHA-256算法HASH两次.</td></tr><tr><td>OP_CODESEPARATOR</td><td>171</td><td>0xab</td><td>无</td><td>无</td><td>所有签名检查只需匹配最近一次执行的OP_CODESEPARATOR 操作数据的签名即可。</td></tr><tr><td>OP_CHECKSIG</td><td>172</td><td>0xac</td><td>sig pubkey</td><td>True / false</td><td>全部交易的输出、输入和脚本(从最近执行的OP_CODESEPARATOR操作到最)都被HASH，OP_CHECKSIG使用的签名必须是该HASH值和公钥的有效签名，如果是真则返回1，否则返回0。</td></tr><tr><td>OP_CHECKSIGVERIFY</td><td>173</td><td>0xad</td><td>sig pubkey</td><td>True / false</td><td>与OP_CHECKSIG一样，但之后执行 OP_VERIFY</td></tr><tr><td>OP_CHECKMULTISIG</td><td>174</td><td>0xae</td><td>x sig1 sig2 …<number of="" signatures="">pub1 pub2<number of="" public="" keys=""></number></number></td><td>True / False</td><td>对于每个签名和公钥对，OP_CHECKSIG 都会被执行，如果公钥列得比签名多，一些公钥/签名对会失败。所有的签名要与公钥匹配。如果所有签名有效，输出1，否则返回0。因为存在BUG，一个未使用的外部值会从堆栈中删除。</td></tr><tr><td>OP_CHECKMULTISIGVERIFY</td><td>175</td><td>0xaf</td><td>x sig1 sig2 …<number of="" signatures="">pub1 pub2 …<number of="" public="" keys=""></number></number></td><td>True / False</td><td>与 OP_CHECKMULTISIG,一样，但是之后运行 OP_VERIFY。</td></tr></tbody></table><h3 id="伪关键字"><a href="#伪关键字" class="headerlink" title="伪关键字"></a>伪关键字</h3><p>这些关键字仅供内部使用，用辅助进行交易匹配，如果使用在实际的交易中则是无效的。</p><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>描述</th></tr></thead><tbody><tr><td>OP_PUBKEYHASH</td><td>253</td><td>0xfd</td><td>表示公钥用OP_HASH160操作码HASH</td></tr><tr><td>OP_PUBKEY</td><td>254</td><td>0xfe</td><td>表示与OP_CHECKSIG.兼容的一个公钥</td></tr><tr><td>OP_INVALIDOPCODE</td><td>255</td><td>0xff</td><td>匹配任何未指定的操作码</td></tr></tbody></table><h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><table><thead><tr><th>关键字</th><th>操作码</th><th>十六进制</th><th>描述</th></tr></thead><tbody><tr><td>OP_RESERVED</td><td>80</td><td>0×50</td><td>交易无效，除非发生在未执行的OP_IF 分支</td></tr><tr><td>OP_VER</td><td>98</td><td>0×62</td><td>交易无效，除非发生在未执行的OP_IF 分支</td></tr><tr><td>OP_VERIF</td><td>101</td><td>0×65</td><td>交易无效，即使发生在未执行的OP_IF 分支</td></tr><tr><td>OP_VERNOTIF</td><td>102</td><td>0×66</td><td>交易无效，即使发生在未执行的OP_IF 分支</td></tr><tr><td>OP_RESERVED1</td><td>137</td><td>0×89</td><td>交易无效，除非发生在未执行的OP_IF 分支</td></tr><tr><td>OP_RESERVED2</td><td>138</td><td>0x8a</td><td>交易无效，除非发生在未执行的OP_IF 分支</td></tr><tr><td>OP_NOP1-OP_NOP10</td><td>176-185</td><td>0xb0-0xb9</td><td>这些关键字被忽略</td></tr></tbody></table><h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png"></p><p>这里面的实现其实比较简单，没有什么特别需要说明的。</p><p>我们大概解释这里面的类的含义：</p><ol><li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li><li>ScriptError是脚本所有的错误集</li><li>ScriptException是关于脚本的所有异常</li><li>ScriptChunk是脚本的每个命令的抽象</li><li>ScriptOpCodes是存放脚本命令的集合和编码</li><li>TransactionSignature是交易的签名</li><li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li><li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li></ol><p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p><h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure><h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cDovL2Jvb2suOGJ0Yy5jb20vYm9va3MvNi9tYXN0ZXJiaXRjb2luMmNuL19ib29rL2NoMDQuaHRtbA==" title="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html">第四章 密钥和地址<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jvb2suOGJ0Yy5jb20vYm9va3MvNi9tYXN0ZXJiaXRjb2luMmNuL19ib29rL2NoMDYuaHRtbA==" title="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html">第六章 交易<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvU2NyaXB0" title="https://en.bitcoin.it/wiki/Script">Script<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy44YnRjLmNvbS9iaXRjb2luX3NjcmlwdHM=" title="http://www.8btc.com/bitcoin_scripts">比特币脚本<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy44YnRjLmNvbS91bmRlcnN0YW5kLWJpdGNvaW4tc2NyaXB0" title="http://www.8btc.com/understand-bitcoin-script">理解比特币脚本<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9iaXRjb2luai5naXRodWIuaW8vd29ya2luZy13aXRoLWNvbnRyYWN0cyNwMnNoLXBheS10by1zY3JpcHQtaGFzaA==" title="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash">Working with contracts<i class="fa fa-external-link"></i></span></p></div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者： </strong>Gavin Zhang</li><li class="post-copyright-link"><strong>本文链接：</strong> <a href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html" title="bitcoin脚本解析">https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html</a></li><li class="post-copyright-license"><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"><a href="/tags/比特币/" rel="tag"><i class="fa fa-tag"></i> 比特币</a> <a href="/tags/bitcoin/" rel="tag"><i class="fa fa-tag"></i> bitcoin</a> <a href="/tags/脚本/" rel="tag"><i class="fa fa-tag"></i> 脚本</a></div><div class="post-widgets"><div class="social_share"><div><script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css"><div class="likely"><div class="twitter">Tweet</div><div class="facebook">Share</div><div class="linkedin">Link</div><div class="gplus">Plus</div><div class="vkontakte">Share</div><div class="odnoklassniki">Class</div><div class="telegram">Send</div><div class="whatsapp">Send</div><div class="pinterest">Pin</div></div></div></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/blockchain/比特币/bitcoin智能合约的实现.html" rel="next" title="bitcoin智能合约的实现"><i class="fa fa-chevron-left"></i> bitcoin智能合约的实现</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/blockchain/安全编写以太坊的智能合约指南.html" rel="prev" title="安全编写以太坊的智能合约指南">安全编写以太坊的智能合约指南 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article></div></div><div class="comments" id="gitalk-container"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">站点概览</li></ul><div class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><img class="site-author-image" itemprop="image" src="/images/user-avatar.jpg" alt="Gavin Zhang"><p class="site-author-name" itemprop="name">Gavin Zhang</p><div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br>邮箱：zlcgavin@gmail.com</div></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"><a href="/categories/"><span class="site-state-item-count">25</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"><a href="/tags/"><span class="site-state-item-count">102</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate"><i class="fa fa-rss"></i>RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span></span></div><div class="cc-license motion-element" itemprop="license"><span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span></div></div></div><div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令简介"><span class="nav-number">1.</span> <span class="nav-text">命令简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常数"><span class="nav-number">1.1.</span> <span class="nav-text">常数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程控制"><span class="nav-number">1.2.</span> <span class="nav-text">流程控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#堆栈"><span class="nav-number">1.3.</span> <span class="nav-text">堆栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串"><span class="nav-number">1.4.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#位逻辑"><span class="nav-number">1.5.</span> <span class="nav-text">位逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算术逻辑"><span class="nav-number">1.6.</span> <span class="nav-text">算术逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">1.7.</span> <span class="nav-text">加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#伪关键字"><span class="nav-number">1.8.</span> <span class="nav-text">伪关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保留关键字"><span class="nav-number">1.9.</span> <span class="nav-text">保留关键字</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bitcoinj脚本实现"><span class="nav-number">2.</span> <span class="nav-text">bitcoinj脚本实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用bitcoinj生成多签名钱包"><span class="nav-number">3.</span> <span class="nav-text">利用bitcoinj生成多签名钱包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">4.</span> <span class="nav-text">参考和引用</span></a></li></ol></div></div></div></div></aside><div id="sidebar-dimmer"></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-22</span> <span class="with-love" id="animate"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Gavin Zhang</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-area-chart"></i> </span><span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">820k</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-coffee"></i> </span><span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">12:25</span></div><div class="busuanzi-count"><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span class="post-meta-item-icon"><i class="fa fa-user"></i> </span><span class="site-uv" title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i> </span><span class="site-pv" title="总访问量"><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span></div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div><div><div class="addthis_inline_share_toolbox"><script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async></script></div></div></div><script>"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script><script src="/lib/jquery/index.js?v=3.4.1"></script><script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script><script src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script src="/lib/reading_progress/reading_progress.js"></script><script src="/js/utils.js?v=7.2.0"></script><script src="/js/motion.js?v=7.2.0"></script><script src="/js/schemes/muse.js?v=7.2.0"></script><script src="/js/scrollspy.js?v=7.2.0"></script><script src="/js/post-details.js?v=7.2.0"></script><script src="/js/next-boot.js?v=7.2.0"></script><script src="/js/exturl.js?v=7.2.0"></script><script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"><script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script><script>var gitalk=new Gitalk({clientID:"9ed54522a8818f2ebf63",clientSecret:"2977df7ea417b2b266949482dce578d39d7a2df6",repo:"cordate.github.io",owner:"cordate",admin:["cordate"],id:md5(location.pathname),language:"zh-CN",distractionFreeMode:"true"});gitalk.render("gitalk-container")</script><script>function proceedsearch(){$("body").append('<div class="search-popup-overlay local-search-pop-overlay"></div>').css("overflow","hidden"),$(".search-popup-overlay").click(onPopupClose),$(".popup").toggle();var e=$("#local-search-input");e.attr("autocapitalize","none"),e.attr("autocorrect","off"),e.focus()}var isfetched=!1,isXml=!0,search_path="search.xml";0===search_path.length?search_path="search.xml":/json$/i.test(search_path)&&(isXml=!1);var path="/"+search_path,onPopupClose=function(e){$(".popup").hide(),$("#local-search-input").val(""),$(".search-result-list").remove(),$("#no-result").remove(),$(".local-search-pop-overlay").remove(),$("body").css("overflow","")},searchFunc=function(e,t,o){"use strict";$("body").append('<div class="search-popup-overlay local-search-pop-overlay"><div id="search-loading-icon"><i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i></div></div>').css("overflow","hidden"),$("#search-loading-icon").css("margin","20% auto 0 auto").css("text-align","center"),$.ajax({url:e,dataType:isXml?"xml":"json",async:!0,success:function(e){isfetched=!0,$(".popup").detach().appendTo(".header-inner");var n=isXml?$("entry",e).map(function(){return{title:$("title",this).text(),content:$("content",this).text(),url:$("url",this).text()}}).get():e,r=document.getElementById(t),s=document.getElementById(o),a=function(){var e=r.value.trim().toLowerCase(),t=e.split(/[\s\-]+/);t.length>1&&t.push(e);var o=[];if(e.length>0&&n.forEach(function(n){function r(t,o,n,r){for(var s=r[r.length-1],a=s.position,i=s.word,l=[],h=0;a+i.length<=n&&0!=r.length;){i===e&&h++,l.push({position:a,length:i.length});var p=a+i.length;for(r.pop();0!=r.length&&(s=r[r.length-1],a=s.position,i=s.word,p>a);)r.pop()}return c+=h,{hits:l,start:o,end:n,searchTextCount:h}}function s(e,t){var o="",n=t.start;return t.hits.forEach(function(t){o+=e.substring(n,t.position);var r=t.position+t.length;o+='<b class="search-keyword">'+e.substring(t.position,r)+"</b>",n=r}),o+=e.substring(n,t.end)}var a=!1,i=0,c=0,l=n.title.trim(),h=l.toLowerCase(),p=n.content.trim().replace(/<[^>]+>/g,""),u=p.toLowerCase(),f=decodeURIComponent(n.url).replace(/\/{2,}/g,"/"),d=[],g=[];if(""!=l&&(t.forEach(function(e){function t(e,t,o){var n=e.length;if(0===n)return[];var r=0,s=[],a=[];for(o||(t=t.toLowerCase(),e=e.toLowerCase());(s=t.indexOf(e,r))>-1;)a.push({position:s,word:e}),r=s+n;return a}d=d.concat(t(e,h,!1)),g=g.concat(t(e,u,!1))}),(d.length>0||g.length>0)&&(a=!0,i=d.length+g.length)),a){[d,g].forEach(function(e){e.sort(function(e,t){return t.position!==e.position?t.position-e.position:e.word.length-t.word.length})});var v=[];0!=d.length&&v.push(r(l,0,l.length,d));for(var $=[];0!=g.length;){var C=g[g.length-1],m=C.position,x=C.word,w=m-20,y=m+80;0>w&&(w=0),y<m+x.length&&(y=m+x.length),y>p.length&&(y=p.length),$.push(r(p,w,y,g))}$.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hits.length!==t.hits.length?t.hits.length-e.hits.length:e.start-t.start});var T=parseInt("1");T>=0&&($=$.slice(0,T));var b="";b+=0!=v.length?"<li><a href='"+f+"' class='search-result-title'>"+s(l,v[0])+"</a>":"<li><a href='"+f+"' class='search-result-title'>"+l+"</a>",$.forEach(function(e){b+="<a href='"+f+'\'><p class="search-result">'+s(p,e)+"...</p></a>"}),b+="</li>",o.push({item:b,searchTextCount:c,hitCount:i,id:o.length})}}),1===t.length&&""===t[0])s.innerHTML='<div id="no-result"><i class="fa fa-search fa-5x"></i></div>';else if(0===o.length)s.innerHTML='<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>';else{o.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hitCount!==t.hitCount?t.hitCount-e.hitCount:t.id-e.id});var a='<ul class="search-result-list">';o.forEach(function(e){a+=e.item}),a+="</ul>",s.innerHTML=a}};r.addEventListener("input",a),$(".local-search-pop-overlay").remove(),$("body").css("overflow",""),proceedsearch()}})};$(".popup-trigger").click(function(e){e.stopPropagation(),isfetched===!1?searchFunc(path,"local-search-input","local-search-result"):proceedsearch()}),$(".popup-btn-close").click(onPopupClose),$(".popup").click(function(e){e.stopPropagation()}),$(document).on("keyup",function(e){var t=27===e.which&&$(".search-popup").is(":visible");t&&onPopupClose()})</script><script>$("body").find("pre.mermaid").length&&$.ajax({type:"GET",url:"//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js",dataType:"script",cache:!0,success:function(){mermaid.initialize({theme:"forest",logLevel:3,flowchart:{curve:"linear"},gantt:{axisFormat:"%m/%d/%Y"},sequence:{actorMargin:50}})}})</script><script>!function(){var t=document.createElement("script"),e=window.location.protocol.split(":")[0];t.src="https"===e?"https://zz.bdstatic.com/linksubmit/push.js":"http://push.zhanzhang.baidu.com/push.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}()</script></body></html><!-- rebuild by neat -->
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678">
+<meta name="keywords" content="比特币,bitcoin,脚本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bitcoin脚本解析">
+<meta property="og:url" content="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-21T14:31:45.064Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bitcoin脚本解析">
+<meta name="twitter:description" content="在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。 在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：123456public enum ScriptType &amp;#123;    NO_TYPE,    P2PKH,    PUB_KEY,    P2SH&amp;#125; 再看一下脚本的验证类型吧！12345678">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>bitcoin脚本解析 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+
+    
+      
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+
+    
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+
+    
+      
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/比特币2.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">bitcoin脚本解析
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-17 00:08:08" itemprop="dateCreated datePublished" datetime="2018-03-17T00:08:08+08:00">2018-03-17</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-21 22:31:45" itemprop="dateModified" datetime="2019-07-21T22:31:45+08:00">2019-07-21</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">8.3k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">8 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在研究交易中输入输出的相关内容后我发现了一个Script类，于是决定研究一下。</p>
+<p>在讲脚本之前还是先来了解一下比特币地址吧，因为不同的地址将导致不同的脚本解析。在Source类中有这几种类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public enum ScriptType &#123;</span><br><span class="line">    NO_TYPE,</span><br><span class="line">    P2PKH,</span><br><span class="line">    PUB_KEY,</span><br><span class="line">    P2SH</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再看一下脚本的验证类型吧！<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum VerifyFlag &#123;</span><br><span class="line">    P2SH, // Enable BIP16-style subscript evaluation.</span><br><span class="line">    STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.</span><br><span class="line">    DERSIG, // Passing a non-strict-DER signature to a checksig operation causes script failure (softfork safe, BIP66 rule 1)</span><br><span class="line">    LOW_S, // Passing a non-strict-DER signature or one with S &gt; order/2 to a checksig operation causes script failure</span><br><span class="line">    NULLDUMMY, // Verify dummy stack item consumed by CHECKMULTISIG is of zero-length.</span><br><span class="line">    SIGPUSHONLY, // Using a non-push operator in the scriptSig causes script failure (softfork safe, BIP62 rule 2).</span><br><span class="line">    MINIMALDATA, // Require minimal encodings for all push operations</span><br><span class="line">    DISCOURAGE_UPGRADABLE_NOPS, // Discourage use of NOPs reserved for upgrades (NOP1-10)</span><br><span class="line">    CLEANSTACK, // Require that only a single stack element remains after evaluation.</span><br><span class="line">    CHECKLOCKTIMEVERIFY, // Enable CHECKLOCKTIMEVERIFY operation</span><br><span class="line">    CHECKSEQUENCEVERIFY // Enable CHECKSEQUENCEVERIFY operation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="命令简介"><a href="#命令简介" class="headerlink" title="命令简介"></a>命令简介</h2><h3 id="常数"><a href="#常数" class="headerlink" title="常数"></a>常数</h3><p>当我们说脚本的时候，经常省略了这些把数字压入堆栈的关键字。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_0,OP_FALSE</td>
+<td>0</td>
+<td>0×00</td>
+<td>无</td>
+<td>空</td>
+<td>一个字节空串被推到堆栈中(并非no-op操作，有一个元素压入堆栈)</td>
+</tr>
+<tr>
+<td>N/A</td>
+<td>1-75</td>
+<td>0×01-0x4b</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下一个操作码字节是要被压入堆栈的数据</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA1</td>
+<td>76</td>
+<td>0x4c</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下一字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA2</td>
+<td>77</td>
+<td>0x4d</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下两个字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_PUSHDATA4</td>
+<td>78</td>
+<td>0x4e</td>
+<td>(特殊)</td>
+<td>数据</td>
+<td>下四个字节是要被压入堆栈的数据的长度</td>
+</tr>
+<tr>
+<td>OP_1NEGATE</td>
+<td>79</td>
+<td>0x4f</td>
+<td>无</td>
+<td>-1</td>
+<td>数字-1被压入堆栈</td>
+</tr>
+<tr>
+<td>OP_1,OP_TRUE</td>
+<td>81</td>
+<td>0×51</td>
+<td>无</td>
+<td>1</td>
+<td>数字1被压入堆栈</td>
+</tr>
+<tr>
+<td>OP_2-OP_16</td>
+<td>82-96</td>
+<td>0×52-0×60</td>
+<td>无</td>
+<td>2-16</td>
+<td>与关键名相对应的数字被压入堆栈</td>
+</tr>
+</tbody>
+</table>
+<h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_NOP</td>
+<td>97</td>
+<td>0×61</td>
+<td>无</td>
+<td>无</td>
+<td>无任何操作</td>
+</tr>
+<tr>
+<td>OP_IF</td>
+<td>99</td>
+<td>0×63</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>–</td>
+<td>如果栈项元素值不为0，语句将被执行，栈项元素值被删除。</td>
+</tr>
+<tr>
+<td>OP_NOTIF</td>
+<td>100</td>
+<td>0×64</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>如果栈项元素值为0，语句将被执行，栈项元素值被删除。</td>
+</tr>
+<tr>
+<td>OP_ELSE</td>
+<td>103</td>
+<td>0×67</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>如果前述的OP_IF或 OP_NOTIF或OP_ELSE 未被执行，这些语句就会被执行；如果前述的OP_IF或 OP_NOTIF或OP_ELSE被执行，这些语句就不会被执行</td>
+</tr>
+<tr>
+<td>OP_ENDIF</td>
+<td>104</td>
+<td>0×68</td>
+<td><expression> if [statements] [else [statements]]* endif</expression></td>
+<td>—</td>
+<td>结束if/else语言块</td>
+</tr>
+<tr>
+<td>OP_VERIFY</td>
+<td>105</td>
+<td>0×69</td>
+<td>True / false</td>
+<td>无 / False</td>
+<td>如果栈项元素值非真，则标记交易无效。True会被删除，False不会被删除。</td>
+</tr>
+<tr>
+<td>OP_RETURN</td>
+<td>106</td>
+<td>0x6a</td>
+<td>无</td>
+<td>无</td>
+<td>标记交易无效</td>
+</tr>
+</tbody>
+</table>
+<h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_TOALTSTACK</td>
+<td>107</td>
+<td>0x6b</td>
+<td>x1</td>
+<td>(alt)x1</td>
+<td>把输入压入辅堆栈的项部，从主堆栈删除。</td>
+</tr>
+<tr>
+<td>OP_FROMALTSTACK</td>
+<td>108</td>
+<td>0x6c</td>
+<td>(alt)x1</td>
+<td>x1</td>
+<td>把输入压入主堆栈的项部，从辅堆栈删除。</td>
+</tr>
+<tr>
+<td>OP_IFDUP</td>
+<td>115</td>
+<td>0×73</td>
+<td>x</td>
+<td>x / x x</td>
+<td>如果栈项元素值不为0，复制该元素值</td>
+</tr>
+<tr>
+<td>OP_DEPTH</td>
+<td>116</td>
+<td>0×74</td>
+<td>无</td>
+<td>&lt;堆栈大小&gt;</td>
+<td>把堆栈元素个数压入堆栈</td>
+</tr>
+<tr>
+<td>OP_DROP</td>
+<td>117</td>
+<td>0×75</td>
+<td>x</td>
+<td>无</td>
+<td>删除栈顶元素</td>
+</tr>
+<tr>
+<td>OP_DUP</td>
+<td>118</td>
+<td>0×76</td>
+<td>x</td>
+<td>x x</td>
+<td>复制栈顶元素</td>
+</tr>
+<tr>
+<td>OP_NIP</td>
+<td>119</td>
+<td>0×77</td>
+<td>x1 x2</td>
+<td>x2</td>
+<td>删除栈顶的下一个元素</td>
+</tr>
+<tr>
+<td>OP_OVER</td>
+<td>120</td>
+<td>0×78</td>
+<td>x1 x2</td>
+<td>x1 x2 x1</td>
+<td>复制栈顶的下一个元素到栈顶</td>
+</tr>
+<tr>
+<td>OP_PICK</td>
+<td>121</td>
+<td>0×79</td>
+<td>xn … x2 x1 x0 <n></n></td>
+<td>xn … x2 x1 x0 xn</td>
+<td>把堆栈的第n个元素拷贝到栈顶</td>
+</tr>
+<tr>
+<td>OP_ROLL</td>
+<td>122</td>
+<td>0x7a</td>
+<td>xn … x2 x1 x0 <n></n></td>
+<td>… x2 x1 x0 xn</td>
+<td>把堆栈的第n个元素移动到栈顶</td>
+</tr>
+<tr>
+<td>OP_ROT</td>
+<td>123</td>
+<td>0x7b</td>
+<td>x1 x2 x3</td>
+<td>x2 x3 x1</td>
+<td>栈顶的三个元素向左翻转</td>
+</tr>
+<tr>
+<td>OP_SWAP</td>
+<td>124</td>
+<td>0x7c</td>
+<td>x1 x2</td>
+<td>x2 x1</td>
+<td>栈顶的两个元素交换</td>
+</tr>
+<tr>
+<td>OP_TUCK</td>
+<td>125</td>
+<td>0x7d</td>
+<td>x1 x2</td>
+<td>x2 x1 x2</td>
+<td>把栈顶元素拷贝并插入到栈顶下一个元素之后。注意：原文为“插入到栈顶下一个元素之前”，可能有误，翻译时改为“之后”</td>
+</tr>
+<tr>
+<td>OP_2DROP</td>
+<td>109</td>
+<td>0x6d</td>
+<td>x1 x2</td>
+<td>无</td>
+<td>删除栈顶两个元素</td>
+</tr>
+<tr>
+<td>OP_2DUP</td>
+<td>110</td>
+<td>0x6e</td>
+<td>x1 x2</td>
+<td>x1 x2 x1 x2</td>
+<td>复制栈顶两个元素</td>
+</tr>
+<tr>
+<td>OP_3DUP</td>
+<td>111</td>
+<td>0x6f</td>
+<td>x1 x2 x3</td>
+<td>x1 x2 x3 x1 x2 x3</td>
+<td>复制栈顶三个元素</td>
+</tr>
+<tr>
+<td>OP_2OVER</td>
+<td>112</td>
+<td>0×70</td>
+<td>x1 x2 x3 x4</td>
+<td>x1 x2 x3 x4 x1 x2</td>
+<td>把栈底的两个元素拷贝到栈顶</td>
+</tr>
+<tr>
+<td>OP_2ROT</td>
+<td>113</td>
+<td>0×71</td>
+<td>x1 x2 x3 x4 x5 x6</td>
+<td>x3 x4 x5 x6 x1 x2</td>
+<td>以一对元素为单位，向左翻转。注意：原文大意“把第五和第六元素移动到栈顶”，明显有误</td>
+</tr>
+<tr>
+<td>OP_2SWAP</td>
+<td>114</td>
+<td>0×72</td>
+<td>x1 x2 x3 x4    x3 x4</td>
+<td>x1 x2</td>
+<td>以一对元素为单位，交换栈顶的两对元素的位置。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_CAT</td>
+<td>126</td>
+<td>0x7e</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>连接两个字符串，已禁用</td>
+</tr>
+<tr>
+<td>OP_SUBSTR</td>
+<td>127</td>
+<td>0x7f</td>
+<td>in begin size</td>
+<td>out</td>
+<td>返回字符串的一部分，已禁用</td>
+</tr>
+<tr>
+<td>OP_LEFT</td>
+<td>128</td>
+<td>0×80</td>
+<td>in size</td>
+<td>out</td>
+<td>在一个字符串中保留左边指定长度的子串，已禁用</td>
+</tr>
+<tr>
+<td>OP_RIGHT</td>
+<td>129</td>
+<td>0×81</td>
+<td>in size</td>
+<td>out</td>
+<td>在一个字符串中保留右边指定长度的子串，已禁用</td>
+</tr>
+<tr>
+<td>OP_SIZE</td>
+<td>130</td>
+<td>0×82</td>
+<td>in</td>
+<td>in size</td>
+<td>把栈顶元素的字符串长度压入堆栈(无需弹出元素)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="位逻辑"><a href="#位逻辑" class="headerlink" title="位逻辑"></a>位逻辑</h3><p>如果标记为已禁用的操作码出现在交易中，必须终止和失败返回。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_INVERT</td>
+<td>131</td>
+<td>0×83</td>
+<td>in</td>
+<td>out</td>
+<td>所有输入的位取反，已禁用.</td>
+</tr>
+<tr>
+<td>OP_AND</td>
+<td>132</td>
+<td>0×84</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的所有位进行布尔与运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_OR</td>
+<td>133</td>
+<td>0×85</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的每一位进行布尔或运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_XOR</td>
+<td>134</td>
+<td>0×86</td>
+<td>x1 x2</td>
+<td>out</td>
+<td>对输入的每一位进行布尔异或运算，已禁用</td>
+</tr>
+<tr>
+<td>OP_EQUAL</td>
+<td>135</td>
+<td>0×87</td>
+<td>x1 x2</td>
+<td>True / false</td>
+<td>如果输入的两个数相等，返回1，否则返回0。</td>
+</tr>
+<tr>
+<td>OP_EQUALVERIFY</td>
+<td>136</td>
+<td>0×88</td>
+<td>x1 x2</td>
+<td>True / false</td>
+<td>与OP_EQUAL一样，之后运行OP_VERIFY 。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="算术逻辑"><a href="#算术逻辑" class="headerlink" title="算术逻辑"></a>算术逻辑</h3><p>注意：算术逻辑的输入限于有符号32位长整数，但输出有可能会溢出。</p>
+<p>如果任何命令的输入值长度超过4字节，脚本必须中止和失败返回。如果标记为已禁用的操作码出现在交易中，也必须终止和失败返回</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_1ADD</td>
+<td>139</td>
+<td>0x8b</td>
+<td>in</td>
+<td>out</td>
+<td>输入值加1</td>
+</tr>
+<tr>
+<td>OP_1SUB</td>
+<td>140</td>
+<td>0x8c</td>
+<td>in</td>
+<td>out</td>
+<td>输入值减1</td>
+</tr>
+<tr>
+<td>OP_2MUL</td>
+<td>141</td>
+<td>0x8d</td>
+<td>in</td>
+<td>out</td>
+<td>输入值乘2，已禁用</td>
+</tr>
+<tr>
+<td>OP_2DIV</td>
+<td>142</td>
+<td>0x8e</td>
+<td>in</td>
+<td>out</td>
+<td>输入值除2，已禁用</td>
+</tr>
+<tr>
+<td>OP_NEGATE</td>
+<td>143</td>
+<td>0x8f</td>
+<td>in</td>
+<td>out</td>
+<td>输入值符号取反</td>
+</tr>
+<tr>
+<td>OP_ABS</td>
+<td>144</td>
+<td>0×90</td>
+<td>in</td>
+<td>out</td>
+<td>输入值符号取正</td>
+</tr>
+<tr>
+<td>OP_NOT</td>
+<td>145</td>
+<td>0×91</td>
+<td>in</td>
+<td>out</td>
+<td>如果输入值为0或1，则输出1或0；否则输出0。I</td>
+</tr>
+<tr>
+<td>OP_0NOTEQUAL</td>
+<td>146</td>
+<td>0×92</td>
+<td>in</td>
+<td>out</td>
+<td>输入值为0输出0；否则输出1。</td>
+</tr>
+<tr>
+<td>OP_ADD</td>
+<td>147</td>
+<td>0×93</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a+b</td>
+</tr>
+<tr>
+<td>OP_SUB</td>
+<td>148</td>
+<td>0×94</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a-b</td>
+</tr>
+<tr>
+<td>OP_MUL</td>
+<td>149</td>
+<td>0×95</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a*b，已禁用</td>
+</tr>
+<tr>
+<td>OP_DIV</td>
+<td>150</td>
+<td>0×96</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a/b, 已禁用</td>
+</tr>
+<tr>
+<td>OP_MOD</td>
+<td>151</td>
+<td>0×97</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a/b的余数，已禁用</td>
+</tr>
+<tr>
+<td>OP_LSHIFT</td>
+<td>152</td>
+<td>0×98</td>
+<td>a b</td>
+<td>out</td>
+<td>把a向左移动b位，保留符号，已禁用</td>
+</tr>
+<tr>
+<td>OP_RSHIFT</td>
+<td>153</td>
+<td>0×99</td>
+<td>a b</td>
+<td>out</td>
+<td>把a向右移动b位，保留符号，已禁用</td>
+</tr>
+<tr>
+<td>OP_BOOLAND</td>
+<td>154</td>
+<td>0x9a</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a和b都不为0，输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_BOOLOR</td>
+<td>155</td>
+<td>0x9b</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a或b不为0，输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_NUMEQUAL</td>
+<td>156</td>
+<td>0x9c</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a=b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_NUMEQUALVERIFY</td>
+<td>157</td>
+<td>0x9d</td>
+<td>a b</td>
+<td>out</td>
+<td>与OP_NUMEQUAL一样，之后要运行OP_VERIFY</td>
+</tr>
+<tr>
+<td>OP_NUMNOTEQUAL</td>
+<td>158</td>
+<td>0x9e</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a!=b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_LESSTHAN</td>
+<td>159</td>
+<td>0x9f</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&lt;b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_GREATERTHAN</td>
+<td>160</td>
+<td>0xa0</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&gt;b则输出1，否则输出0。</td>
+</tr>
+<tr>
+<td>OP_LESSTHANOREQUAL</td>
+<td>161</td>
+<td>0xa1</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&lt;=b则输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_GREATERTHANOREQUAL</td>
+<td>162</td>
+<td>0xa2</td>
+<td>a b</td>
+<td>out</td>
+<td>如果a&gt;=b则输出1，否则输出0</td>
+</tr>
+<tr>
+<td>OP_MIN</td>
+<td>163</td>
+<td>0xa3</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a,b中的最小值</td>
+</tr>
+<tr>
+<td>OP_MAX</td>
+<td>164</td>
+<td>0xa4</td>
+<td>a b</td>
+<td>out</td>
+<td>输出a,b中的最大值</td>
+</tr>
+<tr>
+<td>OP_WITHIN</td>
+<td>165</td>
+<td>0xa5</td>
+<td>x min max</td>
+<td>out</td>
+<td>如果x在min和max之间，则输出1，否则输出</td>
+</tr>
+</tbody>
+</table>
+<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>输入</th>
+<th>输出</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_RIPEMD160</td>
+<td>166</td>
+<td>0xa6</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用RIPEMD-160算法HASH</td>
+</tr>
+<tr>
+<td>OP_SHA1</td>
+<td>167</td>
+<td>0xa7</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-1算法HASH.</td>
+</tr>
+<tr>
+<td>OP_SHA256</td>
+<td>168</td>
+<td>0xa8</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-256算法HASH.</td>
+</tr>
+<tr>
+<td>OP_HASH160</td>
+<td>169</td>
+<td>0xa9</td>
+<td>in</td>
+<td>hash</td>
+<td>输入被HASH两次，先用 SHA-256，再用 RIPEMD-160.</td>
+</tr>
+<tr>
+<td>OP_HASH256</td>
+<td>170</td>
+<td>0xaa</td>
+<td>in</td>
+<td>hash</td>
+<td>输入用SHA-256算法HASH两次.</td>
+</tr>
+<tr>
+<td>OP_CODESEPARATOR</td>
+<td>171</td>
+<td>0xab</td>
+<td>无</td>
+<td>无</td>
+<td>所有签名检查只需匹配最近一次执行的OP_CODESEPARATOR 操作数据的签名即可。</td>
+</tr>
+<tr>
+<td>OP_CHECKSIG</td>
+<td>172</td>
+<td>0xac</td>
+<td>sig pubkey</td>
+<td>True / false</td>
+<td>全部交易的输出、输入和脚本(从最近执行的OP_CODESEPARATOR操作到最)都被HASH，OP_CHECKSIG使用的签名必须是该HASH值和公钥的有效签名，如果是真则返回1，否则返回0。</td>
+</tr>
+<tr>
+<td>OP_CHECKSIGVERIFY</td>
+<td>173</td>
+<td>0xad</td>
+<td>sig pubkey</td>
+<td>True / false</td>
+<td>与OP_CHECKSIG一样，但之后执行 OP_VERIFY</td>
+</tr>
+<tr>
+<td>OP_CHECKMULTISIG</td>
+<td>174</td>
+<td>0xae</td>
+<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 <number of="" public="" keys=""></number></number></td>
+<td>True / False</td>
+<td>对于每个签名和公钥对，OP_CHECKSIG 都会被执行，如果公钥列得比签名多，一些公钥/签名对会失败。所有的签名要与公钥匹配。如果所有签名有效，输出1，否则返回0。因为存在BUG，一个未使用的外部值会从堆栈中删除。</td>
+</tr>
+<tr>
+<td>OP_CHECKMULTISIGVERIFY</td>
+<td>175</td>
+<td>0xaf</td>
+<td>x sig1 sig2 … <number of="" signatures=""> pub1 pub2 … <number of="" public="" keys=""></number></number></td>
+<td>True / False</td>
+<td>与 OP_CHECKMULTISIG,一样，但是之后运行 OP_VERIFY。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="伪关键字"><a href="#伪关键字" class="headerlink" title="伪关键字"></a>伪关键字</h3><p>这些关键字仅供内部使用，用辅助进行交易匹配，如果使用在实际的交易中则是无效的。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_PUBKEYHASH</td>
+<td>253</td>
+<td>0xfd</td>
+<td>表示公钥用OP_HASH160操作码HASH</td>
+</tr>
+<tr>
+<td>OP_PUBKEY</td>
+<td>254</td>
+<td>0xfe</td>
+<td>表示与OP_CHECKSIG.兼容的一个公钥</td>
+</tr>
+<tr>
+<td>OP_INVALIDOPCODE</td>
+<td>255</td>
+<td>0xff</td>
+<td>匹配任何未指定的操作码</td>
+</tr>
+</tbody>
+</table>
+<h3 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>操作码</th>
+<th>十六进制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OP_RESERVED</td>
+<td>80</td>
+<td>0×50</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VER</td>
+<td>98</td>
+<td>0×62</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VERIF</td>
+<td>101</td>
+<td>0×65</td>
+<td>交易无效，即使发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_VERNOTIF</td>
+<td>102</td>
+<td>0×66</td>
+<td>交易无效，即使发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_RESERVED1</td>
+<td>137</td>
+<td>0×89</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_RESERVED2</td>
+<td>138</td>
+<td>0x8a</td>
+<td>交易无效，除非发生在未执行的OP_IF 分支</td>
+</tr>
+<tr>
+<td>OP_NOP1-OP_NOP10</td>
+<td>176-185</td>
+<td>0xb0-0xb9</td>
+<td>这些关键字被忽略</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bitcoinj脚本实现"><a href="#bitcoinj脚本实现" class="headerlink" title="bitcoinj脚本实现"></a>bitcoinj脚本实现</h2><p>我们来看一下bitcoinj的基本类图，这里面与脚本相关的核心类都是在org.bitcoinj.script包下面。</p>
+<p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/blockchain/%E8%84%9A%E6%9C%AC%E7%9B%B8%E5%85%B3%E7%9A%84%E7%B1%BB%E5%9B%BE.png"></p>
+<p>这里面的实现其实比较简单，没有什么特别需要说明的。</p>
+<p>我们大概解释这里面的类的含义：</p>
+<ol>
+<li>Script是脚本的核心类，里面保留脚本的二进制格式，和脚本项的列表（动态维护），有关脚本一些限制的设置，byte数组解析为Script脚本，从脚本中获取签名、公钥、地址等，创建输入输出脚本，执行脚本等等操作。</li>
+<li>ScriptError是脚本所有的错误集</li>
+<li>ScriptException是关于脚本的所有异常</li>
+<li>ScriptChunk是脚本的每个命令的抽象</li>
+<li>ScriptOpCodes是存放脚本命令的集合和编码</li>
+<li>TransactionSignature是交易的签名</li>
+<li>ECKey是公私钥的封装（椭圆曲线对称加密算法）</li>
+<li>ScriptBuilder是脚本的生成器，可以生成多种类型钱包的地址脚本。</li>
+</ol>
+<p>关于脚本的执行，其实有3个站，一个是stack用于存放数据的栈，ifstack用于存放if条件相关的栈，altStack是stack的辅助堆栈。涉及altStack的操作符有<code>OP_TOALTSTACK</code>, <code>OP_FROMALTSTACK</code>;</p>
+<h2 id="利用bitcoinj生成多签名钱包"><a href="#利用bitcoinj生成多签名钱包" class="headerlink" title="利用bitcoinj生成多签名钱包"></a>利用bitcoinj生成多签名钱包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Create a random key.</span><br><span class="line">ECKey clientKey = new ECKey();</span><br><span class="line">// We get the other parties public key from somewhere ...</span><br><span class="line">ECKey serverKey = new ECKey(null, publicKeyBytes);</span><br><span class="line"></span><br><span class="line">// Prepare a template for the contract.</span><br><span class="line">Transaction contract = new Transaction(params);</span><br><span class="line">List&lt;ECKey&gt; keys = ImmutableList.of(clientKey, serverKey);</span><br><span class="line">// Create a 2-of-2 multisig output script.</span><br><span class="line">Script script = ScriptBuilder.createMultiSigOutputScript(2, keys);</span><br><span class="line">// Now add an output for 0.50 bitcoins that uses that script.</span><br><span class="line">Coin amount = Coin.valueOf(0, 50);</span><br><span class="line">contract.addOutput(amount, script);</span><br><span class="line"></span><br><span class="line">// We have said we want to make 0.5 coins controlled by us and them.</span><br><span class="line">// But it&apos;s not a valid tx yet because there are no inputs.</span><br><span class="line">SendRequest req = SendRequest.forTx(contract);</span><br><span class="line">wallet.completeTx(req);   // Could throw InsufficientMoneyException</span><br><span class="line"></span><br><span class="line">// Broadcast and wait for it to propagate across the network.</span><br><span class="line">// It should take a few seconds unless something went wrong.</span><br><span class="line">peerGroup.broadcastTransaction(req.tx).get();</span><br></pre></td></tr></table></figure>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cDovL2Jvb2suOGJ0Yy5jb20vYm9va3MvNi9tYXN0ZXJiaXRjb2luMmNuL19ib29rL2NoMDQuaHRtbA==" title="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch04.html">第四章 密钥和地址<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2Jvb2suOGJ0Yy5jb20vYm9va3MvNi9tYXN0ZXJiaXRjb2luMmNuL19ib29rL2NoMDYuaHRtbA==" title="http://book.8btc.com/books/6/masterbitcoin2cn/_book/ch06.html">第六章 交易<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvU2NyaXB0" title="https://en.bitcoin.it/wiki/Script">Script<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy44YnRjLmNvbS9iaXRjb2luX3NjcmlwdHM=" title="http://www.8btc.com/bitcoin_scripts">比特币脚本<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL3d3dy44YnRjLmNvbS91bmRlcnN0YW5kLWJpdGNvaW4tc2NyaXB0" title="http://www.8btc.com/understand-bitcoin-script">理解比特币脚本<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9iaXRjb2luai5naXRodWIuaW8vd29ya2luZy13aXRoLWNvbnRyYWN0cyNwMnNoLXBheS10by1zY3JpcHQtaGFzaA==" title="https://bitcoinj.github.io/working-with-contracts#p2sh-pay-to-script-hash">Working with contracts<i class="fa fa-external-link"></i></span></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html" title="bitcoin脚本解析">https://cordate.github.io/blockchain/比特币/bitcoin脚本解析.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/比特币/" rel="tag"><i class="fa fa-tag"></i> 比特币</a>
+          
+            <a href="/tags/bitcoin/" rel="tag"><i class="fa fa-tag"></i> bitcoin</a>
+          
+            <a href="/tags/脚本/" rel="tag"><i class="fa fa-tag"></i> 脚本</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blockchain/比特币/bitcoin智能合约的实现.html" rel="next" title="bitcoin智能合约的实现">
+                <i class="fa fa-chevron-left"></i> bitcoin智能合约的实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blockchain/安全编写以太坊的智能合约指南.html" rel="prev" title="安全编写以太坊的智能合约指南">
+                安全编写以太坊的智能合约指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令简介"><span class="nav-number">1.</span> <span class="nav-text">命令简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常数"><span class="nav-number">1.1.</span> <span class="nav-text">常数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程控制"><span class="nav-number">1.2.</span> <span class="nav-text">流程控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#堆栈"><span class="nav-number">1.3.</span> <span class="nav-text">堆栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串"><span class="nav-number">1.4.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#位逻辑"><span class="nav-number">1.5.</span> <span class="nav-text">位逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算术逻辑"><span class="nav-number">1.6.</span> <span class="nav-text">算术逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">1.7.</span> <span class="nav-text">加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#伪关键字"><span class="nav-number">1.8.</span> <span class="nav-text">伪关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保留关键字"><span class="nav-number">1.9.</span> <span class="nav-text">保留关键字</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bitcoinj脚本实现"><span class="nav-number">2.</span> <span class="nav-text">bitcoinj脚本实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用bitcoinj生成多签名钱包"><span class="nav-number">3.</span> <span class="nav-text">利用bitcoinj生成多签名钱包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">4.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-01</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">821k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

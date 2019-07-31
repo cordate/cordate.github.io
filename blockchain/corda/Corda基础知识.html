@@ -1,1 +1,1939 @@
-<!-- build time:Mon Jul 22 2019 22:26:10 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion" lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"><link rel="stylesheet" href="/css/main.css?v=7.2.0"><link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0"><link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222"><script id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"7.2.0",sidebar:{position:"left",display:"always",offset:12,onmobile:!1},back2top:{enable:!0,sidebar:!1,scrollpercent:!0},copycode:{enable:!0,show_result:!0,style:"mac"},fancybox:!1,fastclick:!1,lazyload:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}},translation:{copy_button:"复制",copy_success:"复制成功",copy_failure:"复制失败"}}</script><meta name="description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的"><meta name="keywords" content="corda,r3"><meta property="og:type" content="article"><meta property="og:title" content="Corda基础知识"><meta property="og:url" content="https://cordate.github.io/blockchain/corda/Corda基础知识.html"><meta property="og:site_name" content="柳絮纷飞"><meta property="og:description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的"><meta property="og:locale" content="zh-CN"><meta property="og:updated_time" content="2019-07-21T13:21:17.579Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Corda基础知识"><meta name="twitter:description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的"><link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"><link rel="canonical" href="https://cordate.github.io/blockchain/corda/Corda基础知识"><script id="page.configurations">CONFIG.page={sidebar:""}</script><title>Corda基础知识 | 柳絮纷飞</title><noscript><style>.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.use-motion .logo-line-before i{left:initial}.use-motion .logo-line-after i{right:initial}</style></noscript></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"></div><div class="site-nav-toggle"><button aria-label="切换导航栏"><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation"><ul id="menu" class="menu nav navbar-nav hidden-sm"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a></li><li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i> </span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"><input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><div class="reading-progress-bar"></div><img src="/images/blog/区块链1.jpeg" alt="背景图" width="100%"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/corda/Corda基础知识.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Author"><meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"><meta itemprop="image" content="/images/user-avatar.jpg"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="柳絮纷飞"></span><header class="post-header"><h2 class="post-title" itemprop="name headline">Corda基础知识</h2><div class="post-meta"><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-05-30 16:28:29" itemprop="dateCreated datePublished" datetime="2018-05-30T16:28:29+08:00">2018-05-30</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-check-o"></i> </span><span class="post-meta-item-text">更新于</span> <time title="修改时间：2019-07-21 21:21:17" itemprop="dateModified" datetime="2019-07-21T21:21:17+08:00">2019-07-21</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i> </span><span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span> ， <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-eye"></i> 阅读次数： <span class="busuanzi-value" id="busuanzi_value_page_pv"></span></span></span><br><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i> </span><span class="post-meta-item-text">本文字数：</span> <span title="本文字数">18k</span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i> </span><span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">16 分钟</span></span></div></header><div class="post-body" itemprop="articleBody"><p>corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NyeXB0b25vbWV4L2dyYXBoZW5lcw==" title="https://github.com/cryptonomex/graphenes">这里<i class="fa fa-external-link"></i></span>。<span class="exturl" data-url="aHR0cHM6Ly9zdGVlbWl0LmNvbS9ibG9ja2NoYWluL0Byb2Jpbndlbi9idHMtc3RlZW0tZW9z" title="https://steemit.com/blockchain/@robinwen/bts-steem-eos">这篇文章<i class="fa fa-external-link"></i></span>也做了详细的介绍。</p><p>Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的，但是不管怎样分布式账本技术都是借鉴了区块链的设计思想的；Fabric是插件化的，而Corda是模块化的，我觉得这点在软件设计上有很大的区别。Corda是基于Kotlin开发的，而Fabric主力语言是Go，但是也可以使用其他语言，并不限制。</p><p>如果你想了解更多的Corda知识，可以参阅官网的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvX3N0YXRpYy9jb3JkYS1pbnRyb2R1Y3Rvcnktd2hpdGVwYXBlci5wZGY=" title="https://docs.corda.net/releases/release-M7.0/_static/corda-introductory-whitepaper.pdf">技术白皮书<i class="fa fa-external-link"></i></span>。这个白皮书介绍了，这个系统最终的方案，现在还有很多未实现，正在实现中，当然在实现中可能会有与白皮书不一样的地方。</p><h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><h3 id="包含的实现"><a href="#包含的实现" class="headerlink" title="包含的实现"></a>包含的实现</h3><p>Corda原型机目前包括：</p><ul><li>具有消息持久性和递送重试的对等网络。</li><li>用于定义合同和状态的关键数据结构。</li><li>智能合约，您可以在合约目录中找到。</li><li>与它们一起工作的算法，如序列化，散列，签名和签名验证。</li><li>API文档和教程（您正在阅读的内容）。</li><li>业务流程编排框架。</li><li>公证基础设施用于精确时间戳，并且在没有区块链的情况下消除双重花费。</li><li>一个简单的REST API和一个Web应用程序演示，用它来呈现IRS交易的前端。</li></ul><p>现在不包括，但是后面会进行实现的部分：</p><ul><li>沙盒，分销或发布智能合同代码</li><li>用于管理的用户界面</li></ul><p>现在的Corda版本仍然是创意的快速探索，所以为了提高开发的速度，会采取一些捷径，注意以下的一些事项：</p><ul><li>它使用一个对象映射序列化框架，而不是一个明确的，供应商中立的协议。</li><li>目前没有权限框架。（shiro或者Spring auth）</li><li>一些隐私技术尚未实施</li><li>它使用嵌入式SQL数据库，但尚未支持主流SQL供应商（Oracle，Postgres，MySQL，SQL Server等）的连接。</li></ul><h3 id="程序运行"><a href="#程序运行" class="headerlink" title="程序运行"></a>程序运行</h3><p>在corda项目下定义了一些示例程序，这些程序在samples目录下，运行的命令如官网的命令，这里就不做更多说明了。</p><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvcnVubmluZy10aGUtZGVtb3MuaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/running-the-demos.html">运行演示<i class="fa fa-external-link"></i></span></p><h2 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><ul><li>corda网络是由运行Corda和CorDapps的节点组成</li><li>网络是授权网络，通过doorman控制访问</li><li>节点之间是点对点的交互，而不是一个全局的广播网络<h4 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h4>Corda网络是一个认证的节点点对点网络，里面每一个节点都是有Corda服务并且执行CorDapps应用的JVM运行环境。</li></ul><p>节点之间的交流都是直接的，通过AMQP/1.0发送TLS-加密的信息。这意味着数据只在需要知道的节点间共享，并没有全局广播。</p><p><b style="color:red">每个网络都有一个网络映射（map）服务，这个服务发布可以访问的节点IP地址，还有这些节点的身份证书和节点提供的服务。</b></p><h4 id="门卫（doorman）"><a href="#门卫（doorman）" class="headerlink" title="门卫（doorman）"></a>门卫（doorman）</h4><p><b style="color:red">Corda网络是半私有化的。每个网络都有一个门卫服务，门卫强制实施关于节点必须提供信息和在被准入网络前必须完成的KYC进程的规则。</b></p><p><b style="color:red">为了加入网络，节点必须联系门卫并提供需必要的信息。如果门卫同意了，节点会从网络权限服务收到一个根授权签名的TLS证书。当与其他参与交互时，这个证书用于证明节点的身份。</b></p><p>我们可以想象如下一个网络：<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda%E7%BD%91%E7%BB%9C.png?raw=true"></p><h4 id="网络服务"><a href="#网络服务" class="headerlink" title="网络服务"></a>网络服务</h4><p>节点提供几种类型的服务：</p><ul><li>一个或更多可插拔公证（Notary）服务。公证者保证账本更新的唯一性、可能性的有效性。每一个公证服务可能是在单个节点上运行，或者跨越节点集群。</li><li>零个或更多的神谕（oracle）服务。神谕是一个知名服务，如果他们阐明一个事实并且这个事实是真的，那么就签署交易。</li></ul><h3 id="账本Ledger"><a href="#账本Ledger" class="headerlink" title="账本Ledger"></a>账本Ledger</h3><ul><li>账本是每个节点透明的对象</li><li>两个节点总是被保证可以看到账本上他们共享事实的完全相同版本。</li></ul><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>在Corda中，没有一个单独的中心数据存储。替代的是，每个节点维护一个独立的已知事实的数据库。所以，每个节点只会看到账本上事实的子集，并且没有节点可以感知到整个账本。</p><p>例如，想象一个拥有5个节点的网络；在这个网络上，每个彩色的圆代表一个共享的事实：<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda/ledger-venn.png?raw=true"></p><p>我们可以看到尽管Carl，Demi和Ed都感知了事实3，，但是Alice和Bob却不知道事实3的存在。</p><p>同样重要的是，Corda保证，无论何时这些事实中的一个在网络多个节点间共享，它在每个知道它的节点的数据库中以锁的方式发展。<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda/ledger-table.png?raw=true"></p><p>例如，Alice和Bob都会看到共享事实1和7的相同版本。</p><h3 id="身份Identity"><a href="#身份Identity" class="headerlink" title="身份Identity"></a>身份Identity</h3><ul><li>Corda中的身份代表合法的身份或者服务识别。</li><li><b style="color:red">身份是通过Doorman签署的X.509证书签名或者一个已知证书。</b></li><li><b style="color:red">众所周知的身份发布在网络地图(map)中</b></li><li>机密身份仅在需要知道的基础上共享</li></ul><p>Corda中的身份代表：</p><ul><li>组织的合法身份</li><li>一个网络服务的服务身份</li></ul><p>合法身份是为交易的参与者使用，比如一个Cash状态的拥有者。服务身份是给这些提供交易相关服务使用，比如Notary，或者Oracle。服务身份与和合法身份是不同的，以至于一个节点上存在不同组织的服务。这些分散的服务身份是基于<code>CompositeKeys</code>;<code>CompositeKeys</code>为服务的签名描述有效的签名者集合。查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIvYXBpLWNvcmUtdHlwZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.2/api-core-types.html">API: Core types<i class="fa fa-external-link"></i></span>，了解更多关于<code>CompositeKeys</code>的知识。</p><p><b style="color:red">身份是众所周知的还是保密的，取决于他们的X.509证书（和对应的证书路径是否可信的根证书）已发布：</b>.</p><ul><li>众所周知的身份是法律实体或服务的一般可识别的公钥，这使得它们不适用于需要参与者保密的交易。此证书已发布在网络地图服务中供任何人访问。</li><li>机密身份只发布给参与交易身份的人员。公钥可能暴露给第三方（例如公证服务），但名称和X.509证书的分发是有限的。</li></ul><p>虽然Corda交易隐私模式有几个要素，包括确保交易只与需要查看它们的用户共享以及有计划地使用英特尔SGX，但重要的是要提供深入的防御隐私攻击。机密身份用于确保即使第三方访问未加密的交易，他们也无法在没有附加信息的情况下识别参与者。</p><h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>）。Doorman服务应用适当的身份检查，然后向用作节点认证中心（CA）的节点发放证书。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p><p>组织可以从签署证书创建公开和机密身份。众所周知的身份的用例包括代表用于冗余目的的单个身份的节点集群，或者为组织单位创建身份。</p><p>组织需要决定他们希望在网络地图服务中发布哪些身份，使其广为人知，并且出于隐私原因（通常是为了避免暴露商业敏感的交易细节），他们希望将其保留为机密身份。在某些情况下，出于操作原因，除了主网络地图服务之外，节点还可能使用专用网络地图服务。使用此类网络地图注册的身份必须被认为是众所周知的，并且将机密身份存储在中央目录中，而不在记录级别应用控制，以确保只有需要访问身份的人才能检索其证书。</p><h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p>这里需要介绍状态（State）、交易（Transaction）和合约（Contract），以及它们之间的交互关系。</p><p>首先，交易消费的是状态（State），交易的作用就是将一个状态变换为一个新的状态。分类账被定义为一组不可变状态，由数字签名的交易创建和销毁。每个交易指向一组将要消耗/销毁的状态，这些状态称为<strong>输入</strong>，并且包含一组将会创建的新状态，这些状态称为<strong>输出</strong>。</p><p>其次，合约定义了一个验证函数，这是一个纯函数，以交易为输入。要被视为有效，交易必须被输入和输出状态所指向的每个合约的验证功能所接受。</p><p>除了输入和输出之外，交易还可能包括命令，小数据包，平台不会自行解释，但可以参数化执行合约。<b style="color:#00f">它们可以被认为是验证函数的参数。每个命令都有一个与之关联的公钥列表。该平台确保交易在合约开始执行之前由命令中列出的每个密钥签署。该平台确保交易在合同开始执行之前由命令中列出的每个密钥签署。因此，验证功能可以相信所有列出的密钥都签名了交易，但是负责验证交易从验证功能角度看是否有效所需的任何密钥都包含在列表中.</b></p><p><b style="color:red">命令总是嵌入在交易中。有时候，有很多数据可以在许多不同的交易中重复使用。这种使用的例子就是我们的附件。每个交易可以通过哈希引用0个或多个附件。附件始终都是ZIP/JAR文件，可能包含任何内容。这里可以看出命令与附件相关。</b></p><p><b style="color:red">请注意交易中可以有输入、输出、命令（Command）和附件（Attachment）。但是这些东西可能有也可能没有。交易中的数据需要合约来进行解释，并确保它们正确地结合在一起。</b></p><p><b style="color:red">交易有时可能需要提供带有外界数据的合约。可能包括以下的列子：股票价格、关于事件的事实或者法律实体的状态（例如破产）等等。这些事实的提供者称为神谕（oracles），他们通过签署包含他们已知的命令的交易或通过创建签名附件来为账本提供事实。这些命令包含事实和签名来彰显对此事实的一致。</b></p><p>时间也被建模为一个事实，并且有一种称为公证的特殊服务的签名。公证人是一种很有可能的分散式服务，<b style="color:red">它履行在其他区块链系统中矿工的作用</b>：公证人确保只有一项交易可以消耗任何给定的输出。此外，他们可以验证放置在交易中的时间戳命令，该命令指定交易被认为对公证有效的时间窗口。时间窗口可以是开放式的（即开始但不结束或反之亦然）。通过这种方式，交易可以与公证人的时钟相关联。</p><p>一个Corda网络可能有多个竞争公证人。每个状态（State）都指向控制它的公证人。虽然单个交易只有在全部由同一公证人控制的情况下才会消耗状态，但是提供了将一个状态（或一组状态）从一个公证转移到另一个公证的特殊类型的交易。</p><h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><h4 id="Amount"><a href="#Amount" class="headerlink" title="Amount"></a>Amount</h4><p>Amount类是用来表示一些可替代的资产的量。它是一个通用类，它包装用于定义基础产品的类型，称为Token。它可以是JDK的Currency类型，或者Issued，或者是更复杂的类型（例如义务合同签发定义（其中包含用于解决义务的标记定义）。）</p><p>使用示例如下：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// A quantity of some specific currency like pounds, euros, dollars etc.</span><br><span class="line">Amount&lt;Currency&gt;</span><br><span class="line">// A quantity of currency that is issued by a specific issuer, for instance central bank vs other bank dollars</span><br><span class="line">Amount&lt;Issued&lt;Currency&gt;&gt;</span><br><span class="line">// A quantity of obligations to deliver currency of any issuer.</span><br><span class="line">Amount&lt;Obligation.State&lt;Currency&gt;&gt;</span><br></pre></td></tr></table></figure><p></p><h4 id="状态（State）"><a href="#状态（State）" class="headerlink" title="状态（State）"></a>状态（State）</h4><p>Corda合约由三部分组成; 代表特定交易或资产细节的可执行代码、法律散文（legal prose）和状态对象。<b style="color:red">在关系数据库术语中，状态就像数据库中的一行。</b>分类帐中的状态参考（无论是否已消费）用<code>StateRef</code>对象表示。如果状态引用（state ref）已经能从存储中找到，你将有一个<code>StateAndRef</code>，这是一个简单的<code>StateRef</code>加上数据。</p><p><code>ContractState</code>类是所有状态必须实现的接口。<code>TransactionState</code>是一个简单的<code>ContractState</code>容器（一个合约程序使用的自定义数据）和附加的平台级别的状态信息，比如notary指针。</p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ContractState</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * A _participant_ is any party that is able to consume this state in a valid transaction.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * The list of participants is required for certain types of transactions. For example, when changing the notary</span></span><br><span class="line"><span class="comment">     * for this state, every participant has to be involved and approve the transaction</span></span><br><span class="line"><span class="comment">     * so that they receive the updated state, and don't end up in a situation where they can no longer use a state</span></span><br><span class="line"><span class="comment">     * they possess, since someone consumed that state during the notary change process.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * The participants list should normally be derived from the contents of the state.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> participants: List&lt;AbstractParty&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>有一些接口继承了<code>ContractState</code>，代表常见状态的标准化功能：</p><ul><li><p><code>OwnableState</code><br>拥有所有者的状态（表示为一个<code>PublicKey</code>，就是状态里面包含拥有者的<code>PublicKey</code>）。公开所有者和用于替换所有者的功能，例如当资产被出售时。</p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">OwnableState</span> : <span class="type">ContractState &#123;</span></span></span><br><span class="line">    <span class="comment">/** There must be a MoveCommand signed by this key to claim the amount. */</span></span><br><span class="line">    <span class="keyword">val</span> owner: AbstractParty</span><br><span class="line">    <span class="comment">/** Copies the underlying data structure, replacing the owner field with this new value and leaving the rest alone. */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">withNewOwner</span><span class="params">(newOwner: <span class="type">AbstractParty</span>)</span></span>: CommandAndState</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p><code>LinearState</code><br>一种链接回到其先前状态的状态，随着时间的推移创建一个状态线程。对特定交易或不可拆分资产（如罕见艺术品）进行建模时，线性状态非常有用。</p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LinearState</span> : <span class="type">ContractState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Unique id shared by all LinearState states throughout history within the vaults of all parties.</span></span><br><span class="line"><span class="comment">     * Verify methods should check that one input and one output share the id in a transaction,</span></span><br><span class="line"><span class="comment">     * except at issuance/termination.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> linearId: UniqueIdentifier</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p><code>DealState</code><br>一个<code>LinearState</code>(通过继承实现)表示两方或多方之间的协议。旨在简化实施操纵许多协议类型的通用流程。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">interface DealState : LinearState &#123;</span><br><span class="line">    /**</span><br><span class="line">     * Generate a partial transaction representing an agreement (command) to this deal, allowing a general</span><br><span class="line">     * deal/agreement flow to generate the necessary transaction for potential implementations.</span><br><span class="line">     *</span><br><span class="line">     * TODO: Currently this is the &quot;inception&quot; transaction but in future an offer of some description might be an input state ref</span><br><span class="line">     *</span><br><span class="line">     * TODO: This should more likely be a method on the Contract (on a common interface) and the changes to reference a</span><br><span class="line">     * Contract instance from a ContractState are imminent, at which point we can move this out of here.</span><br><span class="line">     */</span><br><span class="line">    fun generateAgreement(notary: Party): TransactionBuilder</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p><code>FixableDealState</code><br>一个交易状态，进一步的功能暴露以支持固定利率。</p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FixableDealState</span> : <span class="type">DealState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * When is the next fixing and what is the fixing for?</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">nextFixingOf</span><span class="params">()</span></span>: FixOf?</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * What oracle service to use for the fixing</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> oracle: Party</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Generate a fixing command for this deal and fix.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">TODO:</span> This would also likely move to methods on the Contract once the changes to reference</span></span><br><span class="line"><span class="comment">     * the Contract from the ContractState are in.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">generateFix</span><span class="params">(ptx: <span class="type">TransactionBuilder</span>, oldState: <span class="type">StateAndRef</span>&lt;*&gt;, fix: <span class="type">Fix</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ul><h4 id="NamedByHash和UniqueIdentifier"><a href="#NamedByHash和UniqueIdentifier" class="headerlink" title="NamedByHash和UniqueIdentifier"></a>NamedByHash和UniqueIdentifier</h4><p>散列作为标识的事物（如交易和附件）应该实现<code>NamedByHash</code>接口，这个接口标准化提取ID的操作。请注意，散列不是全局唯一标识符：它总是对基础数据内容的派生摘要。<b style="color:red">有时候这不是你想要的：两个具有完全相同参数并且同时生成但是在逻辑上不同的交易不能通过散列识别，因为它们的内容将是相同的。相反，你会使用<code>UniqueIdentifier</code>。</b> 这是一个（Java）UUID表示一个全球唯一的128位随机数，以及一个可与之配对的任意字符串。例如，为了方便起见，该字符串可以代表现有的“weak”（不保证唯一）标识符。<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">NamedByHash</span> </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> id: SecureHash</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">UniqueIdentifier</span></span>(<span class="keyword">val</span> externalId: String? = <span class="literal">null</span>, <span class="keyword">val</span> id: UUID = UUID.randomUUID()) : Comparable&lt;UniqueIdentifier&gt; &#123;</span><br><span class="line">    <span class="comment">// 使用UUID标识，但是可以使用配对的字符串进行拼接</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="keyword">if</span> (externalId != <span class="literal">null</span>) <span class="string">"<span class="subst">$&#123;externalId&#125;</span>_<span class="variable">$id</span>"</span> <span class="keyword">else</span> id.toString()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="comment">/** Helper function for unit tests where the UUID needs to be manually initialised for consistency. */</span></span><br><span class="line">        <span class="meta">@VisibleForTesting</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">fromString</span><span class="params">(name: <span class="type">String</span>)</span></span>: UniqueIdentifier = UniqueIdentifier(<span class="literal">null</span>, UUID.fromString(name))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">compareTo</span><span class="params">(other: <span class="type">UniqueIdentifier</span>)</span></span>: <span class="built_in">Int</span> = id.compareTo(other.id)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">equals</span><span class="params">(other: <span class="type">Any</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">if</span> (other <span class="keyword">is</span> UniqueIdentifier)</span><br><span class="line">            id == other.id</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">hashCode</span><span class="params">()</span></span>: <span class="built_in">Int</span> = id.hashCode()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><h4 id="FungibleAssets-and-Cash"><a href="#FungibleAssets-and-Cash" class="headerlink" title="FungibleAssets and Cash"></a>FungibleAssets and Cash</h4><p><code>FungibleAsset</code>(可替代资产)是可模拟可替代资产的合约的一个共同的超类，它也为其子类的状态对象提供了一个标准接口来实现。将典型的用例就是<code>Cash</code>，然而<code>FungibleAsset</code>意图是容易扩展到覆盖其它资产，例如商品可以根据需要通过使用一个子类，其状态的对象包括进一步的细节（商品，产地，等级的位置等）进行建模。<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FungibleAsset</span>&lt;<span class="type">T : Any</span>&gt; : <span class="type">OwnableState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Amount represents a positive quantity of some issued product which can be cash, tokens, assets, or generally</span></span><br><span class="line"><span class="comment">     * anything else that's quantifiable with integer quantities. See [Issued] and [Amount] for more details.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> amount: Amount&lt;Issued&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * There must be an ExitCommand signed by these keys to destroy the amount. While all states require their</span></span><br><span class="line"><span class="comment">     * owner to sign, some (i.e. cash) also require the issuer.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> exitKeys: Collection&lt;PublicKey&gt;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Copies the underlying data structure, replacing the amount and owner fields with the new values and leaving the</span></span><br><span class="line"><span class="comment">     * rest (exitKeys) alone.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">withNewOwnerAndAmount</span><span class="params">(newAmount: <span class="type">Amount</span>&lt;<span class="type">Issued</span>&lt;<span class="type">T</span>&gt;&gt;, newOwner: <span class="type">AbstractParty</span>)</span></span>: FungibleAsset&lt;T&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>注意这里<code>Cash</code>其实是一个<code>Contract</code>，里面包含<code>FungibleAssets</code>的状态子类，由于代码比较长，这里就不展示了。</p><h4 id="Transaction-生命周期类型"><a href="#Transaction-生命周期类型" class="headerlink" title="Transaction 生命周期类型"></a>Transaction 生命周期类型</h4><p><code>WireTransaction</code>类包含一个没有签名交易的核心，并带有附件的引用以代表附件本身。一旦对交易签名就封装成<code>SignedTransaction</code>类。为了处理交易（即验证它），它首先被转换为<code>LedgerTransaction</code>，这涉及到验证签名并将它们关联到相关命令，并对附件的引用进行附件解析。具有有效签名的命令被封装在<code>AuthenticatedObject</code>类中(新版中，这个类被重命名为<code>CommandWithParties</code>)。<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WireTransaction</span></span>(componentGroups: List&lt;ComponentGroup&gt;, <span class="keyword">val</span> privacySalt: PrivacySalt = PrivacySalt()) : TraversableTransaction(componentGroups) &#123;</span><br><span class="line">    <span class="meta">@Deprecated(<span class="meta-string">"Required only in some unit-tests and for backwards compatibility purposes."</span>, ReplaceWith(<span class="meta-string">"WireTransaction(val componentGroups: List&lt;ComponentGroup&gt;, override val privacySalt: PrivacySalt)"</span>)</span>, DeprecationLevel.WARNING)</span><br><span class="line">    <span class="keyword">constructor</span>(inputs: List&lt;StateRef&gt;, <span class="comment">// 输入</span></span><br><span class="line">                attachments: List&lt;SecureHash&gt;, <span class="comment">// 附件hash集合</span></span><br><span class="line">                outputs: List&lt;TransactionState&lt;ContractState&gt;&gt;, <span class="comment">// 输出，这里我们可以看到TransactionState的意义了</span></span><br><span class="line">                commands: List&lt;Command&lt;*&gt;&gt;, <span class="comment">// 命令集合</span></span><br><span class="line">                notary: Party?,   <span class="comment">// 见证者</span></span><br><span class="line">                timeWindow: TimeWindow?, <span class="comment">// 时间窗口</span></span><br><span class="line">                privacySalt: PrivacySalt = PrivacySalt() <span class="comment">// 私钥密码</span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>我们看一下<code>SignedTransaction</code>的定义<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">SignedTransaction</span></span>(<span class="keyword">val</span> txBits: SerializedBytes&lt;CoreTransaction&gt;,</span><br><span class="line">                             <span class="keyword">override</span> <span class="keyword">val</span> sigs: List&lt;TransactionSignature&gt;</span><br><span class="line">) : TransactionWithSignatures &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>接下来看一下LedgerTransaction的定义。<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">LedgerTransaction</span> <span class="meta">@JvmOverloads</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">        <span class="comment">/** The resolved input states which will be consumed/invalidated by the execution of this transaction. */</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> inputs: List&lt;StateAndRef&lt;ContractState&gt;&gt;,           <span class="comment">// 输入</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> outputs: List&lt;TransactionState&lt;ContractState&gt;&gt;,     <span class="comment">// 输出</span></span><br><span class="line">        <span class="comment">/** Arbitrary data passed to the program of each input state. */</span></span><br><span class="line">        <span class="keyword">val</span> commands: List&lt;CommandWithParties&lt;CommandData&gt;&gt;,             <span class="comment">// 命令（具有有效签名的命令）</span></span><br><span class="line">        <span class="comment">/** A list of [Attachment] objects identified by the transaction that are needed for this transaction to verify. */</span></span><br><span class="line">        <span class="keyword">val</span> attachments: List&lt;Attachment&gt;,                               <span class="comment">// 解析好的附件</span></span><br><span class="line">        <span class="comment">/** The hash of the original serialised WireTransaction. */</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> id: SecureHash,                                     <span class="comment">// id，交易的hash</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> notary: Party?,                                     <span class="comment">// 见证者</span></span><br><span class="line">        <span class="keyword">val</span> timeWindow: TimeWindow?,                                     <span class="comment">// 时间窗口</span></span><br><span class="line">        <span class="keyword">val</span> privacySalt: PrivacySalt,                                    <span class="comment">// 密码盐，这个是不是太暴露了</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span> networkParameters: NetworkParameters? = <span class="literal">null</span>         <span class="comment">// 网络配置参数</span></span><br><span class="line">) : FullTransaction() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p><code>AuthenticatedObject</code>类被重命名为<code>CommandWithParties</code>，这个类比较简单，具体的内容如下：<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">CommandWithParties</span>&lt;<span class="type">out T : CommandData</span>&gt;</span>(</span><br><span class="line">        <span class="keyword">val</span> signers: List&lt;PublicKey&gt;,   <span class="comment">// 签署人，其实就是公钥</span></span><br><span class="line">        <span class="comment">/** If any public keys were recognised, the looked up institutions are available here */</span></span><br><span class="line">        <span class="keyword">val</span> signingParties: List&lt;Party&gt;, <span class="comment">// 找到签署人所属的Party</span></span><br><span class="line">        <span class="keyword">val</span> value: T</span><br><span class="line">)</span><br></pre></td></tr></table></figure><p></p><p><b style="color:#6ab0de">注意：<code>LedgerTransaction</code>没有必要运行它的合约，因此合约可以是无效的（但不是签名无效的）。您可以使用如下所示的verify方法运行合约。</b></p><p>可以使用<code>TransactionBuilder</code>构建新的交易，这是一个可修改的交易，一旦内部修改完成，就可以对其进行签名。合约类通常会暴露帮助方法，这些方法对<code>TransactionBuilder</code>会有所帮助。</p><p>以下是一个构建交易的例子，该交易创建了bananas的发行（请注意，bananas不是库中真正的合约类型）：<br></p><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> notaryToUse: Party = ... <span class="comment">// 见证者Party</span></span><br><span class="line"><span class="comment">// 创建交易，加入了State</span></span><br><span class="line"><span class="keyword">val</span> txb = TransactionBuilder(notary = notaryToUse).withItems(BananaState(Amount(<span class="number">20</span>, Bananas), fromCountry = <span class="string">"Elbonia"</span>))</span><br><span class="line"><span class="comment">// 使用私钥进行交易签名</span></span><br><span class="line">txb.signWith(myKey)</span><br><span class="line"><span class="comment">// 设置时间窗口</span></span><br><span class="line">txb.setTime(Instant.now(), notaryToUse, <span class="number">30.</span>seconds)</span><br><span class="line"><span class="comment">// We must disable the check for sufficient signatures, because this transaction is not yet notarised.</span></span><br><span class="line"><span class="comment">// 转化为SignedTransaction</span></span><br><span class="line"><span class="keyword">val</span> stx = txb.toSignedTransaction(checkSufficientSignatures = <span class="literal">false</span>)</span><br><span class="line"><span class="comment">// Alternatively, let's just check it verifies pretending it was fully signed. To do this, we get</span></span><br><span class="line"><span class="comment">// a WireTransaction, which is what the SignedTransaction wraps. Thus by verifying that directly we</span></span><br><span class="line"><span class="comment">// skip signature checking.</span></span><br><span class="line">txb.toWireTransaction().toLedgerTransaction(services).verify()</span><br></pre></td></tr></table></figure><p></p><h4 id="Party和PublicKey"><a href="#Party和PublicKey" class="headerlink" title="Party和PublicKey"></a>Party和PublicKey</h4><p>使用网络的实体称为参与方（Party）。各方可以使用密钥签署结构，并且一方可以在其控制下拥有许多密钥。</p><p>Party有时候可能被伪名识别，例如，作为监管链的一部分发送给你的节点的交易中，重要的是你可以说服你自己了解交易的有效性，但是同样重要的是，你不知道在那次交易中涉及的是谁。在这些情况下，公钥可能不存在关于谁拥有它的任何标识信息。</p><p>参与签署交易的参与方(Party)的身份可以简单地用<code>PublicKey</code>表示，或者通过使用Party类的更多信息（如姓名）来表示。<code>CommandWithParties</code>表示由一组参与方签署的对象（如命令）。</p><p><b style="color:#6ab0de">注意: 这些类型是临时的，将来随着身份框架变得更加充实而将发生重大变化。</b></p><h4 id="多签名支持"><a href="#多签名支持" class="headerlink" title="多签名支持"></a>多签名支持</h4><p>Corda支持需要多个密钥或参与方授权进行状态对象转换的情况，例如：“首席执行官或其中三分之一的助理都需要提供签名”。</p><h5 id="CompositeKey-复合键"><a href="#CompositeKey-复合键" class="headerlink" title="CompositeKey(复合键)"></a>CompositeKey(复合键)</h5><p>这是通过使用树结构的公钥组合来实现的<code>CompositeKey</code>。<code>CompositeKey</code>是一棵树，<b style="color:red">它将密码公钥基元存储在其树叶中，并在中间节点中存储组合逻辑。每个中间节点指定它需要多少个孩子签名的阈值。</b></p><p>“Alice和Bob或Charlie”组合键的例证：</p><p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/composite-key.png"></p><p>为了提供更大的灵活性，每个子节点都可以有一个相关的自定义权重（默认值为1）。该阈值 然后指定所需的所有子节点的最小总权重。我们之前的例子也可以表示为：</p><p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/composite-key-2.png"></p><h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>签名验证分两个阶段进行：</p><ol><li>给定一个签名列表，每个签名都会根据预期的内容进行验证。</li><li>将与签名相对应的公钥与所讨论的组合密钥树的树叶进行匹配，并且针对每个中间节点计算所有孩子的总组合权重。如果所有阈值都满足，则认为组合密钥要求得到满足。</li></ol><h4 id="日期支持"><a href="#日期支持" class="headerlink" title="日期支持"></a>日期支持</h4><p>有许多支持接口和类供合约处理日期（特别是在截止日期范围内）使用。由于合约谈判通常涉及诸如“overnight”，“T+3”等期限的最后期限，因此希望允许将这些条款转换为相应的截止日期。<code>Tenor</code>在截止日期之前（例如3天等）对间隔进行建模，同时<code>DateRollConvention</code>描述如何修改最后期限以考虑银行假期或修改正常工作日的其他事件。</p><p>根据工作日计算期限的延期需要有关所涉银行假期的信息（以及合同各方在不同的国家/地区，例如，这可能涉及多套不同的银行假期）。<code>BusinessCalendar</code>类模拟这些商业假期的日历; 目前它从磁盘上的文件加载这些文件，但将来这可能涉及参考数据库，以确保所用日期的一致性。</p><h4 id="加密和数学支持"><a href="#加密和数学支持" class="headerlink" title="加密和数学支持"></a>加密和数学支持</h4><p><code>SecureHash</code>类代表未知算法的安全散列。我们目前只定义一个子类，<code>SecureHash.SHA256</code>。有实用的方法来创建它们，解析它们等等。</p><p>我们还提供了一些数学实用工具，特别是一组插值器和用于样条线的类。这些可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvYXBpL25ldC5jb3JkYS5jb3JlLm1hdGgvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/api/net.corda.core.math/index.html">数学包<i class="fa fa-external-link"></i></span>中找到。</p><h3 id="交易拆分"><a href="#交易拆分" class="headerlink" title="交易拆分"></a>交易拆分</h3><p>我们平台的基本数据结构之一就是交易。它可以通过签名和验证，也可以由第三方进行验证。交易的构建假定它们构成一个具有输入和输出状态，命令和附件的完整实体。但是，所有敏感数据都不应该透露给参与验证级别交易创建的其他节点（这种情况的一个很好的例子是只验证嵌入式命令的Oracle）。如何以一种让对方信服他们获得签名数据的方式来实现这一点，确实构成了交易的一部分？</p><p>我们决定使用众所周知的密码方案来提供包含和数据完整性的证明。Merkle树广泛用于点对点网络，区块链系统和git。</p><h4 id="Corda的Merkle树"><a href="#Corda的Merkle树" class="headerlink" title="Corda的Merkle树"></a>Corda的Merkle树</h4><p>交易分为叶子，每个叶子都包含输入，输出，命令或附件。计算中不使用时间戳或签名者等其他字段。接下来，Merkle树以正常方式构建，方法是将当前节点下方的节点散列连接在一起。它在下面的示例图像中可见，其中<code>H</code>表示sha256函数，“+” – 级联。</p><p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/merkleTree.png"></p><p>该交易有一个输入状态，一个输出和三个命令。如果树不是完整的二叉树，则在散列计算（虚线）中重复最右边的节点。</p><p><b style="color:#00f">最后，根的散列是交易的标识符，它也用于数据完整性的签名和验证。每个叶级别的更改都会改变交易的标识符。</b></p><h4 id="隐藏数据"><a href="#隐藏数据" class="headerlink" title="隐藏数据"></a>隐藏数据</h4><p><b style="color:red">隐藏数据并提供它构成交易一部分的证据通过构建部分Merkle树（或Merkle分支）来完成。</b>Merkle分支是一组散列，根据叶子的数据来计算根的散列。然后将该散列与整个交易的散列进行比较，如果它们匹配，则意味着我们获得的数据属于该特定交易。</p><p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/partialMerkle.png"></p><p>在上面的例子中，红色节点是持有Oracle服务签名数据的节点。蓝色节点的哈希形成部分梅克尔树，不包括虚线的哈希。有了应该在红色节点位置和分支中的命令，我们可以计算这棵树的根，并将它与原始交易标识符进行比较 - 我们证明此命令属于此交易。</p><h3 id="共识模型"><a href="#共识模型" class="headerlink" title="共识模型"></a>共识模型</h3><p>Corda的基本共识单位是状态。共识的概念可以分为两部分：</p><ol><li>对状态有效性达成共识 - 各方可以确定定义输出状态的交易被各状态指定的合约接受并具有所有必需的签名。这是通过各方独立运行相同的合约代码和验证逻辑来​​实现的。</li><li>关于状态唯一性的共识 - 各方可以确定交易中创建的输出状态是该交易消耗的输入状态的唯一继承者（换句话说 - 一个状态未被用作多个交易的输入）</li></ol><h4 id="公证人"><a href="#公证人" class="headerlink" title="公证人"></a>公证人</h4><p>我们介绍了公证人（notary）的概念，该公证人是负责证明对于给定的交易没有签署另一个消耗其任何输入状态的交易的机构。数据模型被扩展，以便每个状态都有一个指定的公证人：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">data class TransactionState&lt;out T : ContractState&gt;(</span><br><span class="line">        /** The custom contract state */</span><br><span class="line">        val data: T,</span><br><span class="line">        /** Identity of the notary that ensures the state is not used as an input to a transaction more than once */</span><br><span class="line">        val notary: Party) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>所有交易都必须由其输入状态公证人签名，以使输出状态有效（除了发行交易，不包含输入状态）。</p><p>当公证人被要求签署交易时，它要么签署交易，证明输出是输入的唯一后继者，要么提供已经被之前签署的另一个交易消耗的任何输入状态的冲突信息。这样做，公证人提供了系统中的终点。在获得公证人签名之前，各方不能确定同等有效但冲突的交易不会被视为确认。获得签名后，双方知道该交易的输入已被该交易独有消耗。因此，这是我们可以说终结发生的地步。</p><h4 id="多个公证人"><a href="#多个公证人" class="headerlink" title="多个公证人"></a>多个公证人</h4><p>网络中可以存在一个以上的公证人。这提供了以下好处：</p><ol><li>自定义行为。我们可以同时拥有验证和隐私保护公证人 - 各方可以根据他们的具体要求做出选择</li><li>负载平衡。将事务处理负载分摊到多个公证处将会在整个平台中实现更高的事务吞吐量</li><li>低延迟。通过选择公证员与交易方更接近，延迟时间可以缩短</li></ol><p><b style="color:#00f">如果一个交易的所有输入状态指向一个交易，交易只能由公证人签名。在交易涉及由多个公证人控制的状态的情况下，各状态首先必须被重新委托给同一公证人。这是通过使用一种特殊类型的交易来实现的，该交易不会修改任何内容，而是修改状态的公证指针。确保所有投入状态都指向同一公证人是每个相关方的责任（这是交易输出状态有效的另一个条件）</b></p><h4 id="改变公证人"><a href="#改变公证人" class="headerlink" title="改变公证人"></a>改变公证人</h4><p>要更改输入状态的公证，请使用NotaryChangeFlow。例如：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Suspendable</span><br><span class="line">fun changeNotary(originalState: StateAndRef&lt;ContractState&gt;,</span><br><span class="line">                 newNotary: Party): StateAndRef&lt;ContractState&gt; &#123;</span><br><span class="line">    val flow = NotaryChangeFlow.Instigator(originalState, newNotary)</span><br><span class="line">    return subFlow(flow)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p><p>流程如下：</p><ol><li>将旧状态作为输入，将新状态作为输出进行构建</li><li>从所有参与者获取签名（参与者是能够在有效交易中消费此状态的任何一方，如由状态本身定义的那样）</li><li>获得旧的公证人签名</li><li>记录并向参与者分发最终交易，以便每个人都拥有新的状态</li></ol><h4 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h4><p>公证人的设计决定之一是在提交输入状态之前是否验证交易。</p><p>如果一个交易没有被检查有效性，它会打开平台进行“拒绝状态”攻击，任何人都可以建立一个无效的交易，消耗其他人的状态并将其提交给公证员以使状态“被阻止”。但是，对交易的验证需要公证人能够看到有问题交易的全部内容及其依赖关系。这是一个明显的隐私泄露。</p><p>我们的平台非常灵活，目前我们支持验证和非验证公证实施 - 一方可以根据自己的隐私要求选择使用哪一个。</p><h4 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h4><p>在这个模型中，公证人还充当时间戳机构，验证交易时间戳命令。</p><h2 id="涉及的技术"><a href="#涉及的技术" class="headerlink" title="涉及的技术"></a>涉及的技术</h2><h3 id="corda网站"><a href="#corda网站" class="headerlink" title="corda网站"></a>corda网站</h3><p>这里是corda的<span class="exturl" data-url="aHR0cHM6Ly93d3cuY29yZGEubmV0L3poLWhhbnQv" title="https://www.corda.net/zh-hant/">官方网站<i class="fa fa-external-link"></i></span>。<br><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRh" title="https://github.com/corda">这个网站<i class="fa fa-external-link"></i></span>是corda的github主页，你可在里面找到我们的corda项目，入门的cordapp example也可以在这里找到，还是比较实用的。</p><h3 id="Kotlin"><a href="#Kotlin" class="headerlink" title="Kotlin"></a>Kotlin</h3><p>最后这里列一下Kotlin的学习的一些资料。</p><p>最棒的就是<span class="exturl" data-url="aHR0cHM6Ly90cnkua290bGlubGFuZy5vcmcvIy9Lb3RsaW4lMjBLb2Fucy9JbnRyb2R1Y3Rpb24vU3RyaW5ncy9UYXNrLmt0" title="https://try.kotlinlang.org/#/Kotlin%20Koans/Introduction/Strings/Task.kt">这个网站<i class="fa fa-external-link"></i></span>的在线练习，做的的确棒极了。</p><p>当然对于Kotlin，我们不得不研究一下它的<span class="exturl" data-url="aHR0cDovL2tvdGxpbmxhbmcub3JnL2RvY3MvcmVmZXJlbmNlL2NvZGluZy1jb252ZW50aW9ucy5odG1s" title="http://kotlinlang.org/docs/reference/coding-conventions.html">官方指南<i class="fa fa-external-link"></i></span>. 你可以在这里查询文档和Api的说明文档，另外里面还做了一个全局的搜索，不管是文档，博客还是Api文档，你都可以一键搜索，很是方便。</p><h3 id="Gradle"><a href="#Gradle" class="headerlink" title="Gradle"></a>Gradle</h3><p>这个是志愿者翻译的<span class="exturl" data-url="aHR0cHM6Ly9kb25nY2h1YW4uZ2l0Ym9va3MuaW8vZ3JhZGxlLXVzZXItZ3VpZGUtL2NvbnRlbnQvb3ZlcnZpZXcvZmVhdHVyZXMuaHRtbA==" title="https://dongchuan.gitbooks.io/gradle-user-guide-/content/overview/features.html">Gradle User Guide中文版<i class="fa fa-external-link"></i></span></p><p>当然如果你想自定义Gradle插件的话，就不得不研究<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmdyYWRsZS5vcmcvY3VycmVudC9kc2wvb3JnLmdyYWRsZS5hcGkuUHJvamVjdC5odG1sI29yZy5ncmFkbGUuYXBpLlByb2plY3Q6YnVpbGRzY3JpcHQoZ3Jvb3Z5LmxhbmcuQ2xvc3VyZQ==" title="https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#org.gradle.api.Project:buildscript(groovy.lang.Closure">Gradle的文档<i class="fa fa-external-link"></i></span>)，里面有相关的Api和概念。</p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLWVjb3N5c3RlbS5odG1s" title="https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html">https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/index.html">Corda API reference<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL2NvcmRhL3BlZXItdG8tcGVlci1lbnRlcnByaXNlLWJsb2NrY2hhaW4tbmV0d29ya2luZy13aXRoLXRoZS1jb3JkYS1maXJld2FsbC00ZjZhNDI3ZWJkOTc=" title="https://medium.com/corda/peer-to-peer-enterprise-blockchain-networking-with-the-corda-firewall-4f6a427ebd97">Peer-to-Peer Enterprise Blockchain Networking with the Corda Firewall.<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tLw==" title="http://cncorda.com/">Corda中文网<i class="fa fa-external-link"></i></span></p></div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者： </strong>Gavin Zhang</li><li class="post-copyright-link"><strong>本文链接：</strong> <a href="https://cordate.github.io/blockchain/corda/Corda基础知识.html" title="Corda基础知识">https://cordate.github.io/blockchain/corda/Corda基础知识.html</a></li><li class="post-copyright-license"><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"><a href="/tags/corda/" rel="tag"><i class="fa fa-tag"></i> corda</a> <a href="/tags/r3/" rel="tag"><i class="fa fa-tag"></i> r3</a></div><div class="post-widgets"><div class="social_share"><div><script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css"><div class="likely"><div class="twitter">Tweet</div><div class="facebook">Share</div><div class="linkedin">Link</div><div class="gplus">Plus</div><div class="vkontakte">Share</div><div class="odnoklassniki">Class</div><div class="telegram">Send</div><div class="whatsapp">Send</div><div class="pinterest">Pin</div></div></div></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/java/ProcessBuilder简介.html" rel="next" title="ProcessBuilder简介"><i class="fa fa-chevron-left"></i> ProcessBuilder简介</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/blockchain/corda/Corda基础学习.html" rel="prev" title="Corda基础学习">Corda基础学习 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article></div></div><div class="comments" id="gitalk-container"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">站点概览</li></ul><div class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><img class="site-author-image" itemprop="image" src="/images/user-avatar.jpg" alt="Gavin Zhang"><p class="site-author-name" itemprop="name">Gavin Zhang</p><div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br>邮箱：zlcgavin@gmail.com</div></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"><a href="/categories/"><span class="site-state-item-count">25</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"><a href="/tags/"><span class="site-state-item-count">102</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate"><i class="fa fa-rss"></i>RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span></span></div><div class="cc-license motion-element" itemprop="license"><span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span></div></div></div><div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#入门"><span class="nav-number">1.</span> <span class="nav-text">入门</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#包含的实现"><span class="nav-number">1.1.</span> <span class="nav-text">包含的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序运行"><span class="nav-number">1.2.</span> <span class="nav-text">程序运行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键概念"><span class="nav-number">2.</span> <span class="nav-text">关键概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络"><span class="nav-number">2.1.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网络结构"><span class="nav-number">2.1.1.</span> <span class="nav-text">网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#门卫（doorman）"><span class="nav-number">2.1.2.</span> <span class="nav-text">门卫（doorman）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络服务"><span class="nav-number">2.1.3.</span> <span class="nav-text">网络服务</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#账本Ledger"><span class="nav-number">2.2.</span> <span class="nav-text">账本Ledger</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">2.2.1.</span> <span class="nav-text">概述</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#身份Identity"><span class="nav-number">2.3.</span> <span class="nav-text">身份Identity</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#证书"><span class="nav-number">2.3.1.</span> <span class="nav-text">证书</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据模型"><span class="nav-number">2.4.</span> <span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据类型"><span class="nav-number">2.5.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Amount"><span class="nav-number">2.5.1.</span> <span class="nav-text">Amount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态（State）"><span class="nav-number">2.5.2.</span> <span class="nav-text">状态（State）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NamedByHash和UniqueIdentifier"><span class="nav-number">2.5.3.</span> <span class="nav-text">NamedByHash和UniqueIdentifier</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FungibleAssets-and-Cash"><span class="nav-number">2.5.4.</span> <span class="nav-text">FungibleAssets and Cash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transaction-生命周期类型"><span class="nav-number">2.5.5.</span> <span class="nav-text">Transaction 生命周期类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Party和PublicKey"><span class="nav-number">2.5.6.</span> <span class="nav-text">Party和PublicKey</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多签名支持"><span class="nav-number">2.5.7.</span> <span class="nav-text">多签名支持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CompositeKey-复合键"><span class="nav-number">2.5.7.1.</span> <span class="nav-text">CompositeKey(复合键)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">2.5.7.2.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#日期支持"><span class="nav-number">2.5.8.</span> <span class="nav-text">日期支持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加密和数学支持"><span class="nav-number">2.5.9.</span> <span class="nav-text">加密和数学支持</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#交易拆分"><span class="nav-number">2.6.</span> <span class="nav-text">交易拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Corda的Merkle树"><span class="nav-number">2.6.1.</span> <span class="nav-text">Corda的Merkle树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隐藏数据"><span class="nav-number">2.6.2.</span> <span class="nav-text">隐藏数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共识模型"><span class="nav-number">2.7.</span> <span class="nav-text">共识模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#公证人"><span class="nav-number">2.7.1.</span> <span class="nav-text">公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多个公证人"><span class="nav-number">2.7.2.</span> <span class="nav-text">多个公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#改变公证人"><span class="nav-number">2.7.3.</span> <span class="nav-text">改变公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证-1"><span class="nav-number">2.7.4.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时间戳"><span class="nav-number">2.7.5.</span> <span class="nav-text">时间戳</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#涉及的技术"><span class="nav-number">3.</span> <span class="nav-text">涉及的技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#corda网站"><span class="nav-number">3.1.</span> <span class="nav-text">corda网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin"><span class="nav-number">3.2.</span> <span class="nav-text">Kotlin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gradle"><span class="nav-number">3.3.</span> <span class="nav-text">Gradle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div></div></div></div></aside><div id="sidebar-dimmer"></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-22</span> <span class="with-love" id="animate"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Gavin Zhang</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-area-chart"></i> </span><span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">820k</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-coffee"></i> </span><span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">12:25</span></div><div class="busuanzi-count"><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span class="post-meta-item-icon"><i class="fa fa-user"></i> </span><span class="site-uv" title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i> </span><span class="site-pv" title="总访问量"><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span></div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div><div><div class="addthis_inline_share_toolbox"><script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async></script></div></div></div><script>"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script><script src="/lib/jquery/index.js?v=3.4.1"></script><script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script><script src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script src="/lib/reading_progress/reading_progress.js"></script><script src="/js/utils.js?v=7.2.0"></script><script src="/js/motion.js?v=7.2.0"></script><script src="/js/schemes/muse.js?v=7.2.0"></script><script src="/js/scrollspy.js?v=7.2.0"></script><script src="/js/post-details.js?v=7.2.0"></script><script src="/js/next-boot.js?v=7.2.0"></script><script src="/js/exturl.js?v=7.2.0"></script><script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"><script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script><script>var gitalk=new Gitalk({clientID:"9ed54522a8818f2ebf63",clientSecret:"2977df7ea417b2b266949482dce578d39d7a2df6",repo:"cordate.github.io",owner:"cordate",admin:["cordate"],id:md5(location.pathname),language:"zh-CN",distractionFreeMode:"true"});gitalk.render("gitalk-container")</script><script>function proceedsearch(){$("body").append('<div class="search-popup-overlay local-search-pop-overlay"></div>').css("overflow","hidden"),$(".search-popup-overlay").click(onPopupClose),$(".popup").toggle();var e=$("#local-search-input");e.attr("autocapitalize","none"),e.attr("autocorrect","off"),e.focus()}var isfetched=!1,isXml=!0,search_path="search.xml";0===search_path.length?search_path="search.xml":/json$/i.test(search_path)&&(isXml=!1);var path="/"+search_path,onPopupClose=function(e){$(".popup").hide(),$("#local-search-input").val(""),$(".search-result-list").remove(),$("#no-result").remove(),$(".local-search-pop-overlay").remove(),$("body").css("overflow","")},searchFunc=function(e,t,o){"use strict";$("body").append('<div class="search-popup-overlay local-search-pop-overlay"><div id="search-loading-icon"><i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i></div></div>').css("overflow","hidden"),$("#search-loading-icon").css("margin","20% auto 0 auto").css("text-align","center"),$.ajax({url:e,dataType:isXml?"xml":"json",async:!0,success:function(e){isfetched=!0,$(".popup").detach().appendTo(".header-inner");var n=isXml?$("entry",e).map(function(){return{title:$("title",this).text(),content:$("content",this).text(),url:$("url",this).text()}}).get():e,r=document.getElementById(t),s=document.getElementById(o),a=function(){var e=r.value.trim().toLowerCase(),t=e.split(/[\s\-]+/);t.length>1&&t.push(e);var o=[];if(e.length>0&&n.forEach(function(n){function r(t,o,n,r){for(var s=r[r.length-1],a=s.position,i=s.word,l=[],h=0;a+i.length<=n&&0!=r.length;){i===e&&h++,l.push({position:a,length:i.length});var p=a+i.length;for(r.pop();0!=r.length&&(s=r[r.length-1],a=s.position,i=s.word,p>a);)r.pop()}return c+=h,{hits:l,start:o,end:n,searchTextCount:h}}function s(e,t){var o="",n=t.start;return t.hits.forEach(function(t){o+=e.substring(n,t.position);var r=t.position+t.length;o+='<b class="search-keyword">'+e.substring(t.position,r)+"</b>",n=r}),o+=e.substring(n,t.end)}var a=!1,i=0,c=0,l=n.title.trim(),h=l.toLowerCase(),p=n.content.trim().replace(/<[^>]+>/g,""),u=p.toLowerCase(),f=decodeURIComponent(n.url).replace(/\/{2,}/g,"/"),d=[],g=[];if(""!=l&&(t.forEach(function(e){function t(e,t,o){var n=e.length;if(0===n)return[];var r=0,s=[],a=[];for(o||(t=t.toLowerCase(),e=e.toLowerCase());(s=t.indexOf(e,r))>-1;)a.push({position:s,word:e}),r=s+n;return a}d=d.concat(t(e,h,!1)),g=g.concat(t(e,u,!1))}),(d.length>0||g.length>0)&&(a=!0,i=d.length+g.length)),a){[d,g].forEach(function(e){e.sort(function(e,t){return t.position!==e.position?t.position-e.position:e.word.length-t.word.length})});var v=[];0!=d.length&&v.push(r(l,0,l.length,d));for(var $=[];0!=g.length;){var C=g[g.length-1],m=C.position,x=C.word,w=m-20,y=m+80;0>w&&(w=0),y<m+x.length&&(y=m+x.length),y>p.length&&(y=p.length),$.push(r(p,w,y,g))}$.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hits.length!==t.hits.length?t.hits.length-e.hits.length:e.start-t.start});var T=parseInt("1");T>=0&&($=$.slice(0,T));var b="";b+=0!=v.length?"<li><a href='"+f+"' class='search-result-title'>"+s(l,v[0])+"</a>":"<li><a href='"+f+"' class='search-result-title'>"+l+"</a>",$.forEach(function(e){b+="<a href='"+f+'\'><p class="search-result">'+s(p,e)+"...</p></a>"}),b+="</li>",o.push({item:b,searchTextCount:c,hitCount:i,id:o.length})}}),1===t.length&&""===t[0])s.innerHTML='<div id="no-result"><i class="fa fa-search fa-5x"></i></div>';else if(0===o.length)s.innerHTML='<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>';else{o.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hitCount!==t.hitCount?t.hitCount-e.hitCount:t.id-e.id});var a='<ul class="search-result-list">';o.forEach(function(e){a+=e.item}),a+="</ul>",s.innerHTML=a}};r.addEventListener("input",a),$(".local-search-pop-overlay").remove(),$("body").css("overflow",""),proceedsearch()}})};$(".popup-trigger").click(function(e){e.stopPropagation(),isfetched===!1?searchFunc(path,"local-search-input","local-search-result"):proceedsearch()}),$(".popup-btn-close").click(onPopupClose),$(".popup").click(function(e){e.stopPropagation()}),$(document).on("keyup",function(e){var t=27===e.which&&$(".search-popup").is(":visible");t&&onPopupClose()})</script><script>$("body").find("pre.mermaid").length&&$.ajax({type:"GET",url:"//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js",dataType:"script",cache:!0,success:function(){mermaid.initialize({theme:"forest",logLevel:3,flowchart:{curve:"linear"},gantt:{axisFormat:"%m/%d/%Y"},sequence:{actorMargin:50}})}})</script><script>!function(){var t=document.createElement("script"),e=window.location.protocol.split(":")[0];t.src="https"===e?"https://zz.bdstatic.com/linksubmit/push.js":"http://push.zhanzhang.baidu.com/push.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}()</script></body></html><!-- rebuild by neat -->
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的">
+<meta name="keywords" content="corda,r3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Corda基础知识">
+<meta property="og:url" content="https://cordate.github.io/blockchain/corda/Corda基础知识.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-21T13:21:17.579Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Corda基础知识">
+<meta name="twitter:description" content="corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击这里。这篇文章也做了详细的介绍。 Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/blockchain/corda/Corda基础知识"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>Corda基础知识 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+
+    
+      
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+
+    
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+
+    
+      
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/区块链1.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/corda/Corda基础知识.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Corda基础知识
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-30 16:28:29" itemprop="dateCreated datePublished" datetime="2018-05-30T16:28:29+08:00">2018-05-30</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-21 21:21:17" itemprop="dateModified" datetime="2019-07-21T21:21:17+08:00">2019-07-21</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/corda/" itemprop="url" rel="index"><span itemprop="name">corda</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">18k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">16 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>corda是分布式账本技术的一种，另一种大家已经熟知的就是HyperLedger的Fabric。当然这种插件化的开发也有公共链上的石墨烯技术，这种技术也是插件化的挖矿节点的实现，但是石墨烯技术是C++语言的实现，这里我就不做更多的说明了，关于石墨烯更多的介绍可以点击<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NyeXB0b25vbWV4L2dyYXBoZW5lcw==" title="https://github.com/cryptonomex/graphenes">这里<i class="fa fa-external-link"></i></span>。<span class="exturl" data-url="aHR0cHM6Ly9zdGVlbWl0LmNvbS9ibG9ja2NoYWluL0Byb2Jpbndlbi9idHMtc3RlZW0tZW9z" title="https://steemit.com/blockchain/@robinwen/bts-steem-eos">这篇文章<i class="fa fa-external-link"></i></span>也做了详细的介绍。</p>
+<p>Corda与Fabric的区别，官网的说法是Corda专注于金融这块，而Fabric是基于组织联盟的，但是不管怎样分布式账本技术都是借鉴了区块链的设计思想的；Fabric是插件化的，而Corda是模块化的，我觉得这点在软件设计上有很大的区别。Corda是基于Kotlin开发的，而Fabric主力语言是Go，但是也可以使用其他语言，并不限制。</p>
+<p>如果你想了解更多的Corda知识，可以参阅官网的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvX3N0YXRpYy9jb3JkYS1pbnRyb2R1Y3Rvcnktd2hpdGVwYXBlci5wZGY=" title="https://docs.corda.net/releases/release-M7.0/_static/corda-introductory-whitepaper.pdf">技术白皮书<i class="fa fa-external-link"></i></span>。这个白皮书介绍了，这个系统最终的方案，现在还有很多未实现，正在实现中，当然在实现中可能会有与白皮书不一样的地方。</p>
+<h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><h3 id="包含的实现"><a href="#包含的实现" class="headerlink" title="包含的实现"></a>包含的实现</h3><p>Corda原型机目前包括：</p>
+<ul>
+<li>具有消息持久性和递送重试的对等网络。</li>
+<li>用于定义合同和状态的关键数据结构。</li>
+<li>智能合约，您可以在合约目录中找到。</li>
+<li>与它们一起工作的算法，如序列化，散列，签名和签名验证。</li>
+<li>API文档和教程（您正在阅读的内容）。</li>
+<li>业务流程编排框架。</li>
+<li>公证基础设施用于精确时间戳，并且在没有区块链的情况下消除双重花费。</li>
+<li>一个简单的REST API和一个Web应用程序演示，用它来呈现IRS交易的前端。</li>
+</ul>
+<p>现在不包括，但是后面会进行实现的部分：</p>
+<ul>
+<li>沙盒，分销或发布智能合同代码</li>
+<li>用于管理的用户界面</li>
+</ul>
+<p>现在的Corda版本仍然是创意的快速探索，所以为了提高开发的速度，会采取一些捷径，注意以下的一些事项：</p>
+<ul>
+<li>它使用一个对象映射序列化框架，而不是一个明确的，供应商中立的协议。</li>
+<li>目前没有权限框架。（shiro或者Spring auth）</li>
+<li>一些隐私技术尚未实施</li>
+<li>它使用嵌入式SQL数据库，但尚未支持主流SQL供应商（Oracle，Postgres，MySQL，SQL Server等）的连接。</li>
+</ul>
+<h3 id="程序运行"><a href="#程序运行" class="headerlink" title="程序运行"></a>程序运行</h3><p>在corda项目下定义了一些示例程序，这些程序在samples目录下，运行的命令如官网的命令，这里就不做更多说明了。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvcnVubmluZy10aGUtZGVtb3MuaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/running-the-demos.html">运行演示<i class="fa fa-external-link"></i></span></p>
+<h2 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><ul>
+<li>corda网络是由运行Corda和CorDapps的节点组成</li>
+<li>网络是授权网络，通过doorman控制访问</li>
+<li>节点之间是点对点的交互，而不是一个全局的广播网络<h4 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h4>Corda网络是一个认证的节点点对点网络，里面每一个节点都是有Corda服务并且执行CorDapps应用的JVM运行环境。</li>
+</ul>
+<p>节点之间的交流都是直接的，通过AMQP/1.0发送TLS-加密的信息。这意味着数据只在需要知道的节点间共享，并没有全局广播。</p>
+<p><b style="color:red">每个网络都有一个网络映射（map）服务，这个服务发布可以访问的节点IP地址，还有这些节点的身份证书和节点提供的服务。</b></p>
+<h4 id="门卫（doorman）"><a href="#门卫（doorman）" class="headerlink" title="门卫（doorman）"></a>门卫（doorman）</h4><p><b style="color:red">Corda网络是半私有化的。每个网络都有一个门卫服务，门卫强制实施关于节点必须提供信息和在被准入网络前必须完成的KYC进程的规则。</b></p>
+<p><b style="color:red">为了加入网络，节点必须联系门卫并提供需必要的信息。如果门卫同意了，节点会从网络权限服务收到一个根授权签名的TLS证书。当与其他参与交互时，这个证书用于证明节点的身份。</b></p>
+<p>我们可以想象如下一个网络：<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda%E7%BD%91%E7%BB%9C.png?raw=true"></p>
+<h4 id="网络服务"><a href="#网络服务" class="headerlink" title="网络服务"></a>网络服务</h4><p>节点提供几种类型的服务：</p>
+<ul>
+<li>一个或更多可插拔公证（Notary）服务。公证者保证账本更新的唯一性、可能性的有效性。每一个公证服务可能是在单个节点上运行，或者跨越节点集群。</li>
+<li>零个或更多的神谕（oracle）服务。神谕是一个知名服务，如果他们阐明一个事实并且这个事实是真的，那么就签署交易。</li>
+</ul>
+<h3 id="账本Ledger"><a href="#账本Ledger" class="headerlink" title="账本Ledger"></a>账本Ledger</h3><ul>
+<li>账本是每个节点透明的对象</li>
+<li>两个节点总是被保证可以看到账本上他们共享事实的完全相同版本。</li>
+</ul>
+<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>在Corda中，没有一个单独的中心数据存储。替代的是，每个节点维护一个独立的已知事实的数据库。所以，每个节点只会看到账本上事实的子集，并且没有节点可以感知到整个账本。</p>
+<p>例如，想象一个拥有5个节点的网络；在这个网络上，每个彩色的圆代表一个共享的事实：<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda/ledger-venn.png?raw=true"></p>
+<p>我们可以看到尽管Carl，Demi和Ed都感知了事实3，，但是Alice和Bob却不知道事实3的存在。</p>
+<p>同样重要的是，Corda保证，无论何时这些事实中的一个在网络多个节点间共享，它在每个知道它的节点的数据库中以锁的方式发展。<br><img alt="" data-src="https://github.com/gavin-account/blog-pics/blob/master/blockchain/corda/ledger-table.png?raw=true"></p>
+<p>例如，Alice和Bob都会看到共享事实1和7的相同版本。</p>
+<h3 id="身份Identity"><a href="#身份Identity" class="headerlink" title="身份Identity"></a>身份Identity</h3><ul>
+<li>Corda中的身份代表合法的身份或者服务识别。</li>
+<li><b style="color:red">身份是通过Doorman签署的X.509证书签名或者一个已知证书。</b></li>
+<li><b style="color:red">众所周知的身份发布在网络地图(map)中</b></li>
+<li>机密身份仅在需要知道的基础上共享</li>
+</ul>
+<p>Corda中的身份代表：</p>
+<ul>
+<li>组织的合法身份</li>
+<li>一个网络服务的服务身份</li>
+</ul>
+<p>合法身份是为交易的参与者使用，比如一个Cash状态的拥有者。服务身份是给这些提供交易相关服务使用，比如Notary，或者Oracle。服务身份与和合法身份是不同的，以至于一个节点上存在不同组织的服务。这些分散的服务身份是基于<code>CompositeKeys</code>;<code>CompositeKeys</code>为服务的签名描述有效的签名者集合。查看<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIvYXBpLWNvcmUtdHlwZXMuaHRtbA==" title="https://docs.corda.net/releases/release-V3.2/api-core-types.html">API: Core types<i class="fa fa-external-link"></i></span>，了解更多关于<code>CompositeKeys</code>的知识。</p>
+<p><b style="color:red">身份是众所周知的还是保密的，取决于他们的X.509证书（和对应的证书路径是否可信的根证书）已发布：</b>.</p>
+<ul>
+<li>众所周知的身份是法律实体或服务的一般可识别的公钥，这使得它们不适用于需要参与者保密的交易。此证书已发布在网络地图服务中供任何人访问。</li>
+<li>机密身份只发布给参与交易身份的人员。公钥可能暴露给第三方（例如公证服务），但名称和X.509证书的分发是有限的。</li>
+</ul>
+<p>虽然Corda交易隐私模式有几个要素，包括确保交易只与需要查看它们的用户共享以及有计划地使用英特尔SGX，但重要的是要提供深入的防御隐私攻击。机密身份用于确保即使第三方访问未加密的交易，他们也无法在没有附加信息的情况下识别参与者。</p>
+<h4 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h4><p>节点必须能够验证使用X.509证书实现的公钥所有者的身份。<b style="color:red">首次运行时，节点生成密钥对并向网络门卫服务提交证书签名请求</b>（请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjEvcGVybWlzc2lvbmluZy5odG1s" title="https://docs.corda.net/releases/release-V3.1/permissioning.html">网络许可<i class="fa fa-external-link"></i></span>）。Doorman服务应用适当的身份检查，然后向用作节点认证中心（CA）的节点发放证书。从该初始CA证书中，节点自动创建并签署两个其他证书，一个TLS证书(sslKeyStore)和一个用于该节点众所周知的身份的签名证书(nodeKeyStore)。最后，节点建立包含其地址和众所周知的身份的节点信息记录，并将其注册到网络地图服务。</p>
+<p>组织可以从签署证书创建公开和机密身份。众所周知的身份的用例包括代表用于冗余目的的单个身份的节点集群，或者为组织单位创建身份。</p>
+<p>组织需要决定他们希望在网络地图服务中发布哪些身份，使其广为人知，并且出于隐私原因（通常是为了避免暴露商业敏感的交易细节），他们希望将其保留为机密身份。在某些情况下，出于操作原因，除了主网络地图服务之外，节点还可能使用专用网络地图服务。使用此类网络地图注册的身份必须被认为是众所周知的，并且将机密身份存储在中央目录中，而不在记录级别应用控制，以确保只有需要访问身份的人才能检索其证书。</p>
+<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p>这里需要介绍状态（State）、交易（Transaction）和合约（Contract），以及它们之间的交互关系。</p>
+<p>首先，交易消费的是状态（State），交易的作用就是将一个状态变换为一个新的状态。分类账被定义为一组不可变状态，由数字签名的交易创建和销毁。每个交易指向一组将要消耗/销毁的状态，这些状态称为<strong>输入</strong>，并且包含一组将会创建的新状态，这些状态称为<strong>输出</strong>。</p>
+<p>其次，合约定义了一个验证函数，这是一个纯函数，以交易为输入。要被视为有效，交易必须被输入和输出状态所指向的每个合约的验证功能所接受。</p>
+<p>除了输入和输出之外，交易还可能包括命令，小数据包，平台不会自行解释，但可以参数化执行合约。<b style="color:blue">它们可以被认为是验证函数的参数。每个命令都有一个与之关联的公钥列表。该平台确保交易在合约开始执行之前由命令中列出的每个密钥签署。该平台确保交易在合同开始执行之前由命令中列出的每个密钥签署。因此，验证功能可以相信所有列出的密钥都签名了交易，但是负责验证交易从验证功能角度看是否有效所需的任何密钥都包含在列表中.</b></p>
+<p><b style="color:red">命令总是嵌入在交易中。有时候，有很多数据可以在许多不同的交易中重复使用。这种使用的例子就是我们的附件。每个交易可以通过哈希引用0个或多个附件。附件始终都是ZIP/JAR文件，可能包含任何内容。这里可以看出命令与附件相关。</b></p>
+<p><b style="color:red">请注意交易中可以有输入、输出、命令（Command）和附件（Attachment）。但是这些东西可能有也可能没有。交易中的数据需要合约来进行解释，并确保它们正确地结合在一起。</b></p>
+<p><b style="color:red">交易有时可能需要提供带有外界数据的合约。可能包括以下的列子：股票价格、关于事件的事实或者法律实体的状态（例如破产）等等。这些事实的提供者称为神谕（oracles），他们通过签署包含他们已知的命令的交易或通过创建签名附件来为账本提供事实。这些命令包含事实和签名来彰显对此事实的一致。</b></p>
+<p>时间也被建模为一个事实，并且有一种称为公证的特殊服务的签名。公证人是一种很有可能的分散式服务，<b style="color:red">它履行在其他区块链系统中矿工的作用</b>：公证人确保只有一项交易可以消耗任何给定的输出。此外，他们可以验证放置在交易中的时间戳命令，该命令指定交易被认为对公证有效的时间窗口。时间窗口可以是开放式的（即开始但不结束或反之亦然）。通过这种方式，交易可以与公证人的时钟相关联。</p>
+<p>一个Corda网络可能有多个竞争公证人。每个状态（State）都指向控制它的公证人。虽然单个交易只有在全部由同一公证人控制的情况下才会消耗状态，但是提供了将一个状态（或一组状态）从一个公证转移到另一个公证的特殊类型的交易。</p>
+<h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><h4 id="Amount"><a href="#Amount" class="headerlink" title="Amount"></a>Amount</h4><p>Amount类是用来表示一些可替代的资产的量。它是一个通用类，它包装用于定义基础产品的类型，称为Token。它可以是JDK的Currency类型，或者Issued，或者是更复杂的类型（例如义务合同签发定义（其中包含用于解决义务的标记定义）。）</p>
+<p>使用示例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// A quantity of some specific currency like pounds, euros, dollars etc.</span><br><span class="line">Amount&lt;Currency&gt;</span><br><span class="line">// A quantity of currency that is issued by a specific issuer, for instance central bank vs other bank dollars</span><br><span class="line">Amount&lt;Issued&lt;Currency&gt;&gt;</span><br><span class="line">// A quantity of obligations to deliver currency of any issuer.</span><br><span class="line">Amount&lt;Obligation.State&lt;Currency&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="状态（State）"><a href="#状态（State）" class="headerlink" title="状态（State）"></a>状态（State）</h4><p>Corda合约由三部分组成; 代表特定交易或资产细节的可执行代码、法律散文（legal prose）和状态对象。<b style="color:red">在关系数据库术语中，状态就像数据库中的一行。</b>分类帐中的状态参考（无论是否已消费）用<code>StateRef</code>对象表示。如果状态引用（state ref）已经能从存储中找到，你将有一个<code>StateAndRef</code>，这是一个简单的<code>StateRef</code>加上数据。</p>
+<p><code>ContractState</code>类是所有状态必须实现的接口。<code>TransactionState</code>是一个简单的<code>ContractState</code>容器（一个合约程序使用的自定义数据）和附加的平台级别的状态信息，比如notary指针。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ContractState</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * A _participant_ is any party that is able to consume this state in a valid transaction.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * The list of participants is required for certain types of transactions. For example, when changing the notary</span></span><br><span class="line"><span class="comment">     * for this state, every participant has to be involved and approve the transaction</span></span><br><span class="line"><span class="comment">     * so that they receive the updated state, and don't end up in a situation where they can no longer use a state</span></span><br><span class="line"><span class="comment">     * they possess, since someone consumed that state during the notary change process.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * The participants list should normally be derived from the contents of the state.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> participants: List&lt;AbstractParty&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有一些接口继承了<code>ContractState</code>，代表常见状态的标准化功能：</p>
+<ul>
+<li><p><code>OwnableState</code><br>拥有所有者的状态（表示为一个<code>PublicKey</code>，就是状态里面包含拥有者的<code>PublicKey</code>）。公开所有者和用于替换所有者的功能，例如当资产被出售时。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">OwnableState</span> : <span class="type">ContractState &#123;</span></span></span><br><span class="line">    <span class="comment">/** There must be a MoveCommand signed by this key to claim the amount. */</span></span><br><span class="line">    <span class="keyword">val</span> owner: AbstractParty</span><br><span class="line">    <span class="comment">/** Copies the underlying data structure, replacing the owner field with this new value and leaving the rest alone. */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">withNewOwner</span><span class="params">(newOwner: <span class="type">AbstractParty</span>)</span></span>: CommandAndState</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>LinearState</code><br>一种链接回到其先前状态的状态，随着时间的推移创建一个状态线程。对特定交易或不可拆分资产（如罕见艺术品）进行建模时，线性状态非常有用。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LinearState</span> : <span class="type">ContractState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Unique id shared by all LinearState states throughout history within the vaults of all parties.</span></span><br><span class="line"><span class="comment">     * Verify methods should check that one input and one output share the id in a transaction,</span></span><br><span class="line"><span class="comment">     * except at issuance/termination.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> linearId: UniqueIdentifier</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DealState</code><br>一个<code>LinearState</code>(通过继承实现)表示两方或多方之间的协议。旨在简化实施操纵许多协议类型的通用流程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">interface DealState : LinearState &#123;</span><br><span class="line">    /**</span><br><span class="line">     * Generate a partial transaction representing an agreement (command) to this deal, allowing a general</span><br><span class="line">     * deal/agreement flow to generate the necessary transaction for potential implementations.</span><br><span class="line">     *</span><br><span class="line">     * TODO: Currently this is the &quot;inception&quot; transaction but in future an offer of some description might be an input state ref</span><br><span class="line">     *</span><br><span class="line">     * TODO: This should more likely be a method on the Contract (on a common interface) and the changes to reference a</span><br><span class="line">     * Contract instance from a ContractState are imminent, at which point we can move this out of here.</span><br><span class="line">     */</span><br><span class="line">    fun generateAgreement(notary: Party): TransactionBuilder</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>FixableDealState</code><br>一个交易状态，进一步的功能暴露以支持固定利率。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FixableDealState</span> : <span class="type">DealState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * When is the next fixing and what is the fixing for?</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">nextFixingOf</span><span class="params">()</span></span>: FixOf?</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * What oracle service to use for the fixing</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> oracle: Party</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Generate a fixing command for this deal and fix.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">TODO:</span> This would also likely move to methods on the Contract once the changes to reference</span></span><br><span class="line"><span class="comment">     * the Contract from the ContractState are in.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">generateFix</span><span class="params">(ptx: <span class="type">TransactionBuilder</span>, oldState: <span class="type">StateAndRef</span>&lt;*&gt;, fix: <span class="type">Fix</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="NamedByHash和UniqueIdentifier"><a href="#NamedByHash和UniqueIdentifier" class="headerlink" title="NamedByHash和UniqueIdentifier"></a>NamedByHash和UniqueIdentifier</h4><p>散列作为标识的事物（如交易和附件）应该实现<code>NamedByHash</code>接口，这个接口标准化提取ID的操作。请注意，散列不是全局唯一标识符：它总是对基础数据内容的派生摘要。<b style="color:red">有时候这不是你想要的：两个具有完全相同参数并且同时生成但是在逻辑上不同的交易不能通过散列识别，因为它们的内容将是相同的。相反，你会使用<code>UniqueIdentifier</code>。</b> 这是一个（Java）UUID表示一个全球唯一的128位随机数，以及一个可与之配对的任意字符串。例如，为了方便起见，该字符串可以代表现有的“weak”（不保证唯一）标识符。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">NamedByHash</span> </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> id: SecureHash</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">UniqueIdentifier</span></span>(<span class="keyword">val</span> externalId: String? = <span class="literal">null</span>, <span class="keyword">val</span> id: UUID = UUID.randomUUID()) : Comparable&lt;UniqueIdentifier&gt; &#123;</span><br><span class="line">    <span class="comment">// 使用UUID标识，但是可以使用配对的字符串进行拼接</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="keyword">if</span> (externalId != <span class="literal">null</span>) <span class="string">"<span class="subst">$&#123;externalId&#125;</span>_<span class="variable">$id</span>"</span> <span class="keyword">else</span> id.toString()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="comment">/** Helper function for unit tests where the UUID needs to be manually initialised for consistency. */</span></span><br><span class="line">        <span class="meta">@VisibleForTesting</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">fromString</span><span class="params">(name: <span class="type">String</span>)</span></span>: UniqueIdentifier = UniqueIdentifier(<span class="literal">null</span>, UUID.fromString(name))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">compareTo</span><span class="params">(other: <span class="type">UniqueIdentifier</span>)</span></span>: <span class="built_in">Int</span> = id.compareTo(other.id)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">equals</span><span class="params">(other: <span class="type">Any</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">if</span> (other <span class="keyword">is</span> UniqueIdentifier)</span><br><span class="line">            id == other.id</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">hashCode</span><span class="params">()</span></span>: <span class="built_in">Int</span> = id.hashCode()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="FungibleAssets-and-Cash"><a href="#FungibleAssets-and-Cash" class="headerlink" title="FungibleAssets and Cash"></a>FungibleAssets and Cash</h4><p><code>FungibleAsset</code>(可替代资产)是可模拟可替代资产的合约的一个共同的超类，它也为其子类的状态对象提供了一个标准接口来实现。将典型的用例就是<code>Cash</code>，然而<code>FungibleAsset</code>意图是容易扩展到覆盖其它资产，例如商品可以根据需要通过使用一个子类，其状态的对象包括进一步的细节（商品，产地，等级的位置等）进行建模。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FungibleAsset</span>&lt;<span class="type">T : Any</span>&gt; : <span class="type">OwnableState &#123;</span></span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Amount represents a positive quantity of some issued product which can be cash, tokens, assets, or generally</span></span><br><span class="line"><span class="comment">     * anything else that's quantifiable with integer quantities. See [Issued] and [Amount] for more details.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> amount: Amount&lt;Issued&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * There must be an ExitCommand signed by these keys to destroy the amount. While all states require their</span></span><br><span class="line"><span class="comment">     * owner to sign, some (i.e. cash) also require the issuer.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> exitKeys: Collection&lt;PublicKey&gt;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Copies the underlying data structure, replacing the amount and owner fields with the new values and leaving the</span></span><br><span class="line"><span class="comment">     * rest (exitKeys) alone.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">withNewOwnerAndAmount</span><span class="params">(newAmount: <span class="type">Amount</span>&lt;<span class="type">Issued</span>&lt;<span class="type">T</span>&gt;&gt;, newOwner: <span class="type">AbstractParty</span>)</span></span>: FungibleAsset&lt;T&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里<code>Cash</code>其实是一个<code>Contract</code>，里面包含<code>FungibleAssets</code>的状态子类，由于代码比较长，这里就不展示了。</p>
+<h4 id="Transaction-生命周期类型"><a href="#Transaction-生命周期类型" class="headerlink" title="Transaction 生命周期类型"></a>Transaction 生命周期类型</h4><p><code>WireTransaction</code>类包含一个没有签名交易的核心，并带有附件的引用以代表附件本身。一旦对交易签名就封装成<code>SignedTransaction</code>类。为了处理交易（即验证它），它首先被转换为<code>LedgerTransaction</code>，这涉及到验证签名并将它们关联到相关命令，并对附件的引用进行附件解析。具有有效签名的命令被封装在<code>AuthenticatedObject</code>类中(新版中，这个类被重命名为<code>CommandWithParties</code>)。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WireTransaction</span></span>(componentGroups: List&lt;ComponentGroup&gt;, <span class="keyword">val</span> privacySalt: PrivacySalt = PrivacySalt()) : TraversableTransaction(componentGroups) &#123;</span><br><span class="line">    <span class="meta">@Deprecated(<span class="meta-string">"Required only in some unit-tests and for backwards compatibility purposes."</span>, ReplaceWith(<span class="meta-string">"WireTransaction(val componentGroups: List&lt;ComponentGroup&gt;, override val privacySalt: PrivacySalt)"</span>)</span>, DeprecationLevel.WARNING)</span><br><span class="line">    <span class="keyword">constructor</span>(inputs: List&lt;StateRef&gt;, <span class="comment">// 输入</span></span><br><span class="line">                attachments: List&lt;SecureHash&gt;, <span class="comment">// 附件hash集合</span></span><br><span class="line">                outputs: List&lt;TransactionState&lt;ContractState&gt;&gt;, <span class="comment">// 输出，这里我们可以看到TransactionState的意义了</span></span><br><span class="line">                commands: List&lt;Command&lt;*&gt;&gt;, <span class="comment">// 命令集合</span></span><br><span class="line">                notary: Party?,   <span class="comment">// 见证者</span></span><br><span class="line">                timeWindow: TimeWindow?, <span class="comment">// 时间窗口</span></span><br><span class="line">                privacySalt: PrivacySalt = PrivacySalt() <span class="comment">// 私钥密码</span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看一下<code>SignedTransaction</code>的定义<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">SignedTransaction</span></span>(<span class="keyword">val</span> txBits: SerializedBytes&lt;CoreTransaction&gt;,</span><br><span class="line">                             <span class="keyword">override</span> <span class="keyword">val</span> sigs: List&lt;TransactionSignature&gt;</span><br><span class="line">) : TransactionWithSignatures &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来看一下LedgerTransaction的定义。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">LedgerTransaction</span> <span class="meta">@JvmOverloads</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">        <span class="comment">/** The resolved input states which will be consumed/invalidated by the execution of this transaction. */</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> inputs: List&lt;StateAndRef&lt;ContractState&gt;&gt;,           <span class="comment">// 输入</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> outputs: List&lt;TransactionState&lt;ContractState&gt;&gt;,     <span class="comment">// 输出</span></span><br><span class="line">        <span class="comment">/** Arbitrary data passed to the program of each input state. */</span></span><br><span class="line">        <span class="keyword">val</span> commands: List&lt;CommandWithParties&lt;CommandData&gt;&gt;,             <span class="comment">// 命令（具有有效签名的命令）</span></span><br><span class="line">        <span class="comment">/** A list of [Attachment] objects identified by the transaction that are needed for this transaction to verify. */</span></span><br><span class="line">        <span class="keyword">val</span> attachments: List&lt;Attachment&gt;,                               <span class="comment">// 解析好的附件</span></span><br><span class="line">        <span class="comment">/** The hash of the original serialised WireTransaction. */</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> id: SecureHash,                                     <span class="comment">// id，交易的hash</span></span><br><span class="line">        <span class="keyword">override</span> <span class="keyword">val</span> notary: Party?,                                     <span class="comment">// 见证者</span></span><br><span class="line">        <span class="keyword">val</span> timeWindow: TimeWindow?,                                     <span class="comment">// 时间窗口</span></span><br><span class="line">        <span class="keyword">val</span> privacySalt: PrivacySalt,                                    <span class="comment">// 密码盐，这个是不是太暴露了</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span> networkParameters: NetworkParameters? = <span class="literal">null</span>         <span class="comment">// 网络配置参数</span></span><br><span class="line">) : FullTransaction() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>AuthenticatedObject</code>类被重命名为<code>CommandWithParties</code>，这个类比较简单，具体的内容如下：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CordaSerializable</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">CommandWithParties</span>&lt;<span class="type">out T : CommandData</span>&gt;</span>(</span><br><span class="line">        <span class="keyword">val</span> signers: List&lt;PublicKey&gt;,   <span class="comment">// 签署人，其实就是公钥</span></span><br><span class="line">        <span class="comment">/** If any public keys were recognised, the looked up institutions are available here */</span></span><br><span class="line">        <span class="keyword">val</span> signingParties: List&lt;Party&gt;, <span class="comment">// 找到签署人所属的Party</span></span><br><span class="line">        <span class="keyword">val</span> value: T</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p><b style="color:#6ab0de">注意：<code>LedgerTransaction</code>没有必要运行它的合约，因此合约可以是无效的（但不是签名无效的）。您可以使用如下所示的verify方法运行合约。</b></p>
+<p>可以使用<code>TransactionBuilder</code>构建新的交易，这是一个可修改的交易，一旦内部修改完成，就可以对其进行签名。合约类通常会暴露帮助方法，这些方法对<code>TransactionBuilder</code>会有所帮助。</p>
+<p>以下是一个构建交易的例子，该交易创建了bananas的发行（请注意，bananas不是库中真正的合约类型）：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> notaryToUse: Party = ... <span class="comment">// 见证者Party</span></span><br><span class="line"><span class="comment">// 创建交易，加入了State</span></span><br><span class="line"><span class="keyword">val</span> txb = TransactionBuilder(notary = notaryToUse).withItems(BananaState(Amount(<span class="number">20</span>, Bananas), fromCountry = <span class="string">"Elbonia"</span>))</span><br><span class="line"><span class="comment">// 使用私钥进行交易签名</span></span><br><span class="line">txb.signWith(myKey)</span><br><span class="line"><span class="comment">// 设置时间窗口</span></span><br><span class="line">txb.setTime(Instant.now(), notaryToUse, <span class="number">30.</span>seconds)</span><br><span class="line"><span class="comment">// We must disable the check for sufficient signatures, because this transaction is not yet notarised.</span></span><br><span class="line"><span class="comment">// 转化为SignedTransaction</span></span><br><span class="line"><span class="keyword">val</span> stx = txb.toSignedTransaction(checkSufficientSignatures = <span class="literal">false</span>)</span><br><span class="line"><span class="comment">// Alternatively, let's just check it verifies pretending it was fully signed. To do this, we get</span></span><br><span class="line"><span class="comment">// a WireTransaction, which is what the SignedTransaction wraps. Thus by verifying that directly we</span></span><br><span class="line"><span class="comment">// skip signature checking.</span></span><br><span class="line">txb.toWireTransaction().toLedgerTransaction(services).verify()</span><br></pre></td></tr></table></figure></p>
+<h4 id="Party和PublicKey"><a href="#Party和PublicKey" class="headerlink" title="Party和PublicKey"></a>Party和PublicKey</h4><p>使用网络的实体称为参与方（Party）。各方可以使用密钥签署结构，并且一方可以在其控制下拥有许多密钥。</p>
+<p>Party有时候可能被伪名识别，例如，作为监管链的一部分发送给你的节点的交易中，重要的是你可以说服你自己了解交易的有效性，但是同样重要的是，你不知道在那次交易中涉及的是谁。在这些情况下，公钥可能不存在关于谁拥有它的任何标识信息。</p>
+<p>参与签署交易的参与方(Party)的身份可以简单地用<code>PublicKey</code>表示，或者通过使用Party类的更多信息（如姓名）来表示。<code>CommandWithParties</code>表示由一组参与方签署的对象（如命令）。</p>
+<p><b style="color:#6ab0de">注意: 这些类型是临时的，将来随着身份框架变得更加充实而将发生重大变化。</b></p>
+<h4 id="多签名支持"><a href="#多签名支持" class="headerlink" title="多签名支持"></a>多签名支持</h4><p>Corda支持需要多个密钥或参与方授权进行状态对象转换的情况，例如：“首席执行官或其中三分之一的助理都需要提供签名”。</p>
+<h5 id="CompositeKey-复合键"><a href="#CompositeKey-复合键" class="headerlink" title="CompositeKey(复合键)"></a>CompositeKey(复合键)</h5><p>这是通过使用树结构的公钥组合来实现的<code>CompositeKey</code>。<code>CompositeKey</code>是一棵树，<b style="color:red">它将密码公钥基元存储在其树叶中，并在中间节点中存储组合逻辑。每个中间节点指定它需要多少个孩子签名的阈值。</b></p>
+<p>“Alice和Bob或Charlie”组合键的例证：</p>
+<p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/composite-key.png"></p>
+<p>为了提供更大的灵活性，每个子节点都可以有一个相关的自定义权重（默认值为1）。该阈值 然后指定所需的所有子节点的最小总权重。我们之前的例子也可以表示为：</p>
+<p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/composite-key-2.png"></p>
+<h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>签名验证分两个阶段进行：</p>
+<ol>
+<li>给定一个签名列表，每个签名都会根据预期的内容进行验证。</li>
+<li>将与签名相对应的公钥与所讨论的组合密钥树的树叶进行匹配，并且针对每个中间节点计算所有孩子的总组合权重。如果所有阈值都满足，则认为组合密钥要求得到满足。</li>
+</ol>
+<h4 id="日期支持"><a href="#日期支持" class="headerlink" title="日期支持"></a>日期支持</h4><p>有许多支持接口和类供合约处理日期（特别是在截止日期范围内）使用。由于合约谈判通常涉及诸如“overnight”，“T+3”等期限的最后期限，因此希望允许将这些条款转换为相应的截止日期。<code>Tenor</code>在截止日期之前（例如3天等）对间隔进行建模，同时<code>DateRollConvention</code>描述如何修改最后期限以考虑银行假期或修改正常工作日的其他事件。</p>
+<p>根据工作日计算期限的延期需要有关所涉银行假期的信息（以及合同各方在不同的国家/地区，例如，这可能涉及多套不同的银行假期）。<code>BusinessCalendar</code>类模拟这些商业假期的日历; 目前它从磁盘上的文件加载这些文件，但将来这可能涉及参考数据库，以确保所用日期的一致性。</p>
+<h4 id="加密和数学支持"><a href="#加密和数学支持" class="headerlink" title="加密和数学支持"></a>加密和数学支持</h4><p><code>SecureHash</code>类代表未知算法的安全散列。我们目前只定义一个子类，<code>SecureHash.SHA256</code>。有实用的方法来创建它们，解析它们等等。</p>
+<p>我们还提供了一些数学实用工具，特别是一组插值器和用于样条线的类。这些可以在<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvYXBpL25ldC5jb3JkYS5jb3JlLm1hdGgvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/api/net.corda.core.math/index.html">数学包<i class="fa fa-external-link"></i></span>中找到。</p>
+<h3 id="交易拆分"><a href="#交易拆分" class="headerlink" title="交易拆分"></a>交易拆分</h3><p>我们平台的基本数据结构之一就是交易。它可以通过签名和验证，也可以由第三方进行验证。交易的构建假定它们构成一个具有输入和输出状态，命令和附件的完整实体。但是，所有敏感数据都不应该透露给参与验证级别交易创建的其他节点（这种情况的一个很好的例子是只验证嵌入式命令的Oracle）。如何以一种让对方信服他们获得签名数据的方式来实现这一点，确实构成了交易的一部分？</p>
+<p>我们决定使用众所周知的密码方案来提供包含和数据完整性的证明。Merkle树广泛用于点对点网络，区块链系统和git。</p>
+<h4 id="Corda的Merkle树"><a href="#Corda的Merkle树" class="headerlink" title="Corda的Merkle树"></a>Corda的Merkle树</h4><p>交易分为叶子，每个叶子都包含输入，输出，命令或附件。计算中不使用时间戳或签名者等其他字段。接下来，Merkle树以正常方式构建，方法是将当前节点下方的节点散列连接在一起。它在下面的示例图像中可见，其中<code>H</code>表示sha256函数，“+” – 级联。</p>
+<p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/merkleTree.png"></p>
+<p>该交易有一个输入状态，一个输出和三个命令。如果树不是完整的二叉树，则在散列计算（虚线）中重复最右边的节点。</p>
+<p><b style="color:blue">最后，根的散列是交易的标识符，它也用于数据完整性的签名和验证。每个叶级别的更改都会改变交易的标识符。</b></p>
+<h4 id="隐藏数据"><a href="#隐藏数据" class="headerlink" title="隐藏数据"></a>隐藏数据</h4><p><b style="color:red">隐藏数据并提供它构成交易一部分的证据通过构建部分Merkle树（或Merkle分支）来完成。</b>Merkle分支是一组散列，根据叶子的数据来计算根的散列。然后将该散列与整个交易的散列进行比较，如果它们匹配，则意味着我们获得的数据属于该特定交易。</p>
+<p><img alt="" data-src="https://docs.corda.net/releases/release-M7.0/_images/partialMerkle.png"></p>
+<p>在上面的例子中，红色节点是持有Oracle服务签名数据的节点。蓝色节点的哈希形成部分梅克尔树，不包括虚线的哈希。有了应该在红色节点位置和分支中的命令，我们可以计算这棵树的根，并将它与原始交易标识符进行比较 - 我们证明此命令属于此交易。</p>
+<h3 id="共识模型"><a href="#共识模型" class="headerlink" title="共识模型"></a>共识模型</h3><p>Corda的基本共识单位是状态。共识的概念可以分为两部分：</p>
+<ol>
+<li>对状态有效性达成共识 - 各方可以确定定义输出状态的交易被各状态指定的合约接受并具有所有必需的签名。这是通过各方独立运行相同的合约代码和验证逻辑来​​实现的。</li>
+<li>关于状态唯一性的共识 - 各方可以确定交易中创建的输出状态是该交易消耗的输入状态的唯一继承者（换句话说 - 一个状态未被用作多个交易的输入）</li>
+</ol>
+<h4 id="公证人"><a href="#公证人" class="headerlink" title="公证人"></a>公证人</h4><p>我们介绍了公证人（notary）的概念，该公证人是负责证明对于给定的交易没有签署另一个消耗其任何输入状态的交易的机构。数据模型被扩展，以便每个状态都有一个指定的公证人：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">data class TransactionState&lt;out T : ContractState&gt;(</span><br><span class="line">        /** The custom contract state */</span><br><span class="line">        val data: T,</span><br><span class="line">        /** Identity of the notary that ensures the state is not used as an input to a transaction more than once */</span><br><span class="line">        val notary: Party) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所有交易都必须由其输入状态公证人签名，以使输出状态有效（除了发行交易，不包含输入状态）。</p>
+<p>当公证人被要求签署交易时，它要么签署交易，证明输出是输入的唯一后继者，要么提供已经被之前签署的另一个交易消耗的任何输入状态的冲突信息。这样做，公证人提供了系统中的终点。在获得公证人签名之前，各方不能确定同等有效但冲突的交易不会被视为确认。获得签名后，双方知道该交易的输入已被该交易独有消耗。因此，这是我们可以说终结发生的地步。</p>
+<h4 id="多个公证人"><a href="#多个公证人" class="headerlink" title="多个公证人"></a>多个公证人</h4><p>网络中可以存在一个以上的公证人。这提供了以下好处：</p>
+<ol>
+<li>自定义行为。我们可以同时拥有验证和隐私保护公证人 - 各方可以根据他们的具体要求做出选择</li>
+<li>负载平衡。将事务处理负载分摊到多个公证处将会在整个平台中实现更高的事务吞吐量</li>
+<li>低延迟。通过选择公证员与交易方更接近，延迟时间可以缩短</li>
+</ol>
+<p><b style="color:blue">如果一个交易的所有输入状态指向一个交易，交易只能由公证人签名。在交易涉及由多个公证人控制的状态的情况下，各状态首先必须被重新委托给同一公证人。这是通过使用一种特殊类型的交易来实现的，该交易不会修改任何内容，而是修改状态的公证指针。确保所有投入状态都指向同一公证人是每个相关方的责任（这是交易输出状态有效的另一个条件）</b></p>
+<h4 id="改变公证人"><a href="#改变公证人" class="headerlink" title="改变公证人"></a>改变公证人</h4><p>要更改输入状态的公证，请使用NotaryChangeFlow。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Suspendable</span><br><span class="line">fun changeNotary(originalState: StateAndRef&lt;ContractState&gt;,</span><br><span class="line">                 newNotary: Party): StateAndRef&lt;ContractState&gt; &#123;</span><br><span class="line">    val flow = NotaryChangeFlow.Instigator(originalState, newNotary)</span><br><span class="line">    return subFlow(flow)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>流程如下：</p>
+<ol>
+<li>将旧状态作为输入，将新状态作为输出进行构建</li>
+<li>从所有参与者获取签名（参与者是能够在有效交易中消费此状态的任何一方，如由状态本身定义的那样）</li>
+<li>获得旧的公证人签名</li>
+<li>记录并向参与者分发最终交易，以便每个人都拥有新的状态</li>
+</ol>
+<h4 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h4><p>公证人的设计决定之一是在提交输入状态之前是否验证交易。</p>
+<p>如果一个交易没有被检查有效性，它会打开平台进行“拒绝状态”攻击，任何人都可以建立一个无效的交易，消耗其他人的状态并将其提交给公证员以使状态“被阻止”。但是，对交易的验证需要公证人能够看到有问题交易的全部内容及其依赖关系。这是一个明显的隐私泄露。</p>
+<p>我们的平台非常灵活，目前我们支持验证和非验证公证实施 - 一方可以根据自己的隐私要求选择使用哪一个。</p>
+<h4 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h4><p>在这个模型中，公证人还充当时间戳机构，验证交易时间戳命令。</p>
+<h2 id="涉及的技术"><a href="#涉及的技术" class="headerlink" title="涉及的技术"></a>涉及的技术</h2><h3 id="corda网站"><a href="#corda网站" class="headerlink" title="corda网站"></a>corda网站</h3><p>这里是corda的<span class="exturl" data-url="aHR0cHM6Ly93d3cuY29yZGEubmV0L3poLWhhbnQv" title="https://www.corda.net/zh-hant/">官方网站<i class="fa fa-external-link"></i></span>。<br><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvcmRh" title="https://github.com/corda">这个网站<i class="fa fa-external-link"></i></span>是corda的github主页，你可在里面找到我们的corda项目，入门的cordapp example也可以在这里找到，还是比较实用的。</p>
+<h3 id="Kotlin"><a href="#Kotlin" class="headerlink" title="Kotlin"></a>Kotlin</h3><p>最后这里列一下Kotlin的学习的一些资料。</p>
+<p>最棒的就是<span class="exturl" data-url="aHR0cHM6Ly90cnkua290bGlubGFuZy5vcmcvIy9Lb3RsaW4lMjBLb2Fucy9JbnRyb2R1Y3Rpb24vU3RyaW5ncy9UYXNrLmt0" title="https://try.kotlinlang.org/#/Kotlin%20Koans/Introduction/Strings/Task.kt">这个网站<i class="fa fa-external-link"></i></span>的在线练习，做的的确棒极了。</p>
+<p>当然对于Kotlin，我们不得不研究一下它的<span class="exturl" data-url="aHR0cDovL2tvdGxpbmxhbmcub3JnL2RvY3MvcmVmZXJlbmNlL2NvZGluZy1jb252ZW50aW9ucy5odG1s" title="http://kotlinlang.org/docs/reference/coding-conventions.html">官方指南<i class="fa fa-external-link"></i></span>. 你可以在这里查询文档和Api的说明文档，另外里面还做了一个全局的搜索，不管是文档，博客还是Api文档，你都可以一键搜索，很是方便。</p>
+<h3 id="Gradle"><a href="#Gradle" class="headerlink" title="Gradle"></a>Gradle</h3><p>这个是志愿者翻译的<span class="exturl" data-url="aHR0cHM6Ly9kb25nY2h1YW4uZ2l0Ym9va3MuaW8vZ3JhZGxlLXVzZXItZ3VpZGUtL2NvbnRlbnQvb3ZlcnZpZXcvZmVhdHVyZXMuaHRtbA==" title="https://dongchuan.gitbooks.io/gradle-user-guide-/content/overview/features.html">Gradle User Guide中文版<i class="fa fa-external-link"></i></span></p>
+<p>当然如果你想自定义Gradle插件的话，就不得不研究<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmdyYWRsZS5vcmcvY3VycmVudC9kc2wvb3JnLmdyYWRsZS5hcGkuUHJvamVjdC5odG1sI29yZy5ncmFkbGUuYXBpLlByb2plY3Q6YnVpbGRzY3JpcHQoZ3Jvb3Z5LmxhbmcuQ2xvc3VyZQ==" title="https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#org.gradle.api.Project:buildscript(groovy.lang.Closure">Gradle的文档<i class="fa fa-external-link"></i></span>)，里面有相关的Api和概念。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLVYzLjIva2V5LWNvbmNlcHRzLWVjb3N5c3RlbS5odG1s" title="https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html">https://docs.corda.net/releases/release-V3.2/key-concepts-ecosystem.html<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmNvcmRhLm5ldC9yZWxlYXNlcy9yZWxlYXNlLU03LjAvaW5kZXguaHRtbA==" title="https://docs.corda.net/releases/release-M7.0/index.html">Corda API reference<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL2NvcmRhL3BlZXItdG8tcGVlci1lbnRlcnByaXNlLWJsb2NrY2hhaW4tbmV0d29ya2luZy13aXRoLXRoZS1jb3JkYS1maXJld2FsbC00ZjZhNDI3ZWJkOTc=" title="https://medium.com/corda/peer-to-peer-enterprise-blockchain-networking-with-the-corda-firewall-4f6a427ebd97">Peer-to-Peer Enterprise Blockchain Networking with the Corda Firewall.<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovL2NuY29yZGEuY29tLw==" title="http://cncorda.com/">Corda中文网<i class="fa fa-external-link"></i></span></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/blockchain/corda/Corda基础知识.html" title="Corda基础知识">https://cordate.github.io/blockchain/corda/Corda基础知识.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/corda/" rel="tag"><i class="fa fa-tag"></i> corda</a>
+          
+            <a href="/tags/r3/" rel="tag"><i class="fa fa-tag"></i> r3</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/java/ProcessBuilder简介.html" rel="next" title="ProcessBuilder简介">
+                <i class="fa fa-chevron-left"></i> ProcessBuilder简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blockchain/corda/Corda基础学习.html" rel="prev" title="Corda基础学习">
+                Corda基础学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#入门"><span class="nav-number">1.</span> <span class="nav-text">入门</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#包含的实现"><span class="nav-number">1.1.</span> <span class="nav-text">包含的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序运行"><span class="nav-number">1.2.</span> <span class="nav-text">程序运行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键概念"><span class="nav-number">2.</span> <span class="nav-text">关键概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络"><span class="nav-number">2.1.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网络结构"><span class="nav-number">2.1.1.</span> <span class="nav-text">网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#门卫（doorman）"><span class="nav-number">2.1.2.</span> <span class="nav-text">门卫（doorman）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络服务"><span class="nav-number">2.1.3.</span> <span class="nav-text">网络服务</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#账本Ledger"><span class="nav-number">2.2.</span> <span class="nav-text">账本Ledger</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">2.2.1.</span> <span class="nav-text">概述</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#身份Identity"><span class="nav-number">2.3.</span> <span class="nav-text">身份Identity</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#证书"><span class="nav-number">2.3.1.</span> <span class="nav-text">证书</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据模型"><span class="nav-number">2.4.</span> <span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据类型"><span class="nav-number">2.5.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Amount"><span class="nav-number">2.5.1.</span> <span class="nav-text">Amount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态（State）"><span class="nav-number">2.5.2.</span> <span class="nav-text">状态（State）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NamedByHash和UniqueIdentifier"><span class="nav-number">2.5.3.</span> <span class="nav-text">NamedByHash和UniqueIdentifier</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FungibleAssets-and-Cash"><span class="nav-number">2.5.4.</span> <span class="nav-text">FungibleAssets and Cash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transaction-生命周期类型"><span class="nav-number">2.5.5.</span> <span class="nav-text">Transaction 生命周期类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Party和PublicKey"><span class="nav-number">2.5.6.</span> <span class="nav-text">Party和PublicKey</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多签名支持"><span class="nav-number">2.5.7.</span> <span class="nav-text">多签名支持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CompositeKey-复合键"><span class="nav-number">2.5.7.1.</span> <span class="nav-text">CompositeKey(复合键)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">2.5.7.2.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#日期支持"><span class="nav-number">2.5.8.</span> <span class="nav-text">日期支持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加密和数学支持"><span class="nav-number">2.5.9.</span> <span class="nav-text">加密和数学支持</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#交易拆分"><span class="nav-number">2.6.</span> <span class="nav-text">交易拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Corda的Merkle树"><span class="nav-number">2.6.1.</span> <span class="nav-text">Corda的Merkle树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隐藏数据"><span class="nav-number">2.6.2.</span> <span class="nav-text">隐藏数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共识模型"><span class="nav-number">2.7.</span> <span class="nav-text">共识模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#公证人"><span class="nav-number">2.7.1.</span> <span class="nav-text">公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多个公证人"><span class="nav-number">2.7.2.</span> <span class="nav-text">多个公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#改变公证人"><span class="nav-number">2.7.3.</span> <span class="nav-text">改变公证人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证-1"><span class="nav-number">2.7.4.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时间戳"><span class="nav-number">2.7.5.</span> <span class="nav-text">时间戳</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#涉及的技术"><span class="nav-number">3.</span> <span class="nav-text">涉及的技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#corda网站"><span class="nav-number">3.1.</span> <span class="nav-text">corda网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin"><span class="nav-number">3.2.</span> <span class="nav-text">Kotlin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gradle"><span class="nav-number">3.3.</span> <span class="nav-text">Gradle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-01</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">821k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

@@ -1,1 +1,1817 @@
-<!-- build time:Mon Jul 22 2019 22:26:13 GMT+0800 (CST) --><!DOCTYPE html><html class="theme-next muse use-motion" lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"><link rel="stylesheet" href="/css/main.css?v=7.2.0"><link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0"><link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0"><link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222"><script id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"7.2.0",sidebar:{position:"left",display:"always",offset:12,onmobile:!1},back2top:{enable:!0,sidebar:!1,scrollpercent:!0},copycode:{enable:!0,show_result:!0,style:"mac"},fancybox:!1,fastclick:!1,lazyload:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}},translation:{copy_button:"复制",copy_success:"复制成功",copy_failure:"复制失败"}}</script><meta name="description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的"><meta name="keywords" content="交易替换,比特币"><meta property="og:type" content="article"><meta property="og:title" content="BIP125：可选的交易费用替换信号【翻译】"><meta property="og:url" content="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html"><meta property="og:site_name" content="柳絮纷飞"><meta property="og:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的"><meta property="og:locale" content="zh-CN"><meta property="og:updated_time" content="2019-07-21T14:28:05.872Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="BIP125：可选的交易费用替换信号【翻译】"><meta name="twitter:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的"><link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"><link rel="canonical" href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号"><script id="page.configurations">CONFIG.page={sidebar:""}</script><title>BIP125：可选的交易费用替换信号【翻译】 | 柳絮纷飞</title><noscript><style>.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.use-motion .logo-line-before i{left:initial}.use-motion .logo-line-after i{right:initial}</style></noscript></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"></div><div class="site-nav-toggle"><button aria-label="切换导航栏"><span class="btn-bar"></span> <span class="btn-bar"></span> <span class="btn-bar"></span></button></div></div><nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation"><ul id="menu" class="menu nav navbar-nav hidden-sm"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a></li><li class="menu-item menu-item-commonweal"><a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i> </span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"><input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><div class="reading-progress-bar"></div><img src="/images/blog/比特币1.jpeg" alt="背景图" width="100%"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Author"><meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"><meta itemprop="image" content="/images/user-avatar.jpg"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="柳絮纷飞"></span><header class="post-header"><h2 class="post-title" itemprop="name headline">BIP125：可选的交易费用替换信号【翻译】</h2><div class="post-meta"><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i> </span><span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-03-20 18:16:41" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-check-o"></i> </span><span class="post-meta-item-text">更新于</span> <time title="修改时间：2019-07-21 22:28:05" itemprop="dateModified" datetime="2019-07-21T22:28:05+08:00">2019-07-21</time> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i> </span><span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span> ， <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-eye"></i> 阅读次数： <span class="busuanzi-value" id="busuanzi_value_page_pv"></span></span></span><br><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i> </span><span class="post-meta-item-text">本文字数：</span> <span title="本文字数">3.1k</span> </span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i> </span><span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">3 分钟</span></span></div></header><div class="post-body" itemprop="articleBody"><p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p><p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p><ul><li>节点允许包含这个信号的交易在其 mempools 中被替换。</li><li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li></ul><p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p><h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p><ul><li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li><li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li></ul><h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p><p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p><ul><li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li><li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li><li>替换交易至少支付原始交易支付的金额的绝对费用。</li><li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li><li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li></ul><p>最初的实现可以在<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYml0Y29pbi9wdWxsLzY4NzE=" title="https://github.com/bitcoin/bitcoin/pull/6871">比特核心PR＃6871<i class="fa fa-external-link"></i></span>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p><h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p><ul><li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li><li>在确认之前忽略选择性（opt-in）交易。</li></ul><p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p><h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:#00f">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p><p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvVHJhbnNhY3Rpb25fcmVwbGFjZW1lbnQ=" title="https://en.bitcoin.it/wiki/Transaction_replacement">Bitcoin的Wiki页面<i class="fa fa-external-link"></i></span>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p><p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p><h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3Ryb3R0aWVyL29yaWdpbmFsLWJpdGNvaW4vYmxvYi9tYXN0ZXIvc3JjL21haW4uY3BwI0w0MzQ=" title="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434">允许<i class="fa fa-external-link"></i></span> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p><p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYml0Y29pbi9jb21taXQvMDU0NTQ4MThkYzdlZDkyZjU3N2ExYTFlZjY3OTgwNDlmMTdhNTJlNyNkaWZmLTExOGZjYmFhYmExNjJiYTE3OTMzYzc4OTMyNDdkZjNhUjUyMg==" title="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522">删除了替代品<i class="fa fa-external-link"></i></span>，仅留下评论“暂时禁用替换功能”。</p><p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p><p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:#00f">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p><p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p><p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p><h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p><p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p><p>在满足两个条件之前，实际更换可能不可靠：</p><ul><li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li><li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li></ul><h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p><h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol><li><span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvVHJhbnNhY3Rpb25fcmVwbGFjZW1lbnQ=" title="https://en.bitcoin.it/wiki/Transaction_replacement">Bitcoin Wiki上的交易可替换性<i class="fa fa-external-link"></i></span>旨在帮助钱包作者使用RBF</li><li>用于创建选择性全RBF交易的工具：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3BldGVydG9kZC9yZXBsYWNlLWJ5LWZlZS10b29scyNyZXBsYWNlLWJ5LWZlZS10b29scw==" title="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools<i class="fa fa-external-link"></i></span></li><li>Reddit：<span class="exturl" data-url="aHR0cHM6Ly93d3cucmVkZGl0LmNvbS9yL0JpdGNvaW4vY29tbWVudHMvM3VybThvL29wdGluX3JiZl9pc19taXN1bmRlcnN0b29kX2Fza19xdWVzdGlvbnNfYWJvdXRfaXQv" title="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/">关于选择性RBF的问题<i class="fa fa-external-link"></i></span>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li></ol><h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYmlwcy9ibG9iL21hc3Rlci9iaXAtMDEyNS5tZWRpYXdpa2k=" title="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki">Opt-in Full Replace-by-Fee Signaling<i class="fa fa-external-link"></i></span></p></div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者： </strong>Gavin Zhang</li><li class="post-copyright-link"><strong>本文链接：</strong> <a href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html" title="BIP125：可选的交易费用替换信号【翻译】">https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html</a></li><li class="post-copyright-license"><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"><a href="/tags/交易替换/" rel="tag"><i class="fa fa-tag"></i> 交易替换</a> <a href="/tags/比特币/" rel="tag"><i class="fa fa-tag"></i> 比特币</a></div><div class="post-widgets"><div class="social_share"><div><script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css"><div class="likely"><div class="twitter">Tweet</div><div class="facebook">Share</div><div class="linkedin">Link</div><div class="gplus">Plus</div><div class="vkontakte">Share</div><div class="odnoklassniki">Class</div><div class="telegram">Send</div><div class="whatsapp">Send</div><div class="pinterest">Pin</div></div></div></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/blockchain/比特币/比特币粉尘和空块.html" rel="next" title="比特币粉尘和空块"><i class="fa fa-chevron-left"></i> 比特币粉尘和空块</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/java/Java中volatile解析.html" rel="prev" title="Java中volatile解析">Java中volatile解析 <i class="fa fa-chevron-right"></i></a></div></div></footer></div></article></div></div><div class="comments" id="gitalk-container"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span> <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span> <span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">站点概览</li></ul><div class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><img class="site-author-image" itemprop="image" src="/images/user-avatar.jpg" alt="Gavin Zhang"><p class="site-author-name" itemprop="name">Gavin Zhang</p><div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br>邮箱：zlcgavin@gmail.com</div></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"><a href="/categories/"><span class="site-state-item-count">25</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"><a href="/tags/"><span class="site-state-item-count">102</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate"><i class="fa fa-rss"></i>RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span></span></div><div class="cc-license motion-element" itemprop="license"><span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span></div></div></div><div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">2.</span> <span class="nav-text">概要</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实施细节"><span class="nav-number">2.1.</span> <span class="nav-text">实施细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收钱包政策"><span class="nav-number">2.2.</span> <span class="nav-text">接收钱包政策</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支出钱包政策"><span class="nav-number">2.3.</span> <span class="nav-text">支出钱包政策</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">3.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户支持"><span class="nav-number">5.</span> <span class="nav-text">客户支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#也可以看看"><span class="nav-number">6.</span> <span class="nav-text">也可以看看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">7.</span> <span class="nav-text">参考和引用</span></a></li></ol></div></div></div></div></aside><div id="sidebar-dimmer"></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019-07-22</span> <span class="with-love" id="animate"><i class="fa fa-user"></i> </span><span class="author" itemprop="copyrightHolder">Gavin Zhang</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-area-chart"></i> </span><span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">820k</span> <span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-coffee"></i> </span><span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">12:25</span></div><div class="busuanzi-count"><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span class="post-meta-item-icon"><i class="fa fa-user"></i> </span><span class="site-uv" title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i> </span><span class="site-pv" title="总访问量"><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span></div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div><div><div class="addthis_inline_share_toolbox"><script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async></script></div></div></div><script>"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script><script src="/lib/jquery/index.js?v=3.4.1"></script><script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script><script src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script src="/lib/reading_progress/reading_progress.js"></script><script src="/js/utils.js?v=7.2.0"></script><script src="/js/motion.js?v=7.2.0"></script><script src="/js/schemes/muse.js?v=7.2.0"></script><script src="/js/scrollspy.js?v=7.2.0"></script><script src="/js/post-details.js?v=7.2.0"></script><script src="/js/next-boot.js?v=7.2.0"></script><script src="/js/exturl.js?v=7.2.0"></script><script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"><script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script><script>var gitalk=new Gitalk({clientID:"9ed54522a8818f2ebf63",clientSecret:"2977df7ea417b2b266949482dce578d39d7a2df6",repo:"cordate.github.io",owner:"cordate",admin:["cordate"],id:md5(location.pathname),language:"zh-CN",distractionFreeMode:"true"});gitalk.render("gitalk-container")</script><script>function proceedsearch(){$("body").append('<div class="search-popup-overlay local-search-pop-overlay"></div>').css("overflow","hidden"),$(".search-popup-overlay").click(onPopupClose),$(".popup").toggle();var e=$("#local-search-input");e.attr("autocapitalize","none"),e.attr("autocorrect","off"),e.focus()}var isfetched=!1,isXml=!0,search_path="search.xml";0===search_path.length?search_path="search.xml":/json$/i.test(search_path)&&(isXml=!1);var path="/"+search_path,onPopupClose=function(e){$(".popup").hide(),$("#local-search-input").val(""),$(".search-result-list").remove(),$("#no-result").remove(),$(".local-search-pop-overlay").remove(),$("body").css("overflow","")},searchFunc=function(e,t,o){"use strict";$("body").append('<div class="search-popup-overlay local-search-pop-overlay"><div id="search-loading-icon"><i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i></div></div>').css("overflow","hidden"),$("#search-loading-icon").css("margin","20% auto 0 auto").css("text-align","center"),$.ajax({url:e,dataType:isXml?"xml":"json",async:!0,success:function(e){isfetched=!0,$(".popup").detach().appendTo(".header-inner");var n=isXml?$("entry",e).map(function(){return{title:$("title",this).text(),content:$("content",this).text(),url:$("url",this).text()}}).get():e,r=document.getElementById(t),s=document.getElementById(o),a=function(){var e=r.value.trim().toLowerCase(),t=e.split(/[\s\-]+/);t.length>1&&t.push(e);var o=[];if(e.length>0&&n.forEach(function(n){function r(t,o,n,r){for(var s=r[r.length-1],a=s.position,i=s.word,l=[],h=0;a+i.length<=n&&0!=r.length;){i===e&&h++,l.push({position:a,length:i.length});var p=a+i.length;for(r.pop();0!=r.length&&(s=r[r.length-1],a=s.position,i=s.word,p>a);)r.pop()}return c+=h,{hits:l,start:o,end:n,searchTextCount:h}}function s(e,t){var o="",n=t.start;return t.hits.forEach(function(t){o+=e.substring(n,t.position);var r=t.position+t.length;o+='<b class="search-keyword">'+e.substring(t.position,r)+"</b>",n=r}),o+=e.substring(n,t.end)}var a=!1,i=0,c=0,l=n.title.trim(),h=l.toLowerCase(),p=n.content.trim().replace(/<[^>]+>/g,""),u=p.toLowerCase(),f=decodeURIComponent(n.url).replace(/\/{2,}/g,"/"),d=[],g=[];if(""!=l&&(t.forEach(function(e){function t(e,t,o){var n=e.length;if(0===n)return[];var r=0,s=[],a=[];for(o||(t=t.toLowerCase(),e=e.toLowerCase());(s=t.indexOf(e,r))>-1;)a.push({position:s,word:e}),r=s+n;return a}d=d.concat(t(e,h,!1)),g=g.concat(t(e,u,!1))}),(d.length>0||g.length>0)&&(a=!0,i=d.length+g.length)),a){[d,g].forEach(function(e){e.sort(function(e,t){return t.position!==e.position?t.position-e.position:e.word.length-t.word.length})});var v=[];0!=d.length&&v.push(r(l,0,l.length,d));for(var $=[];0!=g.length;){var C=g[g.length-1],m=C.position,x=C.word,w=m-20,y=m+80;0>w&&(w=0),y<m+x.length&&(y=m+x.length),y>p.length&&(y=p.length),$.push(r(p,w,y,g))}$.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hits.length!==t.hits.length?t.hits.length-e.hits.length:e.start-t.start});var T=parseInt("1");T>=0&&($=$.slice(0,T));var b="";b+=0!=v.length?"<li><a href='"+f+"' class='search-result-title'>"+s(l,v[0])+"</a>":"<li><a href='"+f+"' class='search-result-title'>"+l+"</a>",$.forEach(function(e){b+="<a href='"+f+'\'><p class="search-result">'+s(p,e)+"...</p></a>"}),b+="</li>",o.push({item:b,searchTextCount:c,hitCount:i,id:o.length})}}),1===t.length&&""===t[0])s.innerHTML='<div id="no-result"><i class="fa fa-search fa-5x"></i></div>';else if(0===o.length)s.innerHTML='<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>';else{o.sort(function(e,t){return e.searchTextCount!==t.searchTextCount?t.searchTextCount-e.searchTextCount:e.hitCount!==t.hitCount?t.hitCount-e.hitCount:t.id-e.id});var a='<ul class="search-result-list">';o.forEach(function(e){a+=e.item}),a+="</ul>",s.innerHTML=a}};r.addEventListener("input",a),$(".local-search-pop-overlay").remove(),$("body").css("overflow",""),proceedsearch()}})};$(".popup-trigger").click(function(e){e.stopPropagation(),isfetched===!1?searchFunc(path,"local-search-input","local-search-result"):proceedsearch()}),$(".popup-btn-close").click(onPopupClose),$(".popup").click(function(e){e.stopPropagation()}),$(document).on("keyup",function(e){var t=27===e.which&&$(".search-popup").is(":visible");t&&onPopupClose()})</script><script>$("body").find("pre.mermaid").length&&$.ajax({type:"GET",url:"//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js",dataType:"script",cache:!0,success:function(){mermaid.initialize({theme:"forest",logLevel:3,flowchart:{curve:"linear"},gantt:{axisFormat:"%m/%d/%Y"},sequence:{actorMargin:50}})}})</script><script>!function(){var t=document.createElement("script"),e=window.location.protocol.split(":")[0];t.src="https"===e?"https://zz.bdstatic.com/linksubmit/push.js":"http://push.zhanzhang.baidu.com/push.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}()</script></body></html><!-- rebuild by neat -->
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
+<meta name="keywords" content="交易替换,比特币">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BIP125：可选的交易费用替换信号【翻译】">
+<meta property="og:url" content="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-21T14:28:05.872Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BIP125：可选的交易费用替换信号【翻译】">
+<meta name="twitter:description" content="这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&amp;gt; RBF -&amp;gt; full-RBF -&amp;gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。也许这里面的信号（signal）也许也可以理解成标记。 概述今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>BIP125：可选的交易费用替换信号【翻译】 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+
+    
+      
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+
+    
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+
+    
+      
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i>公益 404</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/比特币1.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">BIP125：可选的交易费用替换信号【翻译】
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-20 18:16:41" itemprop="dateCreated datePublished" datetime="2018-03-20T18:16:41+08:00">2018-03-20</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-21 22:28:05" itemprop="dateModified" datetime="2019-07-21T22:28:05+08:00">2019-07-21</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/区块链/bitcoin/" itemprop="url" rel="index"><span itemprop="name">bitcoin</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">3.1k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是关于比特币节点在mempool中去替换广播交易的一些原则，同时也提到了交易替换的变迁历史。原始的实现 -&gt; RBF -&gt; full-RBF -&gt; Opt-in fullRBF. 需要仔细理解方能理解其中的意思。<b style="color:red">也许这里面的信号（signal）也许也可以理解成标记。</b></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>今天的许多节点不会在mempool里面用其他使用相同未花费输出替换相应的交易，使得花费者难以调整其先前发送的交易以处理意外的确认延迟或执行其他有用的替换。</p>
+<p>此处所述的 opt-in full Replace-by-Fee (opt-in full-RBF) signaling 政策允许消费者向交易添加信号，表明他们希望能够在未来取代该交易。为了响应这个信号：</p>
+<ul>
+<li>节点允许包含这个信号的交易在其 mempools 中被替换。</li>
+<li>在此信号交易未被确认之前，包含此信号交易的接收人不会用此付款，从而消除了付款人将使用允许的替换物来欺诈他们的风险。（交易确认之后才能继续交易，否则会出现双花的现象。可改动更会发生这个情况）。</li>
+</ul>
+<p>节点和接收人可以继续处理没有信号的交易，就像他们以前处理它们的方式一样，从而保持现有的现状。</p>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>该政策规定了交易可以通过两种方式表明其可以替换。</p>
+<ul>
+<li>显式信令：如果一个交易的任何输入的nSequence数小于（0xffffffff - 1），则认为交易允许替换。</li>
+<li>继承信号：只要其中任何一个祖先表示可替换并且未被确认，没有明确表示信号可替换的交易在本政策下可以被替换。</li>
+</ul>
+<h3 id="实施细节"><a href="#实施细节" class="headerlink" title="实施细节"></a>实施细节</h3><p>比特核心0.12.0预期的初步实施使用以下规则：</p>
+<p>当前在mempool中的一个或多个交易（原始交易）将被替换为花费一个或多个相同输入的新交易（替换交易）</p>
+<ul>
+<li>原始交易处理信号的可替换性可以显式地或通过继承实现，如上述摘要部分所述。</li>
+<li>替换交易不包含先前未出现在mempool中的任何新的未确认输入。（未确认的输入是从当前未确认的交易中消耗输出的输入。）</li>
+<li>替换交易至少支付原始交易支付的金额的绝对费用。</li>
+<li>替换交易还必须支付自己的带宽，其速率等于或高于节点的最低中继费用设置的速率。例如，如果最低中继费为1satoshi/byte，并且替换交易总共为500字节，则替换者必须支付至少500 satoshis的费用，高于原件总和。（修改是有代价的）</li>
+<li>将要从mempool中删除的原始交易及其后代交易的数量总计不得超过100笔交易。</li>
+</ul>
+<p>最初的实现可以在<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYml0Y29pbi9wdWxsLzY4NzE=" title="https://github.com/bitcoin/bitcoin/pull/6871">比特核心PR＃6871<i class="fa fa-external-link"></i></span>中看到， 特别是主分支从5891f870d68d90408aa5ce5b597fb574f2d2cbca提交到16a2f93629f75d182871f288f0396afe6cdc8504（含）。</p>
+<h3 id="接收钱包政策"><a href="#接收钱包政策" class="headerlink" title="接收钱包政策"></a>接收钱包政策</h3><p>向用户显示未经确认的交易或向自动化系统提供有关未确认交易数据的钱包应考虑执行以下操作之一：</p>
+<ul>
+<li>向用户或数据使用者传递更多的关于opt-in full-RBF交易的怀疑（推测）。</li>
+<li>在确认之前忽略选择性（opt-in）交易。</li>
+</ul>
+<p><b style="color:red">因为后代交易也可以通过继承信号在此策略下进行替换，只要任何祖先加入交易的full-RBF交易并保持未确认状态，那么任何用于处理<code>opt-in full-RBF</code>交易的方法都应该被任何后代交易继承。</b></p>
+<h3 id="支出钱包政策"><a href="#支出钱包政策" class="headerlink" title="支出钱包政策"></a>支出钱包政策</h3><p><b style="color:blue">当想要使用锁定时间时，不希望信号可替换性的钱包应使用最大序列号（0xffffffff）或序列号（0xffffffff-1）; 所有已知的钱包目前都这样做</b>。<b style="color:red">他们还应该注意不要花费任何明确的信号替代性或通过遗传信号未经确认的交易; 除了他们自己创造的交易，大多数钱包目前也不花费任何未经确认的交易。</b></p>
+<p>希望进行替换的钱包应使用明确的信号并符合上述实施细节中描述的标准。一个<span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvVHJhbnNhY3Rpb25fcmVwbGFjZW1lbnQ=" title="https://en.bitcoin.it/wiki/Transaction_replacement">Bitcoin的Wiki页面<i class="fa fa-external-link"></i></span>已经建立，以帮助钱包作者跟踪与交易更换mempool部署策略。</p>
+<p>最初的实现是利用P2P协议拒绝消息来拒绝替换，允许P2P客户端确定他们的替换是否最初被同伴接受。 标准的P2P轻量级客户端的做法是，在侦听来自其他对等方的中继时发送给某些对等方，对等方应该允许客户端确定替换是否已传播。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>Satoshi Nakamoto最初的比特币实现在每个输入中提供了nSequence数字字段，以<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3Ryb3R0aWVyL29yaWdpbmFsLWJpdGNvaW4vYmxvYi9tYXN0ZXIvc3JjL21haW4uY3BwI0w0MzQ=" title="https://github.com/trottier/original-bitcoin/blob/master/src/main.cpp#L434">允许<i class="fa fa-external-link"></i></span> 在mempool中替换包含该输入的交易。在接收替换时，节点应该用序号较高的交易替换输入序号较低的交易。</p>
+<p>在那个实施中，替换交易不需要支付额外的费用，所以矿工们没有直接的动机来包括替代品，也没有内置的限制速度，防止过度使用中继节点带宽。Nakamoto 从比特币版本0.3.12中<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYml0Y29pbi9jb21taXQvMDU0NTQ4MThkYzdlZDkyZjU3N2ExYTFlZjY3OTgwNDlmMTdhNTJlNyNkaWZmLTExOGZjYmFhYmExNjJiYTE3OTMzYzc4OTMyNDdkZjNhUjUyMg==" title="https://github.com/bitcoin/bitcoin/commit/05454818dc7ed92f577a1a1ef6798049f17a52e7#diff-118fcbaaba162ba17933c7893247df3aR522">删除了替代品<i class="fa fa-external-link"></i></span>，仅留下评论“暂时禁用替换功能”。</p>
+<p>用较高费用的交易替代交易为消费者提供了一种使他们的愿望与矿工相一致的方式，但是到费用替代（RBF）补丁用来重新启用替代时，一些接收者开始期望他们所看到的第一个交易版本可能是要确认的交易的版本，因此一些用户主张替换应该被禁止。</p>
+<p><b style="color:red">为了解决这些问题，创建了一个RBF变体，要求替换交易支付与原始交易所有输出相同或更大的金额。 这被称为RBF-First Seen Safe（RBF-FSS），并且最初的RBF被称为全RBF。</b> <b style="color:blue">虽然对于依赖首次交易版本的接受者来说是合适的，但每次使用RBF-FSS都需要在交易中增加额外的输入，导致钱包无法使用，如果他们没有备用输入，则会丧失隐私，当不同来源的输入在相同的交易中被使用时，交易字节大小的浪费将会增加。</b></p>
+<p><b style="color:red">Opt-in full-RBF使用Nakamoto的原始语义（稍作调整以允许锁定时间用户选择退出）表示可以进行替换，为首次使用的用户提供忽略这些交易的能力，同时还有可以提高full-RBF效率的优点。</b></p>
+<p>opt-in full-RBF和nSequence的其他用途之间没有已知的有问题的相互作用。具体来说，选择性全RBF符合比特币0.1实施，BIP68草案（使用共识执行的序列号的相对锁定时间）草案和BIP112（CHECKSEQUENCEVERIFY）草案中提供的达成共识的锁定时间。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>自从比特币首次发布以来，100％的网络哈希率使用选择全RBF语义（序列小于（0xffffffff - 1））来挖掘交易。</p>
+<p>选择全RBF作为节点和矿工之间默认的mempool替换策略，预计会在升级到Bitcoin Core 0.12.0（预计2016年1月/ 2月发布） 并且会和类似节点软件（比如比特币LJR）一样变得普遍。</p>
+<p>在满足两个条件之前，实际更换可能不可靠：</p>
+<ul>
+<li>足够的节点已经升级到支持它，提供了一个中继路径，用于替换从支出钱包到控制大量散列率的矿工。</li>
+<li>足够的散列率已经升级以支持替换，从而允许可以挖掘替换的合理可能性。</li>
+</ul>
+<h2 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h2><p>目前没有已知的钱包在默认情况下创建交易，其中nSequence设置在下面（0xffffffff – 1），因此默认情况下没有已知的现有钱包明确指示可替换性。 没有已知的流行钱包默认支付其他用户未确认的交易，因此没有已知的现有钱包表明继承的可替换性。</p>
+<h2 id="也可以看看"><a href="#也可以看看" class="headerlink" title="也可以看看"></a>也可以看看</h2><ol>
+<li><span class="exturl" data-url="aHR0cHM6Ly9lbi5iaXRjb2luLml0L3dpa2kvVHJhbnNhY3Rpb25fcmVwbGFjZW1lbnQ=" title="https://en.bitcoin.it/wiki/Transaction_replacement">Bitcoin Wiki上的交易可替换性<i class="fa fa-external-link"></i></span>旨在帮助钱包作者使用RBF</li>
+<li>用于创建选择性全RBF交易的工具：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3BldGVydG9kZC9yZXBsYWNlLWJ5LWZlZS10b29scyNyZXBsYWNlLWJ5LWZlZS10b29scw==" title="https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools">https://github.com/petertodd/replace-by-fee-tools#replace-by-fee-tools<i class="fa fa-external-link"></i></span></li>
+<li>Reddit：<span class="exturl" data-url="aHR0cHM6Ly93d3cucmVkZGl0LmNvbS9yL0JpdGNvaW4vY29tbWVudHMvM3VybThvL29wdGluX3JiZl9pc19taXN1bmRlcnN0b29kX2Fza19xdWVzdGlvbnNfYWJvdXRfaXQv" title="https://www.reddit.com/r/Bitcoin/comments/3urm8o/optin_rbf_is_misunderstood_ask_questions_about_it/">关于选择性RBF的问题<i class="fa fa-external-link"></i></span>旨在帮助社区成员了解opt-in<br>full-RBF.<br>版权<br>该文件置于公共领域。</li>
+</ol>
+<h2 id="参考和引用"><a href="#参考和引用" class="headerlink" title="参考和引用"></a>参考和引用</h2><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JpdGNvaW4vYmlwcy9ibG9iL21hc3Rlci9iaXAtMDEyNS5tZWRpYXdpa2k=" title="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki">Opt-in Full Replace-by-Fee Signaling<i class="fa fa-external-link"></i></span></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html" title="BIP125：可选的交易费用替换信号【翻译】">https://cordate.github.io/blockchain/比特币/BIP125：可选的交易费用替换信号.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/交易替换/" rel="tag"><i class="fa fa-tag"></i> 交易替换</a>
+          
+            <a href="/tags/比特币/" rel="tag"><i class="fa fa-tag"></i> 比特币</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blockchain/比特币/比特币粉尘和空块.html" rel="next" title="比特币粉尘和空块">
+                <i class="fa fa-chevron-left"></i> 比特币粉尘和空块
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/java/Java中volatile解析.html" rel="prev" title="Java中volatile解析">
+                Java中volatile解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">2.</span> <span class="nav-text">概要</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实施细节"><span class="nav-number">2.1.</span> <span class="nav-text">实施细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收钱包政策"><span class="nav-number">2.2.</span> <span class="nav-text">接收钱包政策</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支出钱包政策"><span class="nav-number">2.3.</span> <span class="nav-text">支出钱包政策</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-number">3.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户支持"><span class="nav-number">5.</span> <span class="nav-text">客户支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#也可以看看"><span class="nav-number">6.</span> <span class="nav-text">也可以看看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考和引用"><span class="nav-number">7.</span> <span class="nav-text">参考和引用</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-01</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">821k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
