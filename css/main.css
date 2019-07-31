@@ -1062,11 +1062,15 @@ pre .javascript .function {
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
   transition-delay: 0s;
+  background-color: #ccc;
+  color: #565656;
+  background-image: url("/images/bg2.png");
 }
 .pagination .prev:hover,
 .pagination .next:hover,
 .pagination .page-number:hover {
   border-top-color: #364050;
+  color: #fff;
 }
 .pagination .space {
   padding: 0;
@@ -1080,7 +1084,7 @@ pre .javascript .function {
 }
 .pagination .page-number.current {
   color: #fff;
-  background: #ccc;
+  background: #364050;
   border-top-color: #ccc;
 }
 @media (max-width: 767px) {
@@ -1961,7 +1965,7 @@ ul.menu .menu-item a:hover {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #3daa9c;
+  background: #b91dd0;
 }
 .feed-link,
 .chat {
