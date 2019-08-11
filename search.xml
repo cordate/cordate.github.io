@@ -2457,9 +2457,9 @@
       
         <tags>
             
-            <tag> 集合 </tag>
-            
             <tag> BlockingQueue </tag>
+            
+            <tag> 集合 </tag>
             
         </tags>
       
@@ -2486,9 +2486,9 @@
       
         <tags>
             
-            <tag> Queue </tag>
-            
             <tag> 集合 </tag>
+            
+            <tag> Queue </tag>
             
         </tags>
       

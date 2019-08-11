@@ -221,15 +221,27 @@ $(document).ready(function() {
   };
   sidebarToggleMotion.init();
 
+  // function updateFooterPosition() {
+  //   var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
+  //   if (containerHeight < window.innerHeight) {
+  //     $('#footer').css({ 'position': 'fixed', 'bottom': 0, 'left': 0, 'right': 0 }).attr('position', 'fixed');
+  //   } else {
+  //     $('#footer').removeAttr('style position');
+  //   }
+  // }
+
   function updateFooterPosition() {
-    var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
-    if (containerHeight < window.innerHeight) {
-      $('#footer').css({ 'position': 'fixed', 'bottom': 0, 'left': 0, 'right': 0 }).attr('position', 'fixed');
+    // var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
+    var footerHeight = $('#footer').height();
+    // alert($('.container').height());
+    if ($('.container').height() < window.innerHeight) {
+      $('#footer').css({ 'position': 'absolute', 'bottom': $(".container").height() - window.innerHeight, 'right': 0, 'width': '100%' });
     } else {
       $('#footer').removeAttr('style position');
     }
   }
 
-  updateFooterPosition();
-  $(window).on('resize scroll', updateFooterPosition);
+  // updateFooterPosition();
+  $(window).on('resize scroll load', updateFooterPosition);
+  $("iframe").on('resize load', updateFooterPosition); // iframe的大小也会改变
 });
