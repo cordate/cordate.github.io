@@ -1433,6 +1433,7 @@ ul.menu .menu-item a:hover {
 .posts-collapse {
   position: relative;
   z-index: 1010;
+  top: 30px;
   margin-left: 55px;
 }
 .posts-collapse::after {
@@ -1965,7 +1966,7 @@ ul.menu .menu-item a:hover {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #b91dd0;
+  background: #cb2e73;
 }
 .feed-link,
 .chat {
