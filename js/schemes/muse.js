@@ -241,7 +241,7 @@ $(document).ready(function() {
     }
   }
 
-  // updateFooterPosition();
+  updateFooterPosition();
   $(window).on('resize scroll load', updateFooterPosition);
   $("iframe").on('resize load', updateFooterPosition); // iframe的大小也会改变
 });
