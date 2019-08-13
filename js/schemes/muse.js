@@ -188,6 +188,7 @@ $(document).ready(function() {
           },
           complete: function() {
             self.sidebarEl.addClass('sidebar-active');
+            $(".site-nav.sticky").css({left: (self.sidebarEl.width() / 2 + 'px')});
           }
         });
       } else {
@@ -206,6 +207,7 @@ $(document).ready(function() {
       NexT.utils.isDesktop() && $('body').stop().animate(isRight ? {'padding-right': 0} : {'padding-left': 0});
       this.sidebarEl.find('.motion-element').hide();
       this.sidebarEl.stop().animate({width: 0, display: 'none'}).removeClass('sidebar-active');
+      $(".site-nav.sticky").css({left: 0});
 
       sidebarToggleLines.init();
 
