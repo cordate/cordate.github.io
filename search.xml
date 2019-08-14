@@ -2339,9 +2339,9 @@
       
         <tags>
             
-            <tag> 比特币 </tag>
-            
             <tag> bitcoinj </tag>
+            
+            <tag> 比特币 </tag>
             
         </tags>
       
@@ -2368,11 +2368,11 @@
       
         <tags>
             
-            <tag> 比特币 </tag>
-            
             <tag> bitcoinj </tag>
             
             <tag> message </tag>
+            
+            <tag> 比特币 </tag>
             
         </tags>
       
@@ -3117,31 +3117,20 @@
     
     
     <entry>
-      <title>文章分类</title>
-      <link href="/categories/index.html"/>
-      <url>/categories/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>关于我</title>
       <link href="/about/index.html"/>
       <url>/about/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>文章分类</title>
+      <link href="/categories/index.html"/>
+      <url>/categories/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3161,6 +3150,17 @@
     
     
     <entry>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>vedio</title>
       <link href="/vedio/index.html"/>
       <url>/vedio/index.html</url>
@@ -3172,22 +3172,22 @@
     
     
     <entry>
-      <title>厦门市</title>
-      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
-      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
+      <title>安徽九华山</title>
+      <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
+      <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 九华山 --><iframe src="//player.bilibili.com/player.html?aid=42749538&cid=74978829&page=1" frameborder="0" 'allowfullscreen'="" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"></iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
     
     
     <entry>
-      <title>安徽九华山</title>
-      <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
-      <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
+      <title>厦门市</title>
+      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
+      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 九华山 --><iframe src="//player.bilibili.com/player.html?aid=42749538&cid=74978829&page=1" frameborder="0" 'allowfullscreen'="" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"></iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
@@ -3216,22 +3216,22 @@
     
     
     <entry>
-      <title>鼋头渚</title>
-      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
-      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      <title>青海游</title>
+      <link href="/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html"/>
+      <url>/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html</url>
       
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 青海游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><iframe src="//player.bilibili.com/player.html?aid=42755267&cid=74987726&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
     
     
     <entry>
-      <title>青海游</title>
-      <link href="/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html"/>
-      <url>/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html</url>
+      <title>鼋头渚</title>
+      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
+      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 青海游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><iframe src="//player.bilibili.com/player.html?aid=42755267&cid=74987726&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
