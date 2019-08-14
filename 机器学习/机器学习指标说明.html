@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="分类器评价指标主要有：  准确度 Accuracy 精确率 Precision  召回率 Recall  F1 score  ROC 曲线 AUC PR 曲线  我们先从混淆矩阵开始； 混淆矩阵混淆矩阵是监督学习中的一种可视化工具，主要用于比较分类结果和实例的真实信息。矩阵中的每一行代表实例的预测类别，每一列代表实例的真实类别。  上图的四种情况说明：  真正(True Positive , TP">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-31T18:42:00.363Z">
+<meta property="og:updated_time" content="2019-08-14T18:04:04.710Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习指标说明">
 <meta name="twitter:description" content="分类器评价指标主要有：  准确度 Accuracy 精确率 Precision  召回率 Recall  F1 score  ROC 曲线 AUC PR 曲线  我们先从混淆矩阵开始； 混淆矩阵混淆矩阵是监督学习中的一种可视化工具，主要用于比较分类结果和实例的真实信息。矩阵中的每一行代表实例的预测类别，每一列代表实例的真实类别。  上图的四种情况说明：  真正(True Positive , TP">
@@ -451,7 +451,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-01 02:42:00" itemprop="dateModified" datetime="2019-08-01T02:42:00+08:00">2019-08-01</time>
+                <time title="修改时间：2019-08-15 02:04:04" itemprop="dateModified" datetime="2019-08-15T02:04:04+08:00">2019-08-15</time>
               </span>
             
           
@@ -504,7 +504,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">1.3k</span>
+              <span title="本文字数">2.4k</span>
             </span>
           
 
@@ -516,7 +516,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">1 分钟</span>
+              <span title="阅读时长">2 分钟</span>
             </span>
           
 
@@ -547,7 +547,7 @@
 </ol>
 <p>我们先从混淆矩阵开始；</p>
 <h1 id="混淆矩阵"><a href="#混淆矩阵" class="headerlink" title="混淆矩阵"></a>混淆矩阵</h1><p>混淆矩阵是监督学习中的一种可视化工具，主要用于比较分类结果和实例的真实信息。矩阵中的每一行代表实例的预测类别，每一列代表实例的真实类别。</p>
-<p><img alt="混淆矩阵图" data-src="https://github.com/gavin-account/blog-pics/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5.png?raw=true"></p>
+<p><img alt="混淆矩阵图" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5.png"></p>
 <p>上图的四种情况说明：</p>
 <ol>
 <li>真正(True Positive , TP)：被模型预测为正的正样本。</li>
@@ -568,6 +568,26 @@
 <h1 id="召回率（Recall）"><a href="#召回率（Recall）" class="headerlink" title="召回率（Recall）"></a>召回率（Recall）</h1><p>召回率表现出在实际正样本中，分类器能预测出多少。与真正率相等，可理解为查全率。<br><code>Recall = TP/(TP+FN)</code>，即正确预测的正例数 /实际正例总数。</p>
 <h1 id="F1-score"><a href="#F1-score" class="headerlink" title="F1 score"></a>F1 score</h1><p>F值是精确率和召回率的调和值，更接近于两个数较小的那个，所以精确率和召回率接近时，F值最大。很多推荐系统的评测指标就是用F值的。<br><code>2/F1 = 1/Precision + 1/Recall</code> 。</p>
 <h1 id="ROC曲线"><a href="#ROC曲线" class="headerlink" title="ROC曲线"></a>ROC曲线</h1><p>逻辑回归里面，对于正负例的界定，通常会设一个阈值，大于阈值的为正类，小于阈值为负类。如果我们减小这个阀值，更多的样本会被识别为正类，提高正类的识别率，但同时也会使得更多的负类被错误识别为正类。为了直观表示这一现象，引入ROC。根据分类结果计算得到ROC空间中相应的点，连接这些点就形成ROC curve，横坐标为False Positive Rate(FPR假正率)，纵坐标为True Positive Rate(TPR真正率)。一般情况下，这个曲线都应该处于(0,0)和(1,1)连线的上方,如图：</p>
+<p><img alt="ROC曲线" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/ROC%E6%9B%B2%E7%BA%BF.png"></p>
+<p>ROC曲线中的四个点和一条线:</p>
+<ul>
+<li>点(0,1)：即FPR=0, TPR=1，意味着FN＝0且FP＝0，将所有的样本都正确分类。</li>
+<li>点(1,0)：即FPR=1，TPR=0，最差分类器，避开了所有正确答案。</li>
+<li>点(0,0)：即FPR=TPR=0，FP＝TP＝0，分类器把每个实例都预测为负类。</li>
+<li>点(1,1)：分类器把每个实例都预测为正类。</li>
+</ul>
+<p>总之：ROC曲线越接近左上角，该分类器的性能越好。而且一般来说，如果ROC是光滑的，那么基本可以判断没有太大的overfitting</p>
+<h1 id="AUC"><a href="#AUC" class="headerlink" title="AUC"></a>AUC</h1><p>AUC（Area Under Curve）被定义为ROC曲线下的面积(ROC的积分)，通常大于0.5小于1。随机挑选一个正样本以及一个负样本，分类器判定正样本的值高于负样本的概率就是 AUC 值。AUC值(面积)越大的分类器，性能越好，如图：</p>
+<p><img alt="AUC曲线" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/AUC%E5%9B%BE.png"></p>
+<h1 id="PR曲线"><a href="#PR曲线" class="headerlink" title="PR曲线"></a>PR曲线</h1><p>PR曲线的横坐标是精确率P，纵坐标是召回率R。评价标准和ROC一样，先看平滑不平滑（蓝线明显好些）。一般来说，在同一测试集，上面的比下面的好（绿线比红线好）。当P和R的值接近时，F1值最大，此时画连接(0,0)和(1,1)的线，线和PRC重合的地方的F1是这条线最大的F1（光滑的情况下），此时的F1对于PRC就好像AUC对于ROC一样。一个数字比一条线更方便调型。</p>
+<p><img alt="PR曲线" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/PR%E6%9B%B2%E7%BA%BF.png"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>有时候模型没有单纯的谁比谁好（比如图二的蓝线和青线），所以选择模型还是要结合具体的使用场景。下面是两个场景：</p>
+<ol>
+<li>地震的预测 对于地震的预测，我们希望的是RECALL非常高，也就是说每次地震我们都希望预测出来。这个时候我们可以牺牲PRECISION。情愿发出1000次警报，把10次地震都预测正确了，也不要预测100次对了8次漏了两次。</li>
+<li>嫌疑人定罪 基于不错怪一个好人的原则，对于嫌疑人的定罪我们希望是非常准确的。即时有时候放过了一些罪犯（recall低），但也是值得的。</li>
+</ol>
+<p>对于分类器来说，本质上是给一个概率，此时，我们再选择一个CUTOFF点（阀值），高于这个点的判正，低于的判负。那么这个点的选择就需要结合你的具体场景去选择。反过来，场景会决定训练模型时的标准，比如第一个场景中，我们就只看RECALL=99.9999%（地震全中）时的PRECISION，其他指标就变得没有了意义。</p>
+<p>当正负样本数量差距不大的情况下，ROC和PR的趋势是差不多的，但是在正负样本分布极不均衡的情况下，PRC比ROC更能真实的反映出实际情况，因为此时ROC曲线看起来似乎很好，但是却在PR上效果一般。<br>详见：<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzMwNjQzMDQ0L2Fuc3dlci80ODk1NTgzMw==" title="https://www.zhihu.com/question/30643044/answer/48955833">https://www.zhihu.com/question/30643044/answer/48955833<i class="fa fa-external-link"></i></span></p>
 
       
     </div>
@@ -1129,7 +1149,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#混淆矩阵"><span class="nav-number">1.</span> <span class="nav-text">混淆矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准确率（Accuracy）"><span class="nav-number">2.</span> <span class="nav-text">准确率（Accuracy）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#精确率（Precision）"><span class="nav-number">3.</span> <span class="nav-text">精确率（Precision）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#召回率（Recall）"><span class="nav-number">4.</span> <span class="nav-text">召回率（Recall）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#F1-score"><span class="nav-number">5.</span> <span class="nav-text">F1 score</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ROC曲线"><span class="nav-number">6.</span> <span class="nav-text">ROC曲线</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#混淆矩阵"><span class="nav-number">1.</span> <span class="nav-text">混淆矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准确率（Accuracy）"><span class="nav-number">2.</span> <span class="nav-text">准确率（Accuracy）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#精确率（Precision）"><span class="nav-number">3.</span> <span class="nav-text">精确率（Precision）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#召回率（Recall）"><span class="nav-number">4.</span> <span class="nav-text">召回率（Recall）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#F1-score"><span class="nav-number">5.</span> <span class="nav-text">F1 score</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ROC曲线"><span class="nav-number">6.</span> <span class="nav-text">ROC曲线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AUC"><span class="nav-number">7.</span> <span class="nav-text">AUC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PR曲线"><span class="nav-number">8.</span> <span class="nav-text">PR曲线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
@@ -1150,7 +1170,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-14</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-15</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1164,7 +1184,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">821k</span>
+    <span title="站点总字数">822k</span>
   
 
   
@@ -1175,7 +1195,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">12:26</span>
+    <span title="站点阅读时长">12:27</span>
   
 </div>
 
