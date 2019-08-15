@@ -4,6 +4,106 @@
   
     
     <entry>
+      <title>同步与异步，阻塞与非阻塞与IO模型</title>
+      <link href="//%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5%EF%BC%8C%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E.html"/>
+      <url>//%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5%EF%BC%8C%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="概念剖析"><a href="#概念剖析" class="headerlink" title="概念剖析"></a>概念剖析</h1><p>相信很多从事linux后台开发工作的都接触过同步&amp;异步、阻塞&amp;非阻塞这样的概念，也相信都曾经产生过误解，比如认为同步就是阻塞、异步就是非阻塞，下面我们先剖析下这几个概念分别是什么含义。</p><h2 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h2><p>所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事。</p><p>例如普通B/S模式（同步）：提交请求-&gt;等待服务器处理-&gt;处理完毕返回 这个期间客户端浏览器不能干任何事</p><h2 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h2><p>异步的概念和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。</p><p>例如 ajax请求（异步）: 请求通过事件触发-&gt;服务器处理（这是浏览器仍然可以作其他事情）-&gt;处理完毕</p><h2 id="阻塞"><a href="#阻塞" class="headerlink" title="阻塞"></a>阻塞</h2><p>阻塞调用是指调用结果返回之前，当前线程会被挂起（线程进入非可执行状态，在这个状态下，cpu不会给线程分配时间片，即线程暂停运行）。函数只有在得到结果之后才会返回。</p><p>有人也许会把阻塞调用和同步调用等同起来，实际上他是不同的。对于同步调用来说，很多时候当前线程还是激活的，只是从逻辑上当前函数没有返回,它还会抢占cpu去执行其他逻辑，也会主动检测io是否准备好。</p><h2 id="非阻塞"><a href="#非阻塞" class="headerlink" title="非阻塞"></a>非阻塞</h2><p>非阻塞和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。</p><p>再简单点理解就是：</p><ol><li>同步，就是我调用一个功能，该功能没有结束前，我死等结果。</li><li>异步，就是我调用一个功能，不需要知道该功能结果，该功能有结果后通知我（回调通知）</li><li>阻塞，就是调用我（函数），我（函数）没有接收完数据或者没有得到结果之前，我不会返回。</li><li>非阻塞，就是调用我（函数），我（函数）立即返回，通过select通知调用者</li></ol><p>同步IO和异步IO的区别就在于：数据拷贝的时候进程是否阻塞</p><p>阻塞IO和非阻塞IO的区别就在于：应用程序的调用是否立即返回</p><p>综上可知，同步和异步,阻塞和非阻塞,有些混用,其实它们完全不是一回事,而且它们修饰的对象也不相同。</p><h1 id="五种IO模型"><a href="#五种IO模型" class="headerlink" title="五种IO模型"></a>五种IO模型</h1><p>在了解了同步与异步、阻塞与非阻塞概念后，我们来讲讲linux的五种IO模型：</p><ol><li>阻塞I/O（blocking I/O）</li><li>非阻塞I/O （nonblocking I/O）</li><li>I/O复用(select 和poll) （I/O multiplexing）</li><li>信号驱动I/O （signal driven I/O (SIGIO)）</li><li>异步I/O （asynchronous I/O (the POSIX aio_functions)）</li></ol><p>其中前4种都是同步，最后一种才是异步。</p><h2 id="阻塞I-O"><a href="#阻塞I-O" class="headerlink" title="阻塞I/O"></a>阻塞I/O</h2><p>应用程序调用一个IO函数，导致应用程序阻塞，等待数据准备好。 如果数据没有准备好，一直等待….数据准备好了，从内核拷贝到用户空间,IO函数返回成功指示。</p><p><b style="color:red">阻塞I/O模型图：在调用recv()/recvfrom（）函数时，发生在内核中等待数据和复制数据的过程。</b></p><p>当调用recv()函数时，系统首先查是否有准备好的数据。如果数据没有准备好，那么系统就处于等待状态。当数据准备好后，将数据从系统缓冲区复制到用户空间，然后该函数返回。在套接应用程序中，当调用recv()函数时，未必用户空间就已经存在数据，那么此时recv()函数就会处于等待状态。</p><h2 id="非阻塞I-O"><a href="#非阻塞I-O" class="headerlink" title="非阻塞I/O"></a>非阻塞I/O</h2><p>非阻塞IO通过进程反复调用IO函数（多次系统调用，并马上返回）；在数据拷贝的过程中，进程是阻塞的</p><p>我们把一个SOCKET接口设置为非阻塞就是告诉内核，当所请求的I/O操作无法完成时，不要将进程睡眠，而是返回一个错误。这样我们的I/O操作函数将不断的测试数据是否已经准备好，如果没有准备好，继续测试，直到数据准备好为止。在这个不断测试的过程中，会大量的占用CPU的时间。</p><p><img alt="非阻塞I/O图示过程" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E9%9D%9E%E9%98%BB%E5%A1%9Eio.png"></p><h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><p>主要是select和epoll；对一个IO端口，两次调用，两次返回，比阻塞IO并没有什么优越性；关键是能实现同时对多个IO端口进行监听；<b style="color:red"> I/O复用模型会用到select、poll、epoll函数，这几个函数也会使进程阻塞，但是和阻塞I/O所不同的的，这两个函数可以同时阻塞多个I/O操作。而且可以同时对多个读操作，多个写操作的I/O函数进行检测，直到有数据可读或可写时，才真正调用I/O操作函数。</b></p><p><img alt="IO多路复用" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8.png"></p><h2 id="信号驱动IO"><a href="#信号驱动IO" class="headerlink" title="信号驱动IO"></a>信号驱动IO</h2><p>首先我们允许套接口进行信号驱动I/O,并安装一个信号处理函数，进程继续运行并不阻塞。当数据准备好时，进程会收到一个SIGIO信号，可以在信号处理函数中调用I/O操作函数处理数据。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8.png"></p><h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><p>当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者的输入输出操作.</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%BC%82%E6%AD%A5IO.png"></p><h1 id="5中io比较"><a href="#5中io比较" class="headerlink" title="5中io比较"></a>5中io比较</h1><p>最后我们看一下5种IO的比较，这样你能直观的感受这种模型的区别和联系。<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/5%E4%B8%ADIO%E6%AF%94%E8%BE%83.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 基础知识 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 模式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>expect脚本实现自动登录</title>
+      <link href="//linux/expect%E8%84%9A%E6%9C%AC%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E7%99%BB%E5%BD%95.html"/>
+      <url>//linux/expect%E8%84%9A%E6%9C%AC%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E7%99%BB%E5%BD%95.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>现在的系统都是分布式系统，微服务已经是常态化了。就是环境也是多套，dev、sit、stable、pre、prod。但是带来的问题就是我们要经常连接不同的服务器去查问题，频繁的环境切换+密码查找带来不小的麻烦。今天就了来教大家如何实现自动连接服务器，而不用输入密码。</p><p>expect脚本这个就能满足大家的要求，如果你想更灵活的操作也可以试用一下fabric，但是fabric并不能进行交互shell，fabric虽然不用输入密码，但是它是每次一批一批命令的发。相比之下我更喜欢交互式shell，所以这里我就重点介绍一下expect shell脚本的编写。</p><p>expect脚本是基于Tcl包而构建的，是基于C语言开发的产品，所以Tcl的指令在expect中也是可以使用的。<span class="exturl" data-url="aHR0cHM6Ly9jb3JlLnRjbC1sYW5nLm9yZy9leHBlY3QvaG9tZQ==" title="https://core.tcl-lang.org/expect/home">expect的官网<i class="fa fa-external-link"></i></span>也给了很多信息，我们这里只是一个简明的教程，里面的东西就不进行详细的介绍了。</p><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>安装expect非常简单，Ubuntu用户，使用：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> apt-get install expect</span></span><br></pre></td></tr></table></figure></p><p>Centos用户<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> yum install expect</span></span><br></pre></td></tr></table></figure></p><p>mac用户<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> brew install expect</span></span><br></pre></td></tr></table></figure></p><p>如果你widows用户，那就直接使用Xshell，而且这个Xshell还能开启ss5通道进行翻墙呢。😺 当然这个是基于ssh的功能进行的，如果你想利用ssh开启ss5通道翻墙，可以使用下面的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">while true; do ssh -D 7070 $user@$host -p $port || true; done</span><br></pre></td></tr></table></figure></p><h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><p>Expect是在Tcl基础上创建起来的，它还提供了一些Tcl所没有的命令：</p><ul><li>spawn命令激活一个Unix程序来进行交互式的运行。</li><li>send命令向进程发送字符串。</li><li>expect命令等待进程的某些字符串。expect支持正规表达式并能同时等待多个字符串，并对每一个字符串执行不同的操作。expect还能理解一些特殊情况，如超时和遇到文件尾。</li><li>expect命令和Tcl的case命令的风格很相似。都是用一个字符串去匹配多个字符串。(只要有可能，新的命令总是和已有的Tcl命令相似，以使得该语言保持工具族的继承性)。</li></ul><h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>下面给一个expect脚本的示例，部分信息我做了隐藏。这个脚本是底层连接的脚本，我还在外面包了具体连接某一台机器的脚本。所以这个底层脚本需要输入你要连接的机器作为参数传进来。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/local/bin/expect</span></span><br><span class="line"> </span><br><span class="line">send_user <span class="string">"开始进行连接......\n"</span>;</span><br><span class="line"><span class="comment">#从命令行参数中获取要连接的机器</span></span><br><span class="line"><span class="built_in">set</span> cmd [lindex <span class="variable">$argv</span> 0]</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> &#123; <span class="string">"<span class="variable">$cmd</span>"</span> == <span class="string">""</span> &#125; &#123;</span><br><span class="line">    send_user <span class="string">"参数cmd不能为空\n"</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">send_user <span class="string">"机器: <span class="variable">$cmd</span> \n"</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 进入交互式shell</span></span><br><span class="line">spawn ssh <span class="built_in">log</span>@<span class="variable">$cmd</span></span><br><span class="line">expect &#123;</span><br><span class="line">    <span class="string">"*password:"</span> &#123;</span><br><span class="line">        send <span class="string">"【替换为你的连接的密码】\n"</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># 第一次进行ssh连接的时候，会提示是否继续</span></span><br><span class="line">    <span class="string">"*(yes/no)?"</span> &#123;</span><br><span class="line">        send <span class="string">"yes\n"</span></span><br><span class="line">expect &#123;</span><br><span class="line">            <span class="string">"*password:"</span> &#123;</span><br><span class="line">                send <span class="string">"【替换为你的连接的密码】\n"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接后进入特定的目录 </span></span><br><span class="line"><span class="comment"># expect "*$*" &#123;</span></span><br><span class="line"><span class="comment">#     send "cd /home/admin/logs"</span></span><br><span class="line"><span class="comment">#     send "export app=`uname -ar | awk '&#123;print \$2&#125;' | awk -F . '&#123;print \$1&#125;' | awk -F - '&#123;print \$1&#125;'`"</span></span><br><span class="line"><span class="comment"># &#125;</span></span><br><span class="line"><span class="comment">#expect eof</span></span><br><span class="line"><span class="comment">#catch wait result</span></span><br><span class="line"><span class="comment">#send_user "结果：$result"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接成功后在进行交互之前执行一些命令 </span></span><br><span class="line">spawn ls</span><br><span class="line">spawn <span class="built_in">cd</span> /home/admin/logs</span><br><span class="line">spawn bash -c <span class="string">"app=`uname -ar | awk '&#123;print \$2&#125;' | awk -F . '&#123;print \$1&#125;' | awk -F - '&#123;print \$1&#125;'`"</span></span><br><span class="line">send_user <span class="string">"登录机器的应用名：<span class="variable">$app</span> \n"</span></span><br><span class="line">bash ~/util/common/pre</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 正式进入交互模式</span></span><br><span class="line">interact</span><br></pre></td></tr></table></figure></p><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>更多关于expect的学习请参考：</p><ul><li><span class="exturl" data-url="aHR0cDovL3hzdGFyY2QuZ2l0aHViLmlvL3dpa2kvc2hlbGwvZXhwZWN0X2hhbmRib29rLmh0bWw=" title="http://xstarcd.github.io/wiki/shell/expect_handbook.html">expect教程中文版<i class="fa fa-external-link"></i></span></li><li><span class="exturl" data-url="aHR0cDovL3hzdGFyY2QuZ2l0aHViLmlvL3dpa2kvc2hlbGwvZXhwZWN0Lmh0bWw=" title="http://xstarcd.github.io/wiki/shell/expect.html">expect - 自动交互脚本<i class="fa fa-external-link"></i></span></li><li><span class="exturl" data-url="aHR0cHM6Ly93d3cudGNsLnRrL2RvYy8=" title="https://www.tcl.tk/doc/">Tcl<i class="fa fa-external-link"></i></span></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Linux </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> expect </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>什么是外汇储备</title>
+      <link href="//%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%96%E6%B1%87%E5%82%A8%E5%A4%87.html"/>
+      <url>//%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%96%E6%B1%87%E5%82%A8%E5%A4%87.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="什么是外汇存储备"><a href="#什么是外汇存储备" class="headerlink" title="什么是外汇存储备"></a>什么是外汇存储备</h1><p>我们大家经常听到我国外汇储备又突破了多少，又降了多少，但是对于外汇储备，你到底知道多少，那么我们今天就来简单聊一聊。</p><p>外汇储备相当于一个国家的“第二个国库”，它的数量增减的意义和动作自然不容忽视。那么，外汇储备是怎么来的呢？</p><p>很多人说是对外贸易得来的，这话没错，但是有些过于笼统。所以小白依然用例子来解释吧。小白开了一家外贸公司，专门对外出口衣服，其中有一笔订单赚了100万美元。小白高兴坏了，可是这美元在国内不能用啊，必须要换成人民币。于是小白跑去中国银行以1:6的汇率（为方便计算，下同）换成了600万人民币。可是中国银行也不能留着这些美元过活啊，这时另一名角——外汇占款登场了。<span style="color:blue">外汇占款简单说是央行投放货币的工具之一，原理说白了就是收回多少外汇，就要向国内相应地投放多少本币。这么一来，中行手中的100万美元幸运地被央行“收”走了。而央行在投放完货币后便开始拿着这些美元去国际市场上投资、进口大宗商品等等。</span></p><p>这就是外汇储备的“身世”。不过，外汇储备中并不全都是美元，它是一揽子货币，其中包括欧元、日元等等，而且外储中还有一部分是以黄金、白银等贵金属形式存在的。总之，外储有两大部分：贵金属和外币现钞。当然也会有外国有价证券，外国银行的支票、期票、外币汇票等。主要用于清偿国际收支逆差，以及干预外汇市场以维持该国货币的汇率。</p><p>这里我们注意所谓外汇储备，其实就是你通过贸易所获得的外币，本国货币总量并没有增加，但是央行用人民币去换的时候其实就是活跃了一下市场，同时国家持有一部分的外国获取，国家内部的货币正常运行，其实就是国家资产增加了，国民其实感知不是很大。但是如果使用本国货币去买外国资产，就是另一种情况，本国货币会减少，需要增发，不利于汇率的稳定。</p><h1 id="外汇储备的影响"><a href="#外汇储备的影响" class="headerlink" title="外汇储备的影响"></a>外汇储备的影响</h1><p>外汇储备下降了，意味着啥？的确，从去年年中算起，到现在，外储波动确实挺大，从3.2万亿直降到今年1月跌破1万亿，然后重新回升到现在的3.1万亿左右。同样，外汇储备的下降由多方面因素造成的，但是！很多自媒体拿外储下降来做文章，说什么用国人的血汗钱买美国国债，借钱给美国人用、21世纪的广场协议等等阴谋论。在此，小白先说明，这些都是片面的，至于为何下降？其中又意味着什么？待小白娓娓道来：</p><p>1、<span style="color:red">维持汇率稳定。中国拿巨额外储购国外政府债是有原因的。重要的一方面是稳定人民币币值。刚刚小白说了，外汇是由对外贸易顺差得来的，随着多余的外币在本国越来越多，就会造成输入型通胀。因此，适当地购买美债，也是消化多余外币，缓解通胀的方法之一。</span></p><p>2、外汇占款增加。外汇占款的定义是一国收购外汇资产而相应投放到本国货币的那部分（因为购买外汇导致本国内流通货币减少，需要投放补充）。那用什么收购呢？人民币是非自由货币，那就只能动用外储了。举个栗子，央行用1000亿美元收购了等值的外汇资产，那么向国内市场投放6000亿人民币。需要说明的是，外汇占款也是资金流的重要风向标，目前外汇占款在连降22个月后，首次回升至21.5万亿左右。这说明热钱涌入国内的压力正在减少，人民币开始坚挺，外贸开始改善。</p><p>3、大宗商品涨价。目前，我国的石油、粮食，稀土等战略资源每年都需要大量进口。而在国际上买东西则必定需要用美元。这时外储的作用又来了，就相当于国家用外币账户去国外买东西，然后咱们用人民币去购买国家进口来的东西。显然，大宗商品涨价了，就需要花费更多的外储来进口啦！<span style="color:red">这里你可以把国家看做一个运行的公司，通过税收收钱，也可以垄断资源向国民提供商品赚钱，国民帮他从国外赚取外汇，然后国家拿到这些外汇后，买国外的商品，再为国民提供服务赚取国民的钱，又能获取外汇；仔细理一下思路，对于外汇市场和本国市场的关系，你就能搞的明白了。</span></p><p>4、购美债。大量购买美债是有原因的。虽说美帝有时主动让美元贬值导致外储缩水是非常不要脸的，可是，这巨额的外储找哪投资呢？这就好比你有1万亿人民币，我估计哪怕你一天花1亿你都要二三十年，所以你必定要找一个地方投资。当然这是极端的例子，换成是外储也是一样。美债的信用担保还是有保证的，尽管收益并不高，但也是当前巨额外储资产最好的投资办法。这又回到了第一个问题，如果增持美债的话，外储就会下降。至于为何，请参照第1点。</p><p>5、贸易逆差。显然这算是最直接的原因吧！进口大于出口，流出的外币大于流进的外币，自然而然外储就下降了。不过，外储也分为资本账户和经常性账户，如果逆差上升（经常性账户余额减少）的幅度大于外汇投资收益增加（资本账户余额增加），则外储总体还是减少的，反之则增加。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 行业知识 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 外汇 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>开放银行</title>
+      <link href="//%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/%E5%BC%80%E6%94%BE%E9%93%B6%E8%A1%8C.html"/>
+      <url>//%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/%E5%BC%80%E6%94%BE%E9%93%B6%E8%A1%8C.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>有专家指出，银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来获得竞争优势。在不少业内人士看来，“开放银行”或将引领银行迈入变革新阶段。</p><p>“开放银行”无疑是当下金融圈里的一大热词。一边是银行与银行之间、银行与非银金融机构间的合作与共赢；另一边则是银行与企业之间的数据共享与场景融合。在不少业内人士看来，“开放银行”或将引领银行变革新阶段。</p><p>我觉的开放银行目前主要是三通，通产品、通技术、通数据。最近蚂蚁内部也在讲这个东西。不过蚂蚁不是金融公司，而是金融科技公司。</p><p>现在的开放银行大概有4种模式：</p><ul><li>产品输出：就是将自己的产品开放出服务接口，便于三方服务接入，这样可以起到三方客户的引流作用。</li><li>开放平台模式：平台化战略，就是以自己为中心化的战略。</li><li>三方平台接入模式：提供SDK的接入处理。</li><li>植入模式：微信、钉钉小程序等。</li></ul><p><img alt="开放银行模式" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/1124495052_15578812817971n.jpg"></p><h1 id="多家银行争相“开放”"><a href="#多家银行争相“开放”" class="headerlink" title="多家银行争相“开放”"></a>多家银行争相“开放”</h1><p>通俗地说，“开放银行”是一种利用开放API（Application Programming Interface）技术实现银行与第三方之间数据共享，从而提升客户体验的平台合作模式。</p><p>“‘开放银行’是未来银行的一种经营模式，通过开放产品与服务、交易与流程、数据和算法，并与金融科技公司、供应商、第三方开发者等其他合作伙伴共享，重构商业生态系统，为商业银行提供新的价值，提升竞争力。”浦发银行相关负责人在接受经济日报记者采访时表示，比如浦发银行的无界开放银行（API Bank）就是超级连接器和能力平台，更是一种新的业务模式和经营理念。</p><p>在上述负责人看来，通过API Bank将银行各类金融产品和服务，甚至非金融服务能力，向同业、用户、合作伙伴开放，即把银行的服务植入到客户端、机构端和政府端，无感融入所有人的生产和生活场景。银行将在各类场景中为客户或用户提供无处不在、无微不至的综合服务解决方案。</p><p>不只是浦发银行，上海银行在2019年一季度报告中也重点谈到了开放银行对其业绩的影响。报告提出，上海银行以“开放银行”深化“B2B2C”“B2B2B”发展模式，金融服务与平台场景生态进一步融合，持续打造“电商平台资金管理”“快线贷”“在线理财超市”“上银收汇”等业务特色，相继与银联“云闪付”、平安“壹钱包”等在存贷汇领域开展合作。</p><p>中国人民大学重阳金融研究院副院长董希淼认为，2018年是我国国内“开放银行”元年。目前，国内有4种“开放银行”模式。</p><p>一是产品输出模式，即开放金融服务能力，将产品以API等形式嵌入到各个场景中，本质上属于一种新型的获客和引流模式。比如，浦发银行推出的API Bank。</p><p>二是开放平台模式，即银行通过搭建对外合作平台，确定规范，对外提供标准化的金融应用API、组件和服务，将银行业务植入各类商业生态系统。比如，武汉众邦银行，定位为“互联网交易银行”，构建数字化驱动科技赋能的开放型数字银行。</p><p>三是三方平台接入模式，即通过接口与第三方对接。比如，上海华瑞银行推出的“极限SDK”产品实现了“将银行开进1700万个APP中”的创想。</p><p>四是植入模式，即借助第三方平台或应用推广产品。比如，各家银行微信银行、微信小程序等。</p><h1 id="服务整体战略转型"><a href="#服务整体战略转型" class="headerlink" title="服务整体战略转型"></a>服务整体战略转型</h1><p>开放的目的是实现战略转型。</p><p>“过去一两年，金融业核心指标增速显著放缓。中国商业银行平均净利润增速远低于2014年之前的水平，大部分银行难以实现双位数增长。银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来赢得竞争优势。”麦肯锡全球资深董事合伙人兼麦肯锡中国区金融机构咨询业务负责人曲向军说。</p><p>深入分析较早布局“开放银行”的浦发银行也可以看出，“开放银行”实际上是作为银行整体转型的关键性变量存在的。</p><p>记者了解到，浦发银行于2018年初确立了“以客户为中心，科技引领，打造一流数字生态银行”的新五年战略目标。建设一流数字生态银行是其应对未来市场快速变化和不确定性，实现高质量发展的战略性决策，而建设API Bank是其中的一项关键举措。</p><p>据统计，浦发银行自2018年7月份在业内首家发布API Bank以来，生态场景及对接合作方数量稳步增长，开放功能既涉及直销银行开户、网贷、礼遇平台、出国金融、跨境电商、缴费支付等传统金融领域,也包括合作营销、资产能力证明等创新场景。截至2019年2月底，API Bank已开放接口共257个，对接中国银联、京东数科等共计92家合作方应用，日峰值交易量超百万。</p><p>一个值得关注的案例，是浦发银行通过与政府端的深入合作，API Bank让政府服务变得更加惠民便民，使公共资源分配更加高效有据。</p><p>例如，浦发银行作为首批与上海口岸服务办公室签署战略合作协议的银行，通过API Bank与上海国际贸易单一窗口进行快速对接，将金融服务内嵌于单一窗口平台中，为广大贸易企业提供在线付汇、购汇、申报等功能。外贸企业可通过上海单一窗口平台在线提交付汇或购汇指令，仅需几分钟就可以完成支付。</p><p>“这不仅从根本上为企业节省了时间成本和人力成本，提高了企业开展跨境贸易的效率，也增强了单一窗口平台服务企业的深度和广度，充分发挥单一窗口信息枢纽作用，并有助于对进出口业务进行最小颗粒度、全链条的跟踪和管理，构建起跨境电商生态圈。”上述浦发银行负责人表示。</p><h1 id="风险防控是关键"><a href="#风险防控是关键" class="headerlink" title="风险防控是关键"></a>风险防控是关键</h1><p>董希淼指出，对银行来说，未来跨界合作将成为一种常态，银行与银行之间，除了是竞争对手，更重要的是合作伙伴。</p><p>业内已经形成的一个共识是，场景与流量是银行稀缺且亟待补充的资源。“考虑到用户行为轨迹数据对授信更有参考价值，目前金融机构更青睐于具有消费属性的流量平台，如流量平台抖音、垂直类流量平台健身类APP、专注城镇市场的拼多多等。无场景要求的现金贷，用户转化率较差。”交通银行金融科技研究室研究专员张哲宇表示。</p><p>与此同时，对新消费认可和对新技术的拥抱也是银行在选择合作伙伴的又一考量。如金融科技公司乐信在其最近召开的2019年合作伙伴大会期间，就与来自工商银行、民生银行、中国人保等数十家金融机构签署了战略合作协议。51信用卡也在日前与中原银行宣布达成战略合作，将在智能风控、大数据技术等层面展开深度合作。</p><p>在合作过程中，银行想要行稳致远，必须同步做好风险控制。“开放不是无原则开放，要做好客户信息安全的保护，而且核心能力也应当掌握在银行手里。”董希淼认为，对中小银行来说，在金融科技浪潮下，以更加开放包容的姿态去合作是没错的，但要充分考虑自身的资源禀赋，并将开放方向与发展战略相融合。同时，在开放过程中还要注意合法合规，充分保护信息安全和客户隐私。</p><p>交通银行金融科技研究室认为，不同于国外开放银行是由政府主导并推动，国内开放银行是由竞争驱使、市场驱动，其发展存在一定的盲目性和无序性，亟需监管部门加强顶层制度设计、推动技术标准建设。</p><h1 id="战略："><a href="#战略：" class="headerlink" title="战略："></a>战略：</h1><p>平台化战略，促进银行共享数据，帮助银行服务。</p><h1 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cud2VpeWFuZ3guY29tLzMyNzE3Mi5odG1s" title="https://www.weiyangx.com/327172.html">https://www.weiyangx.com/327172.html<i class="fa fa-external-link"></i></span></p><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuaWJtLmNvbS9kb3dubG9hZHMvY2FzL1dWUlhWS01E" title="https://www.ibm.com/downloads/cas/WVRXVKMD">https://www.ibm.com/downloads/cas/WVRXVKMD<i class="fa fa-external-link"></i></span></p><p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2Nvb2xfd3hwOTExMDExL2FydGljbGUvZGV0YWlscy84NDk2NDU5Mw==" title="https://blog.csdn.net/cool_wxp911011/article/details/84964593">https://blog.csdn.net/cool_wxp911011/article/details/84964593<i class="fa fa-external-link"></i></span></p><p><span class="exturl" data-url="aHR0cDovL3d3dy5zb2h1LmNvbS9hLzExNDkyMzQxMF80NzAwOTc=" title="http://www.sohu.com/a/114923410_470097">http://www.sohu.com/a/114923410_470097<i class="fa fa-external-link"></i></span></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 行业知识 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OpenBank </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>机器学习指标说明</title>
       <link href="//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%8C%87%E6%A0%87%E8%AF%B4%E6%98%8E.html"/>
       <url>//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%8C%87%E6%A0%87%E8%AF%B4%E6%98%8E.html</url>
@@ -1252,9 +1352,9 @@
       
         <tags>
             
-            <tag> Base58Check </tag>
-            
             <tag> bitcoin </tag>
+            
+            <tag> Base58Check </tag>
             
         </tags>
       
@@ -2339,9 +2439,9 @@
       
         <tags>
             
-            <tag> bitcoinj </tag>
-            
             <tag> 比特币 </tag>
+            
+            <tag> bitcoinj </tag>
             
         </tags>
       
@@ -2368,11 +2468,11 @@
       
         <tags>
             
+            <tag> 比特币 </tag>
+            
             <tag> bitcoinj </tag>
             
             <tag> message </tag>
-            
-            <tag> 比特币 </tag>
             
         </tags>
       
@@ -2457,9 +2557,9 @@
       
         <tags>
             
-            <tag> BlockingQueue </tag>
-            
             <tag> 集合 </tag>
+            
+            <tag> BlockingQueue </tag>
             
         </tags>
       
@@ -2486,9 +2586,9 @@
       
         <tags>
             
-            <tag> 集合 </tag>
-            
             <tag> Queue </tag>
+            
+            <tag> 集合 </tag>
             
         </tags>
       
@@ -3117,17 +3217,6 @@
     
     
     <entry>
-      <title>关于我</title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>文章分类</title>
       <link href="/categories/index.html"/>
       <url>/categories/index.html</url>
@@ -3139,9 +3228,9 @@
     
     
     <entry>
-      <title>pictures</title>
-      <link href="/pictures/index.html"/>
-      <url>/pictures/index.html</url>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3150,9 +3239,20 @@
     
     
     <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
+      <title>关于我</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>pictures</title>
+      <link href="/pictures/index.html"/>
+      <url>/pictures/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3183,22 +3283,22 @@
     
     
     <entry>
-      <title>厦门市</title>
-      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
-      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
+      <title>河西走廊</title>
+      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
+      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
     
     
     <entry>
-      <title>河西走廊</title>
-      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
-      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      <title>鼋头渚</title>
+      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
+      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
@@ -3227,11 +3327,11 @@
     
     
     <entry>
-      <title>鼋头渚</title>
-      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
-      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      <title>厦门市</title>
+      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
+      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
       
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     

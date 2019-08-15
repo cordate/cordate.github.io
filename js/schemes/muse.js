@@ -188,7 +188,12 @@ $(document).ready(function() {
           },
           complete: function() {
             self.sidebarEl.addClass('sidebar-active');
-            $(".site-nav.sticky").css({left: (self.sidebarEl.width() / 2 + 'px')});
+            if ($(".site-nav.sticky") != undefined) {
+              $(".site-nav.sticky").css({left: (self.sidebarEl.width() / 2 + 'px')});
+            }
+            if ($('#footer') != undefined) {
+              $('#footer').css({left: (self.sidebarEl.width() / 2 + 'px')});
+            }
           }
         });
       } else {
@@ -207,7 +212,12 @@ $(document).ready(function() {
       NexT.utils.isDesktop() && $('body').stop().animate(isRight ? {'padding-right': 0} : {'padding-left': 0});
       this.sidebarEl.find('.motion-element').hide();
       this.sidebarEl.stop().animate({width: 0, display: 'none'}).removeClass('sidebar-active');
-      $(".site-nav.sticky").css({left: 0});
+      if ($(".site-nav.sticky") != undefined) {
+        $(".site-nav.sticky").css({left: 0});
+      }
+      if ($('#footer') != undefined) {
+        $('#footer').css({left: 0});
+      }
 
       sidebarToggleLines.init();
 
@@ -223,21 +233,10 @@ $(document).ready(function() {
   };
   sidebarToggleMotion.init();
 
-  // function updateFooterPosition() {
-  //   var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
-  //   if (containerHeight < window.innerHeight) {
-  //     $('#footer').css({ 'position': 'fixed', 'bottom': 0, 'left': 0, 'right': 0 }).attr('position', 'fixed');
-  //   } else {
-  //     $('#footer').removeAttr('style position');
-  //   }
-  // }
-
   function updateFooterPosition() {
-    // var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
-    var footerHeight = $('#footer').height();
-    // alert($('.container').height());
-    if ($('.container').height() < window.innerHeight) {
-      $('#footer').css({ 'position': 'absolute', 'bottom': $(".container").height() - window.innerHeight, 'right': 0, 'width': '100%' });
+    var containerHeight = $('#footer').attr('position') ? $('.container').height() + $('#footer').outerHeight(true) : $('.container').height();
+    if (containerHeight < window.innerHeight) {
+      $('#footer').css({ 'position': 'fixed', 'bottom': 0, 'right': 0, 'width': '100%' }).attr('position', 'fixed');
     } else {
       $('#footer').removeAttr('style position');
     }
@@ -245,5 +244,4 @@ $(document).ready(function() {
 
   updateFooterPosition();
   $(window).on('resize scroll load', updateFooterPosition);
-  $("iframe").on('resize load', updateFooterPosition); // iframe的大小也会改变
 });

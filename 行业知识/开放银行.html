@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="概述有专家指出，银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来获得竞争优势。在不少业内人士看来，“开放银行”或将引领银行迈入变革新阶段。 “开放银行”无疑是当下金融圈里的一大热词。一边是银行与银行之间、银行与非银金融机构间的合作与共赢；另一边则是银行与企业之间的数据共享与场景融合。在">
+<meta name="keywords" content="OpenBank">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开放银行">
+<meta property="og:url" content="https://cordate.github.io/行业知识/开放银行.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="概述有专家指出，银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来获得竞争优势。在不少业内人士看来，“开放银行”或将引领银行迈入变革新阶段。 “开放银行”无疑是当下金融圈里的一大热词。一边是银行与银行之间、银行与非银金融机构间的合作与共赢；另一边则是银行与企业之间的数据共享与场景融合。在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-15T16:19:34.940Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="开放银行">
+<meta name="twitter:description" content="概述有专家指出，银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来获得竞争优势。在不少业内人士看来，“开放银行”或将引领银行迈入变革新阶段。 “开放银行”无疑是当下金融圈里的一大热词。一边是银行与银行之间、银行与非银金融机构间的合作与共赢；另一边则是银行与企业之间的数据共享与场景融合。在">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/行业知识/开放银行"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>开放银行 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-vedio">
+
+    
+
+    
+      
+    
+
+    <a href="/vedio/" rel="section"><i class="menu-item-icon fa fa-fw fa-film"></i>视频</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-pictures">
+
+    
+
+    
+      
+    
+
+    <a href="/pictures/" rel="section"><i class="menu-item-icon fa fa-fw fa-picture-o"></i>图片</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/银行.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/行业知识/开放银行.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">开放银行
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-15 15:28:52" itemprop="dateCreated datePublished" datetime="2019-08-15T15:28:52+08:00">2019-08-15</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-16 00:19:34" itemprop="dateModified" datetime="2019-08-16T00:19:34+08:00">2019-08-16</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/行业知识/" itemprop="url" rel="index"><span itemprop="name">行业知识</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">3.1k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">3 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>有专家指出，银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来获得竞争优势。在不少业内人士看来，“开放银行”或将引领银行迈入变革新阶段。</p>
+<p>“开放银行”无疑是当下金融圈里的一大热词。一边是银行与银行之间、银行与非银金融机构间的合作与共赢；另一边则是银行与企业之间的数据共享与场景融合。在不少业内人士看来，“开放银行”或将引领银行变革新阶段。</p>
+<p>我觉的开放银行目前主要是三通，通产品、通技术、通数据。最近蚂蚁内部也在讲这个东西。不过蚂蚁不是金融公司，而是金融科技公司。</p>
+<p>现在的开放银行大概有4种模式：</p>
+<ul>
+<li>产品输出：就是将自己的产品开放出服务接口，便于三方服务接入，这样可以起到三方客户的引流作用。</li>
+<li>开放平台模式：平台化战略，就是以自己为中心化的战略。</li>
+<li>三方平台接入模式：提供SDK的接入处理。</li>
+<li>植入模式：微信、钉钉小程序等。</li>
+</ul>
+<p><img alt="开放银行模式" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E8%A1%8C%E4%B8%9A%E7%9F%A5%E8%AF%86/1124495052_15578812817971n.jpg"></p>
+<h1 id="多家银行争相“开放”"><a href="#多家银行争相“开放”" class="headerlink" title="多家银行争相“开放”"></a>多家银行争相“开放”</h1><p>通俗地说，“开放银行”是一种利用开放API（Application Programming Interface）技术实现银行与第三方之间数据共享，从而提升客户体验的平台合作模式。</p>
+<p>“‘开放银行’是未来银行的一种经营模式，通过开放产品与服务、交易与流程、数据和算法，并与金融科技公司、供应商、第三方开发者等其他合作伙伴共享，重构商业生态系统，为商业银行提供新的价值，提升竞争力。”浦发银行相关负责人在接受经济日报记者采访时表示，比如浦发银行的无界开放银行（API Bank）就是超级连接器和能力平台，更是一种新的业务模式和经营理念。</p>
+<p>在上述负责人看来，通过API Bank将银行各类金融产品和服务，甚至非金融服务能力，向同业、用户、合作伙伴开放，即把银行的服务植入到客户端、机构端和政府端，无感融入所有人的生产和生活场景。银行将在各类场景中为客户或用户提供无处不在、无微不至的综合服务解决方案。</p>
+<p>不只是浦发银行，上海银行在2019年一季度报告中也重点谈到了开放银行对其业绩的影响。报告提出，上海银行以“开放银行”深化“B2B2C”“B2B2B”发展模式，金融服务与平台场景生态进一步融合，持续打造“电商平台资金管理”“快线贷”“在线理财超市”“上银收汇”等业务特色，相继与银联“云闪付”、平安“壹钱包”等在存贷汇领域开展合作。</p>
+<p>中国人民大学重阳金融研究院副院长董希淼认为，2018年是我国国内“开放银行”元年。目前，国内有4种“开放银行”模式。</p>
+<p>一是产品输出模式，即开放金融服务能力，将产品以API等形式嵌入到各个场景中，本质上属于一种新型的获客和引流模式。比如，浦发银行推出的API Bank。</p>
+<p>二是开放平台模式，即银行通过搭建对外合作平台，确定规范，对外提供标准化的金融应用API、组件和服务，将银行业务植入各类商业生态系统。比如，武汉众邦银行，定位为“互联网交易银行”，构建数字化驱动科技赋能的开放型数字银行。</p>
+<p>三是三方平台接入模式，即通过接口与第三方对接。比如，上海华瑞银行推出的“极限SDK”产品实现了“将银行开进1700万个APP中”的创想。</p>
+<p>四是植入模式，即借助第三方平台或应用推广产品。比如，各家银行微信银行、微信小程序等。</p>
+<h1 id="服务整体战略转型"><a href="#服务整体战略转型" class="headerlink" title="服务整体战略转型"></a>服务整体战略转型</h1><p>开放的目的是实现战略转型。</p>
+<p>“过去一两年，金融业核心指标增速显著放缓。中国商业银行平均净利润增速远低于2014年之前的水平，大部分银行难以实现双位数增长。银行业已全面步入4.0时代，金融服务无处不在，但就是不在银行网点。客户脱媒趋势日益明显，跨界竞争也愈发激烈。面对内忧外患，越来越多银行选择部署开启数字化银行战略来赢得竞争优势。”麦肯锡全球资深董事合伙人兼麦肯锡中国区金融机构咨询业务负责人曲向军说。</p>
+<p>深入分析较早布局“开放银行”的浦发银行也可以看出，“开放银行”实际上是作为银行整体转型的关键性变量存在的。</p>
+<p>记者了解到，浦发银行于2018年初确立了“以客户为中心，科技引领，打造一流数字生态银行”的新五年战略目标。建设一流数字生态银行是其应对未来市场快速变化和不确定性，实现高质量发展的战略性决策，而建设API Bank是其中的一项关键举措。</p>
+<p>据统计，浦发银行自2018年7月份在业内首家发布API Bank以来，生态场景及对接合作方数量稳步增长，开放功能既涉及直销银行开户、网贷、礼遇平台、出国金融、跨境电商、缴费支付等传统金融领域,也包括合作营销、资产能力证明等创新场景。截至2019年2月底，API Bank已开放接口共257个，对接中国银联、京东数科等共计92家合作方应用，日峰值交易量超百万。</p>
+<p>一个值得关注的案例，是浦发银行通过与政府端的深入合作，API Bank让政府服务变得更加惠民便民，使公共资源分配更加高效有据。</p>
+<p>例如，浦发银行作为首批与上海口岸服务办公室签署战略合作协议的银行，通过API Bank与上海国际贸易单一窗口进行快速对接，将金融服务内嵌于单一窗口平台中，为广大贸易企业提供在线付汇、购汇、申报等功能。外贸企业可通过上海单一窗口平台在线提交付汇或购汇指令，仅需几分钟就可以完成支付。</p>
+<p>“这不仅从根本上为企业节省了时间成本和人力成本，提高了企业开展跨境贸易的效率，也增强了单一窗口平台服务企业的深度和广度，充分发挥单一窗口信息枢纽作用，并有助于对进出口业务进行最小颗粒度、全链条的跟踪和管理，构建起跨境电商生态圈。”上述浦发银行负责人表示。</p>
+<h1 id="风险防控是关键"><a href="#风险防控是关键" class="headerlink" title="风险防控是关键"></a>风险防控是关键</h1><p>董希淼指出，对银行来说，未来跨界合作将成为一种常态，银行与银行之间，除了是竞争对手，更重要的是合作伙伴。</p>
+<p>业内已经形成的一个共识是，场景与流量是银行稀缺且亟待补充的资源。“考虑到用户行为轨迹数据对授信更有参考价值，目前金融机构更青睐于具有消费属性的流量平台，如流量平台抖音、垂直类流量平台健身类APP、专注城镇市场的拼多多等。无场景要求的现金贷，用户转化率较差。”交通银行金融科技研究室研究专员张哲宇表示。</p>
+<p>与此同时，对新消费认可和对新技术的拥抱也是银行在选择合作伙伴的又一考量。如金融科技公司乐信在其最近召开的2019年合作伙伴大会期间，就与来自工商银行、民生银行、中国人保等数十家金融机构签署了战略合作协议。51信用卡也在日前与中原银行宣布达成战略合作，将在智能风控、大数据技术等层面展开深度合作。</p>
+<p>在合作过程中，银行想要行稳致远，必须同步做好风险控制。“开放不是无原则开放，要做好客户信息安全的保护，而且核心能力也应当掌握在银行手里。”董希淼认为，对中小银行来说，在金融科技浪潮下，以更加开放包容的姿态去合作是没错的，但要充分考虑自身的资源禀赋，并将开放方向与发展战略相融合。同时，在开放过程中还要注意合法合规，充分保护信息安全和客户隐私。</p>
+<p>交通银行金融科技研究室认为，不同于国外开放银行是由政府主导并推动，国内开放银行是由竞争驱使、市场驱动，其发展存在一定的盲目性和无序性，亟需监管部门加强顶层制度设计、推动技术标准建设。</p>
+<h1 id="战略："><a href="#战略：" class="headerlink" title="战略："></a>战略：</h1><p>平台化战略，促进银行共享数据，帮助银行服务。</p>
+<h1 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cud2VpeWFuZ3guY29tLzMyNzE3Mi5odG1s" title="https://www.weiyangx.com/327172.html">https://www.weiyangx.com/327172.html<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuaWJtLmNvbS9kb3dubG9hZHMvY2FzL1dWUlhWS01E" title="https://www.ibm.com/downloads/cas/WVRXVKMD">https://www.ibm.com/downloads/cas/WVRXVKMD<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2Nvb2xfd3hwOTExMDExL2FydGljbGUvZGV0YWlscy84NDk2NDU5Mw==" title="https://blog.csdn.net/cool_wxp911011/article/details/84964593">https://blog.csdn.net/cool_wxp911011/article/details/84964593<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5zb2h1LmNvbS9hLzExNDkyMzQxMF80NzAwOTc=" title="http://www.sohu.com/a/114923410_470097">http://www.sohu.com/a/114923410_470097<i class="fa fa-external-link"></i></span></p>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/行业知识/开放银行.html" title="开放银行">https://cordate.github.io/行业知识/开放银行.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/OpenBank/" rel="tag"><i class="fa fa-tag"></i> OpenBank</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/机器学习/机器学习指标说明.html" rel="next" title="机器学习指标说明">
+                <i class="fa fa-chevron-left"></i> 机器学习指标说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/行业知识/什么是外汇储备.html" rel="prev" title="什么是外汇储备">
+                什么是外汇储备 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多家银行争相“开放”"><span class="nav-number">2.</span> <span class="nav-text">多家银行争相“开放”</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务整体战略转型"><span class="nav-number">3.</span> <span class="nav-text">服务整体战略转型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#风险防控是关键"><span class="nav-number">4.</span> <span class="nav-text">风险防控是关键</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#战略："><span class="nav-number">5.</span> <span class="nav-text">战略：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章："><span class="nav-number">6.</span> <span class="nav-text">参考文章：</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-08-16</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">831k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">12:35</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
