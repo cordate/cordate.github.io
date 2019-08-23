@@ -4,6 +4,60 @@
   
     
     <entry>
+      <title>递归算法原理剖析(一次算法面试)</title>
+      <link href="//%E7%AE%97%E6%B3%95/%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90(%E4%B8%80%E6%AC%A1%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95).html"/>
+      <url>//%E7%AE%97%E6%B3%95/%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90(%E4%B8%80%E6%AC%A1%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95).html</url>
+      
+        <content type="html"><![CDATA[<p>最近看到了一家比较出名的区块链项目，觉得挺好玩的，所以就投了一份简历去面试，后来因为其他原因；我放弃了对方给的很高薪资的offer。但是我觉得他们还是比较靠谱的团队。由于这里是面试题，我就不透露这家公司的名字了。也许以后我会考虑加入也未可知。</p><h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>他们首先考了一道算法题，需要你写代码，这道题目不是很难，大概意思如下：</p><p><span style="color:blue">随意给定一组数字（个数不限），例如：2 4 5 7，然后使用(+ - * /)在数字中随意组合，然后给出最终所有可能的结果。注意：括号在这里也是操作符号哈。</span></p><h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>思路一：这里我原来的思路是排列组合操作符，这个思路有点像编译原理中的表达式拆解，分为操作符栈和数据栈，两个结合起来运算就会得出结果，但是这种方式的缺点是实现起来比较复杂。主要就是要对操作符进行递归，如果没有括号还简单一些，有了括号之后递归就变得有些复杂，但是这里的递归条件还是蛮好处理的，看个数即可；其二就是要写表达式运算的代码；虽说不复杂，但是这是面试哪有时间去写这些东西。</p><p><span style="color:blue">方法二：将数字拆分，拆分的数字就是加括号的地方，比如将[2 4 5 7]拆分成[[2 4 5] [7]]。这里括号是加在了前3个元素上面。以此循环往替。然后[7]与[2 4 5]之间可以随意使用+ - * /，下面的问题就是求解[2 4 5]的结果即可。</span></p><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 主体用于处理的方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> numbers 输入的一组数字</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Double&gt; <span class="title">list</span><span class="params">(List&lt;Double&gt; numbers)</span> </span>&#123;</span><br><span class="line">        Set&lt;Double&gt; result = <span class="keyword">new</span> LinkedHashSet&lt;&gt;();</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 递归条件</span></span><br><span class="line">        <span class="keyword">if</span> (numbers.size() == <span class="number">1</span>) &#123;</span><br><span class="line">            result.addAll(numbers);</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numbers.size() - <span class="number">1</span>; i++) &#123;</span><br><span class="line">            List&lt;Double&gt; right = numbers.subList(i + <span class="number">1</span>, numbers.size());</span><br><span class="line">            List&lt;Double&gt; left = numbers.subList(<span class="number">0</span>, i + <span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">            result.addAll(combine(left, right));</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据的两组数据的组装</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> left 左侧数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> right 右侧数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Double&gt; <span class="title">combine</span><span class="params">(List&lt;Double&gt; left, List&lt;Double&gt; right)</span> </span>&#123;</span><br><span class="line">        Set&lt;Double&gt; result = <span class="keyword">new</span> HashSet&lt;&gt;(left.size() * right.size());</span><br><span class="line"> </span><br><span class="line">        Set&lt;Double&gt; leftValue = list(left);</span><br><span class="line">        Set&lt;Double&gt; rightValue = list(right);</span><br><span class="line">        leftValue.forEach(l -&gt; rightValue.forEach(r -&gt; &#123;</span><br><span class="line">            result.add(l + r);</span><br><span class="line">            result.add(l - r);</span><br><span class="line">            result.add(l * r);</span><br><span class="line">            result.add(l / r);</span><br><span class="line">        &#125;));</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;Double&gt; arrays = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        arrays.add(<span class="number">4</span>d);</span><br><span class="line">        arrays.add(<span class="number">6</span>d);</span><br><span class="line">        arrays.add(<span class="number">5</span>d);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">new</span> Demo().list(arrays).forEach(i -&gt; System.out.print(i + <span class="string">" "</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>运行的结果如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2.8 4.8 3.3333333333333335 34.0 44.0 3.0 15.0 4.0 0.13333333333333333 5.0 5.2 -26.0 -7.0 0.36363636363636365 120.0 3.333333333333333 2.0 -0.4 -10.0 -4.333333333333333 50.0 19.0 29.0 5.666666666666667</span><br></pre></td></tr></table></figure></p><h1 id="更多思考"><a href="#更多思考" class="headerlink" title="更多思考"></a>更多思考</h1><p><span style="color:blue">注意这里我们关注的是运算符的排序，为何我们只去关注括号，而不关注没有加括号的情况呢？</span></p><p>这是因为我们把所有的操作符都当成了平级的操作符，对没有错，+-*/在这里我们认为是相同级别的。然后我们使用了括号来保证*的优先级高于+操作符。</p><p><b style="color:red">比如：a + b * c这样的，在我们的算法中认为这个格式是这样的(a) + ((b) * (c)). </b></p><p>你没有看错算法的核心思想就是这样的，我们是括号的嵌套，哪怕是只有一个元素，这也是递归思想的核心。我相信通过这个示例，大家对于递归的理解应该能够更上一个台阶。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法 </category>
+          
+          <category> 递归算法 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 递归算法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>高可用架构相关名词</title>
+      <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D.html"/>
+      <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D.html</url>
+      
+        <content type="html"><![CDATA[<p>高可用架构中有很多的名词和说明，理解这些名词和说明有利于大家学习交流，特别是对于软件架构师会有很多的帮助。这里讲的某大厂的架构。</p><h1 id="物理网络相关"><a href="#物理网络相关" class="headerlink" title="物理网络相关"></a>物理网络相关</h1><table><thead><tr><th>缩写</th><th>全称</th><th>解释</th></tr></thead><tbody><tr><td>BGP</td><td>Border Getaway Protocol</td><td><span class="exturl" data-url="aHR0cDovL2JhaWppYWhhby5iYWlkdS5jb20vcz9pZD0xNjAzOTg4ODkxMDA2NDgzMzYxJmFtcDt3ZnI9c3BpZGVyJmFtcDtmb3I9cGM=" title="http://baijiahao.baidu.com/s?id=1603988891006483361&amp;wfr=spider&amp;for=pc">BGP<i class="fa fa-external-link"></i></span>是一种基于TCP协议的动态路由协议，主要应用于不同自治域间交换路由信息和网络可达信息</td></tr><tr><td>ABTN</td><td>Alibaba Backbone Transmission Network</td><td>阿里巴巴骨干传输网，通过BGP与全球ISP互联互通，用于承载互联网用户访问IDC应用流量</td></tr><tr><td>ACTN</td><td>Alibaba Core Transmission Network</td><td>阿里巴巴核心传输网，用于承载DC之间的内网交互流量</td></tr><tr><td>AOTN</td><td>Alibaba Optical Transmission Network</td><td>阿里巴巴光传输网，是底层L0网络，同时承载了ABTN和ACTN</td></tr><tr><td>ASW</td><td>Access Switch</td><td>经典三层网络的接入层，也称tor（Top of Rack）</td></tr><tr><td>LVS</td><td>Linux Virtual Server</td><td>Linux虚拟服务器，这里泛指网关类负载均衡服务器。LVS是四层负载均衡，也就是说建立在OSI模型的第四层——传输层之上，传输层上有我们熟悉的TCP/UDP协议，LVS支持TCP/UDP的负载均衡。LVS的转发主要通过修改IP地址（NAT模式，分为源地址修改SNAT和目标地址修改DNAT）、修改目标MAC（DR模式）来实现, 可以参考学习<span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20veWFib3lhL2NhdGVnb3J5LzgwODUzMS5odG1s" title="https://www.cnblogs.com/yaboya/category/808531.html">LVS负载均衡集群<i class="fa fa-external-link"></i></span></td></tr><tr><td>BSW</td><td>Base Service Switch</td><td>基础服务交换机，给DNS/NTP/Syslog/AAA等基础服务server提供接入</td></tr><tr><td>LSW</td><td>LVS Switch</td><td>负载均衡交换机，给SLB/XGW/LVS提供接入服务</td></tr><tr><td>MAN</td><td>Metropolitan Area Network</td><td>域域网</td></tr><tr><td>MC</td><td>MAN Core</td><td>域域网核心交换机</td></tr><tr><td>NAT</td><td>Network Address Translation</td><td>网络地址转换</td></tr><tr><td>NSW</td><td>NAT Switch</td><td>NAT交换机，给ANAT（Alibaba NAT）提供接入服务</td></tr><tr><td>DCI</td><td>Data Center Interconnection</td><td>数据中心互联</td></tr><tr><td>DSW</td><td>DCI Switch</td><td>数据中心互联交换机，也是经典三层网络拓扑的核心层</td></tr><tr><td>PoD</td><td>Points of Delivery</td><td>交付单元，指网络建设和交付的最小单元，一个PoD可以容纳的服务器规模定义为768台（16组ASW*48端口）</td></tr><tr><td>PSW</td><td>PoD Switch</td><td>经典三层网络的汇聚层</td></tr><tr><td>A Record</td><td>Address Record</td><td>A记录，IPv4 Address record。A记录是用来指定主机名（或域名）对应的IPV4 IP地址记录</td></tr><tr><td>AAAA Record</td><td>Quad-A Record</td><td>用来指定主机名（或域名）对应的IPv6 IP地址记录。</td></tr><tr><td>CNAME</td><td>Canonical Name Record</td><td>别名记录，这种记录允许您将多个名字映射到另一个域名。</td></tr><tr><td>Underlay</td><td>Underlay Network</td><td>传统的物理网络，区别于Overlay虚拟网络。通俗的讲，没有SDN和虚拟化之前，基础的数通网络。</td></tr></tbody></table><h1 id="虚拟网络相关"><a href="#虚拟网络相关" class="headerlink" title="虚拟网络相关"></a>虚拟网络相关</h1><table><thead><tr><th>缩写</th><th>全称</th><th>解释</th></tr></thead><tbody><tr><td>IDC</td><td>Internet Data Center</td><td>机房，其中包含多个IDC网络架构，是网络架构模块化设计的最小单元</td></tr><tr><td>VPC</td><td>Virtual Private Connection</td><td>虚拟专用网络</td></tr><tr><td>SLB</td><td>Software Load Balancer</td><td>VPC组件，负载均衡基础设施，为外部用户提供软件负载均衡服务</td></tr><tr><td>VIP</td><td>Virtual IP Address</td><td>虚拟IP技术，IP技术的一种，增强网络管理，发挥出VLAN的优势，改变了网络结构，合理分配网络资源，均衡网络负载，有效降低网上广播信息，方便对用户的分组管理。通常指用户购买的公网IP地址，分为四层和七层VIP，存在于SLB上</td></tr><tr><td>ENI</td><td>Elastic Network interface</td><td><span class="exturl" data-url="aHR0cHM6Ly93d3cuYWxpYmFiYWNsb3VkLmNvbS9oZWxwL3poL2RvYy1kZXRhaWwvNTg0OTYuaHRt" title="https://www.alibabacloud.com/help/zh/doc-detail/58496.htm">弹性网卡<i class="fa fa-external-link"></i></span></td></tr></tbody></table><h1 id="云基础服务-阿里云"><a href="#云基础服务-阿里云" class="headerlink" title="云基础服务/阿里云"></a>云基础服务/阿里云</h1><table><thead><tr><th>缩写</th><th>全称</th><th>解释</th></tr></thead><tbody><tr><td>ECS</td><td>Elastic Compute Service</td><td>云服务器ECS是一种弹性可伸缩的计算服务</td></tr><tr><td>ISP</td><td>Internet Service Provider</td><td>互联网服务提供商，电信运营商</td></tr><tr><td>VPC</td><td>Virtual Private Cloud</td><td>专有网络VPC是构建在物理网络之上的虚拟化网络。是一个隔离的网络环境，并可以自定义IP地址范围、网段、路由表和网关等；此外，也可以通过专线/VPN/GRE等连接方式实现云上VPC与传统IDC的互联，构建混合云业务</td></tr><tr><td>OXS</td><td>OXS区网络</td><td>公有云上的网络分为两大子网；就是传说中的OXS和售卖区。</td></tr><tr><td>HDR</td><td>Hybird Disaster Recovery</td><td>混合云容灾服务。HDR是一个为数据中心提供企业级应用的本地备份与云上容灾一体化的服务</td></tr></tbody></table><h1 id="阿里基础设施-中间件"><a href="#阿里基础设施-中间件" class="headerlink" title="阿里基础设施/中间件"></a>阿里基础设施/中间件</h1><table><thead><tr><th>缩写</th><th>全称</th><th>解释</th></tr></thead><tbody><tr><td>AServer</td><td></td><td>AServer是一个（无线+pc）统一接入（Nginx/Tengine）网关（Aone应用），为阿里内部应用快速接入上线提供了高效稳定的环境保障，同时提供了证书自动续签、安全套件、多种调度策略支持，接入方只需极小的接入成本就可得到功能丰富、极速稳定的接入保障。</td></tr><tr><td>AMDC</td><td></td><td>阿里巴巴移动（无线）调度中心（Aone应用）</td></tr><tr><td>DNS</td><td>Domain Name System</td><td>域名解析系统</td></tr><tr><td>Local DNS</td><td>Recursive Name Server</td><td>也叫递归DNS，介于终端用户和权威DNS之间，提供递归查询DNS Tree和缓存域名记录的功能</td></tr><tr><td>ADNS</td><td>Alibaba DNS</td><td>内部研发的高性能DNS</td></tr><tr><td>CDN</td><td>Content Delivery Network</td><td>内容分发网络，将源站内容分发至最接近用户的节点，使用户可就近取得所需内容，提高用户访问的响应速率和成功率。解决因分布、带宽、服务器性能带来的访问延迟问题，适用于站点加速、点播、直播等场景</td></tr><tr><td>GSLB</td><td>Global Server Load Balance</td><td>全局负载均衡。实现在广域网上不同地域的服务器间的流量调配，保证使用最佳的服务器服务离自己最近的客户，从而确保访问质量</td></tr><tr><td>AMDC</td><td>Alibaba Mobile Dispatch Center</td><td>无线调度服务，为了对无线app进行更好的域名解析，以及进行业务解析工作。基于最基本的HTTP DNS解析，逐渐增加各种业务解析，演化成了现在的AMDC。</td></tr><tr><td>七网隔离</td><td>七网隔离</td><td>七网隔离</td></tr><tr><td>GOC</td><td>Global Operations Center</td><td>全球运行指挥中心</td></tr><tr><td>GNS</td><td>Global Name Server</td><td>GNS是目前内部中间件依赖的元数据中心。存储数据主要是中间件及业务关心的在线元数据（如应用、机器的环境信息、统计数据，依赖关系等）</td></tr><tr><td>Overlay</td><td>Overlay Network</td><td>覆盖网络，Overlay网络是将已有的物理网络（Underlay网络）作为基础，在其上建立叠加的逻辑网络，实现网络资源的虚拟化。Overlay是应用层网络，它是面向应用层的，不考虑或很少考虑网络层，物理层的问题。</td></tr><tr><td>SDN</td><td>Software Defined Network</td><td>软件定义的网络，是由美国斯坦福大学CLean State课题研究组提出的一种新型网络创新架构，是网络虚拟化的一种实现方式。</td></tr></tbody></table><h1 id="常规的名词"><a href="#常规的名词" class="headerlink" title="常规的名词"></a>常规的名词</h1><table><thead><tr><th>缩写</th><th>全称</th><th>解释</th></tr></thead><tbody><tr><td>GHA</td><td>Global High Availability</td><td>全局高可用</td></tr><tr><td>LDR</td><td>Local Disaster Recovery</td><td>同城容灾</td></tr><tr><td>RDR</td><td>Remote Disaster Recovery</td><td>异地容灾</td></tr><tr><td>CDR</td><td>Cloud Disaster Recovery</td><td>云灾难恢复</td></tr><tr><td>DRP</td><td>Disaster Recovery Plan</td><td>灾难恢复预案</td></tr><tr><td>BIA</td><td>Business Impact Analysis</td><td>商业影响分析，也称做业务影响评估</td></tr><tr><td>Failover</td><td>Fail Over</td><td>故障转移，又称故障切换，一般指IDC应用出现故障时恢复应用的过程，即容灾恢复</td></tr><tr><td>Failback</td><td>Fail Back</td><td>故障恢复，一般是指当IDC内的环境恢复后，将应用数据迁回自有IDC恢复应用运行的过程</td></tr><tr><td>RTO</td><td>Recovery Time Objective</td><td>恢复时间目标。故障发生后，期望从启动容灾恢复操作到应用恢复上线所需要的时间，RTO是衡量服务中断的时间长度。故障单位时间内对业务造成的损失越大，RTO就要求越短</td></tr><tr><td>RPO</td><td>Recovery Point Objective</td><td>数据恢复点目标。指应用发生故障时可以容忍的数据丢失量。指当服务恢复后，恢复到的数据所对应的时间点，主要取决于数据同步的延迟。数据越重要，RPO就要求越小。RPO越高，往往要求数据备份、复制频率更高，对生成环境、网络的压力也会越大，成本通常也越高。</td></tr><tr><td>SLA</td><td>Service Level Agreement</td><td>服务等级协议。是关于网络服务供应商和客户间的一份合同，其中定义了服务类型、服务质量，以及在服务不达标情况下的服务赔偿。SLA是在一定开销下为保障服务的性能和可靠性，服务提供商与用户间定义的一种双方认可的协定。</td></tr><tr><td>SLI</td><td>Service Level Indicator</td><td>服务等级指标。测试服务等级的各种基本指标，通常是经过量化了的</td></tr><tr><td>SLO</td><td>Service Level Object</td><td>服务等级目标。指定了服务所提供功能的一种期望状态。实际上，SLA的保障是以一系列的服务等级目标（SLO）的形式定义的。服务等级目标是一个或多个有限定的服务组件的测试的组合。SLO是用SLI来描述的</td></tr><tr><td>基线</td><td>Base Line</td><td>基线是软件工程活动从一个环节转入另一个环节时对阶段产品或组件的标识。因为软件规模的膨胀和分工的细化，软件开发过程变得越来越复杂，每个阶段可能由不同类型的角色和人员来完成，因此有必要清晰标识上一阶段完成的成果和下阶段开始工作的基础。这种标识活动就是建立基线。</td></tr><tr><td>IOHang</td><td>IO hang</td><td>hang：卡主挂起。IO hang就是服务器磁盘读写过慢，导致线程和进程挂起，大量读写线程/进程挂起导致服务器宕机</td></tr><tr><td>QoS</td><td>Quality of Service</td><td>服务质量，指一个网络能够利用各种基础技术，为指定的网络通信提供更好的服务能力，是网络的一种安全机制，是用来解决网络延迟和阻塞等问题的一种技术。</td></tr><tr><td>DSCP</td><td>Differentiated Services Code Point</td><td>差分服务代码点，IETF于1998年12月发布了Differentiate Service的QoS分类标准。它在每个数据包IP头部的服务类别TOS标识字节中，利用已使用的6比特和未使用的2比特，通过编码值来区分优先级。其实DSCP就是为了保障通信的QoS，在数据包IP头部的8个标识字节进行编码，来划分服务类别，区分服务的优先级。</td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> 系统设计 </category>
+          
+          <category> 微服务 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 高可用 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>常用的分布式事务解决方案</title>
       <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%B8%B8%E8%A7%81%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"/>
       <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%B8%B8%E8%A7%81%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html</url>
@@ -708,6 +762,31 @@
         <tags>
             
             <tag> 缓存行 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>关于java的Runtime类解析</title>
+      <link href="//java/%E5%85%B3%E4%BA%8Ejava%E7%9A%84Runtime%E7%B1%BB%E8%A7%A3%E6%9E%90.html"/>
+      <url>//java/%E5%85%B3%E4%BA%8Ejava%E7%9A%84Runtime%E7%B1%BB%E8%A7%A3%E6%9E%90.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>Runtime类封装了运行时的环境。每个 Java应用程序都有一个Runtime类实例，使应用程序能够与其运行的环境相连接。</p><p>一般不能实例化一个Runtime对象，应用程序也不能创建自己的 Runtime 类实例，但可以通过 getRuntime 方法获取当前Runtime运行时对象的引用。</p><p>一旦得到了一个当前的Runtime对象的引用，就可以调用Runtime对象的方法去控制Java虚拟机的状态和行为。</p><p>当Applet和其他不被信任的代码调用任何Runtime方法时，常常会引起SecurityException异常。</p><p>注意在tomcat中，你只能监控tomcat的行为，但是不能在自己的应用web中使用Runtime做系统级的操作，可以利用它获得系统信息，但是Spring boot里面是可以的，我们利用Runtime来获得系统负载情况，并进行相应的监控。</p><h1 id="二、API预览"><a href="#二、API预览" class="headerlink" title="二、API预览"></a>二、API预览</h1><p>addShutdownHook(Thread hook) ： 注册新的虚拟机来关闭挂钩。</p><p>availableProcessors() ： 向 Java 虚拟机返回可用处理器的数目。</p><p>exec(String command) ： 在单独的进程中执行指定的字符串命令。</p><p>exec(String[] cmdarray) ： 在单独的进程中执行指定命令和变量。</p><p>exec(String[] cmdarray, String[] envp) ： 在指定环境的独立进程中执行指定命令和变量。 </p><p>exec(String[] cmdarray, String[] envp, File dir) ： 在指定环境和工作目录的独立进程中执行指定的命令和变量。</p><p>exec(String command, String[] envp) ： 在指定环境的单独进程中执行指定的字符串命令。</p><p>exec(String command, String[] envp, File dir) ： 在有指定环境和工作目录的独立进程中执行指定的字符串命令。</p><p>exit(int status) ： 通过启动虚拟机的关闭序列，终止当前正在运行的 Java 虚拟机。</p><p>freeMemory() ： 返回 Java 虚拟机中的空闲内存量。</p><p>gc() ： 运行垃圾回收器。</p><p>InputStream getLocalizedInputStream(InputStream in) ： 已过时。 从 JDK 1.1 开始，将本地编码字节流转换为 Unicode 字符流的首选方法是使用 InputStreamReader 和 BufferedReader 类。</p><p>OutputStream getLocalizedOutputStream(OutputStream out)： 已过时。 从 JDK 1.1 开始，将 Unicode 字符流转换为本地编码字节流的首选方法是使用 OutputStreamWriter、BufferedWriter 和 PrintWriter 类。</p><p>getRuntime() ： 返回与当前 Java 应用程序相关的运行时对象。 halt(int status) ： 强行终止目前正在运行的 Java 虚拟机。</p><p>load(String filename) ： 加载作为动态库的指定文件名。</p><p>loadLibrary(String libname) ： 加载具有指定库名的动态库。</p><p>maxMemory() ： 返回 Java 虚拟机试图使用的最大内存量。</p><p>removeShutdownHook(Thread hook) ： 取消注册某个先前已注册的虚拟机关闭挂钩。</p><p>runFinalization() ： 运行挂起 finalization 的所有对象的终止方法。</p><p>runFinalizersOnExit(value) ： 已过时。 此方法本身具有不安全性。它可能对正在使用的对象调用终结方法，而其他线程正在操作这些对象，从而导致不正确的行为或死锁。 totalMemory() ： 返回 Java 虚拟机中的内存总量。</p><p>traceInstructions(on) ： 启用／禁用指令跟踪。</p><p>traceMethodCalls(on) ： 启用／禁用方法调用跟踪。</p><h1 id="三、常见的应用"><a href="#三、常见的应用" class="headerlink" title="三、常见的应用"></a>三、常见的应用</h1><h2 id="1、内存管理："><a href="#1、内存管理：" class="headerlink" title="1、内存管理："></a>1、内存管理：</h2><p>Java提供了无用单元自动收集机制。通过totalMemory()和freeMemory()方法可以知道对象的堆内存有多大，还剩多少。</p><p>Java会周期性的回收垃圾对象（未使用的对象），以便释放内存空间。但是如果想先于收集器的下一次指定周期来收集废弃的对象，可以通过调用gc()方法来根据需要运行无用单元收集器。一个很好的试验方法是先调用gc()方法，然后调用freeMemory()方法来查看基本的内存使用情况，接着执行代码，然后再次调用freeMemory()方法看看分配了多少内存。下面的程序演示了这个构想。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此实例来自《java核心技术》卷一</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MemoryDemo</span></span>&#123; </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123; </span><br><span class="line">        Runtime r = Runtime.getRuntime(); </span><br><span class="line">        <span class="keyword">long</span> mem1,mem2; </span><br><span class="line">        Integer someints[] = <span class="keyword">new</span> Integer[<span class="number">1000</span>]; </span><br><span class="line">        System.out.println(<span class="string">"Total memory is ："</span> + r.totalMemory()); </span><br><span class="line">        mem1 = r.freeMemory(); </span><br><span class="line">        System.out.println(<span class="string">"Initial free is : "</span> + mem1); </span><br><span class="line">        r.gc(); </span><br><span class="line">        mem1 = r.freeMemory(); </span><br><span class="line">        System.out.println(<span class="string">"Free memory after garbage collection : "</span> + mem1); </span><br><span class="line">        <span class="comment">//allocate integers </span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">1000</span>; i++) someints[i] = <span class="keyword">new</span> Integer(i);    </span><br><span class="line">        mem2 = r.freeMemory(); </span><br><span class="line">        System.out.println(<span class="string">"Free memory after allocation : "</span> + mem2); </span><br><span class="line">        System.out.println(<span class="string">"Memory used by allocation : "</span> +(mem1-mem2));    </span><br><span class="line">        <span class="comment">//discard Intergers </span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">1000</span>; i++) someints[i] = <span class="keyword">null</span>; </span><br><span class="line">        r.gc(); <span class="comment">//request garbage collection </span></span><br><span class="line">        mem2 = r.freeMemory(); </span><br><span class="line">        System.out.println(<span class="string">"Free memory after collecting "</span> + <span class="string">"discarded integers : "</span> + mem2); </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>编译后运行结果如下（不同的机器不同时间运行的结果也不一定一样）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Total memory is ：2031616</span><br><span class="line">Initial free is : 1818488</span><br><span class="line">Free memory after garbage collection : 1888808</span><br><span class="line">Free memory after allocation : 1872224</span><br><span class="line">Memory used by allocation : 16584</span><br><span class="line">Free memory after collecting discarded integers : 1888808</span><br></pre></td></tr></table></figure></p><h2 id="2、执行其他程序"><a href="#2、执行其他程序" class="headerlink" title="2、执行其他程序"></a>2、执行其他程序</h2><p>在安全的环境中，可以在多任务操作系统中使用Java去执行其他特别大的进程（也就是程序）。ecec()方法有几种形式命名想要运行的程序和它的输入参数。ecec()方法返回一个Process对象，可以使用这个对象控制Java程序与新运行的进程进行交互。ecec()方法本质是依赖于环境。</p><p>下面的例子是使用ecec()方法启动windows的记事本notepad。这个例子必须在Windows操作系统上运行。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此实例来自《Java核心技术》卷一</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExecDemo</span> </span>&#123; </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123; </span><br><span class="line">        Runtime r = Runtime.getRuntime(); </span><br><span class="line">        Process p = <span class="keyword">null</span>; </span><br><span class="line">        <span class="keyword">try</span>&#123; </span><br><span class="line">                p = r.exec(<span class="string">"notepad"</span>); </span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123; </span><br><span class="line">                System.out.println(<span class="string">"Error executing notepad."</span>); </span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>ecec()还有其他几种形式，例子中演示的是最常用的一种。ecec()方法返回Process对象后，在新程序开始运行后就可以使用Process的方法了。可以用destory()方法杀死子进程，也可以使用waitFor()方法等待程序直到子程序结束，exitValue()方法返回子进程结束时返回的值。如果没有错误，将返回0，否则返回非0。下面是关于ecec()方法的例子的改进版本。例子被修改为等待，直到运行的进程退出：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//此实例来自《Java核心技术》卷一</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExecDemoFini</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        Process p = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            p = r.exec(<span class="string">"notepad"</span>);</span><br><span class="line">            p.waitFor();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Error executing notepad."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"Notepad returned "</span> + p.exitValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>下面是运行的结果（当关闭记事本后，会接着运行程序，打印信息）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Notepad returned 0</span><br><span class="line">请按任意键继续. . .</span><br></pre></td></tr></table></figure></p><p>当子进程正在运行时，可以对标准输入输出进行读写。getOutputStream()方法和getInPutStream()方法返回对子进程的标准输入和输出。</p><h2 id="其他有用的方法"><a href="#其他有用的方法" class="headerlink" title="其他有用的方法"></a>其他有用的方法</h2><h3 id="返回系统的信息"><a href="#返回系统的信息" class="headerlink" title="返回系统的信息"></a>返回系统的信息</h3><p>返回Java虚拟机可用的处理器数量。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">availableProcessors</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p><h3 id="gc方法"><a href="#gc方法" class="headerlink" title="gc方法"></a>gc方法</h3><p>运行垃圾回收器。调用此方法是建议Java虚拟机去回收未使用的对象，以便使它们当前占用的内存能够快速重用。当控件从方法调用返回时，虚拟机已经尽最大努力回收所有丢弃的对象。注意，并不是强制回收，这与System类里面的gc方法是一样的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">gc</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p><h3 id="addShutdownHook方法"><a href="#addShutdownHook方法" class="headerlink" title="addShutdownHook方法"></a>addShutdownHook方法</h3><p>在java虚拟机当中注册一个新的shutdown hook， 所谓shutdown就是指的虚拟机关闭的时候。这个方法的意思就是当jvm关闭的时候，会执行系统中已经设置的所有通过方法addShutdownHook添加的钩子，当系统执行完这些钩子后，jvm才会关闭。所以这些钩子可以在jvm关闭的时候进行内存清理、对象销毁等操作。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addShutdownHook</span><span class="params">(Thread hook)</span> </span>&#123;</span><br><span class="line">    SecurityManager sm = System.getSecurityManager();</span><br><span class="line">    <span class="keyword">if</span> (sm != <span class="keyword">null</span>) &#123;</span><br><span class="line">        sm.checkPermission(<span class="keyword">new</span> RuntimePermission(<span class="string">"shutdownHooks"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    ApplicationShutdownHooks.add(hook);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> java </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> java </tag>
             
         </tags>
       
@@ -1843,9 +1922,9 @@
             
             <tag> 比特币 </tag>
             
-            <tag> 脚本 </tag>
-            
             <tag> 多签名 </tag>
+            
+            <tag> 脚本 </tag>
             
         </tags>
       
@@ -2466,9 +2545,9 @@
       
         <tags>
             
-            <tag> bitcoinj </tag>
-            
             <tag> 比特币 </tag>
+            
+            <tag> bitcoinj </tag>
             
         </tags>
       
@@ -2495,11 +2574,11 @@
       
         <tags>
             
+            <tag> 比特币 </tag>
+            
             <tag> bitcoinj </tag>
             
             <tag> message </tag>
-            
-            <tag> 比特币 </tag>
             
         </tags>
       
@@ -2584,9 +2663,9 @@
       
         <tags>
             
-            <tag> BlockingQueue </tag>
-            
             <tag> 集合 </tag>
+            
+            <tag> BlockingQueue </tag>
             
         </tags>
       
@@ -2613,9 +2692,9 @@
       
         <tags>
             
-            <tag> 集合 </tag>
-            
             <tag> Queue </tag>
+            
+            <tag> 集合 </tag>
             
         </tags>
       
@@ -3255,6 +3334,17 @@
     
     
     <entry>
+      <title>关于我</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>标签</title>
       <link href="/tags/index.html"/>
       <url>/tags/index.html</url>
@@ -3277,33 +3367,11 @@
     
     
     <entry>
-      <title>关于我</title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>vedio</title>
       <link href="/vedio/index.html"/>
       <url>/vedio/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>厦门市</title>
-      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
-      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
-      
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
@@ -3321,22 +3389,11 @@
     
     
     <entry>
-      <title>河西走廊</title>
-      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
-      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      <title>镇江一日游</title>
+      <link href="/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html"/>
+      <url>/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>鼋头渚</title>
-      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
-      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
-      
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><iframe id="myframe" height="100%" width="100%" src="//player.youku.com/embed/XMzA0MTQyNzUxNg==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
@@ -3354,11 +3411,33 @@
     
     
     <entry>
-      <title>镇江一日游</title>
-      <link href="/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html"/>
-      <url>/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html</url>
+      <title>河西走廊</title>
+      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
+      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
       
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><iframe id="myframe" height="100%" width="100%" src="//player.youku.com/embed/XMzA0MTQyNzUxNg==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>厦门市</title>
+      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
+      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
+      
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>鼋头渚</title>
+      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
+      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
