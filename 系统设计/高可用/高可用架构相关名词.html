@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="高可用架构中有很多的名词和说明，理解这些名词和说明有利于大家学习交流，特别是对于软件架构师会有很多的帮助。这里讲的某大厂的架构。 物理网络相关   缩写 全称 解释     BGP Border Getaway Protocol BGP（边界网关协议）是一种基于TCP协议的动态路由协议，主要应用于不同自治域间交换路由信息和网络可达信息   ABTN Alibaba Backbone Transmi">
+<meta name="keywords" content="高可用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高可用架构相关名词">
+<meta property="og:url" content="https://cordate.github.io/系统设计/高可用/高可用架构相关名词.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="高可用架构中有很多的名词和说明，理解这些名词和说明有利于大家学习交流，特别是对于软件架构师会有很多的帮助。这里讲的某大厂的架构。 物理网络相关   缩写 全称 解释     BGP Border Getaway Protocol BGP（边界网关协议）是一种基于TCP协议的动态路由协议，主要应用于不同自治域间交换路由信息和网络可达信息   ABTN Alibaba Backbone Transmi">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-01T08:02:55.660Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高可用架构相关名词">
+<meta name="twitter:description" content="高可用架构中有很多的名词和说明，理解这些名词和说明有利于大家学习交流，特别是对于软件架构师会有很多的帮助。这里讲的某大厂的架构。 物理网络相关   缩写 全称 解释     BGP Border Getaway Protocol BGP（边界网关协议）是一种基于TCP协议的动态路由协议，主要应用于不同自治域间交换路由信息和网络可达信息   ABTN Alibaba Backbone Transmi">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/系统设计/高可用/高可用架构相关名词"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>高可用架构相关名词 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-vedio">
+
+    
+
+    
+      
+    
+
+    <a href="/vedio/" rel="section"><i class="menu-item-icon fa fa-fw fa-film"></i>视频</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-pictures">
+
+    
+
+    
+      
+    
+
+    <a href="/pictures/" rel="section"><i class="menu-item-icon fa fa-fw fa-picture-o"></i>图片</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/风景2.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/系统设计/高可用/高可用架构相关名词.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">高可用架构相关名词
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-22 23:30:10" itemprop="dateCreated datePublished" datetime="2019-08-22T23:30:10+08:00">2019-08-22</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-01 16:02:55" itemprop="dateModified" datetime="2019-09-01T16:02:55+08:00">2019-09-01</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/高可用/" itemprop="url" rel="index"><span itemprop="name">高可用</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">4.7k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">4 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>高可用架构中有很多的名词和说明，理解这些名词和说明有利于大家学习交流，特别是对于软件架构师会有很多的帮助。这里讲的某大厂的架构。</p>
+<h1 id="物理网络相关"><a href="#物理网络相关" class="headerlink" title="物理网络相关"></a>物理网络相关</h1><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BGP</td>
+<td>Border Getaway Protocol</td>
+<td><span class="exturl" data-url="aHR0cDovL2JhaWppYWhhby5iYWlkdS5jb20vcz9pZD0xNjAzOTg4ODkxMDA2NDgzMzYxJmFtcDt3ZnI9c3BpZGVyJmFtcDtmb3I9cGM=" title="http://baijiahao.baidu.com/s?id=1603988891006483361&amp;wfr=spider&amp;for=pc">BGP<i class="fa fa-external-link"></i></span>（边界网关协议）是一种基于TCP协议的动态路由协议，主要应用于不同自治域间交换路由信息和网络可达信息</td>
+</tr>
+<tr>
+<td>ABTN</td>
+<td>Alibaba Backbone Transmission Network</td>
+<td>阿里巴巴骨干传输网，通过BGP与全球ISP互联互通，用于承载互联网用户访问IDC应用流量</td>
+</tr>
+<tr>
+<td>ACTN</td>
+<td>Alibaba Core Transmission Network</td>
+<td>阿里巴巴核心传输网，用于承载DC之间的内网交互流量</td>
+</tr>
+<tr>
+<td>AOTN</td>
+<td>Alibaba Optical Transmission Network</td>
+<td>阿里巴巴光传输网，是底层L0网络，同时承载了ABTN和ACTN</td>
+</tr>
+<tr>
+<td>ASW</td>
+<td>Access Switch</td>
+<td>经典三层网络的接入层，也称tor（Top of Rack）</td>
+</tr>
+<tr>
+<td>LVS</td>
+<td>Linux Virtual Server</td>
+<td>Linux虚拟服务器，这里泛指网关类负载均衡服务器。LVS是四层负载均衡，也就是说建立在OSI模型的第四层——传输层之上，传输层上有我们熟悉的TCP/UDP协议，LVS支持TCP/UDP的负载均衡。LVS的转发主要通过修改IP地址（NAT模式，分为源地址修改SNAT和目标地址修改DNAT）、修改目标MAC（DR模式）来实现, 可以参考学习<span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20veWFib3lhL2NhdGVnb3J5LzgwODUzMS5odG1s" title="https://www.cnblogs.com/yaboya/category/808531.html">LVS负载均衡集群<i class="fa fa-external-link"></i></span></td>
+</tr>
+<tr>
+<td>BSW</td>
+<td>Base Service Switch</td>
+<td>基础服务交换机，给DNS/NTP/Syslog/AAA等基础服务server提供接入</td>
+</tr>
+<tr>
+<td>LSW</td>
+<td>LVS Switch</td>
+<td>负载均衡交换机，给SLB/XGW/LVS提供接入服务</td>
+</tr>
+<tr>
+<td>MAN</td>
+<td>Metropolitan Area Network</td>
+<td>域域网</td>
+</tr>
+<tr>
+<td>MC</td>
+<td>MAN Core</td>
+<td>域域网核心交换机</td>
+</tr>
+<tr>
+<td>NAT</td>
+<td>Network Address Translation</td>
+<td>网络地址转换</td>
+</tr>
+<tr>
+<td>NSW</td>
+<td>NAT Switch</td>
+<td>NAT交换机，给ANAT（Alibaba NAT）提供接入服务</td>
+</tr>
+<tr>
+<td>DCI</td>
+<td>Data Center Interconnection</td>
+<td>数据中心互联</td>
+</tr>
+<tr>
+<td>DSW</td>
+<td>DCI Switch</td>
+<td>数据中心互联交换机，也是经典三层网络拓扑的核心层</td>
+</tr>
+<tr>
+<td>PoD</td>
+<td>Points of Delivery</td>
+<td>交付单元，指网络建设和交付的最小单元，一个PoD可以容纳的服务器规模定义为768台（16组ASW*48端口）</td>
+</tr>
+<tr>
+<td>PSW</td>
+<td>PoD Switch</td>
+<td>经典三层网络的汇聚层</td>
+</tr>
+<tr>
+<td>A Record</td>
+<td>Address Record</td>
+<td>A记录，IPv4 Address record。A记录是用来指定主机名（或域名）对应的IPV4 IP地址记录</td>
+</tr>
+<tr>
+<td>AAAA Record</td>
+<td>Quad-A Record</td>
+<td>用来指定主机名（或域名）对应的IPv6 IP地址记录。</td>
+</tr>
+<tr>
+<td>CNAME</td>
+<td>Canonical Name Record</td>
+<td>别名记录，这种记录允许您将多个名字映射到另一个域名。</td>
+</tr>
+<tr>
+<td>Underlay</td>
+<td>Underlay Network</td>
+<td>传统的物理网络，区别于Overlay虚拟网络。通俗的讲，没有SDN和虚拟化之前，基础的数通网络。</td>
+</tr>
+</tbody>
+</table>
+<h1 id="虚拟网络相关"><a href="#虚拟网络相关" class="headerlink" title="虚拟网络相关"></a>虚拟网络相关</h1><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IDC</td>
+<td>Internet Data Center</td>
+<td>机房，其中包含多个IDC网络架构，是网络架构模块化设计的最小单元</td>
+</tr>
+<tr>
+<td>VPC</td>
+<td>Virtual Private Connection</td>
+<td>虚拟专用网络</td>
+</tr>
+<tr>
+<td>SLB</td>
+<td>Software Load Balancer</td>
+<td>VPC组件，负载均衡基础设施，为外部用户提供软件负载均衡服务</td>
+</tr>
+<tr>
+<td>VIP</td>
+<td>Virtual IP Address</td>
+<td>虚拟IP技术，IP技术的一种，增强网络管理，发挥出VLAN的优势，改变了网络结构，合理分配网络资源，均衡网络负载，有效降低网上广播信息，方便对用户的分组管理。通常指用户购买的公网IP地址，分为四层和七层VIP，存在于SLB上</td>
+</tr>
+<tr>
+<td>ENI</td>
+<td>Elastic Network interface</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly93d3cuYWxpYmFiYWNsb3VkLmNvbS9oZWxwL3poL2RvYy1kZXRhaWwvNTg0OTYuaHRt" title="https://www.alibabacloud.com/help/zh/doc-detail/58496.htm">弹性网卡<i class="fa fa-external-link"></i></span></td>
+</tr>
+</tbody>
+</table>
+<h1 id="云基础服务-阿里云"><a href="#云基础服务-阿里云" class="headerlink" title="云基础服务/阿里云"></a>云基础服务/阿里云</h1><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ECS</td>
+<td>Elastic Compute Service</td>
+<td>云服务器ECS是一种弹性可伸缩的计算服务</td>
+</tr>
+<tr>
+<td>ISP</td>
+<td>Internet Service Provider</td>
+<td>互联网服务提供商，电信运营商</td>
+</tr>
+<tr>
+<td>VPC</td>
+<td>Virtual Private Cloud</td>
+<td>专有网络VPC是构建在物理网络之上的虚拟化网络。是一个隔离的网络环境，并可以自定义IP地址范围、网段、路由表和网关等；此外，也可以通过专线/VPN/GRE等连接方式实现云上VPC与传统IDC的互联，构建混合云业务</td>
+</tr>
+<tr>
+<td>OXS</td>
+<td>OXS区网络</td>
+<td>公有云上的网络分为两大子网；就是传说中的OXS和售卖区。</td>
+</tr>
+<tr>
+<td>HDR</td>
+<td>Hybird Disaster Recovery</td>
+<td>混合云容灾服务。HDR是一个为数据中心提供企业级应用的本地备份与云上容灾一体化的服务</td>
+</tr>
+</tbody>
+</table>
+<h1 id="阿里基础设施-中间件"><a href="#阿里基础设施-中间件" class="headerlink" title="阿里基础设施/中间件"></a>阿里基础设施/中间件</h1><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AServer</td>
+<td></td>
+<td>AServer是一个（无线+pc）统一接入（Nginx/Tengine）网关（Aone应用），为阿里内部应用快速接入上线提供了高效稳定的环境保障，同时提供了证书自动续签、安全套件、多种调度策略支持，接入方只需极小的接入成本就可得到功能丰富、极速稳定的接入保障。</td>
+</tr>
+<tr>
+<td>AMDC</td>
+<td></td>
+<td>阿里巴巴移动（无线）调度中心（Aone应用）</td>
+</tr>
+<tr>
+<td>DNS</td>
+<td>Domain Name System</td>
+<td>域名解析系统</td>
+</tr>
+<tr>
+<td>Local DNS</td>
+<td>Recursive Name Server</td>
+<td>也叫递归DNS，介于终端用户和权威DNS之间，提供递归查询DNS Tree和缓存域名记录的功能</td>
+</tr>
+<tr>
+<td>ADNS</td>
+<td>Alibaba DNS</td>
+<td>内部研发的高性能DNS</td>
+</tr>
+<tr>
+<td>CDN</td>
+<td>Content Delivery Network</td>
+<td>内容分发网络，将源站内容分发至最接近用户的节点，使用户可就近取得所需内容，提高用户访问的响应速率和成功率。解决因分布、带宽、服务器性能带来的访问延迟问题，适用于站点加速、点播、直播等场景</td>
+</tr>
+<tr>
+<td>GSLB</td>
+<td>Global Server Load Balance</td>
+<td>全局负载均衡。实现在广域网上不同地域的服务器间的流量调配，保证使用最佳的服务器服务离自己最近的客户，从而确保访问质量</td>
+</tr>
+<tr>
+<td>AMDC</td>
+<td>Alibaba Mobile Dispatch Center</td>
+<td>无线调度服务，为了对无线app进行更好的域名解析，以及进行业务解析工作。基于最基本的HTTP DNS解析，逐渐增加各种业务解析，演化成了现在的AMDC。</td>
+</tr>
+<tr>
+<td>七网隔离</td>
+<td>七网隔离</td>
+<td>七网隔离</td>
+</tr>
+<tr>
+<td>GOC</td>
+<td>Global Operations Center</td>
+<td>全球运行指挥中心</td>
+</tr>
+<tr>
+<td>GNS</td>
+<td>Global Name Server</td>
+<td>GNS是目前内部中间件依赖的元数据中心。存储数据主要是中间件及业务关心的在线元数据（如应用、机器的环境信息、统计数据，依赖关系等）</td>
+</tr>
+<tr>
+<td>Overlay</td>
+<td>Overlay Network</td>
+<td>覆盖网络，Overlay网络是将已有的物理网络（Underlay网络）作为基础，在其上建立叠加的逻辑网络，实现网络资源的虚拟化。Overlay是应用层网络，它是面向应用层的，不考虑或很少考虑网络层，物理层的问题。</td>
+</tr>
+<tr>
+<td>SDN</td>
+<td>Software Defined Network</td>
+<td>软件定义的网络，是由美国斯坦福大学CLean State课题研究组提出的一种新型网络创新架构，是网络虚拟化的一种实现方式。</td>
+</tr>
+</tbody>
+</table>
+<h1 id="常规的名词"><a href="#常规的名词" class="headerlink" title="常规的名词"></a>常规的名词</h1><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GHA</td>
+<td>Global High Availability</td>
+<td>全局高可用</td>
+</tr>
+<tr>
+<td>LDR</td>
+<td>Local Disaster Recovery</td>
+<td>同城容灾</td>
+</tr>
+<tr>
+<td>RDR</td>
+<td>Remote Disaster Recovery</td>
+<td>异地容灾</td>
+</tr>
+<tr>
+<td>CDR</td>
+<td>Cloud Disaster Recovery</td>
+<td>云灾难恢复</td>
+</tr>
+<tr>
+<td>DRP</td>
+<td>Disaster Recovery Plan</td>
+<td>灾难恢复预案</td>
+</tr>
+<tr>
+<td>BIA</td>
+<td>Business Impact Analysis</td>
+<td>商业影响分析，也称做业务影响评估</td>
+</tr>
+<tr>
+<td>Failover</td>
+<td>Fail Over</td>
+<td>故障转移，又称故障切换，一般指IDC应用出现故障时恢复应用的过程，即容灾恢复</td>
+</tr>
+<tr>
+<td>Failback</td>
+<td>Fail Back</td>
+<td>故障恢复，一般是指当IDC内的环境恢复后，将应用数据迁回自有IDC恢复应用运行的过程</td>
+</tr>
+<tr>
+<td>RTO</td>
+<td>Recovery Time Objective</td>
+<td>恢复时间目标。故障发生后，期望从启动容灾恢复操作到应用恢复上线所需要的时间，RTO是衡量服务中断的时间长度。故障单位时间内对业务造成的损失越大，RTO就要求越短</td>
+</tr>
+<tr>
+<td>RPO</td>
+<td>Recovery Point Objective</td>
+<td>数据恢复点目标。指应用发生故障时可以容忍的数据丢失量。指当服务恢复后，恢复到的数据所对应的时间点，主要取决于数据同步的延迟。数据越重要，RPO就要求越小。RPO越高，往往要求数据备份、复制频率更高，对生成环境、网络的压力也会越大，成本通常也越高。</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>Service Level Agreement</td>
+<td>服务等级协议。是关于网络服务供应商和客户间的一份合同，其中定义了服务类型、服务质量，以及在服务不达标情况下的服务赔偿。SLA是在一定开销下为保障服务的性能和可靠性，服务提供商与用户间定义的一种双方认可的协定。</td>
+</tr>
+<tr>
+<td>SLI</td>
+<td>Service Level Indicator</td>
+<td>服务等级指标。测试服务等级的各种基本指标，通常是经过量化了的</td>
+</tr>
+<tr>
+<td>SLO</td>
+<td>Service Level Object</td>
+<td>服务等级目标。指定了服务所提供功能的一种期望状态。实际上，SLA的保障是以一系列的服务等级目标（SLO）的形式定义的。服务等级目标是一个或多个有限定的服务组件的测试的组合。SLO是用SLI来描述的</td>
+</tr>
+<tr>
+<td>基线</td>
+<td>Base Line</td>
+<td>基线是软件工程活动从一个环节转入另一个环节时对阶段产品或组件的标识。因为软件规模的膨胀和分工的细化，软件开发过程变得越来越复杂，每个阶段可能由不同类型的角色和人员来完成，因此有必要清晰标识上一阶段完成的成果和下阶段开始工作的基础。这种标识活动就是建立基线。</td>
+</tr>
+<tr>
+<td>IOHang</td>
+<td>IO hang</td>
+<td>hang：卡主挂起。IO hang就是服务器磁盘读写过慢，导致线程和进程挂起，大量读写线程/进程挂起导致服务器宕机</td>
+</tr>
+<tr>
+<td>QoS</td>
+<td>Quality of Service</td>
+<td>服务质量，指一个网络能够利用各种基础技术，为指定的网络通信提供更好的服务能力，是网络的一种安全机制，是用来解决网络延迟和阻塞等问题的一种技术。</td>
+</tr>
+<tr>
+<td>DSCP</td>
+<td>Differentiated Services Code Point</td>
+<td>差分服务代码点，IETF于1998年12月发布了Differentiate Service的QoS分类标准。它在每个数据包IP头部的服务类别TOS标识字节中，利用已使用的6比特和未使用的2比特，通过编码值来区分优先级。其实DSCP就是为了保障通信的QoS，在数据包IP头部的8个标识字节进行编码，来划分服务类别，区分服务的优先级。</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/系统设计/高可用/高可用架构相关名词.html" title="高可用架构相关名词">https://cordate.github.io/系统设计/高可用/高可用架构相关名词.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/高可用/" rel="tag"><i class="fa fa-tag"></i> 高可用</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/系统设计/常见的分布式事务解决方案.html" rel="next" title="常用的分布式事务解决方案">
+                <i class="fa fa-chevron-left"></i> 常用的分布式事务解决方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/算法/递归算法原理剖析(一次算法面试).html" rel="prev" title="递归算法原理剖析(一次算法面试)">
+                递归算法原理剖析(一次算法面试) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">124</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">112</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#物理网络相关"><span class="nav-number">1.</span> <span class="nav-text">物理网络相关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟网络相关"><span class="nav-number">2.</span> <span class="nav-text">虚拟网络相关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#云基础服务-阿里云"><span class="nav-number">3.</span> <span class="nav-text">云基础服务/阿里云</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阿里基础设施-中间件"><span class="nav-number">4.</span> <span class="nav-text">阿里基础设施/中间件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常规的名词"><span class="nav-number">5.</span> <span class="nav-text">常规的名词</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-04</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">870k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">13:11</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
