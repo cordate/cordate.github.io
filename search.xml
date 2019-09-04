@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>一次生产问题查询与调优</title>
+      <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E4%B8%80%E6%AC%A1%E7%94%9F%E4%BA%A7%E9%97%AE%E9%A2%98%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98.html"/>
+      <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E4%B8%80%E6%AC%A1%E7%94%9F%E4%BA%A7%E9%97%AE%E9%A2%98%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98.html</url>
+      
+        <content type="html"><![CDATA[<p>最近在生产上查问题，各种问题，其实都是小问题。</p><p>首先来说一下背景吧，我们是蚂蚁金融云科技平台；蚂蚁的金融云平台是Paas层的技术，底层是阿里云的Iaas。这本来没啥特别的，区别就是阿里云是真技术，金融云这边是各类中间件，包括LDC、同城容灾、异地容灾。阿里云会在每台机器中安装天机的客户端，用于收集每台ECS机器的信息；而金融云不用去管每台机器，因为它的资源都是规划的，比如说这个租户需要哪些资源等等。</p><p>我们的系统在一个托管云，名字不重要了，在该云上租户之间是硬隔离的，租户之间的网络是不通的，我们团队是为银行做各类软件服务，所以会有很多租户的问题，金融云是Paas平台，那么我们就是基于Paas云的Saas平台。</p><p>好了聊了这么多，我们聊回问题；刚开始的时候报错的是一家租户，后来我和DBA查来查去都没有发现问题；找了很久终于在DBP同学的帮助下发现DBP的连接池大小配置被改了。之前配置都是800，谁会去该呢？这个问题很大哈。首先来解释一下什么是DBP，DBP是数据库代理层，实现了OB（MySQL）的协议，其实是各类数据库的协议，使用cobar实现分表分库的功能。熟悉MyCAt的人一定都知道Cobar是什么，这里就不多说了。反正就是连接被改了导致访问受限，tps达到50左右应用就报了数据库连接的问题。</p><p>对于这个问题，一开始我问了DBA关于连接数的问题，但是他没有看活跃连接数，如果看了就应该知道连接数不大于10，应为设置被改为了10。还有就是中间件有两台，两台机器的连接数都是10.实际连接数应该是20。这是实现，不多说，以后可以单独开篇博客来深入讲解下这里的实现。</p><p>这里我总结了一下经验</p><blockquote><p>全线路查找在所难免，一定要了解你的上下游都在干嘛。</p></blockquote><p>第二次另一个租户也出问题了，这个租户量比较大，200多tps，后来发现由于业务方流控做得不好，导致tps飙升至580左右，这个租户有6台4C8G的机器；我线下做过调试，单台机器tps可达100（线程数设置为16的时候，线程数为64的时候，tps50就报错了），由于线下环境的db和ots资源都很慢，所以线上的机器tps理论上一定大于100，6台600的tps应该是没问题的。</p><p>后来DBP的同学说连接没释放，问我有没有异常没commit或者rollback的情况，我很诧异，因为Mybatis都帮我处理好了呀，不该出这个问题才对。后来有研究<code>DBPDataSource</code>、<code>DruidDataSource</code>，看有没有直接<code>getConnection</code>的。但是搜了一圈也没发现。这个问题就这么僵着。但是我一直监控着数据，我发现随着时间的推移总会出现一些连接不释放的问题，而且在不停的累积。</p><p>后来我有了DBP机器的权限，于是我查了这台机器的日志，没发现特别的。就是觉得这台机器日志反映出的一些慢SQL是没有道理的，DBA反映很快；于是查了CPU发现，cpu使用率已经到达了65%，其中%system为25%左右，%user为40%左右，%idle为35%左右。后来发现上面显示2 CPU，赶紧<code>cat /proc/cpuinfo</code>，发现还真是2核的机器。</p><p>后来DBP的同学对我说4C8G的机器可达5000qps，那么2C4G可达2500qps，但是这个租户当时的量在3300qps左右，DBP有两台机器，所以理论上还是没有问题的，我仍然不知道为何连接池被占用。</p><p>直到今天，我查了下ISV的流量，发现10s一个循环，5s有流量，5s没啥流量，这就意味着之前我们认为的3300qps计算有误，因为那是分钟级的，换成秒级6600tps，完全超了。这也许就是连接池泄漏的根本原因。</p><blockquote><p>永远不要被已知事实迷惑，分钟级的东西不要相信，还是要关注秒级的tps</p></blockquote><p>后来发现ISV的同学是使用MQ做流控，而这种规律的不均匀流量就是MQ引起的；只要推动他们去修改一下。</p><blockquote><p>有些事情你确实需要去了解一下</p></blockquote><p>后来又发现了部分MQ发送失败的问题，因为系统有自愈重试的能力，也就没有太在意。但是架构组的同学还是找了消息中间件的同学跟进解决。后来发现是我们的日志打印太多，出现了太大的磁盘IO的await。但是发MQ消息是网络能力，与磁盘无关。这个也许就是中间件自己做了啥事情，这个就不得而知了。</p><blockquote><p>刨根问底才能找到最根本的问题，如果因为影响不大而忽视，可能永远也发现不了问题。<br>看起来不相关的两件事，也许存在极大的关联性，发现的时候的确会吓你一跳。</p></blockquote><p>解决的方式就是使用日志的异步化打印功能。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 系统设计 </category>
+          
+          <category> 高可用 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 调优 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>机器学习Python环境建立</title>
       <link href="//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Python%E7%8E%AF%E5%A2%83%E5%BB%BA%E7%AB%8B.html"/>
       <url>//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Python%E7%8E%AF%E5%A2%83%E5%BB%BA%E7%AB%8B.html</url>
@@ -1560,9 +1587,9 @@
       
         <tags>
             
-            <tag> bitcoin </tag>
-            
             <tag> Base58Check </tag>
+            
+            <tag> bitcoin </tag>
             
         </tags>
       
@@ -3425,9 +3452,9 @@
     
     
     <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
+      <title>文章分类</title>
+      <link href="/categories/index.html"/>
+      <url>/categories/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3447,20 +3474,9 @@
     
     
     <entry>
-      <title>vedio</title>
-      <link href="/vedio/index.html"/>
-      <url>/vedio/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>文章分类</title>
-      <link href="/categories/index.html"/>
-      <url>/categories/index.html</url>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3480,22 +3496,11 @@
     
     
     <entry>
-      <title>河西走廊</title>
-      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
-      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      <title>vedio</title>
+      <link href="/vedio/index.html"/>
+      <url>/vedio/index.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>镇江一日游</title>
-      <link href="/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html"/>
-      <url>/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html</url>
-      
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><iframe id="myframe" height="100%" width="100%" src="//player.youku.com/embed/XMzA0MTQyNzUxNg==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[]]></content>
       
     </entry>
     
@@ -3513,6 +3518,17 @@
     
     
     <entry>
+      <title>河西走廊</title>
+      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
+      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>安徽九华山</title>
       <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
       <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
@@ -3524,22 +3540,33 @@
     
     
     <entry>
-      <title>青海游</title>
-      <link href="/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html"/>
-      <url>/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html</url>
+      <title>鼋头渚</title>
+      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
+      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 青海游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><iframe src="//player.bilibili.com/player.html?aid=42755267&cid=74987726&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
     
     
     <entry>
-      <title>鼋头渚</title>
-      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
-      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      <title>镇江一日游</title>
+      <link href="/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html"/>
+      <url>/vedio/%E9%95%87%E6%B1%9F%E6%97%85%E6%B8%B8.html</url>
       
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><iframe id="myframe" height="100%" width="100%" src="//player.youku.com/embed/XMzA0MTQyNzUxNg==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>青海游</title>
+      <link href="/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html"/>
+      <url>/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html</url>
+      
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 青海游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><iframe src="//player.bilibili.com/player.html?aid=42755267&cid=74987726&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
