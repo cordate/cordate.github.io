@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="最近在生产上查问题，各种问题，其实都是小问题。 首先来说一下背景吧，我们是蚂蚁金融云科技平台；蚂蚁的金融云平台是Paas层的技术，底层是阿里云的Iaas。这本来没啥特别的，区别就是阿里云是真技术，金融云这边是各类中间件，包括LDC、同城容灾、异地容灾。阿里云会在每台机器中安装天机的客户端，用于收集每台ECS机器的信息；而金融云不用去管每台机器，因为它的资源都是规划的，比如说这个租户需要哪些资源等等">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-04T16:58:34.118Z">
+<meta property="og:updated_time" content="2019-09-05T16:54:24.138Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一次生产问题查询与调优">
 <meta name="twitter:description" content="最近在生产上查问题，各种问题，其实都是小问题。 首先来说一下背景吧，我们是蚂蚁金融云科技平台；蚂蚁的金融云平台是Paas层的技术，底层是阿里云的Iaas。这本来没啥特别的，区别就是阿里云是真技术，金融云这边是各类中间件，包括LDC、同城容灾、异地容灾。阿里云会在每台机器中安装天机的客户端，用于收集每台ECS机器的信息；而金融云不用去管每台机器，因为它的资源都是规划的，比如说这个租户需要哪些资源等等">
@@ -451,7 +451,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-05 00:58:34" itemprop="dateModified" datetime="2019-09-05T00:58:34+08:00">2019-09-05</time>
+                <time title="修改时间：2019-09-06 00:54:24" itemprop="dateModified" datetime="2019-09-06T00:54:24+08:00">2019-09-06</time>
               </span>
             
           
@@ -511,7 +511,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">1.8k</span>
+              <span title="本文字数">1.9k</span>
             </span>
           
 
@@ -555,7 +555,9 @@
 <p>后来DBP的同学说连接没释放，问我有没有异常没commit或者rollback的情况，我很诧异，因为Mybatis都帮我处理好了呀，不该出这个问题才对。后来有研究<code>DBPDataSource</code>、<code>DruidDataSource</code>，看有没有直接<code>getConnection</code>的。但是搜了一圈也没发现。这个问题就这么僵着。但是我一直监控着数据，我发现随着时间的推移总会出现一些连接不释放的问题，而且在不停的累积。</p>
 <p>后来我有了DBP机器的权限，于是我查了这台机器的日志，没发现特别的。就是觉得这台机器日志反映出的一些慢SQL是没有道理的，DBA反映很快；于是查了CPU发现，cpu使用率已经到达了65%，其中%system为25%左右，%user为40%左右，%idle为35%左右。后来发现上面显示2 CPU，赶紧<code>cat /proc/cpuinfo</code>，发现还真是2核的机器。</p>
 <p>后来DBP的同学对我说4C8G的机器可达5000qps，那么2C4G可达2500qps，但是这个租户当时的量在3300qps左右，DBP有两台机器，所以理论上还是没有问题的，我仍然不知道为何连接池被占用。</p>
+<p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E7%9B%91%E6%8E%A71.jpeg"></p>
 <p>直到今天，我查了下ISV的流量，发现10s一个循环，5s有流量，5s没啥流量，这就意味着之前我们认为的3300qps计算有误，因为那是分钟级的，换成秒级6600tps，完全超了。这也许就是连接池泄漏的根本原因。</p>
+<p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E7%9B%91%E6%8E%A72.jpeg"></p>
 <blockquote>
 <p>永远不要被已知事实迷惑，分钟级的东西不要相信，还是要关注秒级的tps</p>
 </blockquote>
@@ -696,6 +698,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/杂谈/关于多维度的漫谈.html" rel="prev" title="关于多维度的漫谈">
+                关于多维度的漫谈 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -765,7 +771,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -846,7 +852,9 @@
         
           
         
-        <span class="site-state-item-count">32</span>
+          
+        
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -1089,7 +1097,9 @@
         
           
         
-        <span class="site-state-item-count">113</span>
+          
+        
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -1160,7 +1170,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-05</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-08</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1174,7 +1184,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">872k</span>
+    <span title="站点总字数">874k</span>
   
 
   
@@ -1185,7 +1195,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">13:13</span>
+    <span title="站点阅读时长">13:15</span>
   
 </div>
 

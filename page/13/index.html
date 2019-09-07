@@ -381,6 +381,181 @@
   
     <div class="post-block"> 
       <!-- 文章的meta信息不显示 --> 
+      <link itemprop="mainEntityOfPage" href="https://cordate.github.io/syslib/mmap.html"/>
+      <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <meta itemprop="name" content="Author"/>
+        <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+        <meta itemprop="image" content="/images/user-avatar.jpg"/>
+      </span>
+      <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+        <meta itemprop="name" content="柳絮纷飞"/>
+      </span>
+
+      <!-- 图片显示 -->
+      <div class="frame">
+        <a href="/syslib/mmap.html">
+          
+            <img src="/images/blog/bench-park.jpg" alt="背景图" />
+          
+        </a>
+      </div>
+
+      <!-- 标题，这里面会自动生成一个H2的标题 -->
+      
+        <header class="post-header">
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/syslib/mmap.html" class="post-title-link" itemprop="url">mmap</a>
+              
+            
+            <div class="post-meta" style="display: inline">
+              
+            </div>
+          </h2>
+        
+        </header>
+      
+
+      <!-- 文章大概内容 -->
+      
+      
+      
+      <div class="post-body" itemprop="articleBody">
+
+        
+        
+
+        
+          <a href="/syslib/mmap.html">
+            
+              
+                <p>
+                  在计算机中，mmap(2)是符合POSIX标准的Unix 系统调用，可将文件或设备映射到内存中。它是内存映射文件 I/O的一种方法。它自然地实现了需求分页，因为文件内容最初不是从磁盘读取的，根本不使用物理RAM。在访问特定位置后，实际从磁盘读取数据的操作将以“懒惰”方式执行。在不再需要存储器之后，munmap(2)指向它的指针很重要。保护信息可以使用管理mprotect(2)，特殊处理可以使用强制执行madvise(2)。
+个人的理解就是，直接跳过操作系统的内核空间，直接在你的进程内存空间映射到
+                  ...
+                </p>
+              <!--noindex-->
+              
+              <!--/noindex-->
+            
+          </a>
+        
+      </div>
+      <!-- 文章大概内容结束 -->
+
+      <!-- hexo包的一层 -->
+      
+      <header class="post-header">
+        <!-- 尾部信息说明 -->
+        <div class="post-meta details">
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-02-28 11:21:10 / 修改时间：11:43:56" itemprop="dateCreated datePublished" datetime="2018-02-28T11:21:10+08:00">2018-02-28</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/操作系统扩展/" itemprop="url" rel="index"><span itemprop="name">操作系统扩展</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+           
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">376</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">1 分钟</span>
+            </span>
+          
+
+          
+        </div>
+      </header>
+      
+    </div>
+  </article>
+
+
+    
+      
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal post-box" itemscope itemtype="http://schema.org/Article"> 
+  
+  
+  
+    <div class="post-block"> 
+      <!-- 文章的meta信息不显示 --> 
       <link itemprop="mainEntityOfPage" href="https://cordate.github.io/database/Mycat简介.html"/>
       <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
         <meta itemprop="name" content="Author"/>
@@ -1351,7 +1526,7 @@ cd 相应目录h
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1432,7 +1607,9 @@ cd 相应目录h
         
           
         
-        <span class="site-state-item-count">32</span>
+          
+        
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -1675,7 +1852,9 @@ cd 相应目录h
         
           
         
-        <span class="site-state-item-count">113</span>
+          
+        
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -1746,7 +1925,7 @@ cd 相应目录h
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-05</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-08</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1760,7 +1939,7 @@ cd 相应目录h
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">872k</span>
+    <span title="站点总字数">874k</span>
   
 
   
@@ -1771,7 +1950,7 @@ cd 相应目录h
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">13:13</span>
+    <span title="站点阅读时长">13:15</span>
   
 </div>
 
@@ -2270,6 +2449,8 @@ cd 相应目录h
 
   
   
+    
+      
     
       
     

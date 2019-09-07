@@ -4,11 +4,36 @@
   
     
     <entry>
+      <title>关于多维度的漫谈</title>
+      <link href="//%E6%9D%82%E8%B0%88/%E5%85%B3%E4%BA%8E%E5%A4%9A%E7%BB%B4%E5%BA%A6%E7%9A%84%E6%BC%AB%E8%B0%88.html"/>
+      <url>//%E6%9D%82%E8%B0%88/%E5%85%B3%E4%BA%8E%E5%A4%9A%E7%BB%B4%E5%BA%A6%E7%9A%84%E6%BC%AB%E8%B0%88.html</url>
+      
+        <content type="html"><![CDATA[<p>现在对于多维的理解不在简单地停留在时间这样的思维空间，在研究了天文宇宙、数学以及机器学习之后，对于多维度有了更多的认知。</p><p>在开始说明多维度前，我们先来讲一下<b style="color:red">克莱因瓶</b>。</p><h1 id="克莱因瓶"><a href="#克莱因瓶" class="headerlink" title="克莱因瓶"></a>克莱因瓶</h1><p>在解释什么是克莱因瓶之前，我们先要说一下<b style="color:red">莫比乌斯环</b>。</p><p>莫比乌斯环，是数学家莫比乌斯偶然间想到将一张纸条的一头扭转1880°，然后接到另一头上的纸环。这个纸环的局部虽然有正反面之分，但整体上其实只有一个面。示意图如下：<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E7%8E%AF.jpeg"></p><p>这只蚂蚁在这个环上走，能走过每个部分，最后你会发现，其实这个环只有一面，而不是我们想象出来的两面。</p><p>莫比乌斯环，没有正反面之分。而克莱因瓶更牛，没有内外部之分。模型如下：<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E5%85%8B%E8%8E%B1%E5%9B%A0%E7%93%B6.jpeg"></p><p>和莫比乌斯环类似，克莱因瓶的出现是另外一周首尾相连：在一个瓶子的底部有一个洞，然后将瓶口延长从瓶身进入，然后连接到瓶底的洞上。同样的，克莱因瓶局部上有内外部之分，整体却并没有。</p><p>按说瓶底那个洞就是外面，可是，从这个所谓外部的洞口倒水，就可以顺利地进入到所谓的内部，这就是克莱因瓶没有内外部之分的原因。</p><p>克莱因瓶是基于莫比乌斯环而得出的立体模型，可以看下图：<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E5%85%8B%E8%8E%B1%E5%9B%A0%E7%93%B6%E6%A8%A1%E5%9E%8B.jpg"></p><blockquote><p>克莱因瓶更多知识参考：<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzIzOTIyODYx" title="https://www.zhihu.com/question/23922861">https://www.zhihu.com/question/23922861<i class="fa fa-external-link"></i></span></p></blockquote><p>莫比乌斯环和克莱因瓶为何有如此重要的意义？不仅在于它们在拓扑学方面的重要地位，甚至暗藏着宇宙的奥秘。</p><p>每个人都会好奇：宇宙的边界到底在哪里？</p><p>很多人认为，宇宙就是更高维度上的克莱因瓶。我们自以为在宇宙的内部，实际上也是在宇宙的外部。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E5%85%8B%E8%8E%B1%E5%9B%A0%E5%AE%87%E5%AE%99%E6%A8%A1%E5%9E%8B.jpeg"></p><p>宇宙有边缘吗？也许就像克莱因瓶上的一个点一样，无论怎么走，都不会走出去，最终都会回到原点。即使我们有一个可以看到无限远的望远镜，也许当我们向前看到最远处的时候，看到的却是自己的后脑勺。</p><p>若想跳出宇宙这个“克莱因瓶”，或许，我们要从更高的维度，跳出宇宙的“表面”，才能看清这个宇宙吧！</p><p>这里有些扯远了，回归正题，因为人类的生理限制，也许我们永远都不能理解3维以上的空间，而也无法用几何的方式来进行解释。但是对于多维度，不同学科有不同的应用看法和思维。</p><p>这部分知识可以看这里的<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2NTA5OTc2MjEv" title="https://www.bilibili.com/video/av50997621/">视频<i class="fa fa-external-link"></i></span>，里面有更多的介绍。</p><h1 id="不同学科的多维模型"><a href="#不同学科的多维模型" class="headerlink" title="不同学科的多维模型"></a>不同学科的多维模型</h1><h2 id="物理学"><a href="#物理学" class="headerlink" title="物理学"></a>物理学</h2><p>物理学是真正在进行空间学的研究，克莱因瓶对于物理学作用是最重要的，因为物理学4维空间确实无法感知，有人说是第四维是时间，但是这个有点空，因为人的寿命100以内，但是宇宙确有惊人的年龄，人类在宇宙中都是沧海之一粟。但是克莱因膜模型确实给我们带来了太多震撼和想象。这种想象不再停留在人类的认知上，比较切合实际。</p><p>关于物理上的多维空间，最有说服力的就是广义相对论所说得时空扭曲相关的知识，根据克莱因瓶和莫比乌斯环的现象，一定可以扭曲三维空间使之三维空间内聚在内部。这种拓扑人类史没法想出来的。所以克莱因瓶在现实世界是做不出来的。</p><p>这里有很多关于多维空间理解的视频，有兴趣可以看一下哈。</p><blockquote><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MTgzNTczNzQ/ZnJvbT1zZWFyY2gmYW1wO3NlaWQ9MzEwMTM3MzU5Nzc3OTI1MzQ1OA==" title="https://www.bilibili.com/video/av18357374?from=search&amp;seid=3101373597779253458">形象展示-让你理解四维至十维空间<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2Mjg5NDc5Nz9mcm9tPXNlYXJjaCZhbXA7c2VpZD0zMTAxMzczNTk3Nzc5MjUzNDU4" title="https://www.bilibili.com/video/av2894797?from=search&amp;seid=3101373597779253458">三体问：从一维空间到十维空间，你看得懂吗？<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2NTA4NDc2NjAvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjQ=" title="https://www.bilibili.com/video/av50847660/?spm_id_from=333.788.videocard.4">维度空间！一维到十维之五维到七维！继续烧脑<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MzUzNjY3MzU/ZnJvbT1zZWFyY2gmYW1wO3NlaWQ9MzEwMTM3MzU5Nzc3OTI1MzQ1OA==" title="https://www.bilibili.com/video/av35366735?from=search&amp;seid=3101373597779253458">一维空间到十维空间 你能看懂几维?<i class="fa fa-external-link"></i></span></p></blockquote><p>那么我们人类有4维感官吗，可以看下这个<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MTE1Mjk1OTQvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjM=" title="https://www.bilibili.com/video/av11529594/?spm_id_from=333.788.videocard.3">视频<i class="fa fa-external-link"></i></span>。</p><p>这里还有一个上帝视角的<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MzQ5NjgxMTgvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjg=" title="https://www.bilibili.com/video/av34968118/?spm_id_from=333.788.videocard.8">游戏视频<i class="fa fa-external-link"></i></span>，也挺好玩的。</p><p>如果这些不够烧脑，我们来看下下面这个视频，这个会告诉你什么是降维打击，就怕你看不懂。</p><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MzE3NTA5MDIvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjY=" title="https://www.bilibili.com/video/av31750902/?spm_id_from=333.788.videocard.6">降维攻击为什么可怕，看这动画就明白了<i class="fa fa-external-link"></i></span></p><h2 id="数学"><a href="#数学" class="headerlink" title="数学"></a>数学</h2><p>4维空间在数学中可没有什么时间的概念。数学理论上的4维空间是四维超立方体，如下面这个视频展示的就是<br><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MzEzODU2OS8/c3BtX2lkX2Zyb209MzMzLjc4OC52aWRlb2NhcmQuNA==" title="https://www.bilibili.com/video/av3138569/?spm_id_from=333.788.videocard.4">【请带上耳机！】四维空间 神奇的异度空间 试玩体验<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MTY0MTc0OTQvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjQ=" title="https://www.bilibili.com/video/av16417494/?spm_id_from=333.788.videocard.4">难得一见的四维宇宙实验，超出了人类的想象<i class="fa fa-external-link"></i></span></p><p>有趣的是我在B站上还找到了相应的使用程序编写四维超立方体的<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MzAyMzA5MzkvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjM=" title="https://www.bilibili.com/video/av30230939/?spm_id_from=333.788.videocard.3">学习视频<i class="fa fa-external-link"></i></span>；有兴趣的小伙伴可以看一下。</p><p>当然了在<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL2F2MjU0MDUxOTIvP3NwbV9pZF9mcm9tPTMzMy43ODgudmlkZW9jYXJkLjA=" title="https://www.bilibili.com/video/av25405192/?spm_id_from=333.788.videocard.0">李永乐老师的视频<i class="fa fa-external-link"></i></span>中，四维就是可以有4条不同的直线相互垂直的空间，这个解释确实有点偏学术。但是可以作为一种思维方式来解决问题。</p><p>总而言之，目前数学上的思维更多是模型上的创新；但是确实比物理上的多维好理解，但是都是想象的。</p><h2 id="人工智能"><a href="#人工智能" class="headerlink" title="人工智能"></a>人工智能</h2><p>人工智能的维度停留在矩阵知识的应用上。总体而言，人工智能里面的多维不是指空间，而是问题研究的因素；传统科学实验比较常用的方法就是控制变量法，从实验数据中找到问题的规律。而现在的人工智能认为，这些规律可以通过训练或者机器的自我学习而完成。</p><p>所以人工智能的多维是指各种因素，他们研究的是各种因素对于问题结果的关系，而这种关系不是基于实验结果，而是通过机器训练找到规律然后应用。他们不需要科学上的严谨性；目前的人工智能在商业领域应用比较多，因为人工智能可以解决大部分的问题，它不需要100%解决一个问题，因为这个是科学家该干的事情。但是人工智能可以给科学家人发现一些基本规律，提高他们研究的速率，其实就是减少他们做无用尝试的时间。</p><p>但是问题是，因素这个东西是不可控的，如果数据中没有相应的维度，那么训练出来的结果一定是不理想的。OK，这里有些偏题了。总之呢，机器的多维度，指的是数据的多维度。</p><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>解决问题的角度有很多，看问题的方式也是多样的。人类觉得自己的可以已经很发达了，但是其实我们离本质还有太远的距离；但其实也很近。远是因为花时间探索，近是因为人类越来越接近事物的本质。</p><p>量子力学的发展无疑是伟大的，这门学科带给人类无限的想象力。宇宙是浩瀚的，带给人类的是无尽的探索。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 漫谈 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 多维度 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>一次生产问题查询与调优</title>
       <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E4%B8%80%E6%AC%A1%E7%94%9F%E4%BA%A7%E9%97%AE%E9%A2%98%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98.html"/>
       <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E4%B8%80%E6%AC%A1%E7%94%9F%E4%BA%A7%E9%97%AE%E9%A2%98%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98.html</url>
       
-        <content type="html"><![CDATA[<p>最近在生产上查问题，各种问题，其实都是小问题。</p><p>首先来说一下背景吧，我们是蚂蚁金融云科技平台；蚂蚁的金融云平台是Paas层的技术，底层是阿里云的Iaas。这本来没啥特别的，区别就是阿里云是真技术，金融云这边是各类中间件，包括LDC、同城容灾、异地容灾。阿里云会在每台机器中安装天机的客户端，用于收集每台ECS机器的信息；而金融云不用去管每台机器，因为它的资源都是规划的，比如说这个租户需要哪些资源等等。</p><p>我们的系统在一个托管云，名字不重要了，在该云上租户之间是硬隔离的，租户之间的网络是不通的，我们团队是为银行做各类软件服务，所以会有很多租户的问题，金融云是Paas平台，那么我们就是基于Paas云的Saas平台。</p><p>好了聊了这么多，我们聊回问题；刚开始的时候报错的是一家租户，后来我和DBA查来查去都没有发现问题；找了很久终于在DBP同学的帮助下发现DBP的连接池大小配置被改了。之前配置都是800，谁会去该呢？这个问题很大哈。首先来解释一下什么是DBP，DBP是数据库代理层，实现了OB（MySQL）的协议，其实是各类数据库的协议，使用cobar实现分表分库的功能。熟悉MyCAt的人一定都知道Cobar是什么，这里就不多说了。反正就是连接被改了导致访问受限，tps达到50左右应用就报了数据库连接的问题。</p><p>对于这个问题，一开始我问了DBA关于连接数的问题，但是他没有看活跃连接数，如果看了就应该知道连接数不大于10，应为设置被改为了10。还有就是中间件有两台，两台机器的连接数都是10.实际连接数应该是20。这是实现，不多说，以后可以单独开篇博客来深入讲解下这里的实现。</p><p>这里我总结了一下经验</p><blockquote><p>全线路查找在所难免，一定要了解你的上下游都在干嘛。</p></blockquote><p>第二次另一个租户也出问题了，这个租户量比较大，200多tps，后来发现由于业务方流控做得不好，导致tps飙升至580左右，这个租户有6台4C8G的机器；我线下做过调试，单台机器tps可达100（线程数设置为16的时候，线程数为64的时候，tps50就报错了），由于线下环境的db和ots资源都很慢，所以线上的机器tps理论上一定大于100，6台600的tps应该是没问题的。</p><p>后来DBP的同学说连接没释放，问我有没有异常没commit或者rollback的情况，我很诧异，因为Mybatis都帮我处理好了呀，不该出这个问题才对。后来有研究<code>DBPDataSource</code>、<code>DruidDataSource</code>，看有没有直接<code>getConnection</code>的。但是搜了一圈也没发现。这个问题就这么僵着。但是我一直监控着数据，我发现随着时间的推移总会出现一些连接不释放的问题，而且在不停的累积。</p><p>后来我有了DBP机器的权限，于是我查了这台机器的日志，没发现特别的。就是觉得这台机器日志反映出的一些慢SQL是没有道理的，DBA反映很快；于是查了CPU发现，cpu使用率已经到达了65%，其中%system为25%左右，%user为40%左右，%idle为35%左右。后来发现上面显示2 CPU，赶紧<code>cat /proc/cpuinfo</code>，发现还真是2核的机器。</p><p>后来DBP的同学对我说4C8G的机器可达5000qps，那么2C4G可达2500qps，但是这个租户当时的量在3300qps左右，DBP有两台机器，所以理论上还是没有问题的，我仍然不知道为何连接池被占用。</p><p>直到今天，我查了下ISV的流量，发现10s一个循环，5s有流量，5s没啥流量，这就意味着之前我们认为的3300qps计算有误，因为那是分钟级的，换成秒级6600tps，完全超了。这也许就是连接池泄漏的根本原因。</p><blockquote><p>永远不要被已知事实迷惑，分钟级的东西不要相信，还是要关注秒级的tps</p></blockquote><p>后来发现ISV的同学是使用MQ做流控，而这种规律的不均匀流量就是MQ引起的；只要推动他们去修改一下。</p><blockquote><p>有些事情你确实需要去了解一下</p></blockquote><p>后来又发现了部分MQ发送失败的问题，因为系统有自愈重试的能力，也就没有太在意。但是架构组的同学还是找了消息中间件的同学跟进解决。后来发现是我们的日志打印太多，出现了太大的磁盘IO的await。但是发MQ消息是网络能力，与磁盘无关。这个也许就是中间件自己做了啥事情，这个就不得而知了。</p><blockquote><p>刨根问底才能找到最根本的问题，如果因为影响不大而忽视，可能永远也发现不了问题。<br>看起来不相关的两件事，也许存在极大的关联性，发现的时候的确会吓你一跳。</p></blockquote><p>解决的方式就是使用日志的异步化打印功能。</p>]]></content>
+        <content type="html"><![CDATA[<p>最近在生产上查问题，各种问题，其实都是小问题。</p><p>首先来说一下背景吧，我们是蚂蚁金融云科技平台；蚂蚁的金融云平台是Paas层的技术，底层是阿里云的Iaas。这本来没啥特别的，区别就是阿里云是真技术，金融云这边是各类中间件，包括LDC、同城容灾、异地容灾。阿里云会在每台机器中安装天机的客户端，用于收集每台ECS机器的信息；而金融云不用去管每台机器，因为它的资源都是规划的，比如说这个租户需要哪些资源等等。</p><p>我们的系统在一个托管云，名字不重要了，在该云上租户之间是硬隔离的，租户之间的网络是不通的，我们团队是为银行做各类软件服务，所以会有很多租户的问题，金融云是Paas平台，那么我们就是基于Paas云的Saas平台。</p><p>好了聊了这么多，我们聊回问题；刚开始的时候报错的是一家租户，后来我和DBA查来查去都没有发现问题；找了很久终于在DBP同学的帮助下发现DBP的连接池大小配置被改了。之前配置都是800，谁会去该呢？这个问题很大哈。首先来解释一下什么是DBP，DBP是数据库代理层，实现了OB（MySQL）的协议，其实是各类数据库的协议，使用cobar实现分表分库的功能。熟悉MyCAt的人一定都知道Cobar是什么，这里就不多说了。反正就是连接被改了导致访问受限，tps达到50左右应用就报了数据库连接的问题。</p><p>对于这个问题，一开始我问了DBA关于连接数的问题，但是他没有看活跃连接数，如果看了就应该知道连接数不大于10，应为设置被改为了10。还有就是中间件有两台，两台机器的连接数都是10.实际连接数应该是20。这是实现，不多说，以后可以单独开篇博客来深入讲解下这里的实现。</p><p>这里我总结了一下经验</p><blockquote><p>全线路查找在所难免，一定要了解你的上下游都在干嘛。</p></blockquote><p>第二次另一个租户也出问题了，这个租户量比较大，200多tps，后来发现由于业务方流控做得不好，导致tps飙升至580左右，这个租户有6台4C8G的机器；我线下做过调试，单台机器tps可达100（线程数设置为16的时候，线程数为64的时候，tps50就报错了），由于线下环境的db和ots资源都很慢，所以线上的机器tps理论上一定大于100，6台600的tps应该是没问题的。</p><p>后来DBP的同学说连接没释放，问我有没有异常没commit或者rollback的情况，我很诧异，因为Mybatis都帮我处理好了呀，不该出这个问题才对。后来有研究<code>DBPDataSource</code>、<code>DruidDataSource</code>，看有没有直接<code>getConnection</code>的。但是搜了一圈也没发现。这个问题就这么僵着。但是我一直监控着数据，我发现随着时间的推移总会出现一些连接不释放的问题，而且在不停的累积。</p><p>后来我有了DBP机器的权限，于是我查了这台机器的日志，没发现特别的。就是觉得这台机器日志反映出的一些慢SQL是没有道理的，DBA反映很快；于是查了CPU发现，cpu使用率已经到达了65%，其中%system为25%左右，%user为40%左右，%idle为35%左右。后来发现上面显示2 CPU，赶紧<code>cat /proc/cpuinfo</code>，发现还真是2核的机器。</p><p>后来DBP的同学对我说4C8G的机器可达5000qps，那么2C4G可达2500qps，但是这个租户当时的量在3300qps左右，DBP有两台机器，所以理论上还是没有问题的，我仍然不知道为何连接池被占用。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E7%9B%91%E6%8E%A71.jpeg"></p><p>直到今天，我查了下ISV的流量，发现10s一个循环，5s有流量，5s没啥流量，这就意味着之前我们认为的3300qps计算有误，因为那是分钟级的，换成秒级6600tps，完全超了。这也许就是连接池泄漏的根本原因。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%85%B6%E4%BB%96/%E7%9B%91%E6%8E%A72.jpeg"></p><blockquote><p>永远不要被已知事实迷惑，分钟级的东西不要相信，还是要关注秒级的tps</p></blockquote><p>后来发现ISV的同学是使用MQ做流控，而这种规律的不均匀流量就是MQ引起的；只要推动他们去修改一下。</p><blockquote><p>有些事情你确实需要去了解一下</p></blockquote><p>后来又发现了部分MQ发送失败的问题，因为系统有自愈重试的能力，也就没有太在意。但是架构组的同学还是找了消息中间件的同学跟进解决。后来发现是我们的日志打印太多，出现了太大的磁盘IO的await。但是发MQ消息是网络能力，与磁盘无关。这个也许就是中间件自己做了啥事情，这个就不得而知了。</p><blockquote><p>刨根问底才能找到最根本的问题，如果因为影响不大而忽视，可能永远也发现不了问题。<br>看起来不相关的两件事，也许存在极大的关联性，发现的时候的确会吓你一跳。</p></blockquote><p>解决的方式就是使用日志的异步化打印功能。</p>]]></content>
       
       
       <categories>
@@ -2792,9 +2817,9 @@
       
         <tags>
             
-            <tag> 集合 </tag>
-            
             <tag> BlockingQueue </tag>
+            
+            <tag> 集合 </tag>
             
         </tags>
       
@@ -2821,9 +2846,9 @@
       
         <tags>
             
-            <tag> Queue </tag>
-            
             <tag> 集合 </tag>
+            
+            <tag> Queue </tag>
             
         </tags>
       
@@ -3463,9 +3488,9 @@
     
     
     <entry>
-      <title>关于我</title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3474,9 +3499,9 @@
     
     
     <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
+      <title>关于我</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3507,28 +3532,6 @@
     
     
     <entry>
-      <title>厦门市</title>
-      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
-      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
-      
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>河西走廊</title>
-      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
-      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
-      
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>安徽九华山</title>
       <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
       <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
@@ -3540,11 +3543,33 @@
     
     
     <entry>
+      <title>厦门市</title>
+      <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
+      <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
+      
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 厦门旅游 --> <iframe src="//player.bilibili.com/player.html?aid=25655508&cid=43755105&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>鼋头渚</title>
       <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
       <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
       
         <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>河西走廊</title>
+      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
+      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
