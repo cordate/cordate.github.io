@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="概念剖析相信很多从事linux后台开发工作的都接触过同步&amp;amp;异步、阻塞&amp;amp;非阻塞这样的概念，也相信都曾经产生过误解，比如认为同步就是阻塞、异步就是非阻塞，下面我们先剖析下这几个概念分别是什么含义。 同步所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事。 例如普通B/S模式（同步）：提交请求-&amp;gt;等待服务器处">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-15T19:20:08.716Z">
+<meta property="og:updated_time" content="2019-09-07T18:34:33.159Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="同步与异步，阻塞与非阻塞与IO模型">
 <meta name="twitter:description" content="概念剖析相信很多从事linux后台开发工作的都接触过同步&amp;amp;异步、阻塞&amp;amp;非阻塞这样的概念，也相信都曾经产生过误解，比如认为同步就是阻塞、异步就是非阻塞，下面我们先剖析下这几个概念分别是什么含义。 同步所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事。 例如普通B/S模式（同步）：提交请求-&amp;gt;等待服务器处">
@@ -436,13 +436,23 @@
                 
               
 
-              <time title="创建时间：2019-08-16 01:00:50 / 修改时间：03:20:08" itemprop="dateCreated datePublished" datetime="2019-08-16T01:00:50+08:00">2019-08-16</time>
+              <time title="创建时间：2019-08-16 01:00:50" itemprop="dateCreated datePublished" datetime="2019-08-16T01:00:50+08:00">2019-08-16</time>
             </span>
           
 
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-08 02:34:33" itemprop="dateModified" datetime="2019-09-08T02:34:33+08:00">2019-09-08</time>
+              </span>
             
           
 
@@ -565,6 +575,9 @@
 <h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><p>当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者的输入输出操作.</p>
 <p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%BC%82%E6%AD%A5IO.png"></p>
 <h1 id="5中io比较"><a href="#5中io比较" class="headerlink" title="5中io比较"></a>5中io比较</h1><p>最后我们看一下5种IO的比较，这样你能直观的感受这种模型的区别和联系。<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/5%E4%B8%ADIO%E6%AF%94%E8%BE%83.png"></p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vY2FybDEwMDg2L3AvNTkyNjE1My5odG1s" title="https://www.cnblogs.com/carl10086/p/5926153.html">https://www.cnblogs.com/carl10086/p/5926153.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
 
       
     </div>
@@ -775,7 +788,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">127</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1191,7 +1204,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-08</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-09</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1205,7 +1218,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">874k</span>
+    <span title="站点总字数">883k</span>
   
 
   
@@ -1216,7 +1229,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">13:15</span>
+    <span title="站点阅读时长">13:23</span>
   
 </div>
 

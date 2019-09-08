@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icon2.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon.jpg?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="最近在查一些系统的问题，但是经常会遇到查某些指标的时候不知使用哪个命令，一般命令也记不住，所以呢，这里写一篇博客来进行总结归纳。 IO层的监控我们来看下Linux的IO结构图： 系统级的IO监控iostatiostat #正常IO输出    项目 说明     tps 每秒进程下发的IO读、写请求数量   Blk_read/s 每秒读扇区数量(一扇区为512bytes)   Blk_wrtn/s">
+<meta name="keywords" content="调优">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux下的监控和分析命令大全">
+<meta property="og:url" content="https://cordate.github.io/系统设计/高可用/linux下的监控和分析命令大全.html">
+<meta property="og:site_name" content="柳絮纷飞">
+<meta property="og:description" content="最近在查一些系统的问题，但是经常会遇到查某些指标的时候不知使用哪个命令，一般命令也记不住，所以呢，这里写一篇博客来进行总结归纳。 IO层的监控我们来看下Linux的IO结构图： 系统级的IO监控iostatiostat #正常IO输出    项目 说明     tps 每秒进程下发的IO读、写请求数量   Blk_read/s 每秒读扇区数量(一扇区为512bytes)   Blk_wrtn/s">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-08T17:14:32.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux下的监控和分析命令大全">
+<meta name="twitter:description" content="最近在查一些系统的问题，但是经常会遇到查某些指标的时候不知使用哪个命令，一般命令也记不住，所以呢，这里写一篇博客来进行总结归纳。 IO层的监控我们来看下Linux的IO结构图： 系统级的IO监控iostatiostat #正常IO输出    项目 说明     tps 每秒进程下发的IO读、写请求数量   Blk_read/s 每秒读扇区数量(一扇区为512bytes)   Blk_wrtn/s">
+
+
+
+  <link rel="alternate" href="https://legacy.gitbook.com/@gavinzhang1" title="柳絮纷飞" type="application/atom+xml"/>
+
+
+
+  
+  
+  <link rel="canonical" href="https://cordate.github.io/系统设计/高可用/linux下的监控和分析命令大全"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  
+  <title>linux下的监控和分析命令大全 | 柳絮纷飞</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+  
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav navbar navbar-default sticky animated fadeInDown" role="navigation">
+  
+    <ul id="menu" class="menu nav navbar-nav hidden-sm">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-vedio">
+
+    
+
+    
+      
+    
+
+    <a href="/vedio/" rel="section"><i class="menu-item-icon fa fa-fw fa-film"></i>视频</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-pictures">
+
+    
+
+    
+      
+    
+
+    <a href="/pictures/" rel="section"><i class="menu-item-icon fa fa-fw fa-picture-o"></i>图片</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> 搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  
+    
+      
+      <img src="/images/blog/风景1.jpeg" alt="背景图" width="100%"/>
+    
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cordate.github.io/系统设计/高可用/linux下的监控和分析命令大全.html"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com"/>
+      <meta itemprop="image" content="/images/user-avatar.jpg"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柳絮纷飞"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">linux下的监控和分析命令大全
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+
+          <!-- 置顶的实现 -->
+          
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-02 23:30:10" itemprop="dateCreated datePublished" datetime="2019-09-02T23:30:10+08:00">2019-09-02</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-09 01:14:32" itemprop="dateModified" datetime="2019-09-09T01:14:32+08:00">2019-09-09</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/系统设计/高可用/" itemprop="url" rel="index"><span itemprop="name">高可用</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          <!-- 页面访问量统计 -->
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          
+
+          
+
+          <br/>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">9k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">8 分钟</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在查一些系统的问题，但是经常会遇到查某些指标的时候不知使用哪个命令，一般命令也记不住，所以呢，这里写一篇博客来进行总结归纳。</p>
+<h1 id="IO层的监控"><a href="#IO层的监控" class="headerlink" title="IO层的监控"></a>IO层的监控</h1><p>我们来看下Linux的IO结构图：<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/LinuxIO%E7%BB%93%E6%9E%84.jpg"></p>
+<h2 id="系统级的IO监控"><a href="#系统级的IO监控" class="headerlink" title="系统级的IO监控"></a>系统级的IO监控</h2><h3 id="iostat"><a href="#iostat" class="headerlink" title="iostat"></a>iostat</h3><p><code>iostat #正常IO输出</code></p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tps</td>
+<td>每秒进程下发的IO读、写请求数量</td>
+</tr>
+<tr>
+<td>Blk_read/s</td>
+<td>每秒读扇区数量(一扇区为512bytes)</td>
+</tr>
+<tr>
+<td>Blk_wrtn/s</td>
+<td>每秒写扇区数量</td>
+</tr>
+<tr>
+<td>Blk_read</td>
+<td>取样时间间隔内读扇区总数量</td>
+</tr>
+<tr>
+<td>Blk_wrtn</td>
+<td>取样时间间隔内写扇区总数量</td>
+</tr>
+</tbody>
+</table>
+<p><code>iostat -xdm 1 10 #每一秒打印一次，打10次</code><br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/iostat%E5%91%BD%E4%BB%A4.jpg"></p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rrqm/s</td>
+<td>每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并</td>
+</tr>
+<tr>
+<td>wrqm/s</td>
+<td>每秒对该设备的写请求被合并次数</td>
+</tr>
+<tr>
+<td>r/s</td>
+<td>每秒完成的读次数</td>
+</tr>
+<tr>
+<td>w/s</td>
+<td>每秒完成的写次数</td>
+</tr>
+<tr>
+<td>rkB/s（这里是rMB/s）</td>
+<td>每秒读数据量(kB为单位)</td>
+</tr>
+<tr>
+<td>wkB/s（这里是wMB/s）</td>
+<td>每秒写数据量(kB为单位)</td>
+</tr>
+<tr>
+<td>avgrq-sz</td>
+<td>平均每次IO操作的数据量(扇区数为单位)</td>
+</tr>
+<tr>
+<td>avgqu-sz</td>
+<td>平均等待处理的IO请求队列长度</td>
+</tr>
+<tr>
+<td>await</td>
+<td>平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位)</td>
+</tr>
+<tr>
+<td>svctm</td>
+<td>平均每次IO请求的处理时间(毫秒为单位)</td>
+</tr>
+<tr>
+<td>%util</td>
+<td>采用周期内用于IO操作的时间比率，即IO队列非空的时间比率</td>
+</tr>
+</tbody>
+</table>
+<p>特别说明：</p>
+<ul>
+<li>%util： 代表磁盘繁忙程度。100% 表示磁盘繁忙, 0%表示磁盘空闲。但是注意,磁盘繁忙不代表磁盘(带宽)利用率高</li>
+<li>argrq-sz： 提交给驱动层的IO请求大小,一般不小于4K,不大于max(readahead_kb, max_sectors_kb);可用于判断当前的IO模式,一般情况下,尤其是磁盘繁忙时, 越大代表顺序,越小代表随机.</li>
+<li>svctm： 一次IO请求的服务时间,对于单块盘,完全随机读时,基本在7ms左右,既寻道+旋转延迟时间</li>
+</ul>
+<blockquote>
+<p>注: 各统计量之间关系<br>%util = ( r/s  +  w/s) <em> svctm / 1000                # 队列长度 =  到达率 </em> 平均服务时间<br>avgrq-sz = ( rMB/s + wMB/s) * 2048 / (r/s  + w/s)    # 2048 为 1M / 512</p>
+</blockquote>
+<p>总结:<br>iostat 统计的是通用块层经过合并(rrqm/s, wrqm/s)后,直接向设备提交的IO数据,可以反映系统整体的IO状况,但是有以下2个缺点:</p>
+<ol>
+<li>距离业务层比较遥远,跟代码中的write,read不对应(由于系统预读 + pagecache + IO调度算法等因素, 也很难对应)</li>
+<li>是系统级,没办法精确到进程,比如只能告诉你现在磁盘很忙,但是没办法告诉你是谁在忙,在忙什么？</li>
+</ol>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9pb3N0YXQuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/iostat.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/iostat.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="进程级IO监控"><a href="#进程级IO监控" class="headerlink" title="进程级IO监控"></a>进程级IO监控</h2><h3 id="iotop"><a href="#iotop" class="headerlink" title="iotop"></a>iotop</h3><p>iotop顾名思义, io版的top<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/iotop%E5%91%BD%E4%BB%A4.jpg"></p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vbGVnZW5kYmFieS9wLzUwNTY5NjcuaHRtbA==" title="https://www.cnblogs.com/legendbaby/p/5056967.html">https://www.cnblogs.com/legendbaby/p/5056967.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h3 id="pidstat-仅rhel6u系列"><a href="#pidstat-仅rhel6u系列" class="headerlink" title="pidstat (仅rhel6u系列)"></a>pidstat (仅rhel6u系列)</h3><p>pidstat: 顾名思义, 统计进程(pid)的stat,进程的stat自然包括进程的IO状况.<br><code>pidstat -d  1 #只显示IO</code><br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/pidstat%E5%91%BD%E4%BB%A4.jpg"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pidstat -u -r -d -t 1       # -d IO 信息,</span><br><span class="line">                            # -r 缺页及内存信息</span><br><span class="line">                            # -u CPU使用率</span><br><span class="line">                            # -t 以线程为统计单位</span><br><span class="line">                            # 1  1秒统计一次</span><br></pre></td></tr></table></figure>
+<h3 id="block-dump-iodump"><a href="#block-dump-iodump" class="headerlink" title="block_dump, iodump"></a>block_dump, iodump</h3><p>iotop和pidstat 用着很爽,但两者都依赖于/proc/pid/io文件导出的统计信息, 这个对于老一些的内核是没有的,比如rhel5u2</p>
+<p>因此只好用以上2个穷人版命令来替代:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt; /proc/sys/vm/block_dump    # 开启block_dump,此时会把io信息输入到dmesg中</span><br><span class="line">                                    # 源码: submit_bio@ll_rw_blk.c:3213</span><br><span class="line">watch -n 1 "dmesg -c | grep -oP \"\w+\(\d+\): (WRITE|READ)\" | sort | uniq -c"</span><br><span class="line">                                    # 不停的dmesg -c</span><br><span class="line">echo 0 &gt; /proc/sys/vm/block_dump      # 不用时关闭</span><br></pre></td></tr></table></figure></p>
+<p>也可以使用现成的脚本 iodump, 具体参见 <span class="exturl" data-url="aHR0cDovL2NvZGUuZ29vZ2xlLmNvbS9wL21hYXRraXQvc291cmNlL2Jyb3dzZS90cnVuay91dGlsL2lvZHVtcD9yPTUzODk=" title="http://code.google.com/p/maatkit/source/browse/trunk/util/iodump?r=5389">http://code.google.com/p/maatkit/source/browse/trunk/util/iodump?r=5389<i class="fa fa-external-link"></i></span></p>
+<h3 id="iotop-stp"><a href="#iotop-stp" class="headerlink" title="iotop.stp"></a>iotop.stp</h3><p>systemtap脚本,一看就知道是iotop命令的穷人复制版,需要安装Systemtap, 默认每隔5秒输出一次信息<br><code>stap iotop.stp  #  examples/io/iotop.stp</code></p>
+<p>总结: 进程级IO监控，</p>
+<ol>
+<li>可以回答系统级IO监控不能回答的2个问题</li>
+<li>距离业务层相对较近(例如,可以统计进程的读写量)</li>
+</ol>
+<p>但是也没有办法跟业务层的read,write联系在一起,同时颗粒度较粗,没有办法告诉你,当前进程读写了哪些文件? 耗时? 大小 ？ </p>
+<h2 id="业务级IO监控"><a href="#业务级IO监控" class="headerlink" title="业务级IO监控"></a>业务级IO监控</h2><h3 id="ioprofile"><a href="#ioprofile" class="headerlink" title="ioprofile"></a>ioprofile</h3><p>ioprofile 命令本质上是 lsof + strace, 具体下载可见 <span class="exturl" data-url="aHR0cDovL2NvZGUuZ29vZ2xlLmNvbS9wL21hYXRraXQv" title="http://code.google.com/p/maatkit/">http://code.google.com/p/maatkit/<i class="fa fa-external-link"></i></span></p>
+<p>ioprofile 可以回答你以下三个问题:</p>
+<ol>
+<li>当前进程某时间内,在业务层面读写了哪些文件(read, write)？</li>
+<li>读写次数是多少?(read, write的调用次数)</li>
+<li>读写数据量多少?(read, write的byte数)</li>
+</ol>
+<p>假设某个行为会触发程序一次IO动作,例如: “一个页面点击,导致后台读取A,B,C文件”</p>
+<p><code>./io_event   # 假设模拟一次IO行为,读取A文件一次, B文件500次, C文件500次</code><br><code>ioprofile  -p</code>pidof  io_event<code>-c count   # 读写次数</code></p>
+<p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/ioprofile%E8%AF%BB%E5%86%99%E6%AC%A1%E6%95%B0.jpg"><br><code>ioprofile  -p</code>pidof  io_event<code>-c times   # 读写耗时</code><br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/ioprofile%E8%AF%BB%E5%86%99%E8%80%97%E6%97%B6.jpg"><br><code>ioprofile  -p</code>pidof  io_event<code>-c sizes    # 读写大小</code><br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/ioprofile%E8%AF%BB%E5%86%99%E5%A4%A7%E5%B0%8F.jpg"></p>
+<p>注: ioprofile 仅支持多线程程序,对单线程程序不支持. 对于单线程程序的IO业务级分析,strace足以。</p>
+<p>总结: ioprofile本质上是strace,因此可以看到read,write的调用轨迹,可以做业务层的io分析(mmap方式无能为力)</p>
+<h2 id="文件级IO监控"><a href="#文件级IO监控" class="headerlink" title="文件级IO监控"></a>文件级IO监控</h2><p>文件级IO监控可以配合/补充”业务级和进程级”IO分析<br>文件级IO分析,主要针对单个文件, 回答当前哪些进程正在对某个文件进行读写操作.</p>
+<ol>
+<li>lsof   或者  ls /proc/pid/fd</li>
+<li>inodewatch.stp</li>
+</ol>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9sc29mLmh0bWw=" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/lsof.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/lsof.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<p><code>lsof</code>  告诉你 当前文件由哪些进程打开<br><code>lsof ../io</code>   #  io目录 当前由 bash 和 lsof 两个进程打开<br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/lsof%E5%91%BD%E4%BB%A4.jpg"></p>
+<p>lsof 命令 只能回答静态的信息, 并且”打开” 并不一定”读取”, 对于 cat ,echo这样的命令, 打开和读取都是瞬间的,lsof很难捕捉<br>可以用 inodewatch.stp 来弥补<br><code>stap inodewatch.stp major minor inode      # 主设备号, 辅设备号, 文件inode节点号</code><br><code>stap  inodewatch.stp  0xfd 0x00 523170    # 主设备号, 辅设备号, inode号,可以通过 stat 命令获得</code><br><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/linux/inodewatch.stp%E5%91%BD%E4%BB%A4.jpg"></p>
+<blockquote>
+<p>更多关于IO的命令查看：<span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vcXVpeG90aWMvcC8zMjU4NzMwLmh0bWw=" title="https://www.cnblogs.com/quixotic/p/3258730.html">https://www.cnblogs.com/quixotic/p/3258730.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h1 id="网络IO"><a href="#网络IO" class="headerlink" title="网络IO"></a>网络IO</h1><h2 id="iftop"><a href="#iftop" class="headerlink" title="iftop"></a>iftop</h2><p>需要安装<code>yum install iftop</code><br>安装完成后，使用iftop -n命令可以查看网络的使用情况.</p>
+<h2 id="netstat"><a href="#netstat" class="headerlink" title="netstat"></a>netstat</h2><p>想要跟踪一下具体是哪个进程正在占用网络，可以使用下面的命令：<br><code>netstat -antop |grep 106.120.78.190</code></p>
+<p>netstat参数含义：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-a</td>
+<td>(all)显示所有选项，默认不显示LISTEN相关</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>(tcp)仅显示tcp相关选项</td>
+</tr>
+<tr>
+<td>-u</td>
+<td>(udp)仅显示udp相关选项</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>拒绝显示别名，能显示数字的全部转化成数字。</td>
+</tr>
+<tr>
+<td>-l</td>
+<td>仅列出有在 Listen (监听) 的服務状态</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>显示建立相关链接的程序名</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>显示路由信息，路由表</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>显示扩展信息，例如uid等</td>
+</tr>
+<tr>
+<td>-s</td>
+<td>按各个协议进行统计</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>每隔一个固定时间，执行该netstat命令。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ping"><a href="#ping" class="headerlink" title="ping"></a>ping</h2><p>可以查看经过的跳数和网络响应的时间。</p>
+<h2 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h2><p>测试网络是否联通。</p>
+<h1 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h1><h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p><code>ls -al --block-size=m</code>可以查看文件的大小</p>
+<h2 id="du"><a href="#du" class="headerlink" title="du"></a>du</h2><p>查看文件目录下文件的大小</p>
+<h2 id="df"><a href="#df" class="headerlink" title="df"></a>df</h2><p>查看磁盘空间的使用情况</p>
+<h1 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h1><h2 id="free"><a href="#free" class="headerlink" title="free"></a>free</h2><p>内存使用的情况，swap是交换区空间；cache一般是指磁盘的缓存区。</p>
+<h2 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h2><p>vmstat是Virtual Meomory Statistics（虚拟内存统计）的缩写，可实时动态监视操作系统的虚拟内存、进程、CPU活动。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC92bXN0YXQuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="top"><a href="#top" class="headerlink" title="top"></a>top</h2><p>top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。top是一个动态显示过程,即可以通过用户按键来不断刷新当前状态.如果在前台执行该命令,它将独占前台,直到用户终止该程序为止.比较准确的说,top命令提供了实时的对系统处理器的状态监视.它将显示系统中CPU最“敏感”的任务列表.该命令可以按CPU使用.内存使用和执行时间对任务进行排序；而且该命令的很多特性都可以通过交互式命令或者在个人定制文件中进行设定。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC90b3AuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h1 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h1><h2 id="vmstat-1"><a href="#vmstat-1" class="headerlink" title="vmstat"></a>vmstat</h2><p>vmstat是Virtual Meomory Statistics（虚拟内存统计）的缩写，可实时动态监视操作系统的虚拟内存、进程、CPU活动。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC92bXN0YXQuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="sar"><a href="#sar" class="headerlink" title="sar"></a>sar</h2><p>sar是System Activity Reporter（系统活动情况报告）的缩写。sar工具将对系统当前的状态进行取样，然后通过计算数据和比例来表达系统的当前运行状态。它的特点是可以连续对系统取样，获得大量的取样数据；取样数据和分析的结果都可以存入文件，所需的负载很小。sar是目前Linux上最为全面的系统性能分析工具之一，可以从14个大方面对系统的活动进行报告，包括文件的读写情况、系统调用的使用情况、串口、CPU效率、内存使用状况、进程活动及IPC有关的活动等，使用也是较为复杂。</p>
+<p><code>sar -u 5 20</code></p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9zYXIuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/sar.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/sar.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="top-1"><a href="#top-1" class="headerlink" title="top"></a>top</h2><blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC90b3AuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="proc-cpuinfo"><a href="#proc-cpuinfo" class="headerlink" title="/proc/cpuinfo"></a>/proc/cpuinfo</h2><p>查看cpu的硬件信息</p>
+<h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><h2 id="top-2"><a href="#top-2" class="headerlink" title="top"></a>top</h2><blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC90b3AuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/top.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="ipcs"><a href="#ipcs" class="headerlink" title="ipcs"></a>ipcs</h2><p>ipcs是Linux下显示进程间通信设施状态的工具。可以显示消息队列、共享内存和信号量的信息。对于程序员非常有用，普通的系统管理员一般用不到此指令。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9pcGNzLmh0bWw=" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/ipcs.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/ipcs.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="strace"><a href="#strace" class="headerlink" title="strace"></a>strace</h2><p>strace常用来跟踪进程执行时的系统调用和所接收的信号。 在Linux世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9zdHJhY2UuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/strace.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/strace.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h2><p>Linux中的ps命令是Process Status的缩写。ps命令用来列出系统中当前运行的那些进程。ps命令列出的是当前那些进程的快照，就是执行ps命令的那个时刻的那些进程，如果想要动态的显示进程信息，就可以使用top命令。</p>
+<h2 id="pstack"><a href="#pstack" class="headerlink" title="pstack"></a>pstack</h2><p>此命令可显示每个进程的栈跟踪。pstack 命令必须由相应进程的属主或 root 运行。可以使用 pstack 来确定进程挂起的位置。此命令允许使用的唯一选项是要检查的进程的 PID。请参见 proc(1) 手册页。</p>
+<p>这个命令在排查进程问题时非常有用，比如我们发现一个服务一直处于work状态（如假死状态，好似死循环），使用这个命令就能轻松定位问题所在；可以在一段时间内，多执行几次pstack，若发现代码栈总是停在同一个位置，那个位置就需要重点关注，很可能就是出问题的地方；</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9wc3RhY2suaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/pstack.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/pstack.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="ldd-查看程序依赖库"><a href="#ldd-查看程序依赖库" class="headerlink" title="ldd 查看程序依赖库"></a>ldd 查看程序依赖库</h2><p>用来查看程式运行所需的共享库,常用来解决程式因缺少某个库文件而不能运行的一些问题。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9sZGQuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/ldd.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/ldd.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="pstree"><a href="#pstree" class="headerlink" title="pstree"></a>pstree</h2><p>pstree命令是用于查看进程树之间的关系，即哪个进程是父进程，哪个是子进程，可以清楚的看出来是谁创建了谁</p>
+<p>pstree几个重要的参数：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-A</td>
+<td>各进程树之间的连接以ASCII码字符来连接</td>
+</tr>
+<tr>
+<td>-U</td>
+<td>各进程树之间的连接以utf8字符来连接，某些终端可能会有错误</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>同时列出每个进程的PID</td>
+</tr>
+<tr>
+<td>-u</td>
+<td>同时列出每个进程的所属账号名称：</td>
+</tr>
+</tbody>
+</table>
+<p>例子：<br><code>#pstree  -up</code><br><code>pstree -p [pid]</code><br><code>pstree -a</code></p>
+<h2 id="size"><a href="#size" class="headerlink" title="size"></a>size</h2><p>作用：查看程序被映射到内存中的映像所占用的大小信息。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC9zaXplLmh0bWw=" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/size.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/size.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="proc-pid-文件"><a href="#proc-pid-文件" class="headerlink" title="/proc/[pid]/*文件"></a>/proc/[pid]/*文件</h2><p>主要是为了看下进程的内存文件</p>
+<h1 id="系统信息"><a href="#系统信息" class="headerlink" title="系统信息"></a>系统信息</h1><h2 id="uname"><a href="#uname" class="headerlink" title="uname"></a>uname</h2><p>查看系统的一些信息</p>
+<h2 id="vmstat-2"><a href="#vmstat-2" class="headerlink" title="vmstat"></a>vmstat</h2><p>系统所有的概要信息。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9saW51eHRvb2xzLXJzdC5yZWFkdGhlZG9jcy5pby96aF9DTi9sYXRlc3QvdG9vbC92bXN0YXQuaHRtbA==" title="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/vmstat.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="proc-文件"><a href="#proc-文件" class="headerlink" title="/proc/*文件"></a>/proc/*文件</h2><p>Linux 内核提供了一种通过 /proc 文件系统，在运行时访问内核内部数据结构、改变内核设置的机制。proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。</p>
+<p>用户和应用程序可以通过proc得到系统的信息，并可以改变内核的某些参数。由于系统的信息，如进程，是动态改变的，所以用户或应用程序读取proc文件时，proc文件系统是动态从系统内核读出所需信息并提交的。下面列出的这些文件或子文件夹，并不是都是在你的系统中存在，这取决于你的内核配置和装载的模块。另外，在/proc下还有三个很重要的目录：net，scsi和sys。 Sys目录是可写的，可以通过它来访问或修改内核的参数，而net和scsi则依赖于内核配置。例如，如果系统不支持scsi，则scsi 目录不存在。</p>
+<p>除了以上介绍的这些，还有的是一些以数字命名的目录，它们是进程目录。系统中当前运行的每一个进程都有对应的一个目录在/proc下，以进程的 PID号为目录名，它们是读取进程信息的接口。而self目录则是读取进程本身的信息接口，是一个link。</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/proc/buddyinfo</td>
+<td>每个内存区中的每个order有多少块可用，和内存碎片问题有关</td>
+</tr>
+<tr>
+<td>/proc/cmdline</td>
+<td>启动时传递给kernel的参数信息</td>
+</tr>
+<tr>
+<td>/proc/cpuinfo</td>
+<td>cpu的信息</td>
+</tr>
+<tr>
+<td>/proc/crypto</td>
+<td>内核使用的所有已安装的加密密码及细节</td>
+</tr>
+<tr>
+<td>/proc/devices</td>
+<td>已经加载的设备并分类</td>
+</tr>
+<tr>
+<td>/proc/dma</td>
+<td>已注册使用的ISA DMA频道列表</td>
+</tr>
+<tr>
+<td>/proc/execdomains</td>
+<td>Linux内核当前支持的execution domains</td>
+</tr>
+<tr>
+<td>/proc/fb</td>
+<td>帧缓冲设备列表，包括数量和控制它的驱动</td>
+</tr>
+<tr>
+<td>/proc/filesystems</td>
+<td>内核当前支持的文件系统类型</td>
+</tr>
+<tr>
+<td>/proc/interrupts</td>
+<td>x86架构中的每个IRQ中断数</td>
+</tr>
+<tr>
+<td>/proc/iomem</td>
+<td>每个物理设备当前在系统内存中的映射</td>
+</tr>
+<tr>
+<td>/proc/ioports</td>
+<td>一个设备的输入输出所使用的注册端口范围</td>
+</tr>
+<tr>
+<td>/proc/kcore</td>
+<td>代表系统的物理内存，存储为核心文件格式，里边显示的是字节数，等于RAM大小加上4kb</td>
+</tr>
+<tr>
+<td>/proc/kmsg</td>
+<td>记录内核生成的信息，可以通过/sbin/klogd或/bin/dmesg来处理</td>
+</tr>
+<tr>
+<td>/proc/loadavg</td>
+<td>根据过去一段时间内CPU和IO的状态得出的负载状态，与uptime命令有关</td>
+</tr>
+<tr>
+<td>/proc/locks</td>
+<td>内核锁住的文件列表</td>
+</tr>
+<tr>
+<td>/proc/mdstat</td>
+<td>多硬盘，RAID配置信息(md=multiple disks)</td>
+</tr>
+<tr>
+<td>/proc/meminfo</td>
+<td>RAM使用的相关信息</td>
+</tr>
+<tr>
+<td>/proc/misc</td>
+<td>其他的主要设备(设备号为10)上注册的驱动</td>
+</tr>
+<tr>
+<td>/proc/modules</td>
+<td>所有加载到内核的模块列表</td>
+</tr>
+<tr>
+<td>/proc/mounts</td>
+<td>系统中使用的所有挂载</td>
+</tr>
+<tr>
+<td>/proc/mtrr</td>
+<td>系统使用的Memory Type Range Registers (MTRRs)</td>
+</tr>
+<tr>
+<td>/proc/partitions</td>
+<td>分区中的块分配信息</td>
+</tr>
+<tr>
+<td>/proc/pci</td>
+<td>系统中的PCI设备列表</td>
+</tr>
+<tr>
+<td>/proc/slabinfo</td>
+<td>系统中所有活动的 slab 缓存信息</td>
+</tr>
+<tr>
+<td>/proc/stat</td>
+<td>所有的CPU活动信息</td>
+</tr>
+<tr>
+<td>/proc/sysrq-trigger</td>
+<td>使用echo命令来写这个文件的时候，远程root用户可以执行大多数的系统请求关键命令，就好像在本地终端执行一样。要写入这个文件，需要把/proc/sys/kernel/sysrq不能设置为0。这个文件对root也是不可读的</td>
+</tr>
+<tr>
+<td>/proc/uptime</td>
+<td>系统已经运行了多久</td>
+</tr>
+<tr>
+<td>/proc/swaps</td>
+<td>交换空间的使用情况</td>
+</tr>
+<tr>
+<td>/proc/version</td>
+<td>Linux内核版本和gcc版本</td>
+</tr>
+<tr>
+<td>/proc/bus</td>
+<td>系统总线(Bus)信息，例如pci/usb等</td>
+</tr>
+<tr>
+<td>/proc/driver</td>
+<td>驱动信息</td>
+</tr>
+<tr>
+<td>/proc/fs</td>
+<td>文件系统信息</td>
+</tr>
+<tr>
+<td>/proc/ide</td>
+<td>ide设备信息</td>
+</tr>
+<tr>
+<td>/proc/irq</td>
+<td>中断请求设备信息</td>
+</tr>
+<tr>
+<td>/proc/net</td>
+<td>网卡设备信息</td>
+</tr>
+<tr>
+<td>/proc/scsi</td>
+<td>scsi设备信息</td>
+</tr>
+<tr>
+<td>/proc/tty</td>
+<td>tty设备信息</td>
+</tr>
+<tr>
+<td>/proc/net/dev</td>
+<td>显示网络适配器及统计信息</td>
+</tr>
+<tr>
+<td>/proc/vmstat</td>
+<td>虚拟内存统计信息</td>
+</tr>
+<tr>
+<td>/proc/vmcore</td>
+<td>内核panic时的内存映像</td>
+</tr>
+<tr>
+<td>/proc/diskstats</td>
+<td>取得磁盘信息</td>
+</tr>
+<tr>
+<td>/proc/schedstat</td>
+<td>kernel调度器的统计信息</td>
+</tr>
+<tr>
+<td>/proc/zoneinfo</td>
+<td>显示内存空间的统计信息，对分析虚拟内存行为很有用</td>
+</tr>
+</tbody>
+</table>
+<p>以下是/proc目录中进程N的信息</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/proc/N</td>
+<td>pid为N的进程信息</td>
+</tr>
+<tr>
+<td>/proc/N/cmdline</td>
+<td>进程启动命令</td>
+</tr>
+<tr>
+<td>/proc/N/cwd</td>
+<td>链接到进程当前工作目录</td>
+</tr>
+<tr>
+<td>/proc/N/environ</td>
+<td>进程环境变量列表</td>
+</tr>
+<tr>
+<td>/proc/N/exe</td>
+<td>链接到进程的执行命令文件</td>
+</tr>
+<tr>
+<td>/proc/N/fd</td>
+<td>包含进程相关的所有的文件描述符</td>
+</tr>
+<tr>
+<td>/proc/N/maps</td>
+<td>与进程相关的内存映射信息</td>
+</tr>
+<tr>
+<td>/proc/N/mem</td>
+<td>指代进程持有的内存，不可读</td>
+</tr>
+<tr>
+<td>/proc/N/root</td>
+<td>链接到进程的根目录</td>
+</tr>
+<tr>
+<td>/proc/N/stat</td>
+<td>进程的状态</td>
+</tr>
+<tr>
+<td>/proc/N/statm</td>
+<td>进程使用的内存的状态</td>
+</tr>
+<tr>
+<td>/proc/N/status</td>
+<td>进程状态信息，比stat/statm更具可读性</td>
+</tr>
+<tr>
+<td>/proc/self</td>
+<td>链接到当前正在运行的进程</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+
+    
+      
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Gavin Zhang</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://cordate.github.io/系统设计/高可用/linux下的监控和分析命令大全.html" title="linux下的监控和分析命令大全">https://cordate.github.io/系统设计/高可用/linux下的监控和分析命令大全.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/调优/" rel="tag"><i class="fa fa-tag"></i> 调优</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+              <div>
+                
+
+<script src="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.css">
+
+
+  
+
+
+<div class="likely">
+  
+    <div class="twitter">Tweet</div>
+  
+    <div class="facebook">Share</div>
+  
+    <div class="linkedin">Link</div>
+  
+    <div class="gplus">Plus</div>
+  
+    <div class="vkontakte">Share</div>
+  
+    <div class="odnoklassniki">Class</div>
+  
+    <div class="telegram">Send</div>
+  
+    <div class="whatsapp">Send</div>
+  
+    <div class="pinterest">Pin</div>
+  
+</div>
+
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/杂谈/关于多维度的漫谈.html" rel="next" title="关于多维度的漫谈">
+                <i class="fa fa-chevron-left"></i> 关于多维度的漫谈
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <!-- 左侧菜单--站点概览 -->
+<div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  
+    <img class="site-author-image" itemprop="image"
+      src="/images/user-avatar.jpg"
+      alt="Gavin Zhang"/>
+  
+  <p class="site-author-name" itemprop="name">Gavin Zhang</p>
+  <div class="site-description motion-element" itemprop="description">一个孤独的开发者，正在互联网公司踩坑<br />邮箱：zlcgavin@gmail.com</div>
+</div>
+
+<!-- 下方的分类标签 -->
+
+  <nav class="site-state motion-element">
+    
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">114</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+<!-- rss -->
+
+  <div class="feed-link motion-element">
+    <a href="https://legacy.gitbook.com/@gavinzhang1" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+
+
+  <div class="links-of-author motion-element">
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3lvdXJuYW1l" title="GitHub &rarr; https://github.com/yourname"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+    
+  </div>
+
+
+
+  <div class="cc-license motion-element" itemprop="license">
+  
+  
+    
+  
+  
+  
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"/></span>
+  </div>
+
+
+
+
+
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IO层的监控"><span class="nav-number">1.</span> <span class="nav-text">IO层的监控</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统级的IO监控"><span class="nav-number">1.1.</span> <span class="nav-text">系统级的IO监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iostat"><span class="nav-number">1.1.1.</span> <span class="nav-text">iostat</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程级IO监控"><span class="nav-number">1.2.</span> <span class="nav-text">进程级IO监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#iotop"><span class="nav-number">1.2.1.</span> <span class="nav-text">iotop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pidstat-仅rhel6u系列"><span class="nav-number">1.2.2.</span> <span class="nav-text">pidstat (仅rhel6u系列)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#block-dump-iodump"><span class="nav-number">1.2.3.</span> <span class="nav-text">block_dump, iodump</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iotop-stp"><span class="nav-number">1.2.4.</span> <span class="nav-text">iotop.stp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#业务级IO监控"><span class="nav-number">1.3.</span> <span class="nav-text">业务级IO监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ioprofile"><span class="nav-number">1.3.1.</span> <span class="nav-text">ioprofile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件级IO监控"><span class="nav-number">1.4.</span> <span class="nav-text">文件级IO监控</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络IO"><span class="nav-number">2.</span> <span class="nav-text">网络IO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#iftop"><span class="nav-number">2.1.</span> <span class="nav-text">iftop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#netstat"><span class="nav-number">2.2.</span> <span class="nav-text">netstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ping"><span class="nav-number">2.3.</span> <span class="nav-text">ping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#telnet"><span class="nav-number">2.4.</span> <span class="nav-text">telnet</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#磁盘"><span class="nav-number">3.</span> <span class="nav-text">磁盘</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ls"><span class="nav-number">3.1.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#du"><span class="nav-number">3.2.</span> <span class="nav-text">du</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#df"><span class="nav-number">3.3.</span> <span class="nav-text">df</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存"><span class="nav-number">4.</span> <span class="nav-text">内存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#free"><span class="nav-number">4.1.</span> <span class="nav-text">free</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vmstat"><span class="nav-number">4.2.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#top"><span class="nav-number">4.3.</span> <span class="nav-text">top</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU"><span class="nav-number">5.</span> <span class="nav-text">CPU</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#vmstat-1"><span class="nav-number">5.1.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sar"><span class="nav-number">5.2.</span> <span class="nav-text">sar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#top-1"><span class="nav-number">5.3.</span> <span class="nav-text">top</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proc-cpuinfo"><span class="nav-number">5.4.</span> <span class="nav-text">/proc/cpuinfo</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程"><span class="nav-number">6.</span> <span class="nav-text">进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#top-2"><span class="nav-number">6.1.</span> <span class="nav-text">top</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ipcs"><span class="nav-number">6.2.</span> <span class="nav-text">ipcs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strace"><span class="nav-number">6.3.</span> <span class="nav-text">strace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ps"><span class="nav-number">6.4.</span> <span class="nav-text">ps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pstack"><span class="nav-number">6.5.</span> <span class="nav-text">pstack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ldd-查看程序依赖库"><span class="nav-number">6.6.</span> <span class="nav-text">ldd 查看程序依赖库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pstree"><span class="nav-number">6.7.</span> <span class="nav-text">pstree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#size"><span class="nav-number">6.8.</span> <span class="nav-text">size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proc-pid-文件"><span class="nav-number">6.9.</span> <span class="nav-text">/proc/[pid]/*文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统信息"><span class="nav-number">7.</span> <span class="nav-text">系统信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#uname"><span class="nav-number">7.1.</span> <span class="nav-text">uname</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vmstat-2"><span class="nav-number">7.2.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proc-文件"><span class="nav-number">7.3.</span> <span class="nav-text">/proc/*文件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-09</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gavin Zhang</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">883k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">13:23</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        <!-- add this第三方工具 -->
+<div class="addthis_inline_share_toolbox">
+  <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5d2f5e89bbcb7cce" async="async"></script>
+</div>
+
+      </div>
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/lazyload/lozad.min.js?v=1.10.0"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+  
+
+  
+  <script src="/js/exturl.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css"/>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '9ed54522a8818f2ebf63',
+    clientSecret: '2977df7ea417b2b266949482dce578d39d7a2df6',
+    repo: 'cordate.github.io',
+    owner: 'cordate',
+    admin: ['cordate'],
+    id: md5(location.pathname),
+    
+      language: 'zh-CN',
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+<script>
+if ($('body').find('pre.mermaid').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      mermaid.initialize({
+        theme: 'forest',
+        logLevel: 3,
+        flowchart: { curve: 'linear' },
+        gantt: { axisFormat: '%m/%d/%Y' },
+        sequence: { actorMargin: 50 }
+      });
+    }
+  });
+}
+</script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
