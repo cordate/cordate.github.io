@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="事务是什么事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。 事务ACID特性说到事务，就不得不提一下事务著名的四大特性。 原子性原子性要求，事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。 一致性一致性要求，事务在开始前和结束">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-21T19:15:00.757Z">
+<meta property="og:updated_time" content="2019-09-08T17:32:48.716Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的分布式事务解决方案">
 <meta name="twitter:description" content="事务是什么事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。 事务ACID特性说到事务，就不得不提一下事务著名的四大特性。 原子性原子性要求，事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。 一致性一致性要求，事务在开始前和结束">
@@ -451,7 +451,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-22 03:15:00" itemprop="dateModified" datetime="2019-08-22T03:15:00+08:00">2019-08-22</time>
+                <time title="修改时间：2019-09-09 01:32:48" itemprop="dateModified" datetime="2019-09-09T01:32:48+08:00">2019-09-09</time>
               </span>
             
           
@@ -582,6 +582,9 @@
 <li>实现分区容错性<br>单一节点 或 多个节点处于相同的网络环境下，那么会存在一定的风险，万一该机房断电、该地区发生自然灾害，那么业务系统就全面瘫痪了。为了防止这一问题，采用分布式系统，将多个子系统分布在不同的地域、不同的机房中，从而保证系统高可用性。</li>
 </ol>
 <p>这说明分区容错性是分布式系统的根本，如果分区容错性不能满足，那使用分布式系统将失去意义。<br>此外，可用性对业务系统也尤为重要。在大谈用户体验的今天，如果业务系统时常出现“系统异常”、响应时间过长等情况，这使得用户对系统的好感度大打折扣，在互联网行业竞争激烈的今天，相同领域的竞争者不甚枚举，系统的间歇性不可用会立马导致用户流向竞争对手。因此，我们只能通过牺牲一致性来换取系统的可用性和分区容错性。这也就是下面要介绍的BASE理论。</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTgvMDcvY2FwLmh0bWw=" title="http://www.ruanyifeng.com/blog/2018/07/cap.html">http://www.ruanyifeng.com/blog/2018/07/cap.html<i class="fa fa-external-link"></i></span></p>
+</blockquote>
 <h1 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h1><p>BASE是基本可用（Basically Available）、软状态（Soft state）和最终一致性（Eventually consistent）三个英文的缩写。BASE理论是对CAP中一致性和可用性权衡的结果，其来源于对大规模互联网系统分布式实践的总结， 是基于CAP定理逐步演化而来的。BASE理论的核心思想是：即使无法做到强一致性，但每个应用都可以根据自身业务特点，采用适当的方式来使系统达到最终一致性，其实就是我们所说的，<b style="color:red">牺牲强一致性换取弱一致性。</b>那么具体看一下BASE中的三要素：</p>
 <h2 id="1-基本可用（Basically-Available）"><a href="#1-基本可用（Basically-Available）" class="headerlink" title="1.基本可用（Basically Available）"></a>1.基本可用（Basically Available）</h2><p>当分布式系统出现故障时，允许损失部分可用性，保证核心模块的可用性。这个很好理解，当出现故障时，首先考虑的肯定是核心模块，但也不是说要牺牲掉其他模块，只是在极端情况下对服务做的降级。</p>
 <p>有以下两种方式：</p>
@@ -1015,7 +1018,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-count">129</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1343,7 +1346,9 @@
         
           
         
-        <span class="site-state-item-count">114</span>
+          
+        
+        <span class="site-state-item-count">115</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -1431,7 +1436,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-09</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-24</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1445,7 +1450,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">883k</span>
+    <span title="站点总字数">893k</span>
   
 
   
@@ -1456,7 +1461,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">13:23</span>
+    <span title="站点阅读时长">13:32</span>
   
 </div>
 
