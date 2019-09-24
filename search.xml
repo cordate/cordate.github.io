@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>分布式一致性解决瞬时态</title>
+      <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E8%A7%A3%E5%86%B3%E7%9E%AC%E6%97%B6%E6%80%81.html"/>
+      <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E8%A7%A3%E5%86%B3%E7%9E%AC%E6%97%B6%E6%80%81.html</url>
+      
+        <content type="html"><![CDATA[<p>分布式一致性在微服务中已经不是什么新概念了。分布式一致性问题也是协同问题，我们在软件开发中经常会遇到协同的问题。</p><h1 id="协同"><a href="#协同" class="headerlink" title="协同"></a>协同</h1><p>我在维基百科上找到<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JThEJThGJUU1JTkwJThDJUU1JUFEJUE2" title="https://zh.wikipedia.org/wiki/%E5%8D%8F%E5%90%8C%E5%AD%A6">协同学<i class="fa fa-external-link"></i></span>的说明，我们来看一下:</p><blockquote><p>协同学理论（英语：Synergetics）源于现代物理学和非平衡统计物理学，是一门研究完全不同的学科中存在的共同本质特征的横断科学。它通过分类、类比，来描述各种系统和运动现象中从无序到有序转变的共同规律。协同学理论是1974年德国物理学家赫尔曼·哈肯创立，受激光理论的启发。协同学理论也可称为非平衡系统的自组织理论。</p></blockquote><p>这里最重要的一句话就是<code>非平衡系统的自组织</code>；这种思想也是区块链里面所倡导的理论基础。也是分布式一致性理论的本质。</p><p>天下大势，分久必合，合久必分。其实我们做业务系统也是一样，当我们发起一笔业务时，多系统的数据平衡态被打乱；这时候我们需要多系统之间的自适应自组织而重新达到平衡状态。</p><p>而我们需要做得就是使我们的系统能够具有自适应自组织的能力；</p><h1 id="瞬时态"><a href="#瞬时态" class="headerlink" title="瞬时态"></a>瞬时态</h1><p>在分布式一致性中，从平衡态-&gt;混乱态-&gt;平衡态，因为混乱态出现的时间比较短，所以我把他成为瞬时态。</p><p>对于瞬时态，我们只要做到以下几点即可：</p><ol><li>瞬时态出现的时间应该控制，将时间缩短。</li><li>可见性的说明，这里的可见性还有另外一层意义，我们待会再说明，也就是CAP里面的分区容错性。</li><li>兼容，数据变更前后都不会有问题即可</li></ol><h1 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h1><p>一般来说我们在处理分布式一致性问题的时候必须考虑数据出现一致性问题时候的可见性问题，</p><ol><li>加业务锁，客户端及时返回错误或者等待，这种不适合业务处理</li><li>状态机，临时状态展示给用户</li></ol><h1 id="补偿"><a href="#补偿" class="headerlink" title="补偿"></a>补偿</h1><p>不管是两阶段提交还是Base理论，数据最终一致性的保障都是通过补偿的方式进行的。</p><h1 id="协同场景"><a href="#协同场景" class="headerlink" title="协同场景"></a>协同场景</h1><p>其实我把分布式一致性的场景进行扩充的原因是我遇到了一个推送配置的场景，因为要同时推送多个服务，这个配置需要即时生效而且是多个服务一起生效，否则就会报错；我觉得这个也是分布式一致性的问题；因为我解决这个问题的理论思想都是来自分布式一致性的问题。而如果将其归纳到分布式一致性中也不是很合适；</p><p>对于你觉得很相似的东西，你要明白他们之间一定有共性，而我觉得这里的共性就是协同。这个问题和分布式一致性的不同是，这个地方没有数据同步问题，它只是将不同的配置推送到不同的系统，最终是配置数据的完整性而已。</p><p>对于配置的一致性，一般我们知道Paxos、raft协议等，这里配置协议与我们的配置推送的不同是，配置推送每次是新数据覆盖老数据；但是Paxos这类协议是竞争，不一定遵循新的替换旧的，而是通过版本号叠加处理而已，因为每个节点都在进行相应的处理，所以它们会不停地增加版本号将自己的值存放到存储中。</p><p>这种拆分的配置，我们的处理手段是瞬时态兼容处理；就是推送配置的时候将旧的配置和新的配置合集处理；因为多一些配置对系统的处理不产生影响。下面就是我们的决策架构图。</p><p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%86%B3%E7%AD%96%E7%9B%B8%E5%85%B3.jpeg"></p><p>由于运行态一分钟拉取最新的决策，所以配置话无法通过管理态做一个协同的操作。这时候就需要推送调度系统做合集兼容；管理态发布后，定义一个定时器，至少1分钟后将最新配置重新推送一下决策调度系统即可。所以存在一分钟左右的瞬时态，这里就是合集配置兼容即可。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 系统设计 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 分布式一致性 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数据库与高并发</title>
       <link href="//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91.html"/>
       <url>//%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E9%AB%98%E5%8F%AF%E7%94%A8/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91.html</url>
@@ -1691,9 +1716,9 @@
       
         <tags>
             
-            <tag> bitcoin </tag>
-            
             <tag> Base58Check </tag>
+            
+            <tag> bitcoin </tag>
             
         </tags>
       
@@ -1979,9 +2004,9 @@
       
         <tags>
             
-            <tag> raft </tag>
-            
             <tag> 分布式一致性 </tag>
+            
+            <tag> raft </tag>
             
         </tags>
       
@@ -2037,9 +2062,9 @@
       
         <tags>
             
-            <tag> 分布式一致性 </tag>
-            
             <tag> paxos </tag>
+            
+            <tag> 分布式一致性 </tag>
             
         </tags>
       
@@ -2155,9 +2180,9 @@
             
             <tag> 比特币 </tag>
             
-            <tag> 多签名 </tag>
-            
             <tag> 脚本 </tag>
+            
+            <tag> 多签名 </tag>
             
         </tags>
       
@@ -2778,9 +2803,9 @@
       
         <tags>
             
-            <tag> 比特币 </tag>
-            
             <tag> bitcoinj </tag>
+            
+            <tag> 比特币 </tag>
             
         </tags>
       
@@ -2807,11 +2832,11 @@
       
         <tags>
             
-            <tag> 比特币 </tag>
-            
             <tag> bitcoinj </tag>
             
             <tag> message </tag>
+            
+            <tag> 比特币 </tag>
             
         </tags>
       
@@ -3567,9 +3592,9 @@
     
     
     <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
+      <title>关于我</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3578,9 +3603,9 @@
     
     
     <entry>
-      <title>关于我</title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -3611,17 +3636,6 @@
     
     
     <entry>
-      <title>安徽九华山</title>
-      <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
-      <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
-      
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 九华山 --><iframe src="//player.bilibili.com/player.html?aid=42749538&cid=74978829&page=1" frameborder="0" 'allowfullscreen'="" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"></iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>厦门市</title>
       <link href="/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html"/>
       <url>/vedio/%E5%8E%A6%E9%97%A8%E6%B8%B8.html</url>
@@ -3633,22 +3647,22 @@
     
     
     <entry>
-      <title>鼋头渚</title>
-      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
-      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      <title>河西走廊</title>
+      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
+      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
       
-        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
     
     
     <entry>
-      <title>河西走廊</title>
-      <link href="/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html"/>
-      <url>/vedio/%E6%B2%B3%E8%A5%BF%E8%B5%B0%E5%BB%8A.html</url>
+      <title>安徽九华山</title>
+      <link href="/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html"/>
+      <url>/vedio/%E4%B9%9D%E5%8D%8E%E5%B1%B1.html</url>
       
-        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 甘肃河西走廊 --><iframe height="320" width="570" src="//player.bilibili.com/player.html?aid=42749154&cid=74978022&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+        <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 甘肃游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><!-- 九华山 --><iframe src="//player.bilibili.com/player.html?aid=42749538&cid=74978829&page=1" frameborder="0" 'allowfullscreen'="" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"></iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
       
     </entry>
     
@@ -3671,6 +3685,17 @@
       <url>/vedio/%E9%9D%92%E6%B5%B7%E6%B8%B8.html</url>
       
         <content type="html"><![CDATA[<div style="width:100%;padding-top:66%;"></div><!-- 青海游 --><br><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><div style="width:100%;height:100%;position:relative;overflow: hidden;"><iframe src="//player.bilibili.com/player.html?aid=42755267&cid=74987726&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute;top:-0px;left:0;width:100%;height:100%;"> </iframe><br></div></div><script>    var iframe = document.getElementsByTagName('iframe')[0];    var f = function() {        // var iframeContent = iframe.contentWindow.document;        // console.log(iframeContent);        // var header = iframeContent.getElementsByClassName("bilibili-player-video-recommend")[0];        // if (header != undefined) {          // header.parentNode.removeChild(header);          // var cssStyle = "-" + header.clientHeight + "px";          // iframe.parentNode.style.top = "-50px";        // }        // alert(iframe.parentNode.clientHeight + " : " + iframe.parentNode.clientWidth);        // iframe.style.height=iframe.parentNode.clientHeight + "px";        // iframe.style.width=iframe.parentNode.clientWidth + "px";        if (iframe.clientHeight >= 360) {            iframe.style.top = "-50px";        } else {            iframe.style.top = "0px";            iframe.style.height=iframe.clientWidth * 0.6 + "px";        }    };    var f2 = function() {        iframe.style.top = "0px";        iframe.style.height=iframe.clientWidth * 0.6 + "px";        return true;    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        iframe.attachEvent("onresize", f2);     } else {        iframe.onload = f;        iframe.onresize = f2;      }    window.onload = f;</script>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>鼋头渚</title>
+      <link href="/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html"/>
+      <url>/vedio/%E9%BC%8B%E5%A4%B4%E6%B8%9A.html</url>
+      
+        <content type="html"><![CDATA[<!-- 镇江游 --><div style="width:100%;padding-top:86.8%;"></div><div style="width:100%; text-align:center;height:100%; position:absolute;top:0px;"><!-- 鼋头渚 --><iframe height="100%" width="100%" src="//player.youku.com/embed/XMzA0NDkxMzI4NA==" frameborder="0" allowfullscreen="true"></iframe></div><script>    var iframe = document.getElementById('myframe');    var f = function() {        var ele = document.getElementsByClassName("fluid-vids")[0];        if (ele != undefined) {          ele.style.cssText="position: relative; width: 100%; padding-top: 56.2599%;";        }    }    if (iframe.attachEvent) {        iframe.attachEvent("onload", f);        } else {            iframe.onload = f;        }    // window.onload = function() {    //     alert("loaded");    // }</script>]]></content>
       
     </entry>
     
