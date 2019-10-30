@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="柳絮纷飞">
 <meta property="og:description" content="分布式一致性在微服务中已经不是什么新概念了。分布式一致性问题也是协同问题，我们在软件开发中经常会遇到协同的问题。 协同我在维基百科上找到协同学的说明，我们来看一下:  协同学理论（英语：Synergetics）源于现代物理学和非平衡统计物理学，是一门研究完全不同的学科中存在的共同本质特征的横断科学。它通过分类、类比，来描述各种系统和运动现象中从无序到有序转变的共同规律。协同学理论是1974年德国物">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-24T18:50:13.170Z">
+<meta property="og:updated_time" content="2019-09-25T15:33:53.096Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式一致性解决瞬时态">
 <meta name="twitter:description" content="分布式一致性在微服务中已经不是什么新概念了。分布式一致性问题也是协同问题，我们在软件开发中经常会遇到协同的问题。 协同我在维基百科上找到协同学的说明，我们来看一下:  协同学理论（英语：Synergetics）源于现代物理学和非平衡统计物理学，是一门研究完全不同的学科中存在的共同本质特征的横断科学。它通过分类、类比，来描述各种系统和运动现象中从无序到有序转变的共同规律。协同学理论是1974年德国物">
@@ -451,7 +451,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-25 02:50:13" itemprop="dateModified" datetime="2019-09-25T02:50:13+08:00">2019-09-25</time>
+                <time title="修改时间：2019-09-25 23:33:53" itemprop="dateModified" datetime="2019-09-25T23:33:53+08:00">2019-09-25</time>
               </span>
             
           
@@ -504,7 +504,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">1.3k</span>
+              <span title="本文字数">1.4k</span>
             </span>
           
 
@@ -562,6 +562,7 @@
 <p>这种拆分的配置，我们的处理手段是瞬时态兼容处理；就是推送配置的时候将旧的配置和新的配置合集处理；因为多一些配置对系统的处理不产生影响。下面就是我们的决策架构图。</p>
 <p><img alt="" data-src="https://raw.githubusercontent.com/gavin-account/blog-pics/master/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%86%B3%E7%AD%96%E7%9B%B8%E5%85%B3.jpeg"></p>
 <p>由于运行态一分钟拉取最新的决策，所以配置话无法通过管理态做一个协同的操作。这时候就需要推送调度系统做合集兼容；管理态发布后，定义一个定时器，至少1分钟后将最新配置重新推送一下决策调度系统即可。所以存在一分钟左右的瞬时态，这里就是合集配置兼容即可。</p>
+<p>还有第二种方法就是使用版本号，当决策系统进行发布时，上层通过版本号调用旧的决策；当决策系统发布完成后，切换新的版本号来进行调用，这样就能实现数据的分割了。</p>
 
       
     </div>
@@ -690,6 +691,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/杂谈/我的历史订单列表的实现.html" rel="prev" title="我的历史订单列表的实现">
+                我的历史订单列表的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -768,7 +773,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-count">131</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1098,7 +1103,9 @@
         
           
         
-        <span class="site-state-item-count">115</span>
+          
+        
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -1186,7 +1193,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-09-25</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019-10-31</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1200,7 +1207,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">894k</span>
+    <span title="站点总字数">896k</span>
   
 
   
@@ -1211,7 +1218,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">13:33</span>
+    <span title="站点阅读时长">13:35</span>
   
 </div>
 
